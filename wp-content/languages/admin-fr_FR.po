@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.7.x - Administration package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-01-05 17:22:59+0000\n"
+"PO-Revision-Date: 2017-01-09 16:14:48+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -8524,7 +8524,7 @@ msgstr "Liste noire pour les commentaires"
 
 #: wp-admin/options-discussion.php:155
 msgid "When a comment contains any of these words in its content, name, URL, email, or IP, it will be held in the <a href=\"edit-comments.php?comment_status=moderated\">moderation queue</a>. One word or IP per line. It will match inside words, so &#8220;press&#8221; will match &#8220;WordPress&#8221;."
-msgstr "Lorsqu&rsquo;un commentaire contient l&rsquo;un de ces mots dans son contenu, son nom, son adresse web, son adresse de messagerie, ou son adresse IP, il esera retenu dans la <a href=\"edit-comments.php?comment_status=moderated\">file de modération</a>. Un seul mot ou une seule adresse IP par ligne. Cette fonction reconnaît l&rsquo;intérieur des mots, donc &laquo;&nbsp;press&nbsp;&raquo; suffira pour reconnaître &laquo;&nbsp;WordPress&nbsp;&raquo;."
+msgstr "Lorsqu&rsquo;un commentaire contient l&rsquo;un de ces mots dans son contenu, son nom, son adresse web, son adresse de messagerie, ou son adresse IP, il sera retenu dans la <a href=\"edit-comments.php?comment_status=moderated\">file de modération</a>. Un seul mot ou une seule adresse IP par ligne. Cette fonction reconnaît l&rsquo;intérieur des mots, donc &laquo;&nbsp;press&nbsp;&raquo; suffira pour reconnaître &laquo;&nbsp;WordPress&nbsp;&raquo;."
 
 #: wp-admin/options-discussion.php:153
 msgid "Hold a comment in the queue if it contains %s or more links. (A common characteristic of comment spam is a large number of hyperlinks.)"
