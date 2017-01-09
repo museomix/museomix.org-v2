@@ -9,6 +9,8 @@ wp-content/upgrade/
 wp-content/uploads/
 wp-content/wp-cache-config.php
 wp-content/plugins/hello.php
+wp-content/themes/divi
+wp-content/plugins/divi-builder
 
 /.htaccess
 /license.txt
