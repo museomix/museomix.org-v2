@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl.html
 Tags: SEO, XML sitemap, Google Search Console, Content analysis, Readability
 Requires at least: 4.4
 Tested up to: 4.7
-Stable tag: 4.0.2
+Stable tag: 4.4
 
 Improve your WordPress SEO: Write better content and have a fully optimized WordPress site using the Yoast SEO plugin.
 
@@ -29,7 +29,7 @@ Using the snippet preview, you can see a rendering of what your post or page wil
 = Page Analysis =
 The Yoast SEO plugins [Page Analysis](https://yoast.com/content-seo-wordpress-linkdex/) functionality checks simple things you're bound to forget. It checks, for instance, if you have images in your post and whether they have an alt tag containing the focus keyword for that post. It also checks whether your posts are long enough, whether you've written a meta description and if that meta description contains your focus keyword, if you've used any subheadings within your post, etc. etc.
 
-The plugin also allows you to write meta titles and descriptions for all your category, tag and custom taxonomy archives, giving you the option to further optimize those pages.
+The plugin alsgruo allows you to write meta titles and descriptions for all your category, tag and custom taxonomy archives, giving you the option to further optimize those pages.
 
 Combined, this plugin makes sure that your content is the type of content search engines will love!
 
@@ -124,53 +124,29 @@ You'll find answers to many of your questions on [kb.yoast.com](https://kb.yoast
 
 == Changelog ==
 
-= 4.0.2 =
+= 4.4.0 =
 
-Release Date: December 20th, 2016
+Release date: February 28th, 2017
+
+* Bugfixes:
+	* Fixes a bug where a `span` tag wasn't closed correctly, props [lubobill1990](https://github.com/lubobill1990).
+	* Fixes a bug where there were deprecation warnings shown when an existing author was being updated.
+	* Fixes a bug where the user received an 'insufficient rights' error when the advanced settings are disabled, but an advanced page is visited.
+
+* Enhancements:
+	* Moves the options to disable keyword and content analysis from the general tab to the features tab.
+	* Improves styling of tables so they are viewable on mobile.
+	* Changes the links into shortlinks for the extensions page, helpcenter, facebook settings and premium popup.
+
+= 4.3.0 =
+
+Release Date: February 14th, 2017
 
 * Bugfixes
-	* Fixes a bug where shortcodes would be kept in the content that would be analyzed, which would result in incorrect results.
-	* Fixes a bug where the user language would be used to analyze the content instead of the site language.
+    * Fixes the width of the readability column on post overview, props [rikayla](https://github.com/rikayla).
 
-= 4.0.0 =
-
-Release Date: December 13th, 2016
-
-* Enhancements:
-	* License manager: Add a get_extension_url method to Yoast_Product to retrieve the URL where people can extend/upgrade their license.
-	* License manager: Add a set_extension_url method to Yoast_Product to set the URL where people can extend/upgrade their license.
-	* Updates the credits page.
-	* Improves plugin naming in translations.
-	* Improves translations by making texts more consistent.
-	* Displays the translations in the language chosen by the user in stead of using only the site language.
-	* Improves the styling of the banners.
-	* Adds passive voice for German.
-	* Adds more transition words for French.
-	* Improves feedback strings for the meta description length assessment.
-	* Improves matching of the keyword in the first paragraph.
-	* Improves the snippet preview to match the styling of googles snippet.
-
-* Bugfixes:
-	* Fixes a compatibility bug with the onboarding wizard and Polylang, and possibly more plugins that prevented the configuration wizard from working properly.
-	* Fixes a bug where post format archives showed up in sitemap when disabled.
-	* Fixes a bug where an old update notice would not be removed.
-	* Fixes a bug where keywords with periods where not highlighted in the snippet.
-	* Fixes a bug where the title of the metabox wasn't displayed correctly.
-
-= 3.9.0 =
-
-Release Date: November 29nd, 2016
-
-* Enhancements:
-	* Updates the banners on the admin pages.
-	* Improves accessibility by moving the Google Search Console reload button from the header.
-	* Allow for other plugins and themes to more easily add html namespaces through the new wpseo_html_namespaces filter.
-	* Prevent conflicts with other plugins/themes which also add html namespaces.
-
-* Bugfixes:
-	* Adds a check to prevent a "Cannot read property 'body' of undefined" error with tinyMCE that occurred with Visual Composer and some themes.
-	* Fixes a bug that prevented bulk actions to work in the Google Search Console.
-	* Fixed incorrect timezone for zero offset case (Atlantic/Azores instead of UTC).
+* Enhancements
+    * Improves feedback text for subheading too long assessment.
 
 = Earlier versions =
 
