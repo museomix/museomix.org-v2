@@ -1,0 +1,14 @@
+/*!
+ Theme Name:   Museomix
+ Theme URI:    http://example.com/twenty-fifteen-child/
+ Description:  Museomix Child Theme
+ Author:       John Doe
+ Author URI:   http://example.com
+ Template:     divi
+ Version:      1.0.0
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+ Text Domain:  museomix
+*/#main-header{background-color:#ffec00}#top-menu li{padding-left:11px;padding-right:11px}#top-menu li a{color:#000;padding-left:10px;padding-right:10px;padding-top:2px;text-align:center}#top-menu-nav>ul>li>a:hover,#top-menu li.current_page_item a{color:#fff;opacity:1}#top-menu li.current_page_item a:before,#top-menu li a:hover:before{content:"";background:#000;position:absolute;display:block;width:100%;height:1.4em;z-index:-1;top:0;left:0}#top-menu .current_page_item:after,#top-menu li a:hover:after{content:"";position:absolute;left:15%;top:2em;display:block;width:70%;height:3px;background-color:red;-ms-transform:rotate(1.2deg);transform:rotate(1.2deg)}
+/*# sourceMappingURL=style.css.map */
