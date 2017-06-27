@@ -3,7 +3,7 @@
  * Plugin Name: Divi Builder
  * Plugin URI: http://elegantthemes.com
  * Description: A drag and drop page builder for any WordPress theme.
- * Version: 1.3.10
+ * Version: 2.0.13
  * Author: Elegant Themes
  * Author URI: http://elegantthemes.com
  * License: GPLv2 or later
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'ET_BUILDER_PLUGIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'ET_BUILDER_PLUGIN_URI', plugins_url('', __FILE__) );
-define( 'ET_BUILDER_PLUGIN_VERSION', '1.3.10' );
+define( 'ET_BUILDER_PLUGIN_VERSION', '2.0.13' );
 
 if ( ! class_exists( 'ET_Dashboard_v2' ) ) {
 	require_once( ET_BUILDER_PLUGIN_DIR . 'dashboard/dashboard.php' );
@@ -51,15 +51,11 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 
 		add_action( 'wp_ajax_et_builder_save_settings', array( $this, 'builder_save_settings' ) );
 
-		add_action( 'wp_ajax_et_builder_authorize_aweber', array( $this, 'authorize_aweber' ) );
-
 		add_action( 'wp_ajax_et_builder_refresh_lists', array( $this, 'refresh_lists' ) );
 
 		add_action( 'wp_ajax_et_builder_save_updates_settings', array( $this, 'save_updates_settings' ) );
 
 		add_action( 'wp_ajax_et_builder_save_google_api_settings', array( $this, 'save_google_api_settings' ) );
-
-		add_filter( 'et_pb_builder_authorization_verdict', array( $this, 'is_aweber_authorized' ) );
 
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 
@@ -70,6 +66,13 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 		add_filter( 'et_builder_inner_content_class', array( $this, 'add_builder_inner_content_class' ) );
 
 		add_filter( 'et_pb_builder_options_array', array( $this, 'get_builder_options' ) );
+
+		$theme_file_path_length = strlen( get_theme_file_path() );
+
+		if ( class_exists( 'WooCommerce' ) && function_exists( 'wc_locate_template' ) && substr( wc_locate_template( 'archive-product.php' ), 0, $theme_file_path_length ) === get_theme_file_path() ) {
+			add_action( 'et_pb_shop_before_print_shop', array( $this, 'force_woocommerce_default_templates' ) );
+			add_action( 'et_pb_shop_after_print_shop', array( $this, 'return_woocommerce_default_templates' ) );
+		}
 	}
 
 	static function add_updates() {
@@ -85,24 +88,7 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 
 		// Divi builder layout should only be used in singular template
 		if ( ! is_singular() ) {
-			// get_the_excerpt() for excerpt retrieval causes infinite loop; thus we're using excerpt from global $post variable
-			global $post;
-
-			$read_more = sprintf(
-				' <a href="%1$s" title="%2$s" class="more-link">%3$s</a>',
-				esc_url( get_permalink() ),
-				sprintf( esc_attr__( 'Read more on %1%s', 'et_builder' ), esc_html( get_the_title() ) ),
-				esc_html__( 'read more', 'et_builder' )
-			);
-
-			// Use post excerpt if there's any. If there is no excerpt defined,
-			// Generate from post content by stripping all shortcode first
-			if ( ! empty( $post->post_excerpt ) ) {
-				return wpautop( $post->post_excerpt . $read_more );
-			} else {
-				$shortcodeless_content = preg_replace( '/\[[^\]]+\]/', '', $content );
-				return wpautop( et_wp_trim_words( $shortcodeless_content, 270, $read_more ) );
-			}
+			return $content;
 		}
 
 		$outer_class   = apply_filters( 'et_builder_outer_content_class', array( 'et_builder_outer_content' ) );
@@ -135,7 +121,10 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 	}
 
 	function add_builder_inner_content_class( $classes ) {
-		$classes[] = 'et_pb_gutters3';
+		$page_custom_gutter = get_post_meta( get_the_ID(), '_et_pb_gutter_width', true );
+		$valid_gutter_width = array( '1', '2', '3', '4' );
+		$gutter_width       = in_array( $page_custom_gutter, $valid_gutter_width ) ? $page_custom_gutter : '3';
+		$classes[]          = "et_pb_gutters{$gutter_width}";
 
 		return $classes;
 	}
@@ -174,6 +163,7 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 
 		// prepare array of Google API settings
 		$processed_updates_settings['api_main_google_api_key'] = isset( $google_api_settings['api_key'] ) ? $google_api_settings['api_key'] : '';
+		$processed_updates_settings['api_main_enqueue_google_maps_script'] = isset( $google_api_settings['enqueue_google_maps_script'] ) ? $google_api_settings['enqueue_google_maps_script'] : false;
 
 		$complete_options_set = array_merge( $builder_options, $processed_updates_settings );
 		return $complete_options_set;
@@ -207,7 +197,6 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 		define( 'ET_BUILDER_DIR', ET_BUILDER_PLUGIN_DIR . 'includes/builder/' );
 		define( 'ET_BUILDER_URI', trailingslashit( plugins_url( '', __FILE__ ) ) . 'includes/builder' );
 		define( 'ET_BUILDER_LAYOUT_POST_TYPE', 'et_pb_layout' );
-		define( 'ET_CORE_VERSION', $this->plugin_version );
 
 		load_theme_textdomain( 'et_builder', ET_BUILDER_DIR . 'languages' );
 
@@ -267,120 +256,8 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 			'ajaxurl'                    => admin_url( 'admin-ajax.php', $this->protocol ),
 			'authorize_text'             => esc_html__( 'Authorize', 'et_builder_plugin' ),
 			'reauthorize_text'           => esc_html__( 'Re-Authorize', 'et_builder_plugin' ),
-			'authorization_successflull' => esc_html__( 'AWeber successfully authorized', 'et_builder_plugin' ),
 			'save_settings'              => wp_create_nonce( 'save_settings' ),
 		) );
-	}
-
-	function authorize_aweber() {
-		if ( ! wp_verify_nonce( $_POST['et_builder_nonce'] , 'et_builder_nonce' ) ) {
-			die( -1 );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			die( -1 );
-		}
-
-		$api_key = ! empty( $_POST['et_builder_api_key'] ) ? sanitize_text_field( $_POST['et_builder_api_key'] ) : '';
-
-		$error_message = '' !== $api_key ? $this->aweber_authorization( $api_key ) : esc_html__( 'please paste valid authorization code', 'et_builder_plugin' );
-
-		$result = 'success' == $error_message ?
-			$error_message
-			: esc_html__( 'Authorization failed: ', 'et_builder_plugin' ) . $error_message;
-
-		die( $result );
-	}
-
-	function refresh_lists() {
-		if ( ! wp_verify_nonce( $_POST['et_builder_nonce'] , 'et_builder_nonce' ) ) {
-			die( -1 );
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			die( -1 );
-		}
-
-		$service = ! empty( $_POST['et_builder_mail_service'] ) ? sanitize_text_field( $_POST['et_builder_mail_service'] ) : '';
-		self::process_and_update_options( $_POST['et_builder_form_options'] );
-
-		switch ( $service ) {
-			case 'mailchimp':
-				$result = et_pb_get_mailchimp_lists( 'on' );
-				break;
-			case 'aweber':
-				$result = et_pb_get_aweber_lists( 'on' );
-				break;
-		}
-
-		if ( false === $result ) {
-			$result = sprintf( esc_html__( 'Error: Please make sure %1$s', 'et_builder_plugin' ), 'mailchimp' === $service ? esc_html__( 'MailChimp API key is correct', 'et_builder_plugin' ) : esc_html__( 'AWeber is authorized', 'et_builder_plugin' ) );
-		} else {
-			$result = esc_html__( 'Lists have been successfully regenerated', 'et_builder_plugin' );
-		}
-
-		die( $result );
-	}
-
-	/**
-	 * Retrieves the tokens from AWeber
-	 * @return string
-	 */
-	function aweber_authorization( $api_key ) {
-
-		if ( ! class_exists( 'AWeberAPI' ) ) {
-			require_once( ET_BUILDER_DIR . 'subscription/aweber/aweber_api.php' );
-		}
-
-		try {
-			$auth = AWeberAPI::getDataFromAweberID( $api_key );
-
-			if ( ! ( is_array( $auth ) && 4 === count( $auth ) ) ) {
-				$error_message = esc_html__( 'Authorization code is invalid. Try regenerating it and paste in the new code.', 'et_builder_plugin' );
-			} else {
-				$error_message = 'success';
-				list( $consumer_key, $consumer_secret, $access_key, $access_secret ) = $auth;
-
-				self::update_option( array(
-					'newsletter_main_aweber_key' => sanitize_text_field( $api_key ),
-					'aweber_consumer_key'        => sanitize_text_field( $consumer_key ),
-					'aweber_consumer_secret'     => sanitize_text_field( $consumer_secret ),
-					'aweber_access_key'          => sanitize_text_field( $access_key ),
-					'aweber_access_secret'       => sanitize_text_field( $access_secret ),
-				) );
-			}
-		} catch ( AWeberAPIException $exc ) {
-			$error_message = sprintf(
-				'<p>%4$s</p>
-				<ul>
-					<li>%5$s: %1$s</li>
-					<li>%6$s: %2$s</li>
-					<li>%7$s: %3$s</li>
-				</ul>',
-				esc_html( $exc->type ),
-				esc_html( $exc->message ),
-				esc_html( $exc->documentation_url ),
-				esc_html__( 'AWeberAPIException.', 'et_builder_plugin' ),
-				esc_html__( 'Type', 'et_builder_plugin' ),
-				esc_html__( 'Message', 'et_builder_plugin' ),
-				esc_html__( 'Documentation', 'et_builder_plugin' )
-			);
-		}
-
-		return $error_message;
-	}
-
-	/**
-	 * Checks whether Aweber is authorized or not.
-	 * Used to determine whether to display "Authorize" or "Re-Authorize" text on butoton
-	 */
-	function is_aweber_authorized( $network ) {
-		$builder_settings = $this->get_builder_options();
-
-		// Consider aweber authorized if all 4 fields are not empty
-		if ( ! empty( $builder_settings ) && ! empty( $builder_settings['aweber_consumer_key'] ) && ! empty( $builder_settings['aweber_consumer_secret'] ) && ! empty( $builder_settings['aweber_access_key'] ) && ! empty( $builder_settings['aweber_access_secret'] ) ) {
-			return true;
-		}
 	}
 
 	function save_updates_settings() {
@@ -413,12 +290,30 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 		}
 
 		$api_key = ! empty( $_POST['et_builder_google_api_key'] ) ? sanitize_text_field( $_POST['et_builder_google_api_key'] ) : '';
+		$enqueue_google_maps_script = ( isset( $_POST['et_builder_enqueue_google_maps_script'] ) && 'on' === $_POST['et_builder_enqueue_google_maps_script'] ) ? 'on' : 'off';
 
 		update_option( 'et_google_api_settings', array(
-			'api_key' => $api_key,
-		) );
+			'api_key'                    => $api_key,
+			'enqueue_google_maps_script' => $enqueue_google_maps_script,
+		));
 
 		die();
+	}
+
+	/**
+	 * Force WooCommerce to use its default templates (ignoring themes' custom templates) on shop module
+	 * @return void
+	 */
+	function force_woocommerce_default_templates() {
+		add_filter( 'woocommerce_template_path', '__return_false' );
+	}
+
+	/**
+	 * Cleanup force_woocommerce_default_templates(), allowing non shop module WooCommerce shortcode to use theme's WooCommerce template
+	 * @return void
+	 */
+	function return_woocommerce_default_templates() {
+		remove_filter( 'woocommerce_template_path', '__return_false' );
 	}
 }
 
@@ -432,3 +327,116 @@ function et_divi_builder_add_updates() {
 	ET_Builder_Plugin::add_updates();
 }
 add_action( 'plugins_loaded', 'et_divi_builder_add_updates' );
+
+if ( ! function_exists( 'et_divi_builder_setup_thumbnails' ) ) :
+function et_divi_builder_setup_thumbnails() {
+	add_theme_support( 'post-thumbnails' );
+
+	global $et_theme_image_sizes;
+
+	$et_theme_image_sizes = array(
+		'400x250'   => 'et-pb-post-main-image',
+		'1080x675'  => 'et-pb-post-main-image-fullwidth',
+		'400x284'   => 'et-pb-portfolio-image',
+		'510x382'   => 'et-pb-portfolio-module-image',
+		'1080x9999' => 'et-pb-portfolio-image-single',
+		'400x516'   => 'et-pb-gallery-module-image-portrait',
+	);
+
+	$et_theme_image_sizes = apply_filters( 'et_theme_image_sizes', $et_theme_image_sizes );
+	$crop = apply_filters( 'et_post_thumbnails_crop', true );
+
+	if ( is_array( $et_theme_image_sizes ) ){
+		foreach ( $et_theme_image_sizes as $image_size_dimensions => $image_size_name ){
+			$dimensions = explode( 'x', $image_size_dimensions );
+
+			if ( in_array( $image_size_name, array( 'et-pb-portfolio-image-single' ) ) ){
+				$crop = false;
+			}
+
+			add_image_size( $image_size_name, $dimensions[0], $dimensions[1], $crop );
+
+			$crop = apply_filters( 'et_post_thumbnails_crop', true );
+		}
+	}
+}
+endif;
+add_action( 'after_setup_theme', 'et_divi_builder_setup_thumbnails' );
+
+/**
+ * Switch the translation of Visual Builder interface to current user's language
+ * @return void
+ */
+if ( ! function_exists( 'et_fb_set_builder_locale' ) ) :
+function et_fb_set_builder_locale() {
+	// apply translations inside VB only
+	if ( empty( $_GET['et_fb'] ) ) {
+		return;
+	}
+
+	// make sure switch_to_locale() funciton exists. It was introduced in WP 4.7
+	if ( ! function_exists( 'switch_to_locale' ) ) {
+		return;
+	}
+
+	// do not proceed if user language == website language
+	if ( get_user_locale() === get_locale() ) {
+		return;
+	}
+
+	// switch the translation to user language
+	switch_to_locale( get_user_locale() );
+
+	// manually restore the translation for all domains except for the 'et_builder' domain
+	// otherwise entire page will be translated to user language, but we need to apply it to VB interface only.
+
+	/* The below code adapted from WordPress
+
+	  wp-includes/class-wp-locale-switcher.php:
+	    * load_translations()
+
+	  @copyright 2015 by the WordPress contributors.
+	  This program is free software; you can redistribute it and/or modify
+	  it under the terms of the GNU General Public License as published by
+	  the Free Software Foundation; either version 2 of the License, or
+	  (at your option) any later version.
+
+	  This program is distributed in the hope that it will be useful,
+	  but WITHOUT ANY WARRANTY; without even the implied warranty of
+	  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	  GNU General Public License for more details.
+
+	  You should have received a copy of the GNU General Public License
+	  along with this program; if not, write to the Free Software
+	  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+	  This program incorporates work covered by the following copyright and
+	  permission notices:
+
+	  b2 is (c) 2001, 2002 Michel Valdrighi - m@tidakada.com - http://tidakada.com
+
+	  b2 is released under the GPL
+
+	  WordPress - Web publishing software
+
+	  Copyright 2003-2010 by the contributors
+
+	  WordPress is released under the GPL */
+
+	global $l10n;
+
+	$domains = $l10n ? array_keys( $l10n ) : array();
+
+	load_default_textdomain( get_locale() );
+
+	foreach ( $domains as $domain ) {
+		if ( 'et_builder' === $domain ) {
+			continue;
+		}
+
+		unload_textdomain( $domain );
+		get_translations_for_domain( $domain );
+	}
+}
+endif;
+add_action( 'after_setup_theme', 'et_fb_set_builder_locale' );

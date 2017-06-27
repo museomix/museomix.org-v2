@@ -4,8 +4,12 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
+class ComposerStaticInit87fae0ccab18ea7a6bfc3ed5a918ff81
 {
+    public static $files = array (
+        '995b589e693a50f54393aa31ee1c3763' => __DIR__ . '/..' . '/yoast/whip/src/facades/wordpress.php',
+    );
+
     public static $prefixesPsr0 = array (
         'x' => 
         array (
@@ -103,8 +107,10 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
         'WPSEO_Bulk_List_Table' => __DIR__ . '/../..' . '/admin/class-bulk-editor-list-table.php',
         'WPSEO_Bulk_Title_Editor_List_Table' => __DIR__ . '/../..' . '/admin/class-bulk-title-editor-list-table.php',
         'WPSEO_Config_Component' => __DIR__ . '/../..' . '/admin/config-ui/components/interface-component.php',
+        'WPSEO_Config_Component_Configuration_Choices' => __DIR__ . '/../..' . '/admin/config-ui/components/class-component-configuration-choices.php',
         'WPSEO_Config_Component_Connect_Google_Search_Console' => __DIR__ . '/../..' . '/admin/config-ui/components/class-component-connect-google-search-console.php',
         'WPSEO_Config_Component_Mailchimp_Signup' => __DIR__ . '/../..' . '/admin/config-ui/components/class-component-mailchimp-signup.php',
+        'WPSEO_Config_Component_Suggestions' => __DIR__ . '/../..' . '/admin/config-ui/components/class-component-suggestions.php',
         'WPSEO_Config_Factory_Post_Type' => __DIR__ . '/../..' . '/admin/config-ui/factories/class-factory-post-type.php',
         'WPSEO_Config_Field' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field.php',
         'WPSEO_Config_Field_Choice' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-choice.php',
@@ -112,6 +118,7 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
         'WPSEO_Config_Field_Company_Logo' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-company-logo.php',
         'WPSEO_Config_Field_Company_Name' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-company-name.php',
         'WPSEO_Config_Field_Company_Or_Person' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-company-or-person.php',
+        'WPSEO_Config_Field_Configuration_Choices' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-configuration-choices.php',
         'WPSEO_Config_Field_Connect_Google_Search_Console' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-connect-google-search-console.php',
         'WPSEO_Config_Field_Environment' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-environment.php',
         'WPSEO_Config_Field_Mailchimp_Signup' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-mailchimp-signup.php',
@@ -131,6 +138,7 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
         'WPSEO_Config_Field_Site_Type' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-site-type.php',
         'WPSEO_Config_Field_Social_Profiles_Intro' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-social-profiles-intro.php',
         'WPSEO_Config_Field_Success_Message' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-success-message.php',
+        'WPSEO_Config_Field_Suggestions' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-suggestions.php',
         'WPSEO_Config_Field_Upsell_Configuration_Service' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-upsell-configuration-service.php',
         'WPSEO_Config_Field_Upsell_Site_Review' => __DIR__ . '/../..' . '/admin/config-ui/fields/class-field-upsell-site-review.php',
         'WPSEO_Configuration_Components' => __DIR__ . '/../..' . '/admin/config-ui/class-configuration-components.php',
@@ -140,6 +148,10 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
         'WPSEO_Configuration_Service' => __DIR__ . '/../..' . '/admin/config-ui/class-configuration-service.php',
         'WPSEO_Configuration_Storage' => __DIR__ . '/../..' . '/admin/config-ui/class-configuration-storage.php',
         'WPSEO_Configuration_Structure' => __DIR__ . '/../..' . '/admin/config-ui/class-configuration-structure.php',
+        'WPSEO_Configuration_Translations' => __DIR__ . '/../..' . '/admin/config-ui/class-configuration-translations.php',
+        'WPSEO_Cornerstone' => __DIR__ . '/../..' . '/admin/class-cornerstone.php',
+        'WPSEO_Cornerstone_Field' => __DIR__ . '/../..' . '/admin/class-cornerstone-field.php',
+        'WPSEO_Cornerstone_Filter' => __DIR__ . '/../..' . '/admin/class-cornerstone-filter.php',
         'WPSEO_Customizer' => __DIR__ . '/../..' . '/admin/class-customizer.php',
         'WPSEO_Export' => __DIR__ . '/../..' . '/admin/class-export.php',
         'WPSEO_Features' => __DIR__ . '/../..' . '/inc/class-wpseo-features.php',
@@ -225,6 +237,7 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
         'WPSEO_Replace_Vars' => __DIR__ . '/../..' . '/inc/class-wpseo-replace-vars.php',
         'WPSEO_Rewrite' => __DIR__ . '/../..' . '/inc/class-rewrite.php',
         'WPSEO_Shortcode_Filter' => __DIR__ . '/../..' . '/admin/ajax/class-shortcode-filter.php',
+        'WPSEO_Shortlinker' => __DIR__ . '/../..' . '/inc/class-wpseo-shortlinker.php',
         'WPSEO_Sitemap_Cache_Data' => __DIR__ . '/../..' . '/inc/sitemaps/class-sitemap-cache-data.php',
         'WPSEO_Sitemap_Cache_Data_Interface' => __DIR__ . '/../..' . '/inc/sitemaps/interface-sitemap-cache-data.php',
         'WPSEO_Sitemap_Image_Parser' => __DIR__ . '/../..' . '/inc/sitemaps/class-sitemap-image-parser.php',
@@ -253,6 +266,26 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
         'WPSEO_Twitter' => __DIR__ . '/../..' . '/frontend/class-twitter.php',
         'WPSEO_Upgrade' => __DIR__ . '/../..' . '/inc/class-upgrade.php',
         'WPSEO_Utils' => __DIR__ . '/../..' . '/inc/class-wpseo-utils.php',
+        'Whip_BasicMessage' => __DIR__ . '/..' . '/yoast/whip/src/messages/Whip_BasicMessage.php',
+        'Whip_Configuration' => __DIR__ . '/..' . '/yoast/whip/src/Whip_Configuration.php',
+        'Whip_EmptyProperty' => __DIR__ . '/..' . '/yoast/whip/src/exceptions/Whip_EmptyProperty.php',
+        'Whip_Host' => __DIR__ . '/..' . '/yoast/whip/src/Whip_Host.php',
+        'Whip_HostMessage' => __DIR__ . '/..' . '/yoast/whip/src/messages/Whip_HostMessage.php',
+        'Whip_InvalidOperatorType' => __DIR__ . '/..' . '/yoast/whip/src/exceptions/Whip_InvalidOperatorType.php',
+        'Whip_InvalidType' => __DIR__ . '/..' . '/yoast/whip/src/exceptions/Whip_InvalidType.php',
+        'Whip_InvalidVersionComparisonString' => __DIR__ . '/..' . '/yoast/whip/src/exceptions/Whip_InvalidVersionComparisonString.php',
+        'Whip_InvalidVersionRequirementMessage' => __DIR__ . '/..' . '/yoast/whip/src/messages/Whip_InvalidVersionRequirementMessage.php',
+        'Whip_Message' => __DIR__ . '/..' . '/yoast/whip/src/interfaces/Whip_Message.php',
+        'Whip_MessageFormatter' => __DIR__ . '/..' . '/yoast/whip/src/Whip_MessageFormatter.php',
+        'Whip_MessagePresenter' => __DIR__ . '/..' . '/yoast/whip/src/interfaces/Whip_MessagePresenter.php',
+        'Whip_MessagesManager' => __DIR__ . '/..' . '/yoast/whip/src/Whip_MessagesManager.php',
+        'Whip_NullMessage' => __DIR__ . '/..' . '/yoast/whip/src/messages/Whip_NullMessage.php',
+        'Whip_Requirement' => __DIR__ . '/..' . '/yoast/whip/src/interfaces/Whip_Requirement.php',
+        'Whip_RequirementsChecker' => __DIR__ . '/..' . '/yoast/whip/src/Whip_RequirementsChecker.php',
+        'Whip_UpgradePhpMessage' => __DIR__ . '/..' . '/yoast/whip/src/messages/Whip_UpgradePhpMessage.php',
+        'Whip_VersionDetector' => __DIR__ . '/..' . '/yoast/whip/src/interfaces/Whip_VersionDetector.php',
+        'Whip_VersionRequirement' => __DIR__ . '/..' . '/yoast/whip/src/Whip_VersionRequirement.php',
+        'Whip_WPMessagePresenter' => __DIR__ . '/..' . '/yoast/whip/src/presenters/Whip_WPMessagePresenter.php',
         'Yoast_API_Request' => __DIR__ . '/..' . '/yoast/license-manager/class-api-request.php',
         'Yoast_Alerts' => __DIR__ . '/../..' . '/admin/class-yoast-alerts.php',
         'Yoast_Api_Libs' => __DIR__ . '/..' . '/yoast/api-libs/class-api-libs.php',
@@ -287,8 +320,8 @@ class ComposerStaticInitb302bc72d072431a8a4fd6aae5897830
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitb302bc72d072431a8a4fd6aae5897830::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitb302bc72d072431a8a4fd6aae5897830::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit87fae0ccab18ea7a6bfc3ed5a918ff81::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit87fae0ccab18ea7a6bfc3ed5a918ff81::$classMap;
 
         }, null, ClassLoader::class);
     }

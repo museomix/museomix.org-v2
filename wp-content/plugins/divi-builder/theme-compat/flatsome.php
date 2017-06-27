@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Theme Compatibility for Flatsome theme
- * @see https://wordpress.org/themes/make/
+ * @see http://flatsome.uxthemes.com/
  * @since 1.0
  */
 class ET_Builder_Theme_Compat_Flatsome {
@@ -46,6 +46,7 @@ class ET_Builder_Theme_Compat_Flatsome {
 		}
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10 );
+		add_action( 'et_pb_shop_before_print_shop', array( $this, 'register_shop_thumbnail' ) );
 	}
 
 	/**
@@ -64,6 +65,16 @@ class ET_Builder_Theme_Compat_Flatsome {
 		if ( isset( $current_screen->base ) && 'post' === $current_screen->base ) {
 			wp_enqueue_script( 'et_pb_theme_flatsome_editor', ET_BUILDER_PLUGIN_URI . '/theme-compat/js/flatsome-editor.js', array( 'et_pb_admin_js', 'jquery' ), ET_BUILDER_VERSION, true );
 		}
+	}
+
+	/**
+	 * Remove Flatsome's product thumbnail on shop module and add Divi's product thumbnail
+	 * @since 1.3.10
+	 * @return void
+	 */
+	function register_shop_thumbnail() {
+		remove_action( 'flatsome_woocommerce_shop_loop_images', 'woocommerce_template_loop_product_thumbnail', 10 );
+		add_action( 'woocommerce_before_shop_loop_item_title', 'et_divi_builder_template_loop_product_thumbnail', 10);
 	}
 }
 ET_Builder_Theme_Compat_Flatsome::init();

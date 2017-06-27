@@ -4,9 +4,9 @@ Donate link: https://yoast.com/
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Tags: SEO, XML sitemap, Google Search Console, Content analysis, Readability
-Requires at least: 4.4
-Tested up to: 4.7
-Stable tag: 4.4
+Requires at least: 4.6
+Tested up to: 4.8
+Stable tag: 4.9
 
 Improve your WordPress SEO: Write better content and have a fully optimized WordPress site using the Yoast SEO plugin.
 
@@ -124,29 +124,31 @@ You'll find answers to many of your questions on [kb.yoast.com](https://kb.yoast
 
 == Changelog ==
 
-= 4.4.0 =
+= 4.9.0 =
 
-Release date: February 28th, 2017
-
-* Bugfixes:
-	* Fixes a bug where a `span` tag wasn't closed correctly, props [lubobill1990](https://github.com/lubobill1990).
-	* Fixes a bug where there were deprecation warnings shown when an existing author was being updated.
-	* Fixes a bug where the user received an 'insufficient rights' error when the advanced settings are disabled, but an advanced page is visited.
-
-* Enhancements:
-	* Moves the options to disable keyword and content analysis from the general tab to the features tab.
-	* Improves styling of tables so they are viewable on mobile.
-	* Changes the links into shortlinks for the extensions page, helpcenter, facebook settings and premium popup.
-
-= 4.3.0 =
-
-Release Date: February 14th, 2017
+Release Date: June 7th, 2017
 
 * Bugfixes
-    * Fixes the width of the readability column on post overview, props [rikayla](https://github.com/rikayla).
+	* Fixes a bug where there were certain assessments missing when switching to cornerstone content.
+	* Fixes a bug where the configuration wizard button was visible for users who didn't have enough rights to access the configuration wizard.
+	* Fixes a bug where the column `ID` was ambiguous, causing an SQL error.
+	* Fixes a bug where the category URL in the sitemap was encoded twice.
+	* Fixes a bug where an old upgrade notice is not removed.
 
 * Enhancements
-    * Improves feedback text for subheading too long assessment.
+	* Removes the noodp advanced robots meta value as it is no longer used.
+	* Loads the translations only when the configuration wizard endpoint is called, instead of every time `rest_api_init` is called.
+
+= 4.8.0 =
+
+Release Date: May 23rd, 2017
+
+* Bugfixes
+	* Fixes a bug where the tabs in the social and advanced metabox section are gone when keyword analysis has been disabled.
+
+* Enhancements
+	* Optimizes the way the cornerstone flag is saved.
+	* Analyzes the content using cornerstone assessors when a post or page is cornerstone content.
 
 = Earlier versions =
 

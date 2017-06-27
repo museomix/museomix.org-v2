@@ -39,27 +39,29 @@ class ET_Builder_Theme_Compat_Loader {
 	private function init_hooks() {
 		// load after $post is initiated. Cannot load before `init` hook
 		if ( is_admin() ) {
+			$priority = defined( 'DOING_AJAX' ) && DOING_AJAX ? 10 : 1000;
+
 			// Adding script for UX enhancement in dashboard needs earlier hook registration
-			add_action( 'wp_loaded', array( $this, 'load_theme_compat' ), 1000 );
+			add_action( 'wp_loaded', array( $this, 'load_theme_compat' ), $priority );
 		} else {
 			// Add after $post object has been set up so it can only load theme compat on page
 			// which uses Divi Builder only
 			add_action( 'wp', array( $this, 'load_theme_compat' ) );
+
+			// Load compatibility scripts
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 15 );
 		}
 	}
 
 	/**
-	 * Get theme name
+	 * Get theme data
+	 * @param string data name
 	 * @return string|bool
 	 */
-	function get_theme_name() {
+	function get_theme( $name ) {
 		$theme = wp_get_theme();
 
-		if ( isset( $theme['Name'] ) ) {
-			return $theme['Name'];
-		}
-
-		return false;
+		return $theme->get( $name );
 	}
 
 	/**
@@ -75,6 +77,14 @@ class ET_Builder_Theme_Compat_Loader {
 			'Weblizar',
 			'Zerif Lite',
 			'Flatsome',
+			'Enfold',
+			'Avada',
+			'X',
+			'SmartMag',
+			'Betheme',
+			'The7',
+			'Salient',
+			'Foxy',
 		) );
 	}
 
@@ -89,7 +99,7 @@ class ET_Builder_Theme_Compat_Loader {
 		$is_using_pagebuilder = is_admin() || is_et_pb_preview() ? true : isset( $post_id ) && et_pb_is_pagebuilder_used( $post_id );
 
 		// Check whether: 1) current page uses Divi builder or 2) current theme has compatibility file
-		if ( $is_using_pagebuilder && in_array( $this->get_theme_name(), $this->theme_list() ) ) {
+		if ( $is_using_pagebuilder && in_array( $this->get_theme( 'Name' ), $this->theme_list() ) ) {
 			return true;
 		}
 
@@ -103,8 +113,30 @@ class ET_Builder_Theme_Compat_Loader {
 	function load_theme_compat() {
 		if ( $this->has_theme_compat() ) {
 			// Get theme-compat file at /theme-compat/ directory
-			$theme_compat_path = ET_BUILDER_PLUGIN_DIR . 'theme-compat/' . sanitize_title( $this->get_theme_name() ) . '.php';
-			require_once apply_filters( 'et_builder_theme_compat_loader_list_path', $theme_compat_path, $this->get_theme_name() );
+			$theme_compat_path = ET_BUILDER_PLUGIN_DIR . 'theme-compat/' . sanitize_title( $this->get_theme( 'Name' ) ) . '.php';
+			require_once apply_filters( 'et_builder_theme_compat_loader_list_path', $theme_compat_path, $this->get_theme( 'Name' ) );
+		}
+	}
+
+	/**
+	 * Load compatibility style & scripts
+	 * @return void
+	 */
+	function enqueue_scripts() {
+		// Add Elegant Shortcode Support
+		$shortcode_file_path = get_template_directory() . '/epanel/shortcodes/shortcodes.php';
+
+		if ( 'Elegant Themes' === $this->get_theme( 'Author' ) && file_exists( $shortcode_file_path ) ) {
+			// Dequeue standard Elegant Shortcode styling
+			wp_dequeue_style( 'et-shortcodes-css' );
+
+			// Enqueue modified (more-specific) Elegant Shortcode styling
+			wp_enqueue_style(
+				'et-builder-compat-elegant-shortcodes',
+				ET_BUILDER_PLUGIN_URI . '/theme-compat/css/elegant-shortcodes.css',
+				array( 'et-builder-modules-style' ),
+				ET_BUILDER_PLUGIN_VERSION
+			);
 		}
 	}
 }

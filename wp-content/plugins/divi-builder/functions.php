@@ -327,3 +327,61 @@ if ( ! function_exists( 'et_pb_get_google_api_key' ) ) :
 		return $google_api_key;
 	}
 endif;
+
+if ( function_exists( 'woocommerce_get_product_thumbnail' ) ) {
+	add_action( 'et_pb_shop_before_print_shop', 'et_divi_builder_add_shop_thumbnail' );
+
+	/**
+	 * Remove WooCommerce's default product thumbnail on shop module and add Divi's product thumbnail
+	 */
+	function et_divi_builder_add_shop_thumbnail() {
+		global $wp_filter;
+
+		$item_title_hook = isset( $wp_filter['woocommerce_before_shop_loop_item_title'] ) ? $wp_filter['woocommerce_before_shop_loop_item_title'] : false;
+
+		// If default product thumbnail is registered, deregister and register Divi's product thumbnail
+		// Theme which has modified WooCommerce's product thumbnail should be modified via theme compatibility file
+		if ( isset( $item_title_hook ) && isset( $item_title_hook[10] ) && isset( $item_title_hook[10]['woocommerce_template_loop_product_thumbnail'] ) ) {
+			remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail');
+			add_action( 'woocommerce_before_shop_loop_item_title', 'et_divi_builder_template_loop_product_thumbnail', 10);
+		}
+	}
+
+	function et_divi_builder_template_loop_product_thumbnail() {
+		printf( '<span class="et_shop_image">%1$s<span class="et_overlay"></span></span>',
+			woocommerce_get_product_thumbnail()
+		);
+	}
+}
+
+/**
+ * Modify toggle module options
+ * @param array  $options default toggle module option
+ * @param string $slug module slug
+ * @param string $main_css_element main css selector
+ * @return array modified option
+ */
+function et_divi_builder_fix_toggle_advanced_options( $options, $slug, $main_css_element ) {
+	$options['fonts']['body']['css']['letter_spacing'] = "{$main_css_element} *";
+
+	return $options;
+}
+add_filter( 'et_pb_toggle_advanced_options', 'et_divi_builder_fix_toggle_advanced_options', 10, 3 );
+
+/**
+ * Append the current theme name to the body class
+ */
+if ( ! function_exists( 'et_pb_append_theme_class' ) ) :
+function et_pb_append_theme_class( $body_class ) {
+	$theme_data = wp_get_theme();
+
+	if ( empty( $theme_data ) || '' === $theme_data->Name ) {
+		return $body_class;
+	}
+
+	$body_class[] = sprintf( 'et-pb-theme-%1$s', strtolower( esc_attr( $theme_data->Name ) ) );
+
+	return $body_class;
+}
+endif;
+add_filter( 'body_class', 'et_pb_append_theme_class' );

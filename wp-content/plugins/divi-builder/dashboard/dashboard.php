@@ -721,7 +721,7 @@ class ET_Dashboard_v2 {
 					foreach( $value[ 'contents' ] as $key => $value ) {
 						$current_location = $key;
 						$options_prefix = $current_section . '_' . $key;
-						$options_array = $dashboard_options_assigned[$current_section . '_' . $key . '_options'];
+						$options_array = isset( $dashboard_options_assigned[$current_section . '_' . $key . '_options'] ) ? $dashboard_options_assigned[$current_section . '_' . $key . '_options'] : array();
 						$sidebar_section = 'sidebar' == $key ? true : false;
 						printf(
 							'<div class="et_dashboard_tab_content et_dashboard_tab_content_%1$s_%2$s">',
@@ -832,14 +832,20 @@ class ET_Dashboard_v2 {
 								break;
 
 								case 'checkbox' :
+									$checkbox_value = isset( $option[ 'value' ] ) ? $option[ 'value' ] : '1';
+
+									if ( false === $current_option_value && isset( $option[ 'default'] ) ) {
+										$current_option_value = $option[ 'default'];
+									}
+
 									printf( '
-										<li class="et_dashboard_checkbox clearfix%5$s%6$s%9$s"%4$s%7$s%8$s>
+										<li class="et_dashboard_checkbox clearfix%5$s%6$s"%4$s%7$s%8$s>
 											<p>%1$s</p>
-											<input type="checkbox" id="et_dashboard[%2$s]" name="et_dashboard[%2$s]" value="1" %3$s>
+											<input type="checkbox" id="et_dashboard[%2$s]" class="%9$s" name="et_dashboard[%2$s]" value="%10$s" %3$s>
 											<label for="et_dashboard[%2$s]"></label>',
 										isset( $option['title_' . $current_location] ) ? esc_html( $option['title_' . $current_location] ) : esc_html( $option['title'] ),
 										esc_attr( $current_option_name ),
-										checked( $current_option_value, 1, false ),
+										checked( $current_option_value, $checkbox_value, false ),
 										( isset( $option[ 'conditional' ] )
 											? sprintf( ' data-enables="%1$s"',  '' !== $sub_array
 												? esc_attr( $option[ 'conditional' ] )
@@ -851,7 +857,8 @@ class ET_Dashboard_v2 {
 										isset( $option[ 'display_if' ] ) ? ' et_dashboard_hidden_option et_dashboard_triggered_option' : '',
 										isset( $option[ 'display_if' ] ) ? ' data-condition="' . esc_attr( $option[ 'display_if' ] ) .  '"': '',
 										isset( $option[ 'display_if' ] ) ? ' data-triggers_count="0"': '',
-										isset( $option[ 'class' ] ) ? ' ' . esc_attr( $option[ 'class' ] ) : '' //#9
+										isset( $option[ 'class' ] ) ? ' ' . esc_attr( $option[ 'class' ] ) : '', //#9
+										esc_attr($checkbox_value)
 									);
 
 									echo $hint_output;
