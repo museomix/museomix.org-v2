@@ -2582,7 +2582,7 @@ span.et_pb_disable_on_options { position: absolute; right: -100%; }
 	animation: et_pb_slide_left .3s ease-in-out;
 }
 
-.et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_field_list.yes_no_button label {
+.et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_field_list.yes_no_button:not([data-id=et_pb_page_static_css_file]) label {
 	clear: none;
 	display: initial;
 	float: left;
@@ -3409,8 +3409,9 @@ a.et-pb-ab-refresh-stats span.icon:after { font-family: 'etbuilder'; font-size: 
 .et_pb_ab_visible_tab { display: block !important; }
 
 .et_pb_prompt_field_list select { width: 313px; }
-.et_pb_prompt_field .et_pb_yes_no_button_wrapper { float: right; }
+.et_pb_prompt_field_list:not([data-id=et_pb_page_static_css_file]) .et_pb_prompt_field .et_pb_yes_no_button_wrapper { float: right; }
 .et-pb-app-settings-button object { pointer-events: none; }
+[data-id=et_pb_page_static_css_file] .et_pb_prompt_field > div { display: inline-block; }
 
 /* Help Modal */
 .et-pb-shortcut-subtitle {

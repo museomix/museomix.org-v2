@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.8.x package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-06-26 14:07:37+0000\n"
+"PO-Revision-Date: 2017-07-06 12:36:41+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2929,7 +2929,7 @@ msgstr "<strong>ERREUR</strong> : le mot de passe que vous avez saisi pour l’
 
 #: wp-includes/user.php:220
 msgid "<strong>ERROR</strong>: Invalid email address."
-msgstr "<strong>ERREUR</strong> : l’dresse de messagerie n’est pas valide."
+msgstr "<strong>ERREUR</strong> : l’adresse de messagerie n’est pas valide."
 
 #: wp-includes/user.php:202
 msgid "<strong>ERROR</strong>: The email field is empty."
@@ -5396,7 +5396,7 @@ msgstr "Options avancées"
 
 #: wp-includes/media-template.php:959
 msgid "Custom Size"
-msgstr "Taille personalisée"
+msgstr "Taille personnalisée"
 
 #: wp-includes/class-wp-editor.php:1175
 msgid "Split table cell"

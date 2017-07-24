@@ -28,6 +28,7 @@ class ET_Builder_Element {
 	public $options_toggles = array();
 
 	public static $settings_migrations_initialized = false;
+	public static $setting_advanced_styles = false;
 
 	private static $_current_section_index = -1;
 	private static $_current_row_index     = -1;
@@ -44,8 +45,14 @@ class ET_Builder_Element {
 	// priority number, applied to some CSS rules
 	private $_style_priority;
 
+	/**
+	 * Holds module styles for the current request.
+	 *
+	 * @var array
+	 */
 	private static $styles = array();
 	private static $internal_modules_styles = array();
+
 	private static $prepare_internal_styles = false;
 	private static $internal_modules_counter = 10000;
 	private static $media_queries = array();
@@ -58,8 +65,16 @@ class ET_Builder_Element {
 	private static $current_module_index = 0;
 	private static $structure_modules = array();
 	private static $structure_module_slugs = array();
+	private static $_module_slugs_by_post_type = array();
 
 	private static $loading_backbone_templates = false;
+
+	/**
+	 * @var ET_Core_PageResource
+	 */
+	public static $advanced_styles_manager  = null;
+
+	public static $can_reset_shortcode_indexes = true;
 
 	const DEFAULT_PRIORITY = 10;
 	const HIDE_ON_MOBILE   = 'et-hide-mobile';
@@ -94,6 +109,10 @@ class ET_Builder_Element {
 			if ( ! ( $current_module_index >= $start_from && $current_module_index < ( ET_BUILDER_AJAX_TEMPLATES_AMOUNT + $start_from ) ) ) {
 				return;
 			}
+		}
+
+		if ( null === self::$advanced_styles_manager && ! is_admin() && ! et_fb_is_enabled() ) {
+			self::_setup_advanced_styles_manager();
 		}
 
 		$this->init();
@@ -159,6 +178,14 @@ class ET_Builder_Element {
 				$this->register_post_type( $post_type );
 			}
 
+			if ( ! isset( self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+				self::$_module_slugs_by_post_type[ $post_type ] = array();
+			}
+
+			if ( ! in_array( $this->slug, self::$_module_slugs_by_post_type ) ) {
+				self::$_module_slugs_by_post_type[ $post_type ][] = $this->slug;
+			}
+
 			if ( 'child' == $this->type ) {
 				self::$child_modules[ $post_type ][ $this->slug ] = $this;
 			} else {
@@ -181,6 +208,107 @@ class ET_Builder_Element {
 				add_shortcode( $this->additional_shortcode, array( $this, 'additional_shortcode_callback' ) );
 			}
 		}
+	}
+
+	/**
+	 * Setup the advanced styles manager
+	 *
+	 * {@internal
+	 *   Before the styles manager was implemented, the advanced styles were output inline in the footer.
+	 *   That resulted in them being the last styles parsed by the browser, thus giving them higher
+	 *   priority than other styles on the page. With the styles manager, the advanced styles are
+	 *   enqueued at the very end of the <head>. This is for backwards compatibility (to maintain
+	 *   the same priority for the styles as before).}}
+	 */
+	private static function _setup_advanced_styles_manager() {
+		if ( et_core_page_resource_is_singular() ) {
+			$post_id = et_core_page_resource_get_the_ID();
+		} else {
+			$post_id = 0; // It doesn't matter because we're going to force inline styles.
+		}
+
+		$is_preview       = is_preview() || is_et_pb_preview();
+		$forced_in_footer = $post_id && et_builder_setting_is_on( 'et_pb_css_in_footer', $post_id );
+		$forced_inline    = ! $post_id || $is_preview || $forced_in_footer || et_builder_setting_is_off( 'et_pb_static_css_file', $post_id );
+		$unified_styles   = ! $forced_inline && ! $forced_in_footer;
+
+		$resource_owner = $unified_styles ? 'core' : 'builder';
+		$resource_slug  = $unified_styles ? 'unified' : 'module-design';
+
+		if ( $is_preview ) {
+			// Don't let previews cause existing saved static css files to be modified.
+			$resource_slug .= '-preview';
+		}
+
+		self::$advanced_styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 40 );
+
+		if ( ! $forced_inline && ! $forced_in_footer && self::$advanced_styles_manager->has_file() ) {
+			// This post currently has a fully configured styles manager.
+			return;
+		}
+
+		self::$advanced_styles_manager->forced_inline       = $forced_inline;
+		self::$advanced_styles_manager->write_file_location = 'footer';
+
+		if ( $forced_in_footer || $forced_inline ) {
+			// Restore legacy behavior--output inline styles in the footer.
+			self::$advanced_styles_manager->set_output_location( 'footer' );
+		}
+
+		// Schedule callback to run in the footer so we can pass the module design styles to the page resource.
+		add_action( 'wp_footer', array( 'ET_Builder_Element', 'set_advanced_styles' ), 19 );
+
+		// Add filter for the resource data so we can prevent theme customizer css from being
+		// included with the builder css inline on first-load (since its in the head already).
+		add_filter( 'et_core_page_resource_get_data', array( 'ET_Builder_Element', 'filter_page_resource_data' ), 10, 3 );
+	}
+
+	/**
+	 * Passes the module design styles for the current page to the advanced styles manager.
+	 * {@see 'wp_footer' (19) Must run before the style manager's footer callback}
+	 */
+	public static function set_advanced_styles() {
+		$styles = self::get_style() . self::get_style( true );
+
+		if ( et_core_is_builder_used_on_current_request() ) {
+			$styles .= et_pb_get_page_custom_css();
+		}
+
+		if ( ! $styles ) {
+			return;
+		}
+
+		// Pass styles to page resource which will handle their output
+		self::$advanced_styles_manager->set_data( $styles, 40 );
+	}
+
+	/**
+	 * Filters the unified page resource data. The data is an array of arrays of strings keyed by
+	 * priority. The builder's styles are set with a priority of 40. Here we want to make sure
+	 * only the builder's styles are output in the footer on first-page load so we aren't
+	 * duplicating the customizer and custom css styles which are already in the <head>.
+	 * {@see 'et_core_page_resource_get_data'}
+	 */
+	public static function filter_page_resource_data( $data, $context, $resource ) {
+		global $wp_current_filter;
+
+		if ( 'inline' !== $context || ! in_array( 'wp_footer', $wp_current_filter ) ) {
+			return $data;
+		}
+
+		if ( false === strpos( $resource->slug, 'unified' ) ) {
+			return $data;
+		}
+
+		if ( 'footer' !== $resource->location ) {
+			// This is the first load of a page that doesn't currently have a unified static css file.
+			// The theme customizer and custom css have already been inlined in the <head> using the
+			// unified resource's ID. It's invalid HTML to have duplicated IDs on the page so we'll
+			// fix that here since it only applies to this page load anyway.
+			$resource->slug = $resource->slug . '-2';
+		}
+
+		return isset( $data[40] ) ? array( 40 => $data[40] ) : array();
 	}
 
 	function process_whitelisted_fields() {
@@ -353,8 +481,11 @@ class ET_Builder_Element {
 			return false;
 		}
 
-		// mark current ab module as processed
-		$this->ab_tests_processed[ $test_id ] = true;
+		// If current loop is advanced styles being populated, skip it
+		if ( ! self::$setting_advanced_styles ) {
+			// mark current ab module as processed
+			$this->ab_tests_processed[ $test_id ] = true;
+		}
 
 		if ( false === $saved_module_id ) {
 			// log the view_page event right away
@@ -387,27 +518,47 @@ class ET_Builder_Element {
 		return $saved_module_id;
 	}
 
-	public static function reset_shortcode_indexes( $content ) {
-		self::$_current_section_index = -1;
-		self::$_current_row_index     = -1;
-		self::$_current_column_index  = -1;
-		self::$_current_module_index  = -1;
+	public static function reset_shortcode_indexes( $content = '' ) {
+		if ( ! self::$can_reset_shortcode_indexes || ! is_main_query() ) {
+			return $content;
+		}
+
+		if ( '' !== $content && false === strpos( $content, '[et_pb_' ) ) {
+			// At least one builder section should be present.
+			return $content;
+		}
+
+		global $wp_current_filter;
+
+		if ( in_array( 'the_content', $wp_current_filter ) ) {
+			$call_counts = array_count_values( $wp_current_filter );
+
+			if ( $call_counts['the_content'] > 1 ) {
+				// This is a nested call. We only want to reset indexes after the top-most call.
+				return $content;
+			}
+		}
+
+		self::$_current_section_index       = -1;
+		self::$_current_row_index           = -1;
+		self::$_current_column_index        = -1;
+		self::$_current_module_index        = -1;
 
 		return $content;
 	}
 
 	function _get_current_shortcode_address() {
 		// Yuck! :-/
-		if ( false !== strpos( $this->slug, 'section' ) ) {
+		if ( false !== strpos( $this->slug, '_section' ) ) {
 			self::$_current_section_index++;
 			self::$_current_row_index    = -1;
 			self::$_current_column_index = -1;
 			self::$_current_module_index = -1;
-		} else if ( false !== strpos( $this->slug, 'row' ) ) {
+		} else if ( false !== strpos( $this->slug, '_row' ) ) {
 			self::$_current_row_index++;
 			self::$_current_column_index = -1;
 			self::$_current_module_index = -1;
-		} else if ( false !== strpos( $this->slug, 'column' ) ) {
+		} else if ( false !== strpos( $this->slug, '_column' ) ) {
 			self::$_current_column_index++;
 			self::$_current_module_index = -1;
 		} else {
@@ -498,7 +649,7 @@ class ET_Builder_Element {
 				}
 
 				if ( $content_synced ) {
-					$global_shortcode_content = et_pb_fix_shortcodes( wpautop( et_pb_extract_shortcode_content( $global_content, $function_name ) ) );
+					$global_shortcode_content = et_pb_get_global_module_content( $global_content, $function_name );
 				}
 
 				// cleanup the shortcode string to avoid the attributes messing with content
@@ -508,7 +659,7 @@ class ET_Builder_Element {
 				foreach( $this->shortcode_atts as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
 						// replace %22 with double quotes in options to make sure it's rendered correctly
-						$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! in_array( $single_attr, $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
+						$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! array_intersect( array( "et_pb_{$single_attr}", $single_attr ), $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
 					}
 				}
 			}
@@ -699,7 +850,7 @@ class ET_Builder_Element {
 				}
 
 				if ( $content_synced && ! $is_global_template ) {
-					$global_shortcode_content = et_pb_fix_shortcodes( wpautop( et_pb_extract_shortcode_content( $global_content, $function_name_processed ) ) );
+					$global_shortcode_content = et_pb_get_global_module_content( $global_content, $function_name_processed );
 				}
 
 				// remove the shortcode content to avoid conflicts of parent attributes with similar attrs from child modules
@@ -724,7 +875,7 @@ class ET_Builder_Element {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
 						// replace %22 with double quotes in options to make sure it's rendered correctly
 						if ( ! $is_global_template ) {
-							$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! in_array( $single_attr, $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
+							$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! array_intersect( array( "et_pb_{$single_attr}", $single_attr ), $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
 						}
 					} else if ( ! $use_updated_global_sync_method ) {
 						// prepare array of unsynced options to migrate the legacy modules to new system
@@ -764,7 +915,19 @@ class ET_Builder_Element {
 				$depends_on = array();
 
 				foreach ( $field['computed_depends_on'] as $depends_on_field ) {
-					$depends_on[ $depends_on_field ] = $this->shortcode_atts[ $depends_on_field ];
+					$dependency_value = $this->shortcode_atts[ $depends_on_field ];
+
+					if ( '' === $dependency_value ) {
+						if ( isset( $this->fields_unprocessed[ $depends_on_field]['default'] ) ) {
+							$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['default'];
+						}
+
+						if ( isset( $this->fields_unprocessed[ $depends_on_field]['shortcode_default'] ) ) {
+							$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['shortcode_default'];
+						}
+					}
+
+					$depends_on[ $depends_on_field ] = $dependency_value;
 				}
 
 				if ( ! is_callable( $field['computed_callback'] ) ) {
@@ -1333,7 +1496,7 @@ class ET_Builder_Element {
 					'background_color_gradient_end_position',
 					'background_color_gradient_type',
 				),
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 			);
@@ -1342,7 +1505,7 @@ class ET_Builder_Element {
 				'label'             => esc_html__( 'Gradient Start', 'et_builder' ),
 				'type'              => 'color-alpha',
 				'option_category'   => 'configuration',
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'on',
 				'default'           => '#2b87da',
 				'shortcode_default' => '#2b87da',
@@ -1355,7 +1518,7 @@ class ET_Builder_Element {
 				'label'             => esc_html__( 'Gradient End', 'et_builder' ),
 				'type'              => 'color-alpha',
 				'option_category'   => 'configuration',
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'on',
 				'default'           => '#29c4a9',
 				'shortcode_default' => '#29c4a9',
@@ -1379,7 +1542,7 @@ class ET_Builder_Element {
 				'default'           => 'linear',
 				'shortcode_default' => 'linear',
 				'default_on_child'  => true,
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'on',
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
@@ -1423,7 +1586,7 @@ class ET_Builder_Element {
 				'default'           => 'center',
 				'shortcode_default' => 'center',
 				'default_on_child'  => true,
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'radial',
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
@@ -2343,7 +2506,34 @@ class ET_Builder_Element {
 		return apply_filters( 'et_pb_module_processed_fields', $fields, $this->slug );
 	}
 
-	// intended to be overridden as needed
+	/**
+	 * Get the settings fields data for this element.
+	 *
+	 * @since 1.0
+	 * @todo  Finish documenting return value's structure.
+	 *
+	 * @return array[] {
+	 *     Settings Fields
+	 *
+	 *     @type mixed[] $setting_field_key {
+	 *         Setting Field Data
+	 *
+	 *         @type string   $type                Setting field type.
+	 *         @type string   $id                  CSS id for the setting.
+	 *         @type string   $label               Text label for the setting. Translatable.
+	 *         @type string   $description         Description for the settings. Translatable.
+	 *         @type string   $class               Optional. Css class for the settings.
+	 *         @type string[] $affects             Optional. The keys of all settings that depend on this setting.
+	 *         @type string[] $depends_to          Optional. The keys of all settings that this setting depends on.
+	 *         @type string   $depends_show_if     Optional. Only show this setting when the settings
+	 *                                             on which it depends has a value equal to this.
+	 *         @type string   $depends_show_if_not Optional. Only show this setting when the settings
+	 *                                             on which it depends has a value that is not equal to this.
+	 *         ...
+	 *     }
+	 *     ...
+	 * }
+	 */
 	function get_fields() { return array(); }
 
 	function hex2rgb( $color ) {
@@ -2900,7 +3090,7 @@ class ET_Builder_Element {
 			$default = '' === $default ? '||||' : $default;
 		}
 
-		$field_value = esc_attr( $field_name ) . '.replace("%91", "[").replace("%93", "]")';
+		$field_value = esc_attr( $field_name ) . '.replace(/%91/g, "[").replace(/%93/g, "]").replace(/%22/g, "\"")';
 
 		$value_html = ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : \'%3$s\' %%>" ';
 		$value = sprintf(
@@ -3756,6 +3946,12 @@ class ET_Builder_Element {
 		}
 
 		foreach ( $tabs_output as $tab_slug => $tab_settings ) {
+
+			// Add only tabs allowed for current user
+			if ( ! et_pb_is_allowed( $tab_slug . '_settings' ) ) {
+				continue;
+			}
+
 			$tab_output        = '';
 			$this->used_tabs[] = $tab_slug;
 			$i = 0;
@@ -5819,7 +6015,7 @@ class ET_Builder_Element {
 		$styles_array = $internal ? self::$internal_modules_styles : self::$styles;
 
 		if ( empty( $styles_array ) ) {
-			return false;
+			return '';
 		}
 
 		$output = '';
@@ -5922,6 +6118,29 @@ class ET_Builder_Element {
 	}
 
 	static function set_style( $function_name, $style ) {
+		$builder_post_types = et_builder_get_builder_post_types();
+		$allowed_post_types = apply_filters( 'et_builder_set_style_allowed_post_types', $builder_post_types );
+
+		if ( $builder_post_types != $allowed_post_types ) {
+			$matches = array_intersect( $allowed_post_types, array_keys( self::$_module_slugs_by_post_type ) );
+			$allowed = false;
+
+			foreach ( $matches as $post_type ) {
+				if ( ! isset( self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+					continue;
+				}
+
+				if ( in_array( $function_name, self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+					$allowed = true;
+					break;
+				}
+			}
+
+			if ( ! $allowed ) {
+				return;
+			}
+		}
+
 		global $et_pb_rendering_column_content;
 
 		// do not process all the styles if FB enabled. Only those for modules without fb support and styles for the internal modules from Blog/Slider
@@ -6001,6 +6220,7 @@ class ET_Builder_Element {
 
 		$order_class_name = sprintf( '%1$s_%2$s', $function_name, $shortcode_order_num );
 
+
 		return $order_class_name;
 	}
 
@@ -6023,6 +6243,8 @@ class ET_Builder_Element {
 
 			self::$modules_order[ $function_name ] = isset( self::$modules_order[ $function_name ] ) ? (int) self::$modules_order[ $function_name ] + 1 : 0;
 		}
+
+
 	}
 
 	static function add_module_order_class( $module_class, $function_name ) {

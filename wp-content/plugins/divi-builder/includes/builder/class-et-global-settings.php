@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @todo Rename this class to `ET_Builder_Module_Settings` so that its name clearly indicates its purpose.
+ */
 class ET_Global_Settings {
 	private static $_settings = array();
 

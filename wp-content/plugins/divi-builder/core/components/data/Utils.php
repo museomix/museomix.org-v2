@@ -120,6 +120,27 @@ class ET_Core_Data_Utils {
 		return $result;
 	}
 
+	private function _remove_empty_directories( $path ) {
+		if ( ! is_dir( $path ) ) {
+			return false;
+		}
+
+		$directory_contents = glob( trailingslashit( $path ) . '*{,.}*', GLOB_BRACE );
+		$empty              = true;
+
+		if ( false === $directory_contents ) {
+			return false;
+		}
+
+		foreach ( $directory_contents as $item ) {
+			if ( ! $this->_remove_empty_directories( $item ) ) {
+				$empty = false;
+			}
+		}
+
+		return $empty ? @rmdir( $path ) : false;
+	}
+
 	/**
 	 * Returns `true` if all values in `$array` are not empty, `false` otherwise.
 	 * If `$condition` is provided then values are checked against it instead of `empty()`.
@@ -145,6 +166,10 @@ class ET_Core_Data_Utils {
 		}
 
 		return true;
+	}
+
+	public function ensure_directory_exists( $path ) {
+		return file_exists( $path ) ? true : @mkdir( $path, 0755, true );
 	}
 
 	/**
@@ -198,6 +223,19 @@ class ET_Core_Data_Utils {
 	 */
 	public function is_xmlrpc_error( $value ) {
 		return is_object( $value ) && isset( $value->faultCode );
+	}
+
+	/**
+	 * Replaces any Windows style directory separators in $path with Linux style separators.
+	 * Windows actually supports both styles, even mixed together. However, its better not
+	 * to mix them (especially when doing string comparisons on paths).
+	 *
+	 * @param string $path
+	 *
+	 * @return string
+	 */
+	public function normalize_path( $path ) {
+		return $path ? str_replace( '\\', '/', $path ) : '';
 	}
 
 	/**
@@ -259,6 +297,37 @@ class ET_Core_Data_Utils {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Removes empty directories recursively starting at and (possibly) including `$path`. `$path` must be
+	 * an absolute path located under {@see WP_CONTENT_DIR}. Current user must have 'manage_options'
+	 * capability. If the path or permissions check fails, no directories will be removed.
+	 *
+	 * @param string $path Absolute path to parent directory.
+	 */
+	function remove_empty_directories( $path ) {
+		$path = realpath( $path );
+
+		if ( empty( $path ) ) {
+			// $path doesn't exist
+			return;
+		}
+
+		$path        = $this->normalize_path( $path );
+		$content_dir = $this->normalize_path( WP_CONTENT_DIR );
+
+		if ( 0 !== strpos( $path, $content_dir ) || $content_dir === $path ) {
+			return;
+		}
+
+		$capability = 0 === strpos( $path, "{$content_dir}/cache/et" ) ? 'edit_posts' : 'manage_options';
+
+		if ( ! wp_doing_cron() && ! et_core_security_check_passed( $capability ) ) {
+			return;
+		}
+
+		$this->_remove_empty_directories( $path );
 	}
 
 	/**
@@ -345,4 +414,51 @@ class ET_Core_Data_Utils {
 		return json_decode( $json, true );
 	}
 
+}
+
+
+function et_core_data_utils_minify_css( $string = '' ) {
+	$comments = <<< EOS
+(?sx)
+	# don't change anything inside of quotes
+	( "(?:[^"\\\]++|\\\.)*+" | '(?:[^'\\\]++|\\\.)*+' )
+|
+	# comments
+	/\* (?> .*? \*/ )
+EOS;
+
+	$everything_else = <<< EOS
+(?six)
+	# don't change anything inside of quotes
+	( "(?:[^"\\\]++|\\\.)*+" | '(?:[^'\\\]++|\\\.)*+' )
+|
+	# spaces before and after ; and }
+	\s*+ ; \s*+ ( } ) \s*+
+|
+	# all spaces around meta chars/operators (excluding + and -)
+	\s*+ ( [*$~^|]?+= | [{};,>~] | !important\b ) \s*+
+|
+	# all spaces around + and - (in selectors only!)
+	\s*([+-])\s*(?=[^}]*{)
+|
+	# spaces right of ( [ :
+	( [[(:] ) \s++
+|
+	# spaces left of ) ]
+	\s++ ( [])] )
+|
+	# spaces left (and right) of : (but not in selectors)!
+	\s+(:)(?![^\}]*\{)
+|
+	# spaces at beginning/end of string
+	^ \s++ | \s++ \z
+|
+	# double spaces to single
+	(\s)\s+
+EOS;
+
+	$search_patterns  = array( "%{$comments}%", "%{$everything_else}%" );
+	$replace_patterns = array( '$1', '$1$2$3$4$5$6$7' );
+
+	return preg_replace( $search_patterns, $replace_patterns, $string );
 }

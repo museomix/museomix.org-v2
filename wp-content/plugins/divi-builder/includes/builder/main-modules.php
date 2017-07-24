@@ -4094,7 +4094,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 			( '' !== $args['video_bg_webm'] ? sprintf( '<source type="video/webm" src="%s" />', esc_url( $args['video_bg_webm'] ) ) : '' ),
 			( '' !== $args['video_bg_width'] ? sprintf( ' width="%s"', esc_attr( intval( $args['video_bg_width'] ) ) ) : '' ),
 			( '' !== $args['video_bg_height'] ? sprintf( ' height="%s"', esc_attr( intval( $args['video_bg_height'] ) ) ) : '' ),
-			( '' !== $args['background_image'] ? sprintf( ' poster="%s"', esc_attr( intval( $args['background_image'] ) ) ) : '' )
+			( '' !== $args['background_image'] ? sprintf( ' poster="%s"', esc_url( $args['background_image'] ) ) : '' )
 		) );
 	}
 
@@ -4286,6 +4286,10 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				'background-image: %1$s;',
 				esc_html( join( ', ', $background_images ) )
 			);
+
+			if ( count( $background_images ) > 1 ) {
+				$style .= ' background-color: initial;';
+			}
 		}
 
 		if ( 'on' === $use_bg_overlay && '' !== $bg_overlay_color ) {
@@ -5060,9 +5064,6 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 					'use_manual_excerpt',
 					'excerpt_length',
 				),
-				'computed_minimum' => array(
-					'posts_number',
-				),
 			),
 		);
 
@@ -5140,7 +5141,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 				$query->posts[ $post_index ]->post_author_name    = get_the_author_meta( 'display_name', $post_author_id );
 				$query->posts[ $post_index ]->post_date_readable  = get_the_date();
 				$query->posts[ $post_index ]->categories          = $categories;
-				$query->posts[ $post_index ]->post_comment_popup  = sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) );
+				$query->posts[ $post_index ]->post_comment_popup  = sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) );
 
 				$post_content = et_strip_shortcodes( get_the_content(), true );
 
@@ -5475,7 +5476,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 										et_get_safe_localization( sprintf( __( 'by %s', 'et_builder' ), '<span class="author vcard">' .  et_pb_get_the_author_posts_link() . '</span>' ) ),
 										et_get_safe_localization( sprintf( __( '%s', 'et_builder' ), '<span class="published">' . esc_html( get_the_date() ) . '</span>' ) ),
 										get_the_category_list(', '),
-										sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
+										sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
 									);
 								}
 								?>
@@ -9287,9 +9288,6 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 					'include_categories',
 					'fullwidth',
 				),
-				'computed_minimum' => array(
-					'posts_number',
-				),
 			),
 		);
 		return $fields;
@@ -9893,9 +9891,6 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 					'include_categories',
 					'fullwidth',
 				),
-				'computed_minimum' => array(
-					'posts_number',
-				),
 			),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
@@ -10141,11 +10136,14 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 					$height = (int) apply_filters( 'et_pb_portfolio_image_height', $height );
 					$classtext = 'on' === $fullwidth ? 'et_pb_post_main_image' : '';
 					$titletext = get_the_title();
+					$permalink = get_permalink();
+					$post_meta = get_the_term_list( get_the_ID(), 'project_category', '', ', ' );
 					$thumbnail = get_thumbnail( $width, $height, $classtext, $titletext, $titletext, false, 'Blogimage' );
 					$thumb = $thumbnail["thumb"];
 
+
 					if ( '' !== $thumb ) : ?>
-						<a href="<?php esc_url( the_permalink() ); ?>">
+						<a href="<?php echo esc_url( $permalink ); ?>">
 						<?php if ( 'on' !== $fullwidth ) : ?>
 							<span class="et_portfolio_image">
 						<?php endif; ?>
@@ -10173,11 +10171,11 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 				?>
 
 				<?php if ( 'on' === $show_title ) : ?>
-					<h2><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></h2>
+					<h2><a href="<?php echo esc_url( $permalink ); ?>"><?php echo $titletext; ?></a></h2>
 				<?php endif; ?>
 
 				<?php if ( 'on' === $show_categories ) : ?>
-					<p class="post-meta"><?php echo get_the_term_list( get_the_ID(), 'project_category', '', ', ' ); ?></p>
+					<p class="post-meta"><?php echo $post_meta; ?></p>
 				<?php endif; ?>
 
 				</div><!-- .et_pb_portfolio_item -->
@@ -13056,6 +13054,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 			foreach ( $condition_rows as $condition_row ) {
 				$condition_value = isset( $condition_row->value ) ? $condition_row->value : '';
+				$condition_value = trim( $condition_value );
 
 				$ruleset[] = array(
 					$condition_row->field,
@@ -14805,7 +14804,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 										),
 										(
 											'on' === $args['show_comments']
-												? sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
+												? sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
 												: ''
 										)
 									);
@@ -15158,7 +15157,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 							),
 							(
 								'on' === $show_comments
-									? sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
+									? sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
 									: ''
 							)
 						);
@@ -15791,11 +15790,8 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 				'numbers' => array(
 					'label'    => esc_html__( 'Numbers', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} .section p.value, {$this->main_css_element} .sep p",
-						'important' => array(
-							'size',
-							'line-height',
-						),
+						'main' => ".et_pb_column {$this->main_css_element} .section p.value",
+						'important' => 'all',
 					),
 					'line_height' => array(
 						'range_settings' => array(
@@ -15808,7 +15804,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 				'label' => array(
 					'label'    => esc_html__( 'Label', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} .section p.label",
+						'main'      => ".et_pb_column {$this->main_css_element} .section p.label",
 						'important' => array(
 							'size',
 							'line-height',
@@ -18247,6 +18243,11 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		// Globally flag that comment module is being printed
 		$et_pb_comments_print = true;
 
+		// remove filters to make sure comments module rendered correctly if the below filters were applied earlier.
+		remove_filter( 'get_comments_number', '__return_zero' );
+		remove_filter( 'comments_open', '__return_false' );
+		remove_filter( 'comments_array', '__return_empty_array' );
+
 		ob_start();
 		comments_template( '', true );
 		$comments_content = ob_get_contents();
@@ -18914,7 +18915,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 			),
 			'logo' => array(
 				'label'    => esc_html__( 'Logo', 'et_builder' ),
-				'selector' => '.header-content img',
+				'selector' => '.header-content img.header-logo',
 			),
 			'title' => array(
 				'label'    => esc_html__( 'Title', 'et_builder' ),
@@ -19408,7 +19409,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 			$logo_image = '';
 			if ( '' !== $logo_image_url ){
 				$logo_image = sprintf(
-					'<img src="%1$s" alt="%2$s"%3$s />',
+					'<img src="%1$s" alt="%2$s"%3$s class="header-logo" />',
 					esc_url( $logo_image_url ),
 					esc_attr( $logo_alt_text ),
 					( '' !== $logo_title ? sprintf( ' title="%1$s"', esc_attr( $logo_title ) ) : '' )
@@ -20856,9 +20857,6 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
 					'posts_number',
 					'include_categories',
 				),
-				'computed_minimum' => array(
-					'posts_number',
-				),
 			),
 		);
 		return $fields;
@@ -20957,9 +20955,11 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
+		$zoom_and_hover_selector = '.et_pb_fullwidth_portfolio%%order_class%% .et_pb_portfolio_image';
+
 		if ( '' !== $zoom_icon_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_overlay:before',
+				'selector'    => "{$zoom_and_hover_selector} .et_overlay:before",
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $zoom_icon_color )
@@ -20969,7 +20969,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
 
 		if ( '' !== $hover_overlay_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_overlay',
+				'selector'    => "{$zoom_and_hover_selector} .et_overlay",
 				'declaration' => sprintf(
 					'background-color: %1$s;
 					border-color: %1$s;',
@@ -22371,8 +22371,10 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 		$parallax_background_contaier = '';
 
 		if ( 'on' === $featured_image && ( 'above' === $featured_placement || 'below' === $featured_placement ) ) {
+			// Largest featured image size is needed when featured image is used in "post" post type and full width layout
+			$featured_image_size = 'post' === get_post_type() && 'et_full_width_page' === get_post_meta( get_the_ID(), '_et_pb_page_layout', true ) ? 'et-pb-post-main-image-fullwidth-large' : 'large';
 			$featured_image_output = sprintf( '<div class="et_pb_title_featured_container">%1$s</div>',
-				get_the_post_thumbnail( get_the_ID(), 'large' )
+				get_the_post_thumbnail( get_the_ID(), $featured_image_size )
 			);
 		}
 
@@ -22839,7 +22841,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 				$query->posts[ $post_index ]->post_author_name    = get_the_author_meta( 'display_name', $post_author_id );
 				$query->posts[ $post_index ]->post_date_readable  = get_the_date();
 				$query->posts[ $post_index ]->categories          = $categories;
-				$query->posts[ $post_index ]->post_comment_popup  = sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) );
+				$query->posts[ $post_index ]->post_comment_popup  = sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) );
 
 				$post_content = et_strip_shortcodes( get_the_content(), true );
 
@@ -23339,9 +23341,6 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 					'use_manual_excerpt',
 					'excerpt_length',
 				),
-				'computed_minimum' => array(
-					'posts_number',
-				),
 			),
 		);
 
@@ -23626,7 +23625,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 										et_get_safe_localization( sprintf( __( 'by %s', 'et_builder' ), '<span class="author vcard">' .  et_pb_get_the_author_posts_link() . '</span>' ) ),
 										et_get_safe_localization( sprintf( __( '%s', 'et_builder' ), '<span class="published">' . esc_html( get_the_date() ) . '</span>' ) ),
 										get_the_category_list(', '),
-										sprintf( esc_html( _nx( '1 Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
+										sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) )
 									);
 								}
 								?>

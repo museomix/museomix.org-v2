@@ -447,7 +447,7 @@ final class ET_Core_Updates {
 endif;
 
 if ( ! function_exists( 'et_core_enable_automatic_updates' ) ) :
-function et_core_enable_automatic_updates( $url, $version ) {
+function et_core_enable_automatic_updates( $deprecated, $version ) {
 	if ( ! is_admin() ) {
 		return;
 	}
@@ -456,7 +456,11 @@ function et_core_enable_automatic_updates( $url, $version ) {
 		return;
 	}
 
-	$url = trailingslashit( $url ) . 'core/';
+	if ( defined( 'ET_CORE_URL' ) ) {
+		$url = ET_CORE_URL;
+	} else {
+		$url = trailingslashit( $deprecated ) . 'core/';
+	}
 
 	$GLOBALS['et_core_updates'] = new ET_Core_Updates( $url, $version );
 

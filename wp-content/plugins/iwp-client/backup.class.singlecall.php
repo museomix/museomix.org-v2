@@ -2035,9 +2035,16 @@ function ftp_backup($args)
                     $dropbox = new IWP_Dropbox_API($oauth);
                     $oldRoot = 'Apps/InfiniteWP/';
                     $oldVersion = false;
-                    $dropbox_destination = $oldRoot.$dropbox_destination;
-                    if (isset($dropbox_site_folder) && $dropbox_site_folder == true)
-                    $dropbox_destination .=  '/'.$this->site_name . '/';
+                    $dropbox_destination = $oldRoot.ltrim(trim($dropbox_destination), '/');
+                        $dropbox_destination = rtrim($dropbox_destination, '/');
+                    if (isset($dropbox_site_folder) && $dropbox_site_folder == true){
+                        $dropbox_destination .=  '/'.$this->site_name;
+                    }
+                    $folders = explode('/',$dropbox_destination);
+                    foreach ($folders as $key => $name) {
+                        $path.=trim($name).'/';
+                    }
+                    $dropbox_destination = $path;
                 }
 				
 				try {
@@ -2082,6 +2089,8 @@ function ftp_backup($args)
             
             $dropbox = new IWP_Dropbox($consumer_key, $consumer_secret);
             $dropbox->setOAuthTokens($oauth_token, $oauth_token_secret);
+            if ($dropbox_site_folder == true)
+                $dropbox_destination .= '/' . $this->site_name;
             $oldVersion = true;
        }else{
             require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/API.php';
@@ -2093,12 +2102,20 @@ function ftp_backup($args)
             $oauth->setToken($dropbox_access_token);
             $dropbox = new IWP_Dropbox_API($oauth);
             $oldRoot = 'Apps/InfiniteWP/';
-            $dropbox_destination = $oldRoot.$dropbox_destination;
+            $dropbox_destination = $oldRoot.ltrim(trim($dropbox_destination), '/');
+            $dropbox_destination = rtrim($dropbox_destination, '/');
+            if (isset($dropbox_site_folder) && $dropbox_site_folder == true){
+                $dropbox_destination .=  '/'.$this->site_name;
+            }
+            $folders = explode('/',$dropbox_destination);
+            foreach ($folders as $key => $name) {
+                $path.=trim($name).'/';
+            }
+            $dropbox_destination = $path;
             $oldVersion = false;
        }
         
-        if ($dropbox_site_folder == true)
-        	$dropbox_destination .= '/' . $this->site_name;
+        
     	
 		$temp_backup_file = $backup_file;
 		if(!is_array($backup_file))

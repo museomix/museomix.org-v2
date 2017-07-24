@@ -245,7 +245,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			$setMemory = $this->set_resource_limit();
 
 			if(!empty($params['account_info']) && !empty($params['account_info']['iwp_dropbox'])){
-				if(empty($params['account_info']['iwp_dropbox']['dropbox_access_token']) && time() > 1498608000){
+				if(empty($params['account_info']['iwp_dropbox']['dropbox_access_token']) && time() > 1506556800){
 					return $this->statusLog($historyID, array('stage' => 'verification', 'status' => 'error', 'statusMsg' => 'Please update your cloud backup addon to v1.2.0 or above to use Dropbox API V2', 'statusCode' => 'drop_box_update'));
 				}elseif(!is_new_dropbox_compatible()){
 					return $this->statusLog($historyID, array('stage' => 'verification', 'status' => 'error', 'statusMsg' => 'Please upgrade your PHP version to 5.3.3 or above to use Dropbox V2 API', 'statusCode' => 'drop_box_version_incompitability'));
@@ -4065,7 +4065,7 @@ function ftp_backup($historyID,$args = '')
 				return true;
 			}
 			foreach ($dBoxMetaData['body']->contents as $key => $value) {
-				if($path == $value->path){
+				if(strtolower($path) == strtolower($value->path)){
 					$dBoxFileSize = $value->bytes;
 					if((($dBoxFileSize >= $size1 && $dBoxFileSize <= $actual_file_size) || ($dBoxFileSize <= $size2 && $dBoxFileSize >= $actual_file_size) || ($dBoxFileSize == $actual_file_size)) && ($dBoxFileSize != 0))
 					{
@@ -4394,10 +4394,16 @@ function ftp_backup($historyID,$args = '')
 					$oauth->setToken($dropbox_access_token);
 					$dropbox = new IWP_Dropbox_API($oauth);
 					$oldRoot = 'Apps/InfiniteWP/';
-					$dropbox_destination = $oldRoot.ltrim($dropbox_destination, '/');
-					$dropbox_destination = rtrim($dropbox_destination, '/');
-					if (isset($dropbox_site_folder) && $dropbox_site_folder == true)
-					$dropbox_destination .=  '/'.$this->site_name . '/';
+					$dropbox_destination = $oldRoot.ltrim(trim($dropbox_destination), '/');
+						$dropbox_destination = rtrim($dropbox_destination, '/');
+					if (isset($dropbox_site_folder) && $dropbox_site_folder == true){
+						$dropbox_destination .=  '/'.$this->site_name;
+					}
+					$folders = explode('/',$dropbox_destination);
+					foreach ($folders as $key => $name) {
+					    $path.=trim($name).'/';
+					}
+					$dropbox_destination = $path;
 
 				}
 				
@@ -4564,6 +4570,8 @@ function ftp_backup($historyID,$args = '')
 	       	$dropbox = new IWP_Dropbox($consumer_key, $consumer_secret);
 	       	$dropbox->setOAuthTokens($oauth_token, $oauth_token_secret);
 	       	$oldVersion = true;
+	       	if ($dropbox_site_folder == true)
+	       		$dropbox_destination .= '/' . $this->site_name;
        }else{
 	       	require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/API.php';
 	       	require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/Exception.php';
@@ -4574,11 +4582,19 @@ function ftp_backup($historyID,$args = '')
 	       	$oauth->setToken($dropbox_access_token);
 	       	$dropbox = new IWP_Dropbox_API($oauth);
 	       	$oldRoot = 'Apps/InfiniteWP/';
-	       	$dropbox_destination = $oldRoot.$dropbox_destination;
-	       	$oldVersion = false;
+			$dropbox_destination = $oldRoot.ltrim(trim($dropbox_destination), '/');
+			$dropbox_destination = rtrim($dropbox_destination, '/');
+			if (isset($dropbox_site_folder) && $dropbox_site_folder == true){
+			    $dropbox_destination .=  '/'.$this->site_name;
+			}
+			$folders = explode('/',$dropbox_destination);
+			foreach ($folders as $key => $name) {
+			    $path.=trim($name).'/';
+			}
+			$dropbox_destination = $path;
+				$oldVersion = false;
        }
-        if ($dropbox_site_folder == true)
-        	$dropbox_destination .= '/' . $this->site_name;
+        
     	
 		$temp_backup_file = $backup_file;
 		if(!is_array($backup_file))
@@ -4628,10 +4644,16 @@ function ftp_backup($historyID,$args = '')
 				$oauth->setToken($dropbox_access_token);
 				$dropbox = new IWP_Dropbox_API($oauth);
 				$oldRoot = 'Apps/InfiniteWP/';
-				$dropbox_destination = $oldRoot.ltrim($dropbox_destination, '/');
-				$dropbox_destination = rtrim($dropbox_destination, '/');
-				if (isset($dropbox_site_folder) && $dropbox_site_folder == true)
-				$dropbox_destination .=  '/'.$this->site_name . '/';
+				$dropbox_destination = $oldRoot.ltrim(trim($dropbox_destination), '/');
+                $dropbox_destination = rtrim($dropbox_destination, '/');
+	            if (isset($dropbox_site_folder) && $dropbox_site_folder == true){
+	                $dropbox_destination .=  '/'.$this->site_name;
+	            }
+	            $folders = explode('/',$dropbox_destination);
+	            foreach ($folders as $key => $name) {
+	                $path.=trim($name).'/';
+	            }
+	            $dropbox_destination = $path;
 				$oldVersion = false;
 			}
 			

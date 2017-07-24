@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.8.x package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-06-14 11:35:29+0000\n"
+"PO-Revision-Date: 2017-07-18 10:53:33+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -49,7 +49,7 @@ msgstr[1] "%s elementos"
 #: wp-includes/widgets/class-wp-widget-media.php:60
 msgctxt "label for button in the media widget"
 msgid "Add Media"
-msgstr "Añadir archivo multimedia"
+msgstr "Añadir medios"
 
 #: wp-includes/widgets/class-wp-widget-media-video.php:33
 msgctxt "label for button in the video widget"
@@ -255,7 +255,7 @@ msgstr "Reemplazar imagen"
 
 #: wp-includes/widgets/class-wp-widget-media-image.php:27
 msgid "Displays an image."
-msgstr "Mostrar una imagen."
+msgstr "Muestra una imagen."
 
 #: wp-includes/widgets/class-wp-widget-media-audio.php:198
 #: wp-includes/widgets/class-wp-widget-media-image.php:325
@@ -617,7 +617,7 @@ msgstr "Tu tema tiene 1 área de widget más, pero esta página en concreto no l
 
 #: wp-includes/option.php:1771
 msgid "This address is used for admin purposes, like new user notification."
-msgstr "Esta dirección se utiliza para fines de administración, por ejemplo notificación de nuevo usuario."
+msgstr "Esta dirección se utiliza para fines de administración, por ejemplo avisos de nuevos usuarios."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:101
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:831
@@ -1145,7 +1145,7 @@ msgstr "New York, NY 10001"
 #: wp-includes/theme.php:1952
 msgctxt "Theme starter content"
 msgid "123 Main Street"
-msgstr "123 Main Street"
+msgstr "Calle Principal 123"
 
 #: wp-includes/theme.php:1951
 msgctxt "Theme starter content"
@@ -1990,7 +1990,7 @@ msgstr "Limitar el conjunto de resultados a adjuntos de un tipo MIME en particul
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:647
 msgid "Limit result set to attachments of a particular media type."
-msgstr "Limitar el conjunto de resultados a adjuntos de un tipo multimedia en particular."
+msgstr "Limitar el conjunto de resultados a adjuntos de un tipo de medio en particular."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:531
 msgid "Could not open file handle."
@@ -2041,7 +2041,7 @@ msgstr "Lo siento, no tienes permisos para subir medios a esta entrada."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:75
 msgid "Sorry, you are not allowed to upload media on this site."
-msgstr "Lo siento, no tienes permisos para subir multimedia a este sitio."
+msgstr "Lo siento, no tienes permisos para subir medios a este sitio."
 
 #: wp-includes/rest-api/class-wp-rest-server.php:272
 msgid "The REST API can no longer be completely disabled, the rest_authentication_errors filter can be used to restrict access to the API, instead."
@@ -2122,7 +2122,7 @@ msgstr "Grupos de cambios"
 
 #: wp-includes/post.php:126 wp-includes/post.php:127
 msgid "Custom CSS"
-msgstr "CSS personalizada"
+msgstr "CSS personalizado"
 
 #: wp-includes/post.php:69
 msgid "Attachment Attributes"
@@ -2189,7 +2189,7 @@ msgstr "Título del sitio."
 
 #: wp-includes/media.php:3531
 msgid "Search media items..."
-msgstr "Buscar elementos multimedia..."
+msgstr "Busca medios..."
 
 #: wp-includes/link-template.php:2535
 msgctxt "next set of posts"
@@ -2199,7 +2199,7 @@ msgstr "Siguiente"
 #: wp-includes/link-template.php:2534
 msgctxt "previous set of posts"
 msgid "Previous"
-msgstr "Previo"
+msgstr "Anteriores"
 
 #: wp-includes/general-template.php:408 wp-login.php:538 wp-login.php:902
 msgid "Username or Email Address"
@@ -2515,7 +2515,7 @@ msgstr "Pausa"
 msgid "Play"
 msgstr "Reproducir"
 
-#: wp-includes/taxonomy.php:1967 wp-includes/taxonomy.php:2593
+#: wp-includes/taxonomy.php:1970 wp-includes/taxonomy.php:2596
 msgid "A name is required for this term."
 msgstr "Es necesario asignar un nombre a este término."
 
@@ -2868,7 +2868,7 @@ msgstr "Detalles del plugin"
 
 #: wp-includes/media.php:3532
 msgid "No media files found."
-msgstr "No se encontraron archivos multimedia"
+msgstr "No se encontraron archivos multimedia."
 
 #. translators: 1: post title, 2: site name
 #: wp-includes/embed.php:467
@@ -3091,7 +3091,7 @@ msgstr "Pega la URL o teclea para buscar"
 
 #: wp-includes/class-wp-customize-manager.php:3861
 msgid "Logo"
-msgstr "Logo"
+msgstr "Logotipo"
 
 #: wp-includes/class-wp-customize-manager.php:3828
 #: wp-includes/class-wp-customize-manager.php:3905
@@ -3840,7 +3840,7 @@ msgstr "Desplegar/Plegar sección: Enlaces personalizados"
 
 #: wp-includes/script-loader.php:411
 msgid "Your new password has not been saved."
-msgstr "Tu contraseña no ha sido guardada"
+msgstr "Tu contraseña no se ha guardado."
 
 #: wp-includes/script-loader.php:417
 msgid "Hide password"
@@ -3948,11 +3948,11 @@ msgstr "Cuando empiezas un párrafo nuevo con uno de estos atajos de formato, se
 
 #: wp-login.php:509
 msgid "Your password reset link has expired. Please request a new link below."
-msgstr "Tu enlace de restablecimiento de contraseña ha caducado. Por favor, solicita un nuevo enlace abajo"
+msgstr "Tu enlace de restablecimiento de contraseña ha caducado. Por favor, solicita un nuevo enlace abajo."
 
 #: wp-login.php:507
 msgid "Your password reset link appears to be invalid. Please request a new link below."
-msgstr "Su enlace de restablecimiento de contraseña no es válido. Por favor, solicite un nuevo enlace debajo."
+msgstr "Tu enlace de restablecimiento de contraseña no es válido. Por favor, solicita un nuevo enlace debajo."
 
 #: wp-includes/wp-db.php:1385 wp-includes/wp-db.php:1402
 msgid "WordPress database error:"
@@ -4531,7 +4531,7 @@ msgstr[1] "Tu tema soporta %s menús. Elige qué menú debería aparecer en cada
 
 #: wp-includes/class-wp-customize-nav-menus.php:578
 msgid "Your theme supports one menu. Select which menu you would like to use."
-msgstr "Tu tema soporta un único menú. Elige qué menú te gustaría usar."
+msgstr "Tu tema es compatible con un solo menú. Elige qué menú te gustaría usar."
 
 #. translators: 1: number of comments, 2: post title
 #: wp-includes/theme-compat/comments.php:40
@@ -4588,7 +4588,7 @@ msgstr "Instalación completada con éxito."
 msgid "Taxonomy names must be between 1 and 32 characters in length."
 msgstr "Los nombres de taxonomías deben tener entre 1 y 32 caracteres de longitud."
 
-#: wp-includes/taxonomy.php:3486
+#: wp-includes/taxonomy.php:3489
 msgid "Could not split shared term."
 msgstr "No se pudo dividir el término compartido."
 
@@ -4598,7 +4598,7 @@ msgstr "Personalizador"
 
 #: wp-includes/media.php:3498
 msgid "Drag and drop to reorder media files."
-msgstr "Arrastrar y soltar para reordenar archivos multimedia."
+msgstr "Arrastra y suelta para reordenar archivos multimedia."
 
 #. translators: Do not translate USERNAME, SITE_NAME, BLOG_URL, PASSWORD: those
 #. are placeholders.
@@ -4686,7 +4686,7 @@ msgstr "<strong>No se pudo encontrar el sitio %1$s.</strong> Buscada la tabla %2
 #: wp-includes/pluggable.php:1467 wp-includes/pluggable.php:1478
 #: wp-includes/pluggable.php:1628 wp-includes/pluggable.php:1638
 msgid "Website: %1$s (IP: %2$s, %3$s)"
-msgstr "Sitio web: %1$s (IP: %2$s, %3$s)"
+msgstr "Web: %1$s (IP: %2$s, %3$s)"
 
 #. translators: 1: comment author, 2: author IP, 3: author domain
 #. translators: 1: Comment author name, 2: comment author's IP, 3: comment
@@ -4820,7 +4820,7 @@ msgstr "Ruta de los elementos"
 msgid "The following values do not describe a valid date: month %1$s, day %2$s."
 msgstr "Los siguientes valores no describen una fecha válida: mes %1$s, día %2$s."
 
-#: wp-includes/taxonomy.php:2056
+#: wp-includes/taxonomy.php:2059
 msgid "A term with the name provided already exists in this taxonomy."
 msgstr "Un término con el nombre y el slug ya existe en esta taxonomía."
 
@@ -5096,7 +5096,7 @@ msgstr "Formato"
 #: wp-includes/post.php:64
 msgctxt "post type general name"
 msgid "Media"
-msgstr "Multimedia"
+msgstr "Medios"
 
 #: wp-includes/post.php:66
 msgctxt "add new media"
@@ -5145,7 +5145,7 @@ msgstr "Selección múltiple"
 
 #. translators: %s: taxonomy label, %l: list of terms formatted as per
 #. $term_template
-#: wp-includes/taxonomy.php:3971
+#: wp-includes/taxonomy.php:3974
 msgid "%s: %l."
 msgstr "%s: %l."
 
@@ -5165,7 +5165,7 @@ msgstr "No se encontraron plugins. Prueba una búsqueda diferente."
 
 #: wp-includes/media.php:3530
 msgid "Search Media"
-msgstr "Buscar archivos multimedia"
+msgstr "Buscar medios"
 
 #: wp-includes/media.php:3529
 msgid "Filter by type"
@@ -5217,7 +5217,7 @@ msgstr "Tamaño de archivo:"
 
 #: wp-includes/media-template.php:345
 msgid "Uploaded on:"
-msgstr "Subido en:"
+msgstr "Subido el:"
 
 #: wp-includes/media-template.php:344
 msgid "File type:"
@@ -5229,11 +5229,11 @@ msgstr "Nombre de archivo:"
 
 #: wp-includes/media-template.php:285
 msgid "Edit next media item"
-msgstr "Editar el siguiente elemento multimedia"
+msgstr "Editar el siguiente medio"
 
 #: wp-includes/media-template.php:284
 msgid "Edit previous media item"
-msgstr "Editar el elemento multimedia anterior"
+msgstr "Editar el medio anterior"
 
 #: wp-includes/media-template.php:258
 msgid "Grid View"
@@ -5253,7 +5253,7 @@ msgstr "Cerrar cargador"
 
 #: wp-includes/media-template.php:166
 msgid "Close media panel"
-msgstr "Cerrar el panel de archivos multimedia"
+msgstr "Cerrar el panel de medios"
 
 #: wp-includes/class-wp-editor.php:1705
 msgid "Search or use up and down arrow keys to select an item."
@@ -5273,7 +5273,7 @@ msgstr "Bitrate"
 
 #: wp-includes/class-wp-customize-widgets.php:422
 msgid "Widgets are independent sections of content that can be placed into widgetized areas provided by your theme (commonly called sidebars)."
-msgstr "Los widgets son secciones independientes de contenido que pueden ser colocadas en las áreas de widgets que tenga tu tema (también conocidas por barras laterales)"
+msgstr "Los widgets son secciones independientes de contenido que pueden colocarse en las áreas de widgets que tenga tu tema (también llamadas barras laterales)"
 
 #. translators: %s: the site/panel title in the Customizer
 #: wp-includes/class-wp-customize-panel.php:382
@@ -5289,7 +5289,7 @@ msgstr "Aunque puedes recortar imágenes a tu gusto después de hacer clic en <s
 #. translators: %s: header width in pixels
 #: wp-includes/customize/class-wp-customize-header-image-control.php:184
 msgid "While you can crop images to your liking after clicking <strong>Add new image</strong>, your theme recommends a header width of %s pixels."
-msgstr "Aunque puedes recortar imágenes a tu gusto tras hacer clic en <strong>Añadir nueva imagen</strong>, tu tema recomienda una cabecera de <strong>%s</strong> pixels de ancho. "
+msgstr "Aunque puedes recortar imágenes a tu gusto tras hacer clic en <strong>Añadir nueva imagen</strong>, tu tema recomienda una cabecera de %s píxeles de ancho. "
 
 #: wp-includes/comment.php:3101
 msgid "<strong>ERROR</strong>: The comment could not be saved. Please try again later."
@@ -6655,7 +6655,7 @@ msgstr "Subido a esta entrada"
 
 #: wp-includes/media.php:3511
 msgid "All media items"
-msgstr "Todos los elementos multimedia"
+msgstr "Todos los medios"
 
 #: wp-includes/media.php:3510
 msgid "&#8592; Return to library"
@@ -6726,7 +6726,7 @@ msgstr "Crear galería"
 
 #: wp-includes/media.php:3505
 msgid "Media Library"
-msgstr "Biblioteca multimedia"
+msgstr "Biblioteca de medios"
 
 #: wp-includes/ms-functions.php:1408
 msgid "You appear to have already installed WordPress. To reinstall please clear your old database tables first."
@@ -6869,7 +6869,7 @@ msgctxt "Display name based on first name and last name"
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
-#: wp-includes/taxonomy.php:2301
+#: wp-includes/taxonomy.php:2304
 msgid "Could not insert term relationship into the database"
 msgstr "No se ha podido insertar la relación entre términos en la base de datos"
 
@@ -6899,7 +6899,7 @@ msgstr "Crear una nueva galería"
 
 #: wp-includes/media.php:3506
 msgid "Insert Media"
-msgstr "Insertar multimedia"
+msgstr "Insertar medios"
 
 #: wp-includes/post.php:68
 msgid "View Attachment Page"
@@ -7128,7 +7128,7 @@ msgstr "Esta taxonomía no es jerárquica por lo que no se puede establecer un p
 #: wp-includes/class-wp-xmlrpc-server.php:1455
 #: wp-includes/class-wp-xmlrpc-server.php:2002
 #: wp-includes/class-wp-xmlrpc-server.php:2093
-#: wp-includes/class-wp-xmlrpc-server.php:2165 wp-includes/taxonomy.php:1964
+#: wp-includes/class-wp-xmlrpc-server.php:2165 wp-includes/taxonomy.php:1967
 msgid "Invalid term ID."
 msgstr "Id de término incorrecto."
 
@@ -7140,7 +7140,7 @@ msgstr "Lo siento, no tienes permisos para editar términos en esta taxonomía."
 #: wp-includes/class-wp-xmlrpc-server.php:2026
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:405
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:511
-#: wp-includes/taxonomy.php:1973 wp-includes/taxonomy.php:2597
+#: wp-includes/taxonomy.php:1976 wp-includes/taxonomy.php:2600
 msgid "Parent term does not exist."
 msgstr "No existe término padre."
 
@@ -7164,8 +7164,8 @@ msgstr "Lo siento, no tienes permisos para crear términos en esta taxonomía."
 #: wp-includes/taxonomy.php:419 wp-includes/taxonomy.php:639
 #: wp-includes/taxonomy.php:730 wp-includes/taxonomy.php:910
 #: wp-includes/taxonomy.php:1074 wp-includes/taxonomy.php:1835
-#: wp-includes/taxonomy.php:1949 wp-includes/taxonomy.php:2212
-#: wp-includes/taxonomy.php:2355 wp-includes/taxonomy.php:2556
+#: wp-includes/taxonomy.php:1952 wp-includes/taxonomy.php:2215
+#: wp-includes/taxonomy.php:2358 wp-includes/taxonomy.php:2559
 msgid "Invalid taxonomy."
 msgstr "Taxonomía no válida."
 
@@ -8274,7 +8274,7 @@ msgstr "La dirección de WordPress parece no ser una URL válida. Por favor, int
 msgid "The email address entered did not appear to be a valid email address. Please enter a valid email address."
 msgstr "La dirección de correo electrónico parece que no es válida. Por favor, introduce una válida."
 
-#: wp-includes/taxonomy.php:2053
+#: wp-includes/taxonomy.php:2056
 msgid "A term with the name provided already exists with this parent."
 msgstr "Un término con el nombre dado ya existe en este nivel."
 
@@ -8918,21 +8918,21 @@ msgstr "Falta la hoja de estilo."
 msgid "The parent theme is missing. Please install the \"%s\" parent theme."
 msgstr "No encontramos el tema principal. Por favor, instala el tema principal \"%s\"."
 
-#: wp-includes/taxonomy.php:4042
+#: wp-includes/taxonomy.php:4045
 msgid "Invalid object ID"
 msgstr "El ID del objeto no es válido"
 
 #. translators: 1: Taxonomy term slug
-#: wp-includes/taxonomy.php:2655
+#: wp-includes/taxonomy.php:2658
 msgid "The slug &#8220;%s&#8221; is already in use by another term"
 msgstr "El slug &#8220;%s&#8221; lo está utilizando ya otro término."
 
-#: wp-includes/taxonomy.php:2077
+#: wp-includes/taxonomy.php:2080
 msgid "Could not insert term into the database"
 msgstr "No ha sido posible insertar el término en la base de datos."
 
-#: wp-includes/taxonomy.php:726 wp-includes/taxonomy.php:2569
-#: wp-includes/taxonomy.php:3840
+#: wp-includes/taxonomy.php:726 wp-includes/taxonomy.php:2572
+#: wp-includes/taxonomy.php:3843
 msgid "Empty Term"
 msgstr "Término vacío"
 
@@ -10671,7 +10671,7 @@ msgstr "URL de la imagen"
 
 #: wp-includes/class-wp-editor.php:1081
 msgid "Media"
-msgstr "Multimedia"
+msgstr "Medios"
 
 #: wp-includes/media-template.php:330 wp-includes/media-template.php:528
 #: wp-includes/media.php:3558

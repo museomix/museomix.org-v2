@@ -2,9 +2,9 @@
 Contributors: sudar  
 Tags: mass, bulk, delete, post, comment, draft, revision, page, user, meta fields  
 Requires at least: 3.9  
-Tested up to: 4.7.2  
+Tested up to: 4.8  
 Donate Link: http://sudarmuthu.com/if-you-wanna-thank-me  
-Stable tag: 5.5.5  
+Stable tag: 5.5.6  
 
 Bulk delete posts, pages, users, attachments and meta fields based on different conditions and filters.
 
@@ -274,6 +274,14 @@ You can contact us by posting about it in our [support forum](http://bulkwp.com/
 
 This Readme file was generated using <a href = 'http://sudarmuthu.com/wordpress/wp-readme'>wp-readme</a>, which generates readme files for WordPress Plugins.
 == Changelog ==
+
+= 2017-07-06 - v5.5.6 - (Dev time: 1 hour) =
+
+- New Features
+	- Ability to delete users who have empty value in a user meta field.
+
+- Enhancements
+	- Added custom taxonomies in System Info.
 
 = 2017-01-28 - v5.5.5 - (Dev time: 1 hour) =
 

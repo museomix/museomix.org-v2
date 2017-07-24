@@ -1,4 +1,4 @@
-/*! Bulk Delete - v5.5.5 %>
+/*! Bulk Delete - v5.5.6 %>
  * http://bulkwp.com
  * Copyright (c) 2017; * Licensed GPLv2+ */
 /*global BulkWP, postboxes, pagenow*/

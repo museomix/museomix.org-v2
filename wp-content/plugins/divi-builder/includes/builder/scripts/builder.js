@@ -2,7 +2,11 @@ var ET_PageBuilder = ET_PageBuilder || {};
 
 window.wp = window.wp || {};
 
-window.et_builder_version = '3.0.51';
+/**
+ * The builder version and product name will be updated by grunt release task. Do not edit!
+ */
+window.et_builder_version = '3.0.64';
+window.et_builder_product_name = 'Divi';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
@@ -523,6 +527,16 @@ window.et_builder_version = '3.0.51';
 				return _.findWhere( modules, { label : tag } )['title'];
 			},
 
+			getDefaultAdminLabel : function( module_type ) {
+				var is_structure_element = $.inArray( module_type, [ 'section', 'row', 'column', 'row_inner', 'column_inner' ] ) > -1;
+
+				if ( is_structure_element ) {
+					return typeof et_pb_options.noun[ module_type ] !== 'undefined' ? et_pb_options.noun[ module_type ] : module_type;
+				}
+
+				return this.getTitleByShortcodeTag( module_type );
+			},
+
 			isModuleFullwidth : function ( module_type ) {
 				var modules = this.get('modules');
 
@@ -868,28 +882,35 @@ window.et_builder_version = '3.0.51';
 					global_holder_id   = 'row' === this.model.get( 'layout_type' ) ? current_row : parent_id,
 					global_holder_view = ET_PageBuilder_Layout.getView( global_holder_id ),
 					history_noun       = this.options.model.get( 'layout_type' ) === 'row_inner' ? 'saved_row' : 'saved_' + this.options.model.get( 'layout_type' ),
-					$modal_container   = clicked_button.closest( '.et_pb_modal_settings_container' );
+					$modal_container   = clicked_button.closest( '.et_pb_modal_settings_container' ),
+					global_parent_cid  = et_pb_get_global_parent_cid( global_holder_view );
 
 					if ( 'on' === specialty_row ) {
 						global_holder_id = global_holder_view.model.get( 'parent' );
 						global_holder_view = ET_PageBuilder_Layout.getView( global_holder_id );
 					}
 
-					if ( 'section' !== this.model.get( 'layout_type' ) && ( ( typeof global_holder_view.model.get( 'global_parent_cid' ) !== 'undefined' && '' !== global_holder_view.model.get( 'global_parent_cid' ) ) || ( typeof global_holder_view.model.get( 'et_pb_global_module' ) !== 'undefined' && '' !== global_holder_view.model.get( 'et_pb_global_module' ) ) ) ) {
+					if ( 'section' !== this.model.get( 'layout_type' ) && ( '' !== global_parent_cid ) ) {
 						update_global = true;
+						// reset global id when adding global module into global section or row.
+						global_id = '';
 					}
 
 				// Enable history saving and set meta for history
 				ET_PageBuilder_App.allowHistorySaving( 'added', history_noun );
 
 				event.preventDefault();
+
+				// apply wpautop to the shortcode to make sure all the line breaks inserted correctly
+				if ( typeof window.switchEditors !== 'undefined' ) {
+					shortcode = et_pb_fix_shortcodes( window.switchEditors.wpautop( shortcode ) );
+				}
+
 				ET_PageBuilder_App.createLayoutFromContent( shortcode , parent_id, '', { ignore_template_tag : 'ignore_template', current_row_cid : current_row, global_id : global_id, after_section : parent_id, is_reinit : 'reinit' } );
 				et_reinitialize_builder_layout();
 
 				if ( true === update_global ) {
-						global_module_cid = typeof global_holder_view.model.get( 'global_parent_cid' ) !== 'undefined' ? global_holder_view.model.get( 'global_parent_cid' ) : global_holder_id;
-
-					et_pb_update_global_template( global_module_cid );
+					et_pb_update_global_template( global_parent_cid );
 				}
 
 				if ( $modal_container.length ) {
@@ -1502,31 +1523,38 @@ window.et_builder_version = '3.0.51';
 
 						}
 
+						var module_cid = $( ui.item ).find( '.et-pb-row-content' ).data( 'cid' );
+						var model = this_el.collection.find( function( model ) {
+							return model.get('cid') == module_cid;
+						} );
+
 						if ( $( ui.item ).closest( '.et_pb_section.et_pb_global' ).length && $( ui.item ).hasClass( 'et_pb_global' ) ) {
 							$( ui.sender ).sortable( 'cancel' );
 							alert( et_pb_options.global_row_alert );
 						} else if ( ( $( ui.item ).closest( '.et_pb_section.et_pb_global' ).length || $( ui.sender ).closest( '.et_pb_section.et_pb_global' ).length ) && '' === et_pb_options.template_post_id ) {
-							var module_cid = ui.item.data( 'cid' ),
-									model,
-									global_module_cid,
-									$moving_from,
-									$moving_to;
+							var	global_module_cid,
+								$moving_from,
+								$moving_to;
 
 							$moving_from = $( ui.sender ).closest( '.et_pb_section.et_pb_global' );
 							$moving_to = $( ui.item ).closest( '.et_pb_section.et_pb_global' );
 
-
 							if ( $moving_from === $moving_to ) {
-								model = this_el.collection.find( function( model ) {
-									return model.get('cid') == module_cid;
-								} );
-
 								global_module_cid = model.get( 'global_parent_cid' );
 
 								et_pb_update_global_template( global_module_cid );
 								et_reinitialize_builder_layout();
 							} else {
 								var $global_element = $moving_from;
+
+								// remove global parent attributes if moved not to global parent.
+								if ( $moving_to.length === 0 && ( ( ! _.isUndefined( model.get( 'et_pb_global_parent' ) ) && '' !== model.get( 'et_pb_global_parent' ) ) || ! _.isUndefined( model.get( 'global_parent_cid' ) ) ) ) {
+									model.unset( 'et_pb_global_parent' );
+									model.unset( 'global_parent_cid' );
+									// remove global attributes from all the child components
+									ET_PageBuilder_Layout.removeGlobalAttributes( ET_PageBuilder_Layout.getView( model.get( 'cid' ) ) );
+								}
+
 								for ( var i = 1; i <= 2; i++ ) {
 									global_module_cid = $global_element.find( '.et-pb-section-content' ).data( 'cid' );
 
@@ -2409,8 +2437,15 @@ window.et_builder_version = '3.0.51';
 
 					view = new ET_PageBuilder.ModulesView( view_settings );
 				} else if ( this.attributes['data-open_view'] === 'module_settings' ) {
+					var this_module_type = this.model.get( 'module_type' );
+
+					// check the Row parent and if it's inside the column then change the type Row to Row Inner.
+					if ( 'row' === this_module_type && ! _.isUndefined( this_parent_view ) && 'column' === this_parent_view.model.get('type') ) {
+						this_module_type = 'row_inner';
+					}
+
 					view_settings['attributes'] = {
-						'data-module_type' : this.model.get( 'module_type' )
+						'data-module_type' : this_module_type
 					}
 
 					view_settings['view'] = this;
@@ -3162,6 +3197,15 @@ window.et_builder_version = '3.0.51';
 								et_reinitialize_builder_layout();
 							} else {
 								var $global_element = $moving_from;
+
+								// remove global parent attributes if moved not to global parent.
+								if ( $moving_to.length === 0 && ( ( ! _.isUndefined( model.get( 'et_pb_global_parent' ) ) && '' !== model.get( 'et_pb_global_parent' ) ) || ! _.isUndefined( model.get( 'global_parent_cid' ) ) ) ) {
+									model.unset( 'et_pb_global_parent' );
+									model.unset( 'global_parent_cid' );
+									// remove global attributes from all the child components
+									ET_PageBuilder_Layout.removeGlobalAttributes( ET_PageBuilder_Layout.getView( model.get( 'cid' ) ) );
+								}
+
 								for ( var i = 1; i <= 2; i++ ) {
 									global_module_cid = typeof $global_element.find( '.et-pb-section-content' ).data( 'cid' ) !== 'undefined' ? $global_element.find( '.et-pb-section-content' ).data( 'cid' ) : $global_element.find( '.et-pb-row-content' ).data( 'cid' );
 
@@ -6254,6 +6298,11 @@ window.et_builder_version = '3.0.51';
 					view.pasted_module = false;
 				}
 
+				// update global parent attribute when pasting the module from Global Row or Section.
+				if ( !  _.isUndefined( view.et_pb_global_parent ) && '' !== view.et_pb_global_parent ) {
+					view.et_pb_global_parent = et_pb_get_global_parent_cid( ET_PageBuilder_Layout.getView( parent ) );
+				}
+
 				// Set new global_parent_cid for pasted element
 				if ( ! _.isUndefined( view.et_pb_global_module ) && _.isUndefined( view.global_parent_cid ) && _.isUndefined( this.set_global_parent_cid ) ) {
 					this.global_parent_cid = cid;
@@ -6283,6 +6332,11 @@ window.et_builder_version = '3.0.51';
 
 				// Delete unused childviews
 				delete view.childviews;
+
+				// add default Admin Label if not defined
+				if ( _.isUndefined( view.admin_label ) ) {
+					view.admin_label = ET_PageBuilder_Layout.getDefaultAdminLabel( view.module_type );
+				}
 
 				// Add view to collections
 				this.model.collection.add( view, { at : view_index } );
@@ -6747,6 +6801,9 @@ window.et_builder_version = '3.0.51';
 				this.render();
 
 				this.maybeGenerateInitialLayout();
+
+				// Set current builder product name and version as the last version used to save this post/page.
+				$( '#et_builder_version' ).val( 'BB|' + window.et_builder_product_name + '|' + window.et_builder_version );
 			},
 
 			render : function() {
@@ -7342,11 +7399,10 @@ window.et_builder_version = '3.0.51';
 
 					if ( shortcode_name.indexOf( 'et_pb_' ) !== -1 ) {
 						module_settings['type'] = 'module';
-
-						module_settings['admin_label'] = ET_PageBuilder_Layout.getTitleByShortcodeTag( shortcode_name );
-					} else {
-						module_settings['admin_label'] = shortcode_name;
 					}
+
+					// generate default admin_label
+					module_settings['admin_label'] = ET_PageBuilder_Layout.getDefaultAdminLabel( shortcode_name );
 
 					module_settings._address = index.toString();
 
@@ -7497,7 +7553,7 @@ window.et_builder_version = '3.0.51';
 							$( view.render().el ).find( '.et-pb-section-content' ).append( sub_view.render().el );
 						}
 
-						if ( 'on' === module.get( 'et_pb_specialty' ) && 'auto' === module.get( 'created' ) ) {
+						if ( 'on' === module.get( 'et_pb_specialty' ) && 'auto' === module.get( 'created' ) && ! module.get( 'pasted_module' ) ) {
 							$( view.render().el ).addClass( 'et_pb_section_specialty' );
 
 							var et_view;
@@ -7516,8 +7572,8 @@ window.et_builder_version = '3.0.51';
 						}
 
 						// add Rows layout once the section has been created in "auto" mode
-
-						if ( 'manually' !== module.get( 'created' ) && 'on' !== module.get( 'et_pb_fullwidth' ) && 'on' !== module.get( 'et_pb_specialty' ) ) {
+						// skip this step if pasting section.
+						if ( ! module.get( 'pasted_module' ) && 'manually' !== module.get( 'created' ) && 'on' !== module.get( 'et_pb_fullwidth' ) && 'on' !== module.get( 'et_pb_specialty' ) ) {
 							view.addRow();
 						}
 
@@ -7976,9 +8032,19 @@ window.et_builder_version = '3.0.51';
 									setting_value = setting_value.replace( /\[/g, '%91' ).replace( /\]/g, '%93' );
 								}
 
+								// escape URLs
+								var url_regex = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
+
+								if ( url_regex.test( setting_value ) ) {
+									setting_value = _.escape( _.unescape( setting_value ) );
+								}
+
 								// make sure admin label is always on the same position to correctly save the shortcode into library
 								if ( 'admin_label' === setting_name ) {
-									attributes = ' ' + setting_name + '="' + setting_value + '"' + attributes;
+									// save admin label to shortcode only if it's not default
+									if ( setting_value !== ET_PageBuilder_Layout.getDefaultAdminLabel( module_settings['module_type'] ) ) {
+										attributes = ' ' + setting_name + '="' + setting_value + '"' + attributes;
+									}
 								} else {
 									attributes += ' ' + setting_name + '="' + setting_value + '"';
 								}
@@ -8132,12 +8198,7 @@ window.et_builder_version = '3.0.51';
 				this.stopListening( this.collection, 'change reset add', this.saveAsShortcode );
 
 				if ( action === 'load_layout' && typeof window.switchEditors !== 'undefined' ) {
-					content = window.switchEditors.wpautop( content );
-
-					content = content.replace( /<p>\[/g, '[' );
-					content = content.replace( /\]<\/p>/g, ']' );
-					content = content.replace( /\]<br \/>/g, ']' );
-					content = content.replace( /<br \/>\n\[/g, '[' );
+					content = et_pb_fix_shortcodes( window.switchEditors.wpautop( content ) );
 				}
 
 				this.createLayoutFromContent( content );
@@ -8443,7 +8504,7 @@ window.et_builder_version = '3.0.51';
 
 				event.preventDefault();
 
-				et_pb_file_frame = wp.media.frames.et_pb_file_frame = wp.media({
+				et_pb_file_frame = wp.media.frames.et_pb_file_frame = new wp.media.view.MediaFrame.ETSelect({
 					title: $this_el.data( 'choose' ),
 					library: {
 						type: $this_el.data( 'type' )
@@ -8455,13 +8516,26 @@ window.et_builder_version = '3.0.51';
 				});
 
 				et_pb_file_frame.on( 'select', function() {
-					var attachment = et_pb_file_frame.state().get('selection').first().toJSON();
+					var url = et_pb_file_frame.state().props.get('url');
 					var $upload_field = $this_el.siblings( '.et-pb-upload-field' );
 
-					$upload_field.val( attachment.url );
+					$upload_field.val( url );
 					$upload_field.trigger( 'change' );
 
 					et_pb_generate_preview_content( $this_el );
+				});
+
+				et_pb_file_frame.on( 'insert', function() {
+					var selectedMediaItem = et_pb_file_frame.state().get('selection').models[0];
+
+					if ( ! _.isUndefined( selectedMediaItem ) ) {
+						var $upload_field = $this_el.siblings( '.et-pb-upload-field' );
+
+						$upload_field.val( selectedMediaItem.get('url') );
+						$upload_field.trigger( 'change' );
+
+						et_pb_generate_preview_content( $this_el );
+					}
 				});
 
 				et_pb_file_frame.open();
@@ -10754,47 +10828,32 @@ window.et_builder_version = '3.0.51';
 			$modal.find( '.et_pb_prompt_modal' ).prepend( modal_content( modal_attributes ) );
 
 			if ( 'open_settings' === action ) {
-				var $et_pb_enable_ab_testing = $modal.find( '#et_pb_enable_ab_testing' ),
-					$et_pb_stats_refresh_option = $modal.find( '#et_pb_ab_refresh_interval' ),
-					$et_pb_shortcode_tracking_option = $modal.find( '#et_pb_enable_shortcode_tracking' ),
-					$et_pb_shortcode_tracking_val = ET_PageBuilder_AB_Testing.get_shortcode_tracking_status(),
-					$et_pb_enable_ab_value = ET_PageBuilder_AB_Testing.is_active() ? 'on' : 'off',
-					$et_pb_stats_refresh_value = ET_PageBuilder_AB_Testing.get_stats_refresh_interval();
-
 				$modal.addClass( 'et_pb_builder_settings' );
-
-				$et_pb_enable_ab_testing.children( 'option' ).removeAttr( 'selected' );
-
-				$et_pb_enable_ab_testing.children( 'option[value="' + $et_pb_enable_ab_value + '"]' ).attr( 'selected', 'selected' );
-
-				$et_pb_shortcode_tracking_option.children( 'option[value="' + $et_pb_shortcode_tracking_val + '"]' ).attr( 'selected', 'selected' );
-
-				$et_pb_stats_refresh_option.children( 'option[value="' + $et_pb_stats_refresh_value + '"]' ).attr( 'selected', 'selected' );
 
 				// update the shortcode
 				et_pb_update_tracking_shortcode();
 
 				$modal.find( '.et_pb_prompt_field_list' ).each(function() {
-					var $field_list           = $(this);
+					var $field_list           = $(this),
 						id                    = $field_list.attr( 'data-id' ),
 						type                  = $field_list.attr( 'data-type' ),
 						autoload              = $field_list.attr( 'data-autoload' ),
-						$saving_input         = $( '#' + id ),
+						custom_id             = {
+							et_pb_enable_ab_testing: 'et_pb_use_ab_testing',
+							et_pb_ab_refresh_interval: 'et_pb_ab_stats_refresh_interval'
+						},
+						$saving_input         = typeof custom_id[ id ] !== 'undefined' ? $( '#' + custom_id[ id ] ) : $( '#_' + id ),
 						saved_value           = $saving_input.val();
 
 					switch ( type ) {
 						case ( 'yes_no_button' ) :
 							var $yn_wrapper = $field_list.find( '.et_pb_yes_no_button_wrapper' ),
-								$yn_button  = $field_list.find( '.et_pb_yes_no_button' ),
-								$yn_select  = $field_list.find( 'select' ),
-								yn_value    = $yn_select.val();
+								$yn_button  = $yn_wrapper.find( '.et_pb_yes_no_button' ),
+								$yn_select  = $yn_wrapper.find( 'select' );
 
 							// Determine Y/N button state on load
-							if ( yn_value === 'on' ) {
-								$yn_button.removeClass( 'et_pb_off_state' ).addClass( 'et_pb_on_state' );
-							} else {
-								$yn_button.removeClass( 'et_pb_on_state' ).addClass( 'et_pb_off_state' );
-							}
+							$yn_select.val( saved_value );
+							$yn_select.trigger( 'change' );
 
 							// On button click
 							$yn_button.click( function() {
@@ -10954,6 +11013,11 @@ window.et_builder_version = '3.0.51';
 							$input_range.trigger( 'change' );
 							break;
 
+						case( 'select' ) :
+							var $select = $(this).find( 'select' );
+
+							$select.val( saved_value );
+							break;
 						case( 'textarea' ) :
 							var $textarea     = $(this).find( 'textarea' );
 
@@ -11243,9 +11307,9 @@ window.et_builder_version = '3.0.51';
 								var $item = $( this ),
 									id = $item.attr( 'data-id' ),
 									autoload = $item.attr( 'data-autoload' ) === '1' ? true : false,
-									$saving_input = $( '#' + id ),
+									$saving_input = $( '#_' + id ),
 									saving_palette = [],
-									initial_value = $saving_input.val()
+									initial_value = $saving_input.val();
 
 								// Only pass autoload item
 								if ( ! autoload ) {
@@ -12197,8 +12261,18 @@ window.et_builder_version = '3.0.51';
 					options_value    = $options_list.val(),
 					debounce;
 
-				$current_wrapper.on( 'keyup', 'input[type=text]', function() {
+				$current_wrapper.on( 'keydown', 'input[type=text]', function(event) {
+					if ('Enter' === event.key) {
+						event.stopPropagation();
+					}
+				});
+
+				$current_wrapper.on( 'keyup', 'input[type=text]', function(event) {
 					clearTimeout( debounce );
+
+					if ( 'Enter' === event.key ) {
+						add_options_list_row( $(this), false, true );
+					}
 
 					debounce = setTimeout( function() {
 						update_options_list( $current_wrapper, $options_list );
@@ -12208,40 +12282,13 @@ window.et_builder_version = '3.0.51';
 				$current_wrapper.on( 'click', '.et-pb-add-sortable-option', function( event ) {
 					event.preventDefault();
 
-					// Target the clicked row
-					var $parentRow = $(this).parent().find( '.et_options_list_row:last' );
-
-					// Create a clone of the clicked row
-					var $newRow = $parentRow.clone();
-
-					// Remove the checked status for the new row to avoid multiple checked options
-					$newRow.find( '.et_options_list_checked' ).removeClass( 'et_options_list_checked' );
-
-					// Remove the option value for the new row
-					$newRow.find( 'input[type=text]' ).val('');
-
-					// Append the new row
-					$newRow.insertAfter( $parentRow ).hide().fadeIn( 200, function() {
-						$newRow.find( 'input[type=text]' ).focus();
-					} );
+					add_options_list_row( $(this), true, true );
 				} );
 
 				$current_wrapper.on( 'click', '.et_options_list_copy', function( event ) {
 					event.preventDefault();
 
-					// Target the clicked row
-					var $parentRow = $(this).parents( '.et_options_list_row' );
-
-					// Create a clone of the clicked row
-					var $newRow = $parentRow.clone();
-
-					// Remove the checked status for the new row to avoid multiple checked options
-					$newRow.find( '.et_options_list_checked' ).removeClass( 'et_options_list_checked' );
-
-					// Append the new row
-					$newRow.insertAfter( $parentRow ).hide().fadeIn( 200, function() {
-						$newRow.find( 'input[type=text]' ).focus();
-					} );
+					add_options_list_row( $(this) );
 				} );
 
 				$current_wrapper.on( 'click', '.et_options_list_remove', function( event ) {
@@ -12289,6 +12336,36 @@ window.et_builder_version = '3.0.51';
 					}
 				});
 			} );
+
+			function add_options_list_row( $button, newRow, reset ) {
+				var rowSelector = '.et_options_list_row';
+
+				if ( newRow ) {
+					rowSelector = '.et_options_list_row:last';
+				}
+
+				// Target the clicked row
+				var $parentRow = $button.parents( rowSelector );
+
+				if ( newRow ) {
+					$parentRow = $button.parent().find( rowSelector );
+				}
+
+				// Create a clone of the clicked row
+				var $newRow = $parentRow.clone();
+
+				// Remove the checked status for the new row to avoid multiple checked options
+				$newRow.find( '.et_options_list_checked' ).removeClass( 'et_options_list_checked' );
+
+				// Reset the value for new rows
+				if ( reset ) {
+					$newRow.find( 'input[type=text]' ).val('');
+				}
+
+				// Append the new row
+				$newRow.insertAfter( $parentRow );
+				$newRow.find( 'input[type=text]' ).focus();
+			}
 
 			function init_options_list( $wrapper, $options_list, options_value ) {
 				if ( '' === options_value || _.isUndefined( options_value ) ) {
@@ -12382,8 +12459,11 @@ window.et_builder_version = '3.0.51';
 
 						fieldID = fieldID.toLowerCase();
 
-						var fieldType = ! _.isUndefined( siblingAttrs.et_pb_field_type ) ? siblingAttrs.et_pb_field_type : 'input';
-						var $option   = $('<option data-type="' + fieldType + '" value="' + fieldID + '">' + siblingAttrs.et_pb_field_title + '</option>');
+						var fieldType  = ! _.isUndefined( siblingAttrs.et_pb_field_type ) ? siblingAttrs.et_pb_field_type : 'input';
+						var fieldTitle = ! _.isUndefined( siblingAttrs.et_pb_field_title ) ? siblingAttrs.et_pb_field_title : fieldID;
+						fieldTitle     = '' !== fieldTitle.trim() ? fieldTitle : fieldID;
+
+						var $option    = $('<option data-type="' + fieldType + '" value="' + fieldID + '">' + fieldTitle + '</option>');
 
 						$field.append( $option );
 
@@ -12564,11 +12644,11 @@ window.et_builder_version = '3.0.51';
 						var checked   = $wrapper.data('checked');
 						var unchecked = $wrapper.data('unchecked');
 
-						$value.append( '<option value="Checked">' + checked + '</option>' );
-						$value.append( '<option value="Not Checked">' + unchecked + '</option>' );
+						$value.append( '<option value="checked">' + checked + '</option>' );
+						$value.append( '<option value="not checked">' + unchecked + '</option>' );
 
-						if ( ! _.includes(['Checked', 'Not Checked'], fieldValue) ) {
-							fieldValue = 'Checked';
+						if ( ! _.includes(['checked', 'not checked'], fieldValue) ) {
+							fieldValue = 'checked';
 						}
 
 						$value.val( fieldValue );
@@ -13143,20 +13223,26 @@ window.et_builder_version = '3.0.51';
 						$range_input.data( 'default', new_phone_default );
 					}
 
-					et_pb_check_range_boundaries( $this_el, range_input_value );
+					et_pb_check_range_boundaries( $this_el, range_input_value, true );
 				} );
 			}
 
-			$range_input.on( 'keyup change', function() {
+			$range_input.on( 'keyup change', function( event ) {
 				var $this_el      = $(this),
 					this_device   = typeof $this_el.data( 'device' ) === 'undefined' ? 'all' : $this_el.data( 'device' ),
 					this_value    = et_pb_get_range_input_value( $this_el, true ),
 					$range_slider = 'all' === this_device ? $this_el.siblings( '.et-pb-range' ) : $this_el.siblings( '.et-pb-range.et_pb_setting_mobile_' + this_device ),
+					update_step   = false,
 					slider_value;
 
 				slider_value = parseFloat( this_value ) || 0;
 
-				et_pb_check_range_boundaries( $range_slider, slider_value );
+				// check the range slider step and update if value entered manually.
+				if ( ! _.isUndefined( event.type ) && 'keyup' === event.type ) {
+					update_step = true;
+				}
+
+				et_pb_check_range_boundaries( $range_slider, slider_value, update_step );
 
 				$range_slider.val( slider_value ).trigger( 'et_pb_setting:change' );
 
@@ -13300,6 +13386,33 @@ window.et_builder_version = '3.0.51';
 							}
 						}
 					} );
+
+					$('.et_options_list').each(function() {
+						var $list = $(this);
+
+						if ( 0 !== $list.find('.et_options_rows').length ) {
+							return;
+						}
+
+						var $options = $list.find('textarea');
+
+						$list.find('.et_options_list_row').wrapAll('<div class="et_options_rows" />');
+
+						$list.find( '.et_options_rows' ).sortable({
+							axis : 'y',
+							containment: 'parent',
+							update: function() {
+								update_options_list( $list, $options );
+								setTimeout( function() {
+									$('.et_options_rows').children().css({
+										position: '',
+										top: '',
+										left: ''
+									});
+								}, 700);
+							}
+						});
+					});
 				} );
 
 				// trigger change event for all dependant ( affected ) fields to show on settings page load
@@ -13385,7 +13498,7 @@ window.et_builder_version = '3.0.51';
 		}
 
 		// check the range slider boundaries against the provided value and extend min or max boundary if needed
-		function et_pb_check_range_boundaries( $range_slider, slider_value ) {
+		function et_pb_check_range_boundaries( $range_slider, slider_value, update_step ) {
 			var slider_max = parseFloat( $range_slider.attr( 'max' ) ),
 				slider_min = parseFloat( $range_slider.attr( 'min' ) );
 
@@ -13407,6 +13520,13 @@ window.et_builder_version = '3.0.51';
 				$range_slider.attr( 'min', slider_value );
 
 				$range_slider.val(slider_value);
+			}
+
+			// set the step to 0.1 if we need to update step and value is not integer
+			if ( update_step && '0.1' !== $range_slider.attr( 'step' ) && ( slider_value % 1 > 0 ) ) {
+				$range_slider.attr( 'step', '0.1' );
+				// reset the slider value to make sure it updated correctly after changing the step
+				$range_slider.val( slider_value );
 			}
 		}
 
@@ -14269,7 +14389,7 @@ window.et_builder_version = '3.0.51';
 					var is_builder_settings_popup_opened = $( '.et_pb_modal_overlay.et_pb_builder_settings' ).length;
 
 					_.each( response.et.builder_settings_autosave, function( value, name ) {
-						$('#' + name).val( value );
+						$('#_' + name).val( value );
 
 						if ( 'et_pb_section_background_color' === name ) {
 							et_pb_options.page_section_bg_color = value;
@@ -14579,8 +14699,7 @@ window.et_builder_version = '3.0.51';
 				});
 
 				if ( typeof $clicked_button.data( 'content_loaded' ) === 'undefined' && ! $clicked_button.hasClass( 'et-pb-new-module' ) && 'layout' !== module_type ) {
-					var include_global = $clicked_button.closest( '.et_pb_modal_settings' ).hasClass( 'et_pb_no_global' ) ? 'no_global' : 'include_global';
-					generate_templates_view( include_global, '', module_type, $( '.' + $clicked_button.data( 'open_tab' ) ), module_width, specialty_columns, 'all' );
+					generate_templates_view( 'include_global', '', module_type, $( '.' + $clicked_button.data( 'open_tab' ) ), module_width, specialty_columns, 'all' );
 					$clicked_button.data( 'content_loaded', 'true' );
 				}
 			}
@@ -14697,7 +14816,7 @@ window.et_builder_version = '3.0.51';
 										if ( 'template_type' !== key && ( 'admin_label' !== key || ( 'admin_label' === key && ! ignore_admin_label ) ) ) {
 											// skip unsynced options
 											if ( 'updated' === selective_sync_method && -1 !== et_pb_all_unsynced_options[ global_module_id ].indexOf( key ) ) {
-												return;
+												continue;
 											}
 
 											var prefixed_key = 'admin_label' !== key ? ( 'et_pb_' + key ) : key;
@@ -14715,7 +14834,19 @@ window.et_builder_version = '3.0.51';
 								}
 
 								if ( sync_content ) {
-									view_settings.model.set( 'et_pb_content_new', shortcode_content, { silent : true } );
+									var content_storage = 'et_pb_content_new';
+									var et_pb_raw_shortcodes = ET_PageBuilder_App.getShortCodeRawContentTags();
+
+									// content storage name is different for raw shortcodes ( such as Code module ). Update the content storage name if needed.
+									if ( $.inArray( shortcode_name, et_pb_raw_shortcodes ) > -1 ) {
+										content_storage = 'et_pb_raw_content';
+
+										shortcode_content = _.unescape( shortcode_content );
+										// replace line-break placeholders with real line-breaks
+										shortcode_content = shortcode_content.replace( /<!-- \[et_pb_line_break_holder\] -->/g, '\n' );
+									}
+
+									view_settings.model.set( content_storage, shortcode_content, { silent : true } );
 
 									if ( 'updated' !== selective_sync_method ) {
 										et_pb_all_legacy_synced_options[ global_module_id ].push( 'et_pb_content_field' );
@@ -14790,7 +14921,8 @@ window.et_builder_version = '3.0.51';
 							processed_shortcode = processed_shortcode.replace( /\r?\n|\r/g, '' );
 						}
 
-						if ( processed_shortcode !== processed_content ) {
+						// compare unescaped strings to improve the comparison accuracy
+						if ( _.unescape( processed_shortcode ) !== _.unescape( processed_content ) ) {
 							global_content_is_different = true;
 							// call createLayoutFromContent only if current_shortcode is different than received shortcode
 							ET_PageBuilder_App.createLayoutFromContent( data.shortcode, '', '', { ignore_template_tag : 'ignore_template', current_row_cid : module_cid, global_id : post_id, is_reinit : 'reinit' } );
@@ -14864,6 +14996,9 @@ window.et_builder_version = '3.0.51';
 
 		function et_pb_open_current_tab() {
 			var $container = $( '.et_pb_modal_settings_container' );
+
+			// always open the first tab by default
+			$container.find( '.et-pb-options-tabs .et-pb-options-tab:first-child' ).css( { 'display' : 'block', opacity : 1 } );
 
 			if ( $( '.et_pb_modal_settings_container' ).hasClass( 'et_pb_hide_general_tab' ) ) {
 				$container.find( '.et-pb-options-tabs-links li' ).removeClass( 'et-pb-options-tabs-links-active' );
@@ -15000,6 +15135,19 @@ window.et_builder_version = '3.0.51';
 			var first_part = _.first( path_parts );
 
 			return _.has( obj, first_part ) && has( obj[first_part], _.rest( path_parts ).join( '.' ) );
+		}
+
+		/**
+		 * Removes extra <p> and <br> tags from shortcode similar to et_pb_fix_shortcodes from /includes/builder/functions.php
+		 * @return {string}
+		 */
+		function et_pb_fix_shortcodes( shortcode ) {
+			shortcode = shortcode.replace( /<p>\[/g, '[' );
+			shortcode = shortcode.replace( /\]<\/p>/g, ']' );
+			shortcode = shortcode.replace( /\]<br \/>/g, ']' );
+			shortcode = shortcode.replace( /<br \/>\n\[/g, '[' );
+
+			return shortcode;
 		}
 
 		/**

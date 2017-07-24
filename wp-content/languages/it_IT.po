@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.8.x package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-06-11 10:12:11+0000\n"
+"PO-Revision-Date: 2017-07-04 13:01:37+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2392,7 +2392,7 @@ msgstr "Impostazioni predefinite"
 
 #: wp-includes/class-wp-customize-manager.php:4013
 msgid "Header Video"
-msgstr "Video del header"
+msgstr "Video dell'header"
 
 #. translators: 1: .mp4, 2: header height in pixels
 #: wp-includes/class-wp-customize-manager.php:3960
@@ -2407,7 +2407,7 @@ msgstr "Carica il tuo video in formato %1$s e minimizza la dimensione del file p
 #. translators: 1: .mp4, 2: header size in pixels
 #: wp-includes/class-wp-customize-manager.php:3946
 msgid "Upload your video in %1$s format and minimize its file size for best results. Your theme recommends dimensions of %2$s pixels."
-msgstr "Carica il video nel formato %1$s  e minimizza la dimensione del file per ottenre il miglio risultato. Il tuo tema consiglia una dimensione di %2$s pixel."
+msgstr "Carica il video nel formato %1$s  e minimizza la dimensione del file per ottenere il miglior risultato. Il tema consiglia una dimensione di %2$s pixel."
 
 #: wp-includes/class-wp-customize-manager.php:3935
 msgid "If you add a video, the image will be used as a fallback while the video loads."

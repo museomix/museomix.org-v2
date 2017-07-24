@@ -4,6 +4,12 @@ if ( ! function_exists( 'et_builder_should_load_framework' ) ) :
 function et_builder_should_load_framework() {
 	global $pagenow;
 
+	static $should_load = null;
+
+	if ( null !== $should_load ) {
+		return $should_load;
+	}
+
 	$is_admin = is_admin();
 	$required_admin_pages = array( 'edit.php', 'post.php', 'post-new.php', 'admin.php', 'customize.php', 'edit-tags.php', 'admin-ajax.php', 'export.php', 'options-permalink.php', 'themes.php' ); // list of admin pages where we need to load builder files
 	$specific_filter_pages = array( 'edit.php', 'admin.php', 'edit-tags.php' ); // list of admin pages where we need more specific filtering
@@ -14,11 +20,12 @@ function et_builder_should_load_framework() {
 	$is_edit_layout_category_page = 'edit-tags.php' === $pagenow && isset( $_GET['taxonomy'] ) && 'layout_category' === $_GET['taxonomy'];
 
 	if ( ! $is_admin || ( $is_admin && in_array( $pagenow, $required_admin_pages ) && ( ! in_array( $pagenow, $specific_filter_pages ) || $is_edit_library_page || $is_role_editor_page || $is_edit_layout_category_page || $is_import_page ) ) ) {
-		return true;
+		$should_load = true;
 	} else {
-		return false;
+		$should_load = false;
 	}
 
+	return $should_load;
 }
 endif;
 
@@ -123,6 +130,25 @@ function et_builder_register_layouts(){
 
 if ( et_builder_should_load_framework() ) {
 	et_builder_register_layouts();
+}
+
+if ( ! function_exists( 'et_builder_maybe_enable_inline_styles' ) ):
+function et_builder_maybe_enable_inline_styles() {
+	et_update_option( 'static_css_custom_css_safety_check_done', true );
+
+	if ( ! wp_get_custom_css() ) {
+		return;
+	}
+
+	// This site has Custom CSS that existed prior to v3.0.54 which could contain syntax
+	// errors that the user is unaware of. Such errors would cause problems in a unified
+	// static CSS file so let's enable inline styles for the builder's design styles.
+	et_update_option( 'et_pb_css_in_footer', 'on' );
+}
+endif;
+
+if ( defined( 'ET_CORE_UPDATED' ) && ! et_get_option( 'static_css_custom_css_safety_check_done', false ) ) {
+	et_builder_maybe_enable_inline_styles();
 }
 
 function et_pb_video_get_oembed_thumbnail() {
@@ -298,7 +324,7 @@ function et_pb_get_current_user_role() {
 function et_pb_get_all_roles_list() {
 	// get all roles registered in current WP
 	if ( ! function_exists( 'get_editable_roles' ) ) {
-		require_once( ABSPATH . '/wp-admin/includes/user.php' );
+		require_once( ABSPATH . 'wp-admin/includes/user.php' );
 	}
 
 	$all_roles = get_editable_roles();
@@ -391,6 +417,11 @@ function et_pb_show_all_layouts() {
 				'key'     => '_et_pb_built_for_post_type',
 				'value'   => $post_type,
 				'compare' => 'IN',
+			),
+			array(
+				'key'     => '_et_pb_layout_applicability',
+				'value'   => 'product_tour',
+				'compare' => 'NOT EXISTS',
 			),
 		),
 		'tax_query' => array(
@@ -577,6 +608,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 				$categories_processed = array();
 				$row_layout = '';
 				$this_layout_type = '';
+				$this_layout_applicability = '';
 
 				if ( ! empty( $categories ) ) {
 					foreach( $categories as $category_data ) {
@@ -590,6 +622,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 
 				if ( 'layout' === $layout_type ) {
 					$this_layout_type = 'on' === get_post_meta( $single_post->ID, '_et_pb_predefined_layout', true ) ? 'predefined' : 'library';
+					$this_layout_applicability = get_post_meta( $single_post->ID, '_et_pb_layout_applicability', true );
 				}
 
 				// get unsynced global optoins for module
@@ -603,6 +636,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 					'shortcode'        => $single_post->post_content,
 					'is_global'        => $global_scope,
 					'layout_type'      => $layout_type,
+					'applicability'    => $this_layout_applicability,
 					'layouts_type'     => $this_layout_type,
 					'module_type'      => $module_type,
 					'categories'       => $categories_processed,
@@ -1410,13 +1444,14 @@ function et_fb_wp_refresh_nonces( $response, $data, $screen_id ) {
 add_filter( 'wp_refresh_nonces', 'et_fb_wp_refresh_nonces', 10, 3 );
 
 function et_fb_get_portability_export_url() {
-	$args = array(
+	$admin_url = is_ssl() ? admin_url() : admin_url( '', 'http' );
+	$args      = array(
 		'et_core_portability' => true,
 		'context'             => 'et_builder',
 		'name'                => 'temp_name',
 		'nonce'               => wp_create_nonce( 'et_core_portability_nonce' ),
 	);
-	return add_query_arg( $args, admin_url() );
+	return add_query_arg( $args, $admin_url );
 }
 
 function et_fb_get_nonces() {
@@ -1438,6 +1473,7 @@ function et_fb_get_nonces() {
 		'moduleEmailOptinFetchLists'    => wp_create_nonce( 'et_builder_email_fetch_lists_nonce' ),
 		'moduleEmailOptinAddAccount'    => wp_create_nonce( 'et_builder_email_add_account_nonce' ),
 		'moduleEmailOptinRemoveAccount' => wp_create_nonce( 'et_builder_email_remove_account_nonce' ),
+		'productTourRequest'            => wp_create_nonce( 'et_fb_product_tour_nonce' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );
@@ -2859,9 +2895,10 @@ function et_builder_set_content_activation( $post_id = false ) {
 	}
 
 	// Save old content
+	$saved_old_content = get_post_meta( $post_id, '_et_pb_old_content', true );
 	$save_old_content = update_post_meta( $post_id, '_et_pb_old_content', $post->post_content );
 
-	if ( true !== $save_old_content && '' !== $post->post_content ) {
+	if ( true !== $save_old_content && $saved_old_content !== $post->post_content && '' !== $post->post_content ) {
 		return false;
 	}
 

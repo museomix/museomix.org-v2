@@ -37,7 +37,7 @@
 
 		$( '#et_dashboard_content' ).removeAttr( 'class' );
 		$( '#et_dashboard_content' ).addClass( 'current_tab_' + $tab_id );
-	}
+	};
 
 	//Generates image upload window
 	window.et_dashboard_image_upload = function image_upload( $upload_button ) {
@@ -446,6 +446,50 @@
 			}, $delay );
 		}
 
-    });
+		var $container             = $( '#et_dashboard_options' );
+		var $yes_no_button_wrapper = $container.find( '.et_pb_yes_no_button_wrapper' );
+		var $yes_no_button         = $yes_no_button_wrapper.find( '.et_pb_yes_no_button' );
+		var $yes_no_select         = $yes_no_button.find( 'select' );
 
-})(jQuery)
+		$yes_no_button_wrapper.each( function () {
+			var $this_switcher = $(this).find( '.et_pb_yes_no_button' );
+			var $select        = $(this).find( 'select' );
+			var selected_value = $select.val();
+			var $button        = $(this).closest( '.input' ).find( 'div.et_dashboard_action_button' );
+
+			if ( 'on' === selected_value ) {
+				$this_switcher.addClass( 'et_pb_on_state' );
+			} else {
+				$this_switcher.addClass( 'et_pb_off_state' );
+			}
+
+			if ( $button.length > 0 ) {
+				$button.insertBefore( $button.prev() );
+				$button.on( 'yes_no_button_clicked', function( event, new_value, first_run ) {
+					var delay = first_run ? 0 : 300;
+
+					if ( 'on' === new_value ) {
+						$(this).show( delay );
+					} else {
+						$(this).hide( delay );
+					}
+				});
+
+				$button.trigger( 'yes_no_button_clicked', selected_value, true );
+			}
+
+			$this_switcher.on( 'click', function () {
+				var new_value = $( this ).hasClass( 'et_pb_off_state' ) ? 'on' : 'off';
+
+				if ( $button.length > 0 ) {
+					$button.trigger( 'yes_no_button_clicked', new_value );
+				}
+
+				$select.val( new_value );
+				$select.trigger( 'change' );
+				$(this).toggleClass( 'et_pb_off_state et_pb_on_state' );
+			} );
+		} );
+	});
+
+})(jQuery);

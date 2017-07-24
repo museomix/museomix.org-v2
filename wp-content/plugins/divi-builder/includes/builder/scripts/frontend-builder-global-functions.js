@@ -164,17 +164,18 @@
 		});
 	}
 
-	window.et_pb_set_responsive_grid = function( $grid_items, $single_item_selector ) {
+	window.et_pb_set_responsive_grid = function( $grid_items_container, single_item_selector ) {
 		setTimeout( function() {
-			var container_width = $grid_items.innerWidth(),
-				item_width = $grid_items.find( $single_item_selector ).outerWidth( true ),
-				last_item_margin = item_width - $grid_items.find( $single_item_selector ).outerWidth(),
+			var container_width = $grid_items_container.innerWidth(),
+				$grid_items = $grid_items_container.find( single_item_selector ),
+				item_width = $grid_items.outerWidth( true ),
+				last_item_margin = item_width - $grid_items.outerWidth(),
 				columns_count = Math.round( ( container_width + last_item_margin ) / item_width ),
 				counter = 1,
 				first_in_row = 1;
 
-			$grid_items.find( $single_item_selector ).removeClass( 'last_in_row first_in_row' );
-			$grid_items.find( $single_item_selector ).each( function() {
+			$grid_items.removeClass( 'last_in_row first_in_row' );
+			$grid_items.filter(':visible').each( function() {
 				var $this_el = $( this );
 
 				if ( ! $this_el.hasClass( 'inactive' ) ) {

@@ -475,8 +475,24 @@ class ET_Dashboard_v2 {
 
 		$this->dashboard_options = $this->get_options_array();
 		$dashboard_options = $this->dashboard_options;
-		$dashboard_sections = $this->dashboard_sections;
-		$dashboard_options_assigned = $this->assigned_options;
+
+		/**
+		 * Filters the sections (tabs) in the builder plugin options dashboard.
+		 *
+		 * @since 2.0.7
+		 *
+		 * @param array[] $sections
+		 */
+		$dashboard_sections = apply_filters( 'et_builder_plugin_dashboard_sections', $this->dashboard_sections );
+
+		/**
+		 * Filters the fields data for the builder plugin options dashboard.
+		 *
+		 * @since 2.0.7
+		 *
+		 * @param array[] $sections
+		 */
+		$dashboard_options_assigned = apply_filters( 'et_builder_plugin_dashboard_fields_data', $this->assigned_options );
 
 		$error_message = '';
 		$dashboard_options_temp = array();
@@ -630,8 +646,13 @@ class ET_Dashboard_v2 {
 	function generate_options_page( $sub_array = '' ) {
 		$this->dashboard_options = $this->get_options_array();
 		$dashboard_options = $this->dashboard_options;
-		$dashboard_sections = $this->dashboard_sections;
-		$dashboard_options_assigned = $this->assigned_options;
+
+		/** This filter is documented in `self::process_and_update_options()` */
+		$dashboard_sections = apply_filters( 'et_builder_plugin_dashboard_sections', $this->dashboard_sections );
+
+		/** This filter is documented in `self::process_and_update_options()` */
+		$dashboard_options_assigned = apply_filters( 'et_builder_plugin_dashboard_fields_data', $this->assigned_options );
+
 		$dashboard_post_types = $this->dashboard_post_types;
 		$dashboard_categories = $this->dashboard_categories;
 
@@ -759,6 +780,8 @@ class ET_Dashboard_v2 {
 
 								$hint_output = $this->generate_hint( $option[ 'hint_text' ], $escape );
 							}
+
+							$current_option_value = apply_filters( 'et_' . $this->plugin_name . '_option_value', $current_option_value, $option );
 
 							switch( $option[ 'type' ] ) {
 								case 'select_shape' :
@@ -1268,15 +1291,19 @@ class ET_Dashboard_v2 {
 
 								case 'button' :
 									printf(
-										'<li class="et_dashboard_action_button">
+										'<%4$s class="et_dashboard_action_button">
 											<a href="%1$s" class="et_dashboard_icon %2$s">%3$s</a>
 											<span class="spinner"></span>
-										</li>',
+										</%5$s>
+										%6$s',
 										esc_url( $option[ 'link' ] ),
 										esc_html( $option[ 'class' ] ),
 										( true == $option[ 'authorize' ] && $this->api_is_network_authorized( $option[ 'action' ] ) )
 											? esc_html__( 'Re-Authorize', 'et_dashboard' ) :
-											esc_html( $option[ 'title' ] )
+											esc_html( $option[ 'title' ] ),
+										isset( $option['is_after_element'] ) ? 'div' : 'li',
+										isset( $option['is_after_element'] ) ? 'div' : 'li',
+										isset( $option['is_after_element'] ) ? '</li>' : ''
 									);
 								break;
 
@@ -1327,6 +1354,39 @@ class ET_Dashboard_v2 {
 									echo $hint_output;
 
 									echo '</li>';
+								break;
+
+								case 'yes_no_button' :
+									printf(
+										'<li class="input%1$s">
+											<p>%2$s</p>
+											<div class="et_pb_prompt_field">
+												<div class="et_pb_yes_no_button_wrapper ">
+													<div class="et_pb_yes_no_button">
+														<span class="et_pb_value_text et_pb_on_value">%5$s</span>
+														<span class="et_pb_button_slider"></span>
+														<span class="et_pb_value_text et_pb_off_value">%6$s</span>
+													</div>
+	
+													<select name="et_dashboard[%3$s]" id="et_dashboard_%3$s" class="et-pb-main-setting regular-text">
+														<option value="on"%7$s>%5$s</option>
+														<option value="off"%8$s>%6$s</option>
+													</select>
+												</div><span class="et-pb-reset-setting"></span>
+											</div>
+											%9$s
+										%10$s',
+										isset( $option['no_clearfix'] ) ? '' : ' clearfix',
+										isset( $option[ 'title_' . $current_location ] ) ? esc_html( $option[ 'title_' . $current_location ] ) : esc_html( $option['title'] ),
+										esc_attr( $current_option_name ),
+										esc_html( $option['label'] ),
+										isset( $option['values'] ) ? esc_html( $option['values']['yes'] ) : esc_html__( 'Enabled', 'et_dashboard' ),
+										isset( $option['values'] ) ? esc_html( $option['values']['no'] ) : esc_html__( 'Disabled', 'et_dashboard' ), //#6
+										selected( $current_option_value, 'on', false ),
+										selected( $current_option_value, 'off', false ),
+										$hint_output,
+										isset( $option['after'] ) ? '' : '</li>' //#10
+									);
 								break;
 
 							} // end switch

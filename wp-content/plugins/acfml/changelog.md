@@ -1,3 +1,6 @@
+# 0.6
+* Introduced support for clone fields (wpmlbridge-46)
+
 # 0.5.1
 * Fixed impossible duplication of field groups (wpmlbridge-91)
 

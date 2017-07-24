@@ -124,6 +124,14 @@ function et_fb_backend_helpers() {
 	$current_user = wp_get_current_user();
 	$current_url  = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
+	$product_tour_settings = et_get_option( 'product_tour_status', array() );
+	$product_tour_status = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' ) && ( ! isset( $product_tour_settings[$current_user->ID] ) || 'off' !== $product_tour_settings[$current_user->ID] ) ? 'on' : 'off';
+
+	// disable product tour on the app launch, so it won't be started next time.
+	if ( 'on' === $product_tour_status ) {
+		et_fb_disable_product_tour();
+	}
+
 	$fb_modules_array = apply_filters( 'et_fb_modules_array', ET_Builder_Element::get_modules_array( $post_type, true, true ) );
 
 	$helpers = array(
@@ -138,7 +146,7 @@ function et_fb_backend_helpers() {
 		'publishCapability'            => ( is_page() && ! current_user_can( 'publish_pages' ) ) || ( ! is_page() && ! current_user_can( 'publish_posts' ) ) ? 'no_publish' : 'publish',
 		'shortcodeObject'              => array(),
 		'autosaveShortcodeObject'      => array(),
-		'ajaxUrl'                      => admin_url( 'admin-ajax.php' ),
+		'ajaxUrl'                      => is_ssl() ? admin_url( 'admin-ajax.php' ) : admin_url( 'admin-ajax.php', 'http' ),
 		'tinymceSkinUrl'               => ET_FB_ASSETS_URI . '/vendors/tinymce-skin',
 		'tinymceCSSFiles'              => esc_url( includes_url( 'js/tinymce' ) . '/skins/wordpress/wp-content.css' ),
 		'images_uri'                   => ET_BUILDER_URI .'/images',
@@ -150,6 +158,7 @@ function et_fb_backend_helpers() {
 			'defaults'                     => array(),
 			'optionsToggles'               => array(),
 		),
+		'productTourStatus'            => $product_tour_status,
 		'moduleParentShortcodes'       => ET_Builder_Element::get_parent_shortcodes( $post_type ),
 		'moduleChildShortcodes'        => ET_Builder_Element::get_child_shortcodes( $post_type ),
 		'moduleChildSlugs'             => ET_Builder_Element::get_child_slugs( $post_type ),
@@ -158,7 +167,7 @@ function et_fb_backend_helpers() {
 		'modulesCount'                 => count( $fb_modules_array ),
 		'modulesWithChildren'          => ET_Builder_Element::get_shortcodes_with_children( $post_type ),
 		'modulesShowOnCancelDropClassname' => apply_filters( 'et_fb_modules_show_on_cancel_drop_classname', array( 'et_pb_gallery', 'et_pb_filterable_portfolio') ),
-		'structureModules'             => ET_Builder_Element::get_structure_modules( $post_type ),
+		'structureModules'             => ET_Builder_Element::get_structure_modules(),
 		'et_builder_css_media_queries' => ET_Builder_Element::get_media_quries( 'for_js' ),
 		'builderOptions'               => et_builder_options(),
 		'builderVersion'               => ET_BUILDER_PRODUCT_VERSION,
@@ -210,8 +219,8 @@ function et_fb_backend_helpers() {
 			'hide_on_mobile_class'     => 'et-hide-mobile',
 		),
 		'columnLayouts'                => et_builder_get_columns(),
-		'pageSettingsFields'           => et_pb_get_builder_settings_configurations(),
-		'pageSettingsValues'           => et_pb_get_builder_settings_values(),
+		'pageSettingsFields'           => ET_Builder_Settings::get_fields(),
+		'pageSettingsValues'           => ET_Builder_Settings::get_values(),
 		'splitTestSubjects'            => false !== ( $all_subjects_raw = get_post_meta( $post_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array(),
 		'defaults'                     => array(
 			'contactFormInputs'        => array(),
@@ -379,7 +388,7 @@ function et_fb_backend_helpers() {
 						'background_color_gradient_end_position_%s',
 						'background_color_gradient_type_%s',
 					),
-					'description'     => esc_html__( '', 'et_builder' ),
+					'description'     => '',
 					'tab_slug'        => 'general',
 					'toggle_slug'     => 'background',
 					'sub_toggle'      => 'column_%s',
@@ -388,7 +397,7 @@ function et_fb_backend_helpers() {
 					'label'           => esc_html__( 'Column %s Gradient Start', 'et_builder' ),
 					'type'            => 'color-alpha',
 					'option_category' => 'configuration',
-					'description'     => esc_html__( '', 'et_builder' ),
+					'description'     => '',
 					'depends_show_if' => 'on',
 					'default'         => '#2b87da',
 					'depends_to'      => array(
@@ -402,7 +411,7 @@ function et_fb_backend_helpers() {
 					'label'           => esc_html__( 'Column %s Gradient End', 'et_builder' ),
 					'type'            => 'color-alpha',
 					'option_category' => 'configuration',
-					'description'     => esc_html__( '', 'et_builder' ),
+					'description'     => '',
 					'depends_show_if' => 'on',
 					'default'         => '#29c4a9',
 					'depends_to'      => array(
@@ -425,7 +434,7 @@ function et_fb_backend_helpers() {
 						'background_color_gradient_direction_radial_%s',
 					),
 					'default'         => 'linear',
-					'description'     => esc_html__( '', 'et_builder' ),
+					'description'     => '',
 					'depends_show_if' => 'on',
 					'depends_to'      => array(
 						'use_background_color_gradient_%s',
@@ -471,7 +480,7 @@ function et_fb_backend_helpers() {
 						'left'         => esc_html__( 'Left', 'et_builder' ),
 					),
 					'default'         => '',
-					'description'     => esc_html__( '', 'et_builder' ),
+					'description'     => '',
 					'depends_show_if' => 'radial',
 					'depends_to'      => array(
 						'background_color_gradient_type_%s',
@@ -702,15 +711,18 @@ function et_fb_backend_helpers() {
 				'password'        => esc_html__( 'Password', 'et_builder' ),
 				'note_autofill'   => esc_attr__( 'Note: this field is used to disable browser autofill during the form editing in VB', 'et_builder' ),
 			),
+			'postTitle' => array(
+				'by' => esc_html__( 'by ', 'et_builder' ),
+			),
 			'search' => array(
 				'submitButtonText' => esc_html__( 'Search', 'et_builder' ),
 				'searchfor' => esc_html__( 'Search for:', 'et_builder' ),
 			),
 			'fullwidthPostSlider' => array(
-				'by' => esc_html( 'by ', 'et_builder' ),
+				'by' => esc_html__( 'by ', 'et_builder' ),
 			),
 			'socialFollow' => array(
-				'follow' => esc_html( 'Follow', 'et_builder' ),
+				'follow' => esc_html__( 'Follow', 'et_builder' ),
 			),
 		),
 		'saveButtonText'               => esc_attr__( 'Save', 'et_builder' ),
@@ -845,7 +857,7 @@ function et_fb_backend_helpers() {
 			'allCategoriesText'     => esc_html__( 'All Categories', 'et_builder' ),
 		),
 		'modals' => array(
-			'tabItemTitles' => array(
+			'tabItemTitles'  => array(
 				'general' => esc_html__( 'General', 'et_builder' ),
 				'design'  => esc_html__( 'Design', 'et_builder' ),
 				'css'     => esc_html__( 'CSS', 'et_builder' ),
@@ -853,8 +865,10 @@ function et_fb_backend_helpers() {
 			'moduleSettings' => array(
 				'title' => esc_html__( '%s Settings', 'et_builder' ),
 			),
-			'pageSettings' => array(
-				'title' => esc_html__( 'Page Settings', 'et_builder' ),
+			'pageSettings'   => array(
+				'title'   => ET_Builder_Settings::get_title(),
+				'tabs'    => ET_Builder_Settings::get_tabs(),
+				'toggles' => ET_Builder_Settings::get_toggles(),
 			),
 			'searchOptions' => esc_html__( 'Search Options', 'et_builder' ),
 		),
@@ -985,6 +999,7 @@ function et_fb_backend_helpers() {
 		),
 		'unsavedConfirmation' => esc_html__( 'Unsaved changes will be lost if you leave the Divi Builder at this time.', 'et_builder' ),
 		'libraryLoadError'    => esc_html__( 'Error loading Library items from server. Please refresh the page and try again.', 'et_builder' ),
+		'productTourText'     => array(),
 	);
 
 	// Pass helpers via localization.

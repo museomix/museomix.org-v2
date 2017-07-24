@@ -3,7 +3,7 @@
  * Plugin Name: Divi Builder
  * Plugin URI: http://elegantthemes.com
  * Description: A drag and drop page builder for any WordPress theme.
- * Version: 2.0.13
+ * Version: 2.0.26
  * Author: Elegant Themes
  * Author URI: http://elegantthemes.com
  * License: GPLv2 or later
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'ET_BUILDER_PLUGIN_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'ET_BUILDER_PLUGIN_URI', plugins_url('', __FILE__) );
-define( 'ET_BUILDER_PLUGIN_VERSION', '2.0.13' );
+define( 'ET_BUILDER_PLUGIN_VERSION', '2.0.26' );
 
 if ( ! class_exists( 'ET_Dashboard_v2' ) ) {
 	require_once( ET_BUILDER_PLUGIN_DIR . 'dashboard/dashboard.php' );
@@ -73,12 +73,6 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 			add_action( 'et_pb_shop_before_print_shop', array( $this, 'force_woocommerce_default_templates' ) );
 			add_action( 'et_pb_shop_after_print_shop', array( $this, 'return_woocommerce_default_templates' ) );
 		}
-	}
-
-	static function add_updates() {
-		require_once( ET_BUILDER_PLUGIN_DIR . 'core/updates_init.php' );
-
-		et_core_enable_automatic_updates( ET_BUILDER_PLUGIN_URI, ET_BUILDER_PLUGIN_VERSION );
 	}
 
 	function add_builder_content_wrapper( $content ) {
@@ -205,9 +199,6 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 		require ET_BUILDER_PLUGIN_DIR . 'functions.php';
 		require ET_BUILDER_PLUGIN_DIR . 'theme-compat.php';
 		require ET_BUILDER_DIR . 'framework.php';
-		require_once( ET_BUILDER_PLUGIN_DIR . 'core/init.php' );
-
-		et_core_setup( ET_BUILDER_PLUGIN_URI );
 
 		et_pb_register_posttypes();
 
@@ -252,11 +243,12 @@ class ET_Builder_Plugin extends ET_Dashboard_v2 {
 		wp_enqueue_style( 'et-builder-css', ET_BUILDER_PLUGIN_URI . '/css/admin.css', array(), $this->plugin_version );
 		wp_enqueue_script( 'et-builder-js', ET_BUILDER_PLUGIN_URI . '/js/admin.js', array( 'jquery' ), $this->plugin_version, true );
 		wp_localize_script( 'et-builder-js', 'builder_settings', array(
-			'et_builder_nonce'           => wp_create_nonce( 'et_builder_nonce' ),
-			'ajaxurl'                    => admin_url( 'admin-ajax.php', $this->protocol ),
-			'authorize_text'             => esc_html__( 'Authorize', 'et_builder_plugin' ),
-			'reauthorize_text'           => esc_html__( 'Re-Authorize', 'et_builder_plugin' ),
-			'save_settings'              => wp_create_nonce( 'save_settings' ),
+			'et_builder_nonce' => wp_create_nonce( 'et_builder_nonce' ),
+			'ajaxurl'          => admin_url( 'admin-ajax.php', $this->protocol ),
+			'authorize_text'   => esc_html__( 'Authorize', 'et_builder_plugin' ),
+			'reauthorize_text' => esc_html__( 'Re-Authorize', 'et_builder_plugin' ),
+			'save_settings'    => wp_create_nonce( 'save_settings' ),
+			'et_core_nonces'   => et_core_get_nonces(),
 		) );
 	}
 
@@ -322,11 +314,15 @@ function et_divi_builder_init_plugin() {
 }
 add_action( 'init', 'et_divi_builder_init_plugin' );
 
-function et_divi_builder_add_updates() {
-	// Plugins Updates system should be loaded before a theme core loads
-	ET_Builder_Plugin::add_updates();
+function et_divi_builder_maybe_load_core() {
+	if ( ! defined( 'ET_CORE' ) ) {
+		require_once ET_BUILDER_PLUGIN_DIR . 'core/init.php';
+		et_core_setup();
+	}
+
+	et_core_enable_automatic_updates( ET_BUILDER_PLUGIN_URI, ET_BUILDER_PLUGIN_VERSION );
 }
-add_action( 'plugins_loaded', 'et_divi_builder_add_updates' );
+add_action( 'plugins_loaded', 'et_divi_builder_maybe_load_core' );
 
 if ( ! function_exists( 'et_divi_builder_setup_thumbnails' ) ) :
 function et_divi_builder_setup_thumbnails() {

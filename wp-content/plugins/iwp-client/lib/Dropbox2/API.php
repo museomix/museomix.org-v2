@@ -118,29 +118,105 @@ class IWP_Dropbox_API {
 			// Throw an Exception if the file does not exist
 			throw new Exception('Local file ' . $file . ' does not exist');
 		}
+		$filesize = iwp_mmb_get_file_size($file);
+		if ($filesize >= 157286400) {
+			$output = $this->chunked_upload_single_call_new($file, $path,$overwrite);
+			return $output;
+			
+		}else{
+			$handle = @fopen($file, 'r');
+			//Set the file content to $this->InFile
+			$this->OAuth->setInFile(fread($handle, filesize($file)));
+			fclose($handle);
 
-		if (filesize($file) >= 157286400) {
-			//Dropbox single file upload limit is 150MB, Greater than 150MB should be chunk uploaded
-			throw new Exception('File exceeds 150MB upload limit');
+			$filename = (is_string($filename)) ? $filename : basename($file);
+			$path = '/' . $this->encodePath($path .'/'. $filename);
+			$params = array(
+				'path' => $path,
+				'mute' => true,
+				'mode' => 'overwrite',
+				'api_v2' => true,
+				'content_upload' => true
+				);
+			$response = $this->fetch('POST', self::CONTENT_URL_V2, 'files/upload', $params);
+			return $response;
 		}
 
-		$handle = @fopen($file, 'r');
-		//Set the file content to $this->InFile
-		$this->OAuth->setInFile(fread($handle, filesize($file)));
-		fclose($handle);
-
-		$filename = (is_string($filename)) ? $filename : basename($file);
-		$path = '/' . $this->encodePath($path .'/'. $filename);
-		$params = array(
-			'path' => $path,
-			'mute' => true,
-			'mode' => 'overwrite',
-			'api_v2' => true,
-			'content_upload' => true
-			);
-		$response = $this->fetch('POST', self::CONTENT_URL_V2, 'files/upload', $params);
-		return $response;
 	}
+
+	public function chunked_upload_single_call_new($file, $path = '',$overwrite=true){
+        $file = str_replace("\\", "/",$file);
+        if (!is_readable($file) or !is_file($file))
+            throw new IWP_DropboxException("Error: File \"$file\" is not readable or doesn't exist.");
+        $file_handle=fopen($file,'r');
+        $uploadID=null;
+        $offset=0;
+        $ProgressFunction=null;
+        while ($data=fread($file_handle, (1024*1024*30))) {  //1024*1024*30 = 30MB
+        	$firstCommit = (0 == $offset);
+			iwp_mmb_auto_print('dropbox_chucked_upload');
+          $this->OAuth->setInFile($data);
+
+			if ($firstCommit) {
+				$params = array(
+					'close' => false,
+					'api_v2' => true,
+					'content_upload' => true
+				);
+				$response = $this->fetch('POST', self::CONTENT_URL_V2, 'files/upload_session/start', $params);
+				$firstCommit = false;
+
+			} else {
+				$params = array(
+					'cursor' => array(
+						'session_id' => $uploadID,
+						// If you send it as a string, Dropbox will be unhappy
+						'offset' => (int)$offset
+					),
+					'api_v2' => true,
+					'content_upload' => true
+				);
+				$response = $this->append_upload($params, false);
+			}
+
+			// On subsequent chunks, use the upload ID returned by the previous request
+			if (isset($response['body']->session_id)) {
+				$uploadID = $response['body']->session_id;
+			}
+
+			/*
+				API v2 no longer returns the offset, we need to manually work this out. So check that there are no errors and update the offset as well as calling the callback method.
+			 */
+			if (!isset($response['body']->error)) {
+				$offset = ftell($file_handle);
+				$output['response']= $response;
+				if($isCommit ==false){
+
+					$output['offset']= $offset;
+					$output['upload_id']= $uploadID;
+				}
+				$this->OAuth->setInFile(null);
+			}
+			fseek($file_handle, $offset);
+        }
+        fclose($file_handle);
+        $filename = (is_string($filename)) ? $filename : basename($file);
+			$params = array(
+				'cursor' => array(
+					'session_id' => $uploadID,
+					'offset' => (int)$offset
+				),
+				'commit' => array(
+					'path' => '/' . $this->encodePath($path .'/'. $filename),
+					'mode' => 'overwrite'
+				),
+				'api_v2' => true,
+				'content_upload' => true
+			);
+			$response = $this->append_upload($params, true);
+			
+		return $response;
+    }
 
 	/**
 	 * Not used

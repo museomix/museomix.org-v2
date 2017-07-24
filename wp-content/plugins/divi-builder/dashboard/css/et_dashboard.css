@@ -46,7 +46,7 @@ p { padding-bottom: 1.7em; }
 
 #et_dashboard_content { position: relative; margin-left: 200px; padding: 40px 40px 0; min-height: 600px; }
 
-.et_dashboard_row { margin-bottom: 55px; float: left; width: 100%; }
+.et_dashboard_row { margin-bottom: 55px; float: left; width: 100%; overflow: auto; }
 
 .clearfix { clear: both; }
 
@@ -137,7 +137,7 @@ button.et_dashboard_icon_importexport:before	{ content: "\e646"; }
 /*---------------------[FORM]---------------------*/
 /*------------------------------------------------*/
 
-.et_dashboard_form li { height: 30px; margin-bottom: 10px; }
+.et_dashboard_form li { margin-bottom: 10px; overflow: auto; }
 .et_dashboard_form li p { float: left; width: 200px; line-height: 30px; padding-bottom: 0; }
 li.et_dashboard_auto_height { height: auto; }
 
@@ -193,6 +193,28 @@ li.et_dashboard_live_fields { position: relative; margin-bottom: 0; }
 .et_dashboard_menu_remove { margin-left: 5px; cursor: pointer; }
 .et_dashboard_menu_remove:after { position: absolute; left: -2px; top: -1px; width: 20px; color: #c2c6cf !important; font-size: 14px !important; }
 .et_dashboard_selected span { position: relative; }
+
+/* yes-no button styles */
+.et_pb_yes_no_button {  width: 100%;  display: inline-block;  position: relative;  cursor: pointer;  -moz-transition: all 0.3s;  -webkit-transition: all 0.3s;  transition: all 0.3s;  -webkit-border-radius: 4px;  -moz-border-radius: 4px;  border-radius: 4px;  }
+.et_pb_yes_no_button.et_pb_off_state {  background-color: #F1F5F9;  }
+.et_pb_yes_no_button.et_pb_on_state {  background-color: #008BDB;  }
+.et_pb_yes_no_button span.et_pb_button_slider {  position: absolute;  background: #FFF;  width: 50%;  height: 30px;  margin: 5px 0;  background: #FFF;  -webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.25);  -webkit-border-radius: 3px;  -moz-border-radius: 3px;  border-radius: 3px;  -webkit-box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);  -moz-box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);  -moz-transition: all 0.3s;  -webkit-transition: all 0.3s;  transition: all 0.3s;  }
+.et_pb_yes_no_button.et_pb_off_state span.et_pb_button_slider {  left: 5px;  }
+.et_pb_yes_no_button.et_pb_on_state span.et_pb_button_slider { left: 50%;  margin-left: -5px;  }
+.et_pb_yes_no_button.et_pb_on_state span.et_pb_value_text.et_pb_on_value {  margin-left: 0;  margin-right: 0;  }
+.et_pb_yes_no_button.et_pb_off_state span.et_pb_value_text.et_pb_off_value {  margin-right: 0;  margin-left: 0;  }
+.et_pb_yes_no_button span.et_pb_value_text { padding: 11px; float: left; width: 50%; text-align: center; font-weight: bold; text-transform: uppercase; -moz-transition: all 0.3s; -webkit-transition: all 0.3s; transition: all 0.3s; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+span.et_pb_value_text.et_pb_off_value {  color: #8E969E;  }
+span.et_pb_value_text.et_pb_on_value {  color: #FFF;  }
+.et_pb_yes_no_button_wrapper select { opacity: 0; position: absolute; z-index: -1; width: 0px !important; height: 0px !important; }
+.et-pb-options-tab-advanced .et_pb_yes_no_button_wrapper { width: 200px; position: relative; }
+.et-pb-options-tab-advanced .et_pb_yes_no_button {  float: left;  }
+.et_pb_button_equal_sides .et_pb_yes_no_button.et_pb_on_state {  background-color: #F1F5F9;  }
+.et_pb_button_equal_sides span.et_pb_value_text.et_pb_on_value {  color: #8E969E;  }
+.et_pb_yes_no_button_wrapper { float: left; clear: right; font-size: 13px; line-height: 18px; width: 200px; }
+.et_pb_yes_no_button { max-height: 40px; }
+.et_pb_yes_no_button_wrap { float: left; max-height: 40px;  width: 75% !important;  max-width: 450px !important; position: relative; clear: right; }
+
 
 /*------------------------------------------------*/
 /*--------------------[ICONS]---------------------*/

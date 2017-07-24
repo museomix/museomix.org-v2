@@ -94,10 +94,44 @@
 			return false;
 		});
 
+		$( '.et_builder_clear_static_css' ).on( 'click', function() {
+			clear_static_css( $(this) );
+		});
+
 		$body.append( '<div id="et_pb_loading_animation"></div>' );
 		$body.append( '<div id="et_pb_success_animation"></div>' );
 
 		$( '#et_pb_loading_animation' ).hide();
 		$( '#et_pb_success_animation' ).hide();
+
+		function clear_static_css( $button ) {
+			var $spinner = $button.closest( '.input' ).find( 'span.spinner' );
+			var data     = {
+				action: 'et_core_page_resource_clear',
+				et_owner: 'all',
+				et_post_id: 'all',
+				clear_page_resources_nonce: builder_settings.et_core_nonces.clear_page_resources_nonce
+			};
+
+			$.ajax( {
+				type: "POST",
+				url: ajaxurl,
+				data: data,
+				beforeSend: function ( xhr ) {
+					$spinner.addClass( 'et_dashboard_spinner_visible' );
+				},
+				success: function ( response ) {
+					if ( $spinner.length > 0 ) {
+						setTimeout( function () {
+							$spinner.removeClass( 'et_dashboard_spinner_visible' );
+						}, 500 );
+					}
+
+					if ( $.isFunction( callback ) ) {
+						callback();
+					}
+				}
+			} );
+		}
 	});
 })(jQuery);
