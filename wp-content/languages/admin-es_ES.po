@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.8.x - Administration package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-07-17 19:09:14+0000\n"
+"PO-Revision-Date: 2017-07-25 07:43:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -809,7 +809,7 @@ msgstr "https://codex.wordpress.org/es:Using_Custom_Fields"
 #. translators: %s: Codex URL
 #: wp-admin/includes/meta-boxes.php:659
 msgid "Custom fields can be used to add extra metadata to a post that you can <a href=\"%s\">use in your theme</a>."
-msgstr "Los campos personalizados pueden ser usados para añadir metadatos extra a una entrada que <a href=\"%s\">puedes usar en tu tema</a>."
+msgstr "Los campos personalizados pueden utilizarse para añadir metadatos extra a una entrada que puedes <a href=\"%s\">usar en tu tema</a>."
 
 #. translators: %s: Codex URL
 #: wp-admin/includes/meta-boxes.php:627
@@ -819,7 +819,7 @@ msgstr "Trackbacks son la forma para notificar que otros blogs te han enlazado. 
 #. translators: %s: Codex URL
 #: wp-admin/includes/meta-boxes.php:592
 msgid "Excerpts are optional hand-crafted summaries of your content that can be used in your theme. <a href=\"%s\">Learn more about manual excerpts</a>."
-msgstr "Los extractos son resúmenes opcionales hechos a mano que pueden ser usados en tu tema. <a href=\"%s\">Aprende más sobre los extractos manuales</a>."
+msgstr "Los extractos son resúmenes opcionales hechos a mano que pueden utilizarse en tu tema. <a href=\"%s\">Aprende más sobre los extractos manuales</a>."
 
 #: wp-admin/edit-form-advanced.php:367
 msgid "The Text mode allows you to enter HTML along with your post text. Note that &lt;p&gt; and &lt;br&gt; tags are converted to line breaks when switching to the Text editor to make it less cluttered. When you type, a single line break can be used instead of typing &lt;br&gt;, and two line breaks instead of paragraph tags. The line breaks are converted back to tags automatically."

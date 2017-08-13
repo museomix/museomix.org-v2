@@ -101,12 +101,13 @@ function wpmc_delete_all(isTrash) {
 	});
 }
 
-function wpmc_update_progress(current, totalcount) {
-	jQuery('#wpmc_progression').html('<span class="dashicons dashicons-controls-play"></span> Analyzing ' + current + "/" + totalcount + " (" + Math.round(current / totalcount * 100) + "%)");
+function wpmc_update_progress(current, totalcount, isDeleting = false) {
+	var action = isDeleting ? "Deleting" : "Analyzing";
+	jQuery('#wpmc_progression').html('<span class="dashicons dashicons-controls-play"></span> ' + action + ' ' + current + "/" + totalcount + " (" + Math.round(current / totalcount * 100) + "%)");
 }
 
 function wpmc_delete_do(items, totalcount) {
-	wpmc_update_progress(totalcount - items.length, totalcount);
+	wpmc_update_progress(totalcount - items.length, totalcount, true);
 	if (items.length > 0) {
 		newItems = wpmc_pop_array(items, 5);
 		data = { action: 'wpmc_delete_do', data: newItems };
@@ -342,8 +343,9 @@ function wpmc_scan_do() {
 						reply = { success: false, message: "The reply from the server is broken. The reply will be displayed in your Javascript console. You should also check your PHP Error Logs." };
 						console.debug( "Media File Cleaner got this reply from the server: " + response);
 					}
-					if ( !reply.success ) {
-						alert( reply.message );
+					if (!reply.success) {
+						wpmc_update_to_error(reply.message);
+						console.debug("Media Cleaner got an error from server.", reply.message);
 					}
 					if (reply.result) {
 						wpmc.issues += expectedSuccess - reply.result.success;

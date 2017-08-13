@@ -4,7 +4,7 @@ Plugin Name: InfiniteWP - Client
 Plugin URI: http://infinitewp.com/
 Description: This is the client plugin of InfiniteWP that communicates with the InfiniteWP Admin panel.
 Author: Revmakx
-Version: 1.6.5beta4.1
+Version: 1.6.5
 Author URI: http://www.revmakx.com
 */
 /************************************************************
@@ -28,7 +28,7 @@ if(basename($_SERVER['SCRIPT_FILENAME']) == "init.php"):
     exit;
 endif;
 if(!defined('IWP_MMB_CLIENT_VERSION'))
-	define('IWP_MMB_CLIENT_VERSION', '1.6.5beta4.1');
+	define('IWP_MMB_CLIENT_VERSION', '1.6.5');
 	
 
 
@@ -1745,6 +1745,9 @@ if (!function_exists('iwp_mmb_backup_db_changes')) {
 		if(version_compare(iwp_mmb_get_site_option('iwp_backup_table_version'), '1.1.3', '<')){
 			iwp_mmb_add_lastUpdateTime_column_backup_status_table();
 		}
+		if(version_compare(iwp_mmb_get_site_option('iwp_backup_table_version'), '1.1.4', '<')){
+			iwp_mmb_change_stausMsg_column_type_backup_status_table();
+		}
 	}
 }
 
@@ -1777,7 +1780,7 @@ if(!function_exists('iwp_mmb_create_backup_status_table')){
 				  `stage` varchar(255) NOT NULL,
 				  `status` varchar(255) NOT NULL,
 				  `finalStatus` varchar(50) DEFAULT NULL,
-				  `statusMsg` varchar(255) NOT NULL,
+				  `statusMsg` longtext,
 				  `requestParams` text NOT NULL,
 				  `responseParams` longtext,
 				  `taskResults` text,
@@ -1792,7 +1795,7 @@ if(!function_exists('iwp_mmb_create_backup_status_table')){
 			dbDelta( $sql );
 
 			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
-				update_option( "iwp_backup_table_version", '1.1.3');
+				update_option( "iwp_backup_table_version", '1.1.4');
 			}
 		}
 	}
@@ -1880,6 +1883,17 @@ if(!function_exists('iwp_mmb_add_lastUpdateTime_column_backup_status_table')){
 	}
 }
 
+if (!function_exists('iwp_mmb_change_stausMsg_column_type_backup_status_table')) {
+	function iwp_mmb_change_stausMsg_column_type_backup_status_table(){
+		global $wpdb;
+		$table_name = $wpdb->base_prefix . "iwp_backup_status";
+		$sql = "alter table " . $table_name . " change statusMsg statusMsg LONGTEXT;";
+		$isDone = $wpdb->query($sql);
+		if ($isDone) {
+			update_option( "iwp_backup_table_version", '1.1.4');
+		}
+	}
+}
 //-------------------------------------------------------------------
 
 //-Function name - iwp_mmb_get_file_size()

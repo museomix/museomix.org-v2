@@ -14,7 +14,9 @@ function et_setup_theme() {
 
 	$theme_version = et_get_theme_version();
 
-	define( 'ET_CORE_VERSION', $theme_version );
+	if (!defined( 'ET_CORE_VERSION' ) ) {
+		define( 'ET_CORE_VERSION', $theme_version );
+	}
 
 	require_once( $template_directory . '/core/init.php' );
 

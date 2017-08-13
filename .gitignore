@@ -19,3 +19,4 @@ node_modules
 .sass-cache
 dev.sql
 .revision
+wp-snapshots

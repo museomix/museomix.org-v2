@@ -196,34 +196,93 @@ class Meow_WPMC_Core {
 		$limitsize = get_option( 'wpmc_posts_buffer', 10 );
 		if ( empty( $limit ) )
 			$this->wpmc_reset_issues();
-		if ( !get_option( 'wpmc_galleries', false ) ) {
+
+		$check_posts = get_option( 'wpmc_posts', false );
+		$check_galleries = get_option( 'wpmc_galleries', false );
+		if ( !$check_galleries && !$check_posts ) {
 			echo json_encode( array(
 				'results' => array(),
 				'success' => true,
 				'finished' => true,
-				'message' => __( "Galleries check is off. Prepare finished.", 'media-cleaner' )
+				'message' => __( "Galleries and Posts analysis is off. Done.", 'media-cleaner' )
 			) );
 			die();
 		}
-		$galleries_images = get_transient( "wpmc_galleries_images" );
-		if ( empty( $galleries_images ) )
-			$galleries_images = array();
+
 		global $wpdb;
 		$posts = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM $wpdb->posts p
 			WHERE p.post_status != 'inherit'
 			AND p.post_type != 'attachment'
+			AND p.post_type != 'revision'
 			LIMIT %d, %d", $limit, $limitsize
 			)
 		);
 		foreach ( $posts as $post ) {
-			$galleries = get_post_galleries_images( $post );
-			foreach ( $galleries as $gallery ) {
-				foreach ( $gallery as $image ) {
-					array_push( $galleries_images, $image );
+
+			if ( $check_posts ) {
+				// TODO: Not yet creating this.
+				$posts_images = get_transient( "wpmc_posts_images" );
+				set_transient( "wpmc_posts_images", $posts_images, 60 * 60 * 2 );
+
+				// Single Image in Visual Composer (WPBakery)
+				if ( class_exists( 'Vc_Manager' ) ) {
+					$posts_images_vc = get_transient( "wpmc_posts_images_visualcomposer" );
+					if ( empty( $posts_images_vc ) )
+						$posts_images_vc = array();
+					$html = get_post_field( 'post_content', $post );
+					preg_match_all( "/image=\"([0-9]+)\"/", $html, $res );
+					if ( !empty( $res ) && isset( $res[1] ) ) {
+						$posts_images_vc = array_merge( $posts_images_vc, $res[1] );
+					}
+					set_transient( "wpmc_posts_images_visualcomposer", $posts_images_vc, 60 * 60 * 2 );
 				}
 			}
+
+			if ( $check_galleries ) {
+
+				// Galleries in Visual Composer (WPBakery)
+				if ( class_exists( 'Vc_Manager' ) ) {
+					$galleries_images_vc = get_transient( "wpmc_galleries_images_visualcomposer" );
+					if ( empty( $galleries_images_vc ) )
+						$galleries_images_vc = array();
+					$html = get_post_field( 'post_content', $post );
+					preg_match_all( "/images=\"([0-9,]+)/", $html, $res );
+					if ( !empty( $res ) && isset( $res[1] ) ) {
+						foreach ( $res[1] as $r ) {
+							$ids = explode( ',', $r );
+							$galleries_images_vc = array_merge( $galleries_images_vc, $ids );
+						}
+					}
+					set_transient( "wpmc_galleries_images_visualcomposer", $galleries_images_vc, 60 * 60 * 2 );
+				}
+
+				// WooCommerce
+				if ( class_exists( 'WooCommerce' ) ) {
+					$galleries_images_wc = get_transient( "wpmc_galleries_images_woocommerce" );
+					if ( empty( $galleries_images_wc ) )
+						$galleries_images_wc = array();
+					$res = $wpdb->get_col( "SELECT meta_value FROM $wpdb->postmeta WHERE post_id = $post
+						AND meta_key = '_product_image_gallery'" );
+					foreach ( $res as $values ) {
+						$ids = explode( ',', $values );
+						$galleries_images_wc = array_merge( $galleries_images_wc, $ids );
+					}
+					set_transient( "wpmc_galleries_images_woocommerce", $galleries_images_wc, 60 * 60 * 2 );
+				}
+
+				// Standard WP Gallery
+				$galleries_images = get_transient( "wpmc_galleries_images" );
+				if ( empty( $galleries_images ) )
+					$galleries_images = array();
+				$galleries = get_post_galleries_images( $post );
+				foreach ( $galleries as $gallery ) {
+					foreach ( $gallery as $image ) {
+						array_push( $galleries_images, $image );
+					}
+				}
+				set_transient( "wpmc_galleries_images", $galleries_images, 60 * 60 * 2 );
+			}
 		}
-		set_transient( "wpmc_galleries_images", $galleries_images, 60 * 60 * 2 );
 		$finished = count( $posts ) < $limitsize;
 		echo json_encode(
 			array(
@@ -595,19 +654,19 @@ class Meow_WPMC_Core {
 
 			// ANALYSIS
 			$this->last_analysis = "NONE";
-			if ( $this->wpmc_check_is_ignore( $mainfile ) ) {
+			if ( $this->wpmc_check_is_ignore( $mainfile, $attachmentId ) ) {
 				$this->last_analysis = "IGNORED";
 				return true;
 			}
-			if ( $this->checkers->has_background_or_header( $mainfile ) ) {
+			if ( $this->checkers->has_background_or_header( $mainfile, $attachmentId ) ) {
 				$this->last_analysis = "BACKGROUND_OR_HEADER";
 				return true;
 			}
-			if ( $this->checkers->has_content( $mainfile ) ) {
+			if ( $this->checkers->has_content( $mainfile, $attachmentId ) ) {
 				$this->last_analysis = "CONTENT";
 				return true;
 			}
-			if ( $this->checkers->check_in_gallery( $mainfile ) ) {
+			if ( $this->checkers->check_in_gallery( $mainfile, $attachmentId ) ) {
 				$this->last_analysis = "GALLERY";
 				return true;
 			}
@@ -634,11 +693,11 @@ class Meow_WPMC_Core {
 							error_log("checking MEDIA-IMAGE {$filepath}");
 
 						// ANALYSIS
-						if ( $this->checkers->check_in_gallery( $filepath ) ) {
+						if ( $this->checkers->check_in_gallery( $filepath, $attachmentId ) ) {
 							$this->last_analysis = "GALLERY";
 							return true;
 						}
-						if ( $this->checkers->has_background_or_header( $filepath ) ) {
+						if ( $this->checkers->has_background_or_header( $filepath, $attachmentId ) ) {
 							$this->last_analysis = "BACKGROUND_OR_HEADER";
 							return true;
 						}
@@ -678,7 +737,11 @@ class Meow_WPMC_Core {
 		else {
 			$wpdb->query( "DELETE FROM $table_name WHERE ignored = 0 AND deleted = 0" );
 		}
+		delete_transient( "wpmc_posts_images_visualcomposer" );
+		delete_transient( "wpmc_galleries_images_visualcomposer" );
+		delete_transient( "wpmc_galleries_images_woocommerce" );
 		delete_transient( "wpmc_galleries_images" );
+		delete_transient( "wpmc_posts_images" );
 		delete_transient( 'wpmc_posts_with_shortcode' );
 	}
 
@@ -869,7 +932,7 @@ class Meow_WPMC_Core {
 					}
 
 					if ( !MEDIA_TRASH ) {
-						_e( "<div class='notice notice-warning'><p>The trash for the Media Library is disabled. Any media removed by the plugin will be <b>permanently deleted</b>. To enable it, modify your wp-config.php file and add this line:<br /><b>define( 'MEDIA_TRASH', true );</b></p></div>" );
+						_e( "<div class='notice notice-warning'><p>The trash for the Media Library is disabled. Any media removed by the plugin will be <b>permanently deleted</b>. To enable it, modify your wp-config.php file and add this line (preferably at the top):<br /><b>define( 'MEDIA_TRASH', true );</b></p></div>" );
 					}
 
 					if ( !$this->admin->is_registered() ) {

@@ -280,7 +280,7 @@ class Meow_WPMC_Admin extends MeowApps_Admin {
     $value = get_option( 'wpmc_galleries', null );
 		$html = '<input type="checkbox" id="wpmc_galleries" name="wpmc_galleries" value="1" ' .
 			checked( 1, get_option( 'wpmc_galleries' ), false ) . '/>';
-    $html .= '<label>Analyze</label><br /><small>Checks if the file is used in a WP Gallery (which are in posts or any post-type).</small>';
+    $html .= '<label>Analyze</label><br /><small>Checks if the file is used in a <b>WP Gallery</b> (in any post type) or in a <b>WooCommerce Gallery</b>.</small>';
     echo $html;
   }
 

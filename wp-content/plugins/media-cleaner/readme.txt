@@ -3,17 +3,17 @@ Contributors: TigrouMeow
 Tags: management, admin, file, files, images, image, media, library, upload, clean, cleaning
 Requires at least: 4.2
 Tested up to: 4.8
-Stable tag: 4.0.7
+Stable tag: 4.1.0
 
-Clean your Media Library and Uploads directory. It has an internal trash and recovery features.
+Clean your Media Library and Uploads directory. It has an internal trash and recovery features. Please read the description.
 
 == Description ==
 
 Clean your Media Library from the media which aren't used in any of your posts, gallery and so on. It features an internal trash, moving the files in there temporarily for you to make sure the files aren't actually in used; once checked, you can trash them permanently. **Before using this plugin, make sure you have a proper backup of your files and database. This is the most important step on the usage of this plugin as you can't trust any file deletion tools.** The Pro version of this plugin brings also scanning to the /uploads folder and will detect which files aren't registered in the Media Library, not used in your content and so on. Retina images are also detected and supported, shortcodes, HTML in sidebars and of course your posts, pages and all post types.
 
-**This tool is a knife. I try to make this knife perfect. However, this is still a knife, and in the hands of somebody who doesn't understand it and just use it without thinking, it might end badly. Don't use it you you don't have any backup, or if you don't know what it does.**
+**This tool is a knife. I do my best to make this knife a perfect one. However, this is still a knife, and in the hands of somebody who doesn't know how to use it, it might end badly. Don't use it if you don't have any backup, or if you don't know what it does.**
 
-**INCOMPATIBILITY**. If you are not using WordPress naturally and using plugin to edit your posts, this plugin will not be able to detect how your images are used. For instance, Visual Composer is not supported as for now.
+**PAGE BUILDER**. I am adding support for page builders little by little. Each page builder requires a particular code in the Media Cleaner. As for now, Visual Composer by WPBakery is supported.
 
 **UNIQUE PLUGIN**. Such a plugin is difficult to create and to maintain. If you understand WordPress, you probably know why. This plugin tries its best to help you. Get used to it and you will get awesome results. This is the only plugin to propose those functions and even a dashboard to cleanup your WordPress install from unused files.
 
@@ -49,6 +49,10 @@ It re-creates the Media Cleaner table in the database. You will need to re-run t
 1. Media -> Media Cleaner
 
 == Changelog ==
+
+= 4.1.0 =
+* Add: Support for WooCommerce Gallery.
+* Add: Support for Visual Composer (Single Image and Gallery).
 
 = 4.0.7 =
 * Update: Bulk analyze/prepare galleries, avoid the first request to time out.

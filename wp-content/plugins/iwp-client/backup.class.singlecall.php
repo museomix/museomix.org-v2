@@ -597,6 +597,7 @@ function delete_task_now($task_name){
             trim(basename(WP_CONTENT_DIR)) . "/uploads/wp-hummingbird-cache",
             trim(basename(WP_CONTENT_DIR)) . "/uploads/wp-security-audit-log",
             trim(basename(WP_CONTENT_DIR)) . "/uploads/backwpup-12b462-backups",
+            trim(basename(WP_CONTENT_DIR)) . "/uploads/wpallimport",
             trim(basename(WP_CONTENT_DIR)) . "/uploads/backwpup-12b462-logs",
             trim(basename(WP_CONTENT_DIR)) . "/uploads/backwpup-12b462-temp",
             trim(basename(WP_CONTENT_DIR)) . "/Dropbox_Backup",

@@ -1,0 +1,2218 @@
+# Translation of Plugins - Duplicator &#8211; WordPress Migration Plugin - Stable (latest release) in French (France)
+# This file is distributed under the same license as the Plugins - Duplicator &#8211; WordPress Migration Plugin - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2017-08-03 12:07:11+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: fr\n"
+"Project-Id-Version: Plugins - Duplicator &#8211; WordPress Migration Plugin - Stable (latest release)\n"
+
+#: views/packages/main/s3.build.php:7
+msgid "Get even more power & features with"
+msgstr "Obtenez encore plus de puissance et de fonctionnalités avec"
+
+#: views/packages/main/s2.scan3.php:130
+msgid "Package support up to 2GB in"
+msgstr "Paquets jusqu’à 2GB dans"
+
+#: views/tools/diagnostics/inc.validator.php:75
+msgid "Note: Symlinks are not discoverable on Windows OS with PHP"
+msgstr "Note : les liens symboliques (symlinks) ne sont pas trouvables sous Windows avec PHP."
+
+#: views/tools/diagnostics/inc.validator.php:32
+msgid "The utility will also shows how many files and directories you have in your system.  This process may take several minutes to run.  "
+msgstr "L’utilitaire affichera également le nombre de fichiers et de dossiers présents dans votre système. Ce processus peut prendre plusieurs minutes."
+
+#: views/tools/controller.php:21
+msgid "Support"
+msgstr "Support"
+
+#: views/tools/cleanup.php:105
+msgid "Remove Installation Files"
+msgstr "Supprimer les fichiers d’installation"
+
+#: views/tools/cleanup.php:87
+msgid "Security Notes"
+msgstr "Notes de sécurité"
+
+#: views/settings/packages.php:155
+msgid "/usr/bin/mypath/mysqldump.exe"
+msgstr "/usr/bin/mypath/mysqldump.exe"
+
+#: views/settings/packages.php:153
+msgid "An optional path to the mysqldump program.  Add a custom path if the path to mysqldump is not properly detected or needs to be changed.  For all paths including Windows use a forward slash."
+msgstr "Un chemin vers le programme mysqldump (optionnel). Ajoutez un chemin personnalisé si celui par défaut n’est pas détecté ou doit être modifié. Pour tous les chemins sous Windows, utilisez une barre oblique."
+
+#: views/packages/main/s3.build.php:127
+msgid "Allowed Runtime:"
+msgstr "Temps d’exécution autorisé :"
+
+#: views/packages/main/s3.build.php:118
+msgid "Please click the 'Try Again' button."
+msgstr "Veuillez cliquer sur le bouton « Réessayer »."
+
+#: views/packages/main/s3.build.php:116
+msgid "This host has generated an exception."
+msgstr "Cet hébergement a généré une erreur exceptionnelle."
+
+#: views/packages/main/s3.build.php:115
+msgid "Host Build Interrupt"
+msgstr "Interruption de l’assemblage par l’hébergement"
+
+#: views/packages/main/s2.scan3.php:557
+msgid "Error applying filters.  Please go back to Step 1 to add filter manually!"
+msgstr "Impossible d’appliquer les filtres. Veuillez revenir à l’étape 1 pour les ajouter manuellement !"
+
+#: views/packages/main/s2.scan3.php:530
+msgid "Initializing Please Wait..."
+msgstr "En cours d’initialisation, veuillez patienter&hellip;"
+
+#: views/packages/main/s2.scan3.php:523
+msgid "Manual copy of selected text required on this browser."
+msgstr "La copie manuelle du texte est nécessaire avec ce navigateur."
+
+#: views/packages/main/s2.scan3.php:521
+msgid "Copied to Clipboard!"
+msgstr "Copié dans le presse-papiers !"
+
+#: views/packages/main/s2.scan3.php:483
+msgid "No files have been selected!"
+msgstr "Vous n’avez sélectionné aucun fichier !"
+
+#: views/packages/main/s2.scan3.php:479
+msgid "No directories have been selected!"
+msgstr "Vous n’avez sélectionné aucun dossier !"
+
+#: views/packages/main/s2.scan3.php:453
+msgid "Directory applied filter set."
+msgstr "Filtre appliqué sur les dossiers."
+
+#: views/packages/main/s2.scan3.php:434
+msgid "Copy the paths above and apply them as needed on Step 1 &gt; Archive &gt; Files section."
+msgstr "Copiez les chemins ci-dessous et collez-les à l’étape 1 &gt; Archive &gt; Fichiers."
+
+#: views/packages/main/s2.scan3.php:420 views/packages/main/s2.scan3.php:429
+msgid "Click to Copy"
+msgstr "Cliquez pour copier"
+
+#: views/packages/main/s2.scan3.php:409
+msgid "Auto filters are applied to prevent archiving other backup sets."
+msgstr "Les filtres automatiques seront appliqués pour ne pas inclure d’autres sauvegardes dans l’archive."
+
+#: views/packages/main/s2.scan3.php:407
+msgid "[view json result report]"
+msgstr "[voir les résultats du rapport json]"
+
+#: views/packages/main/s2.scan3.php:406
+msgid "Path filters will be skipped during the archive process when enabled."
+msgstr "Les chemins filtrés seront ignorés pendant l’assemblage du paquet si activé."
+
+#: views/packages/main/s2.scan3.php:391
+msgid "Auto Filters"
+msgstr "Filtres automatiques"
+
+#: views/packages/main/s2.scan3.php:387
+msgid "No custom file filters set."
+msgstr "Aucun filtre personnalisé défini pour les fichiers."
+
+#: views/packages/main/s2.scan3.php:365
+msgid "No custom directory filters set."
+msgstr "Aucun filtre personnalisé défini pour les dossiers."
+
+#: views/packages/main/s2.scan3.php:313
+msgid "Copy Quick Filter Paths"
+msgstr "Copie rapide des chemins filtrés"
+
+#: views/packages/main/s2.scan3.php:306
+msgid "Scan Details"
+msgstr "Détails du scan"
+
+#: views/packages/main/s2.scan3.php:286
+msgid "3. %1$s if this host supports the option."
+msgstr "3. %1$s si votre hébergeur autorise cette option."
+
+#: views/packages/main/s2.scan3.php:285
+msgid "Enable mysqldump"
+msgstr "Activer mysqldump"
+
+#: views/packages/main/s2.scan3.php:283
+msgid "2. Remove post revisions and stale data from tables.  Tables such as logs, statistical or other non-critical data should be cleared."
+msgstr "2. Retire les révisions des articles et les données obsolètes des tables de la base de données. Celles contenant des journaux, des statistiques ou d’autres données non critiques devraient être effacées."
+
+#: views/packages/main/s2.scan3.php:277
+msgid "RECOMMENDATIONS:"
+msgstr "RECOMMANDATIONS :"
+
+#: views/packages/main/s2.scan3.php:267
+msgid "TABLE DETAILS:"
+msgstr "DÉTAILS DES TABLES :"
+
+#: views/packages/main/s2.scan3.php:254
+msgid "TOTAL SIZE"
+msgstr "TAILLE TOTALE"
+
+#: views/packages/main/s2.scan3.php:210
+msgid "No file/directory name warnings found."
+msgstr "Pas d’avertissement à propos des noms de fichiers / de dossiers."
+
+#: views/packages/main/s2.scan3.php:164
+msgid "</b>"
+msgstr "</b>"
+
+#: views/packages/main/s2.scan3.php:163
+msgid "  Only consider using this filter if the package build is failing. Select files that are not important to your site or you can migrate manually."
+msgstr "N’envisagez l’utilisation des filtres que si l’assemblage d’un paquet échoue. Sélectionnez alors les fichiers qui ne sont pas importants ou que vous pourriez migrer manuellement."
+
+#: views/packages/main/s2.scan3.php:162
+msgid "<b>"
+msgstr "<b>"
+
+#: views/packages/main/s2.scan3.php:161
+msgid "Unicode and special characters such as \"*?><:/\\|\", can be problematic on some hosts."
+msgstr "Des caractères spéciaux ou Unicode tels que \"*?><:/\\|\", peuvent poser problème chez certains hébergeurs."
+
+#: views/packages/main/s2.scan3.php:140 views/packages/main/s2.scan3.php:218
+msgid "Copy Paths to Clipboard"
+msgstr "Copier les chemins dans le presse-papiers"
+
+#: views/packages/main/s2.scan3.php:138 views/packages/main/s2.scan3.php:216
+msgid "Add Filters &amp; Rescan"
+msgstr "Appliquer les filtres &amp; re-scanner"
+
+#: views/packages/main/s2.scan3.php:114
+msgid "No large files found during this scan."
+msgstr "Aucun fichier lourd trouvé pendant ce scan."
+
+#: views/packages/main/s2.scan3.php:94 views/packages/main/s2.scan3.php:190
+msgid "Core WordPress directories should not be filtered. Use caution when excluding files."
+msgstr "Les dossiers du c&oelig;ur de WordPress ne doivent pas être filtrés. Faites-le avec précaution."
+
+#: views/packages/main/s2.scan3.php:84 views/packages/main/s2.scan3.php:175
+msgid "Show All"
+msgstr "Tout afficher"
+
+#: views/packages/main/s2.scan3.php:83 views/packages/main/s2.scan3.php:174
+msgid "Hide All"
+msgstr "Tout masquer"
+
+#: views/packages/main/s2.scan3.php:79 views/packages/main/s2.scan3.php:171
+msgid "Quick Filters"
+msgstr "Filtres rapides"
+
+#: views/packages/main/s2.scan3.php:65
+msgid "Consider trying multi-threaded support in "
+msgstr "Envisagez d’essayer la compatibilité multi-thread dans"
+
+#: views/packages/main/s2.scan3.php:64
+msgid "What can I try for Timeout Issues?"
+msgstr "Que puis-je essayer pour des problèmes de coupure ?"
+
+#: views/packages/main/s2.scan3.php:64
+msgid "See the FAQ link to adjust this hosts timeout limits: "
+msgstr "Consultez le lien de la FAQ pour ajouter les limites de coupure de ces hébergeurs :"
+
+#: views/packages/main/s2.scan3.php:63
+msgid "Apply the \"Quick Filters\" below or click the back button to apply on previous page."
+msgstr "Appliquez les « filtres rapides » ci-dessous ou cliquez sur le bouton « retour » pour l’appliquer sur la page précédente."
+
+#: views/packages/main/s2.scan3.php:61
+msgid "Timeout Options"
+msgstr "Options de coupure"
+
+#: views/packages/main/s2.scan3.php:49
+msgid "more details..."
+msgstr "plus de détails&hellip;"
+
+#: views/packages/main/s2.scan3.php:48
+msgid "Compressing larger sites on <i>some budget hosts</i> may cause timeouts.  "
+msgstr "La compression de sites volumineux chez certains <i>hébergeurs low-cost</i> peut provoquer des coupures."
+
+#: views/packages/main/s2.scan3.php:40
+msgid "Size Checks"
+msgstr "Vérifications de taille"
+
+#: views/packages/main/s2.scan3.php:21
+msgid "Archive Size"
+msgstr "Taille d’archive"
+
+#: views/packages/main/s2.scan3.php:14
+msgid "Show Scan Details"
+msgstr "Afficher les détails du scan"
+
+#: views/packages/main/s2.scan2.php:38
+msgid "PHP Max Execution Time"
+msgstr "Temps d’exécution maximum PHP"
+
+#: views/packages/main/s2.scan2.php:32
+msgid "PHP Open Base Dir"
+msgstr "Open Base Dir PHP"
+
+#: views/packages/main/s2.scan2.php:27
+msgid "The minimum PHP version supported by Duplicator is 5.2.9. It is highly recommended to use PHP 5.3+ for improved stability.  For international language support please use PHP 7.0+."
+msgstr "La version minimum de PHP compatible avec Duplicator est la 5.2.9. Il est fortement recommandé d’utiliser PHP 5.3+ pour améliorer la stabilité. Pour la compatibilité internationale, veuillez utiliser PHP 7.0+."
+
+#: views/packages/main/s2.scan2.php:5
+msgid "Show Diagnostics"
+msgstr "Afficher les diagnostics"
+
+#: views/packages/main/s2.scan1.php:334
+msgid "Good"
+msgstr "Bon"
+
+#: views/packages/main/s1.setup2.php:174
+msgid "(file path)"
+msgstr "(chemin de fichier)"
+
+#: views/packages/main/s1.setup2.php:143
+msgid "Archive Only the Database"
+msgstr "Archiver seulement la base de données"
+
+#: views/packages/main/s1.setup2.php:57
+msgid "Toggle a default name"
+msgstr "Basculer vers un nom par défaut"
+
+#: views/packages/main/s1.setup2.php:54
+msgid "Add Notes"
+msgstr "Ajouter des notes"
+
+#: views/packages/main/packages.php:108 views/packages/main/s2.scan3.php:28
+msgid "Database Only"
+msgstr "Base de données seulement"
+
+#: views/packages/main/packages.php:45
+msgid "Rate Duplicator!"
+msgstr "Donnez votre avis sur Duplicator !"
+
+#: views/packages/details/detail.php:229
+msgid "Archive Database Only Enabled"
+msgstr "Archive contenant seulement la base de données sélectionnée"
+
+#: views/packages/details/detail.php:228
+msgid "Database Mode"
+msgstr "Mode « Base de données »"
+
+#: duplicator.php:320
+msgid "Go Pro"
+msgstr "Passez à la version Pro"
+
+#: classes/utilities/class.u.json.php:57
+msgid "One or more filenames isn't compatible with JSON encoding"
+msgstr "Un ou plusieurs noms de fichiers ne sont pas compatibles avec l’encodage JSON"
+
+#: classes/ui/class.ui.notice.php:71
+msgid "Take me there now!"
+msgstr "Y accéder"
+
+#: classes/ui/class.ui.notice.php:70
+msgid "Go to: Duplicator > Tools > Cleanup > and click the \"Remove Installation Files\" button."
+msgstr "Allez dans Duplicator > Outils > et cliquez sur le bouton « Supprimer les fichiers d’installation »."
+
+#: classes/ui/class.ui.notice.php:69
+msgid "Reserved Duplicator installation still exist in the root directory.  Please remove these installation files to complete setup and avoid security issues. <br/>"
+msgstr "Les fichiers d’installation de Duplicator sont encore présents au dossier racine. Veuillez les retirer manuellement pour terminer l’installation et éviter des failles de sécurité.<br/>"
+
+#: classes/ui/class.ui.notice.php:61
+msgid "Remove Installation Files Now!"
+msgstr "Supprimer les fichiers d’installation !"
+
+#: classes/ui/class.ui.notice.php:60
+msgid "Optionally, Review Duplicator at WordPress.org..."
+msgstr "Optionnellement, donnez votre avis sur Duplicator sur WordPress.org"
+
+#: classes/ui/class.ui.notice.php:49
+msgid "Please complete these final steps:"
+msgstr "Veuillez complétez ces dernières étapes :"
+
+#: classes/ui/class.ui.notice.php:48
+msgid "Migration Almost Complete!"
+msgstr "Migration presque terminée !"
+
+#: classes/ui/class.ui.notice.php:47
+msgid "This site has been successfully migrated!"
+msgstr "Ce site a été migré avec succès !"
+
+#: views/settings/storage.php:13
+msgid "Store your packages in multiple<br/> locations  with Duplicator Professional"
+msgstr "Stockez vos paquets dans plusieurs<br/> emplacements avec Duplicator Pro"
+
+#: views/settings/schedule.php:15
+msgid "Simply choose your storage location and when you want it to run."
+msgstr "Choisissez simplement votre emplacement de stockage et les moments de sauvegardes."
+
+#: views/settings/schedule.php:13
+msgid "Create robust automated schedules that automatically create packages while you sleep."
+msgstr "Planifiez des sauvegardes qui créent des paquets pendant que vous dormez."
+
+#: views/settings/packages.php:197
+msgid "Save Package Settings"
+msgstr "Enregistrer les réglages du paquet"
+
+#: views/settings/packages.php:93
+msgid "Processing"
+msgstr "En cours d’exécution"
+
+#: views/settings/packages.php:56
+msgid "Visual"
+msgstr "Visuel"
+
+#: views/settings/packages.php:6
+msgid "Package Settings Saved"
+msgstr "Réglages du paquets enregistrés"
+
+#: views/settings/general.php:125
+msgid "Save General Settings"
+msgstr "Enregistrer les réglages généraux"
+
+#: views/settings/general.php:6
+msgid "General Settings Saved"
+msgstr "Réglages généraux enregistrés"
+
+#: views/settings/controller.php:24
+msgid "Schedules"
+msgstr "Planification"
+
+#: views/packages/details/transfer.php:26 views/settings/storage.php:26
+msgid "Setup a one-time storage location and automatically <br/> push the package to your destination."
+msgstr "Définissez un emplacement de stockage temporaire et envoyez<br/> automatiquement le paquet à destination."
+
+#: views/packages/details/transfer.php:22 views/settings/storage.php:22
+msgid "Custom Directory"
+msgstr "Dossier personnalisé"
+
+#: views/packages/details/transfer.php:21 views/settings/storage.php:21
+msgid "FTP"
+msgstr "FTP"
+
+#: views/packages/details/transfer.php:20 views/settings/storage.php:20
+msgid "Google Drive"
+msgstr "Google Drive"
+
+#: views/packages/details/transfer.php:19 views/settings/storage.php:19
+msgid " Dropbox"
+msgstr " Dropbox"
+
+#: views/packages/details/transfer.php:18 views/settings/storage.php:18
+msgid "Amazon S3"
+msgstr "Amazon S3"
+
+#: views/packages/details/transfer.php:13
+msgid "Transfer your packages to multiple<br/> locations  with Duplicator Professional"
+msgstr "Transférez vos paquets vers plusieurs<br/> emplacements avec Duplicator Pro"
+
+#: views/packages/main/s2.scan3.php:351
+#: views/tools/diagnostics/inc.settings.php:157
+msgid "Disabled"
+msgstr "Désactivé"
+
+#: views/tools/diagnostics/inc.settings.php:156
+msgid "Suhosin Extension"
+msgstr "Suhosin Extension"
+
+#: views/packages/main/s2.scan1.php:150
+msgid "This can take several minutes."
+msgstr "Cela peut prendre plusieurs minutes."
+
+#: views/packages/main/s2.scan1.php:149
+msgid "Keep this window open during the scan process."
+msgstr "Gardez cette fenêtre ouverte pendant le scan."
+
+#: views/packages/main/s1.setup1.php:200
+msgid "WordPress Root Path:"
+msgstr "Racine de WordPress :"
+
+#: views/packages/main/s1.setup2.php:352
+msgid "example: DatabaseUserName (value is optional)"
+msgstr "exemple : UtilisateurDeBaseDeDonnées (optionnel)"
+
+#: views/packages/main/s1.setup2.php:348
+msgid "example: DatabaseName (value is optional)"
+msgstr "exemple : NomDeBaseDeDonnées (optionnel)"
+
+#: views/packages/main/s1.setup2.php:344
+msgid "example: 3306 (value is optional)"
+msgstr "exemple : 3306 (optionnel)"
+
+#: views/packages/main/s1.setup2.php:340
+msgid "example: localhost (value is optional)"
+msgstr "exemple : localhost (optionnel)"
+
+#: views/packages/main/s1.setup2.php:330
+msgid "The values in this section are NOT required! If you know ahead of time the database input fields the installer will use, then you can optionally enter them here.  Otherwise you can just enter them in at install time."
+msgstr "Les valeurs des champs NE sont PAS requises ! Si vous connaissez les accès à votre base de données en amont, vous pouvez les renseigner dès maintenant. Sinon, vous pourrez le faire au moment de l’installation."
+
+#: views/packages/main/s1.setup2.php:329
+msgid "MySQL Server Prefills"
+msgstr "Pré-remplissage des accès MySQL"
+
+#: views/tools/diagnostics/inc.settings.php:167
+msgid "Comments"
+msgstr "Commentaires"
+
+#: views/packages/main/s1.setup1.php:178
+msgid "MySQL version 5.0+ or better is required and the PHP MySQLi extension (note the trailing 'i') is also required.  Contact your server administrator and request that mysqli extension and MySQL Server 5.0+ be installed."
+msgstr "La version 5.0+ de MySQL et l’extension MySQLi de PHP (notez bien le « i ») sont requises. Contactez votre administrateur système pour vérifier qu’elles sont bien installées."
+
+#: views/packages/main/s1.setup2.php:402
+msgid "Create the database and users directly at install time with "
+msgstr "Créez la base de données et les utilisateurs directement depuis l’installeur avec"
+
+#. Description of the plugin/theme
+msgid "Migrate and backup a copy of your WordPress files and database. Duplicate and move a site from one location to another quickly."
+msgstr "Créez et transférez une copie de vos fichiers WordPress et de votre base de données. Dupliquez et déplacez un site d'un emplacement à un autre rapidement."
+
+#: views/tools/diagnostics/inc.validator.php:15
+msgid "This will run the scan validation check.  This may take several minutes.  Do you want to Continue?"
+msgstr "Cela va lancer le scan de validation. Cela peut prendre quelques minutes. Souhaitez-vous continuer ?"
+
+#: views/tools/diagnostics/inc.validator.php:14
+msgid "Run Validator"
+msgstr "Lancer le validateur"
+
+#: views/tools/diagnostics/inc.data.php:62
+msgid "Delete the option value"
+msgstr "Effacer la valeur de l’option"
+
+#: views/tools/diagnostics/inc.data.php:50
+msgid "Removing Option, Please Wait..."
+msgstr "Effacement de l’option. Merci de patienter&hellip;"
+
+#: views/tools/diagnostics/inc.data.php:49
+msgid "Delete the option value just selected?"
+msgstr "Effacer la valeur d’option sélectionnée ?"
+
+#: views/tools/diagnostics/inc.data.php:48
+msgid "Delete Option?"
+msgstr "Effacer l’option ?"
+
+#: views/tools/cleanup.php:144
+msgid "Clear Build Cache?"
+msgstr "Effacer le cache d’assemblage ?"
+
+#: views/settings/packages.php:78
+msgid "By Day"
+msgstr "Par jour"
+
+#: views/settings/packages.php:71
+msgid "By Month"
+msgstr "Par mois"
+
+#: views/settings/packages.php:64
+msgid "By Year"
+msgstr "Par année"
+
+#: views/packages/main/packages.php:219
+msgid "Removing Packages, Please Wait..."
+msgstr "Effacement des paquets. Merci de patienter&hellip;"
+
+#: views/packages/main/packages.php:217
+msgid "Delete Packages?"
+msgstr "Effacer les paquets ?"
+
+#: views/packages/main/packages.php:212
+msgid "Selection Required"
+msgstr "Sélectionnez au moins un élément"
+
+#: views/packages/main/packages.php:208
+msgid "Please select an action from the \"Bulk Actions\" drop down menu!"
+msgstr "Merci de sélectionner une action groupée dans la liste déroulante !"
+
+#: views/packages/main/packages.php:207
+msgid "Bulk Action Required"
+msgstr "Action groupée requise"
+
+#: views/packages/main/s2.scan3.php:235
+msgid "Database Size:"
+msgstr "Taille de la base de données :"
+
+#: views/packages/main/s2.scan2.php:91
+msgid "This is not a Multisite install so duplication will proceed without issue.  Duplicator does not officially support Multisite. However, Duplicator Pro supports duplication of a full Multisite network and also has the ability to install a Multisite subsite as a standalone site."
+msgstr "Ce site n'est pas multisite donc la duplication va se dérouler sans problème. Duplicator n’est officiellement pas compatible avec le mutisite. Cependant, Duplicator Pro peut dupliquer un réseau multisite entier ou encore installer un sous-site du réseau en installation monosite."
+
+#: views/packages/main/s2.scan2.php:90
+msgid "Multisite: N/A"
+msgstr "Multisite : N/A"
+
+#: views/packages/main/s2.scan2.php:87
+msgid "Duplicator does not officially support Multisite. However, Duplicator Pro supports duplication of a full Multisite network and also has the ability to install a Multisite subsite as a standalone site."
+msgstr "Duplicator n’est officiellement pas compatible avec le mutisite. Cependant, Duplicator Pro peut dupliquer un réseau multisite entier ou encore installer un sous-site du réseau en installation monosite."
+
+#: views/packages/main/s2.scan2.php:86
+msgid "Multisite: Unsupported"
+msgstr "Multisite : non pris en charge"
+
+#: views/packages/main/s2.scan2.php:50
+msgid "Get faster builds with Duplicator Pro with access to shell_exec zip."
+msgstr "Allez plus vite grâce à Duplicator Pro et la possibilité de compresser en ligne de commande."
+
+#: views/packages/main/s1.setup2.php:427
+msgid "Reset Package Settings?"
+msgstr "Mettre à zéro les réglages des paquets ?"
+
+#: classes/ui/class.ui.dialog.php:148
+msgid "Cancel"
+msgstr "Annuler"
+
+#: classes/ui/class.ui.dialog.php:110 classes/ui/class.ui.dialog.php:147
+msgid "OK"
+msgstr "OK"
+
+#: classes/ui/class.ui.dialog.php:78
+msgid "Processing please wait..."
+msgstr "Opération en cours, merci de patienter&hellip;"
+
+#: views/tools/logging.php:185
+msgid "Top 20"
+msgstr "Top 20"
+
+#: views/settings/packages.php:186
+msgid "enable only for large archives"
+msgstr "activer seulement pour les grandes archives"
+
+#: views/settings/packages.php:168
+msgid "A higher limit size will speed up the database build time, however it will use more memory.  If your host has memory caps start off low."
+msgstr "Une plus grande limite de taille va accélérer l’assemblage de la base de données mais utilisera plus de mémoire. Si votre hébergeur a des limites, commencez bas."
+
+#: views/settings/packages.php:167
+msgid "PHP Query Limit Size"
+msgstr "Limite de taille des requêtes PHP"
+
+#: views/settings/packages.php:163
+msgid "Use PHP Code"
+msgstr "Utiliser le code PHP"
+
+#: views/settings/packages.php:154
+msgid "Custom Path:"
+msgstr "Chemin personnalisé :"
+
+#: views/settings/packages.php:152
+msgid "mysqldump"
+msgstr "mysqldump"
+
+#: views/settings/packages.php:143
+msgid "See the"
+msgstr "Jetez un &oelig;il aux"
+
+#: views/settings/packages.php:126
+msgid "recommended"
+msgstr "recommandés"
+
+#: views/settings/packages.php:105
+msgid "Please contact the host or server administrator to enable this feature."
+msgstr "Merci de contacter votre hébergeur ou administrateur système pour activer cette fonctionnalité."
+
+#: views/settings/packages.php:104
+msgid "This server does not support the PHP shell_exec function which is required for mysqldump to run. "
+msgstr "Ce serveur ne prend pas en charge la fonction PHP shell_exec, requise pour le mysqldump."
+
+#: views/settings/packages.php:97
+msgid "Database Script"
+msgstr "Script de base de données"
+
+#: views/settings/packages.php:86
+msgid "The date format shown in the 'Created' column on the Packages screen."
+msgstr "Le format de date affiché dans la colonne « Créé » dans l’onglet des paquets."
+
+#: views/settings/packages.php:60
+msgid "Created Format"
+msgstr "Format de date"
+
+#: views/settings/about-info.php:110
+msgid "Stay in the Loop"
+msgstr "Restez dans la boucle"
+
+#: views/settings/about-info.php:120
+msgid "Subscribe to the Duplicator newsletter and stay on top of great ideas, tutorials, and better ways to improve your workflows"
+msgstr "Abonnez-vous à la newsletter Duplicator et recevez de bonnes idées, des tutoriels et de meilleures façons d'améliorer vos processus"
+
+#. Author URI of the plugin/theme
+msgid "http://www.snapcreek.com/duplicator/"
+msgstr "http://www.snapcreek.com/duplicator/"
+
+#. Author of the plugin/theme
+msgid "Snap Creek"
+msgstr "Snap Creek"
+
+#: views/tools/diagnostics/inc.validator.php:121
+msgid "Scanning Environment... This may take a few minutes."
+msgstr "Scan de l’environnement&hellip; Cela peut prendre quelques minutes."
+
+#: views/settings/general.php:118
+msgid "Refresh page after saving to show/hide Debug menu"
+msgstr "Actualisez la page après avoir enregistré pour afficher/masquer le menu de débogage"
+
+#: views/settings/general.php:117
+msgid "Enable debug options throughout user interface"
+msgstr "Activer les options de débogage dans l’interface utilisateur"
+
+#: views/settings/general.php:114
+msgid "Debugging"
+msgstr "Débogage"
+
+#: duplicator.php:233 views/settings/general.php:110
+msgid "Debug"
+msgstr "Débogage"
+
+#: debug/main.php:69
+msgid "Refresh Page"
+msgstr "Actualiser la page"
+
+#: debug/main.php:68
+msgid "Run Tests"
+msgstr "Lancer les tests"
+
+#: debug/main.php:58
+msgid "Testing Interface"
+msgstr "Interface de test"
+
+#: views/tools/logging.php:162
+msgid "Consider our recommended"
+msgstr "Jetez un oeil à notre"
+
+#: views/settings/packages.php:116 views/settings/packages.php:144
+#: views/tools/logging.php:163
+msgid "host list"
+msgstr "liste d’hébergeurs"
+
+#: views/settings/packages.php:115
+msgid "Please visit our recommended"
+msgstr "Visitez les sites de notre"
+
+#: views/tools/logging.php:164
+msgid "if you’re unhappy with your current provider"
+msgstr "si votre hébergement actuel ne vous convient pas"
+
+#: views/tools/diagnostics.php:454
+msgid "This will run the scan validation check.  This may take several minutes.\\nDo you want to Continue?"
+msgstr "Le scan de vérification va être lancé. Cela peut prendre plusieurs minutes. Voulez-vous continuer ?"
+
+#: views/tools/diagnostics.php:432
+msgid "Try Scan Again"
+msgstr "Relancer le scan"
+
+#: views/tools/diagnostics/inc.validator.php:41
+#: views/tools/diagnostics/inc.validator.php:142
+#: views/tools/diagnostics.php:380
+msgid "Run Scan Integrity Validation"
+msgstr "Lancer le scan de vérification d’intégrité"
+
+#: views/tools/diagnostics.php:376
+msgid "Scan integrity validation detection is running please wait..."
+msgstr "Scan de vérification d’intégrité en cours, merci de patienter&hellip;"
+
+#: views/tools/diagnostics.php:369
+msgid "A message will show indicated that that a scan depth has been reached. "
+msgstr "Un message apparaîtra lorsque le scan atteindra un blocage."
+
+#: views/tools/diagnostics/inc.validator.php:33 views/tools/diagnostics.php:368
+msgid "If there is a recursive loop on your system then the process has a built in check to stop after a large set of files and directories have been scanned.  "
+msgstr "S’il y a des boucles récursives dans votre système, le processus s’arrêtera automatiquement après le scan d’un grand groupe de fichiers ou de dossiers."
+
+#: views/tools/diagnostics.php:367
+msgid "The utility  will also show how many files and directories you have in your system.  This process may take several minutes to run.  "
+msgstr "Cet utilitaire vous donnera le nombre de fichiers et de dossiers présents dans votre système. Ce processus peut prendre plusieurs minutes."
+
+#: views/tools/diagnostics/inc.validator.php:31 views/tools/diagnostics.php:366
+msgid "This utility will help to find unreadable files and sys-links in your environment  that can lead to issues during the scan process.  "
+msgstr "Cet utilitaire va déceler les fichiers illisibles et les liens symboliques de votre environnement qui pourraient poser problème pendant le scan."
+
+#: views/tools/diagnostics/inc.validator.php:26 views/tools/diagnostics.php:361
+msgid "Scan Validator"
+msgstr "Validateur de scan"
+
+#: views/settings/about-info.php:91
+msgid "Rapid WordPress Duplication by snapcreek.com"
+msgstr "Duplication WordPress rapide par snapcreek.com"
+
+#: views/tools/diagnostics/inc.settings.php:112 views/tools/diagnostics.php:243
+msgid "Process"
+msgstr "Processus"
+
+#: views/packages/main/s2.scan1.php:192
+msgid "Yes.  Continue with the build process!"
+msgstr "Oui. Continuons avec le processus d’assemblage !"
+
+#: views/packages/main/s1.setup1.php:152
+msgid "The root WordPress path [%s] is currently not writable by PHP."
+msgstr "Le chemin racine de WordPress [%s] n&rsquo;a actuellement pas les droits d&rsquo;écriture par PHP."
+
+#: views/packages/main/s1.setup1.php:149
+msgid "If Duplicator does not have enough permissions then you will need to manually create the paths above. &nbsp; "
+msgstr "Si Duplicator n&rsquo;a pas suffisamment de permissions, il vous faudra créer manuellement les chemins ci-dessous. &nbsp;"
+
+#: views/settings/about-info.php:63
+msgid "Rate Duplicator"
+msgstr "Notez Duplicator"
+
+#: views/packages/main/s1.setup2.php:326
+msgid "All values in this section are"
+msgstr "Toutes les valeurs dans cette section sont"
+
+#: views/packages/main/s1.setup2.php:326
+msgid "optional"
+msgstr "optionnelles"
+
+#: views/packages/main/s2.scan1.php:313
+msgid "1. Go back and create a root path directory filter to validate the site is scan-able."
+msgstr "1. Créez un filtre en visant le répertoire racine pour vérifier que le site peut être scanné"
+
+#: views/packages/main/s2.scan1.php:314
+msgid "2. Continue to add/remove filters to isolate which path is causing issues."
+msgstr "2. Continuez à ajouter/retirer des filtres pour isoler les chemins qui posent problème."
+
+#: views/packages/main/s2.scan1.php:315
+msgid "3. This message will go away once the correct filters are applied."
+msgstr "3. Ce message disparaîtra lorsque les bons filtres seront appliqués."
+
+#: views/packages/main/s2.scan1.php:318
+msgid "- On some budget hosts scanning over 30k files can lead to timeout/gateway issues. Consider scanning only your main WordPress site and avoid trying to backup other external directories."
+msgstr "- Chez certains hébergeurs, le scan de plus de 30&nbsp;000fichiers peut déclencher des erreurs ou des coupures. Envisagez de ne scanner que votre site principal et d&rsquo;éviter les répertoires où se trouvent des sauvegardes."
+
+#: views/packages/main/s2.scan1.php:312
+msgid "Unable to perform a full scan, please try the following actions:"
+msgstr "Impossible de lancer un scan complet, essayez les actions suivants&nbsp;:"
+
+#: views/packages/main/s2.scan1.php:317
+msgid "Common Issues:"
+msgstr "Problèmes courants&nbsp;:"
+
+#: views/packages/main/s2.scan1.php:319
+msgid "- Symbolic link recursion can cause timeouts.  Ask your server admin if any are present in the scan path.  If they are add the full path as a filter and try running the scan again."
+msgstr "- La récursivité de liens symboliques peut provoquer des coupures. Demandez à votre administrateur système s&rsquo;il y en a dans les chemins de scan. Si c&rsquo;est le cas, essayez de les filtrer et de recommencer le scan."
+
+#: views/settings/packages.php:117 views/settings/packages.php:145
+msgid "for reliable access to mysqldump"
+msgstr "pour un accès fiable à mysqldump"
+
+#: views/settings/packages.php:111 views/tools/logging.php:158
+msgid "Duplicator recommends going with the high performance pro plan or better from our recommended list"
+msgstr "Duplicator vous recommande de choisir les offres d’hébergement professionnelles de notre liste de recommandation."
+
+#: views/settings/packages.php:110 views/tools/logging.php:157
+msgid "Host Recommendation:"
+msgstr "Recommandation d&rsquo;hébergement&nbsp;:"
+
+#: views/packages/main/s2.scan3.php:289
+msgid "4. For table name case sensitivity issues either rename the table with lower case characters or be prepared to work with the %1$s system variable setting."
+msgstr "4. Pour les problèmes liés à la casse du nom de table, renommez la table en utilisant des minuscules ou soyez prêt à utiliser les réglages de variables système de %1$s."
+
+#: views/packages/main/s2.scan3.php:288
+msgid "lower_case_table_names"
+msgstr "noms_de_table_en_minuscules"
+
+#: views/packages/main/s2.scan3.php:281
+msgid "1. Run a %1$s on the table to improve the overall size and performance."
+msgstr "1. Exécuter un %1$s sur la table pour optimiser la taille et la performance globale."
+
+#: views/packages/main/s2.scan3.php:53 views/packages/main/s2.scan3.php:250
+msgid "Overview"
+msgstr "Aperçu"
+
+#: views/packages/main/s1.setup1.php:193
+msgid "None of the reserved files where found from a previous install.  This means you are clear to create a new package."
+msgstr "Aucun fichier réservé d'une installation précédente n’a été trouvé. Cela signifie que vous pouvez créer un nouveau paquet."
+
+#: views/help/gopro.php:143
+msgid "Plus Many Other Features..."
+msgstr "Et de nombreuses autres fonctionnalités..."
+
+#: views/help/gopro.php:101
+msgid "cPanel Database API"
+msgstr "API de la base de données cPanel"
+
+#: views/packages/main/s1.setup2.php:96
+msgid "%1$s, %2$s, %3$s, %4$s and other storage options available in"
+msgstr "%1$s, %2$s, %3$s, %4$s et d&rsquo;autres options de stockage sont disponibles dans"
+
+#: views/tools/cleanup.php:35
+msgid "File Removed"
+msgstr "Fichier supprimé"
+
+#: views/tools/cleanup.php:34
+msgid "File Found"
+msgstr "Fichier trouvé"
+
+#: views/packages/main/packages.php:178
+msgid "Error Processing"
+msgstr "Erreur dans le processus"
+
+#: views/packages/main/packages.php:151 views/packages/main/packages.php:180
+msgid "Package Details"
+msgstr "Détails du paquet"
+
+#: views/packages/main/s3.build.php:100
+msgid "click buttons to download"
+msgstr "﻿Cliquez sur les boutons pour télécharger"
+
+#: views/packages/main/s1.setup2.php:406
+msgid "If your server supports cPanel API access then you can create new databases and select existing ones with Duplicator Professional at install time."
+msgstr "Si votre serveur utilise l&rsquo;API cPanel, vous pouvez créer ou sélectionner des bases de données avec Duplicator Pro au moment de l&rsquo;installation."
+
+#: views/packages/main/s1.setup2.php:405
+msgid "cPanel Access:"
+msgstr "Accès cPanel&nbsp;:"
+
+#: views/packages/main/s1.setup2.php:307
+msgid "This option is only availbe with mysqldump mode."
+msgstr "﻿Cette option n'est disponible qu'en mode mysqldump."
+
+#: views/packages/main/s1.setup2.php:302
+msgid "no_field_options"
+msgstr "no_field_options"
+
+#: views/packages/main/s1.setup2.php:298
+msgid "no_key_options"
+msgstr "no_key_options"
+
+#: views/packages/main/s1.setup2.php:294
+msgid "no_table_options"
+msgstr "no_table_options"
+
+#: views/packages/main/s1.setup2.php:290
+msgid "mysql40"
+msgstr "mysql40"
+
+#: views/packages/main/s1.setup2.php:268
+msgid "Compatibility Mode:"
+msgstr "Mode de compatibilité&nbsp;:"
+
+#: views/packages/main/s1.setup2.php:266
+msgid "Compatibility Mode"
+msgstr "Mode de compatibilité"
+
+#: views/packages/main/s1.setup2.php:224
+msgid "Enable Table Filters:"
+msgstr "﻿Activer les filtres de tables&nbsp;:"
+
+#: views/packages/main/s1.setup1.php:131
+msgid "PHP versions 5.2.9+ or higher is required.  For compression to work the ZipArchive extension for PHP is required. Safe Mode should be set to 'Off' in you php.ini file and is deprecated as of PHP 5.3.0.  For any issues in this section please contact your hosting provider or server administrator.  For additional information see our online documentation."
+msgstr "PHP dans sa version 5.2.9+ ou supérieure est requise. Pour que la compression fonctionne, l&rsquo;extension PHP ZipArchive est requise. Le mode sans échec doit être réglé sur «&nbsp;Off&nbsp;» dans votre fichier php.ini (obsolète depuis PHP 5.3.0). Pour toute question, veuillez contacter votre hébergeur ou l'administrateur du serveur. Pour plus d&rsquo;informations, consultez notre documentation en ligne."
+
+#: views/packages/main/controller.php:36 views/packages/main/controller.php:40
+#: views/packages/main/controller.php:44
+msgid "Packages &raquo; New"
+msgstr "Paquets &raquo; Tous"
+
+#: views/packages/main/controller.php:32
+msgid "Packages &raquo; All"
+msgstr "Paquets &raquo; Tous"
+
+#: views/packages/details/transfer.php:32 views/settings/schedule.php:20
+#: views/settings/storage.php:32
+msgid "Learn More"
+msgstr "Apprendre plus"
+
+#: views/settings/schedule.php:12
+msgid "This option is available in Duplicator Professional."
+msgstr "Cette option est disponible dans Duplicator Pro."
+
+#: views/packages/details/detail.php:319 views/packages/details/detail.php:323
+#: views/packages/details/detail.php:327 views/packages/details/detail.php:331
+msgid "- not set -"
+msgstr "-&nbsp;aucun réglage&nbsp;-"
+
+#: views/packages/details/detail.php:283 views/packages/main/s2.scan3.php:340
+msgid "MySQL Compatibility Mode Enabled"
+msgstr "Mode de compatibilité MySQL activé"
+
+#: views/packages/main/s1.setup2.php:149
+msgid "File Filters:"
+msgstr "Filtres de fichiersnbsp;:"
+
+#: views/packages/details/detail.php:247 views/packages/main/s2.scan3.php:369
+msgid "Extensions"
+msgstr "Extensions"
+
+#: views/packages/details/detail.php:241 views/packages/details/detail.php:251
+#: views/packages/details/detail.php:260 views/packages/details/detail.php:299
+msgid "- no filters -"
+msgstr "- aucun filtre -"
+
+#: views/packages/details/detail.php:233 views/packages/details/detail.php:290
+msgid "Filters"
+msgstr "Filtres"
+
+#: views/packages/details/detail.php:223
+msgid "ZipArchive"
+msgstr "ZipArchive"
+
+#: views/packages/details/detail.php:222 views/packages/details/detail.php:277
+#: views/packages/main/s1.setup2.php:216
+msgid "Build Mode"
+msgstr "Mode d’assemblage"
+
+#: views/packages/details/detail.php:219
+msgid "FILES"
+msgstr "FICHIERS"
+
+#: views/packages/details/detail.php:193 views/packages/main/s1.setup2.php:99
+msgid "Additional Storage:"
+msgstr "Stockage additionnel&nbsp;:"
+
+#: views/packages/details/detail.php:190
+msgid "%1$s, %2$s, %3$s, %4$s and more storage options available in"
+msgstr "%1$s, %2$s, %3$s, %4$s et d&rsquo;autres options de stockage disponibles dans"
+
+#: views/packages/details/detail.php:118
+msgid "Share"
+msgstr "Partagez"
+
+#: views/packages/details/detail.php:102
+msgid "in-complete"
+msgstr "en cours de finalisation"
+
+#: views/packages/details/detail.php:102
+msgid "completed"
+msgstr "terminé"
+
+#: views/packages/details/detail.php:101
+msgid "Status"
+msgstr "&Eacute;tat"
+
+#: views/packages/details/detail.php:98
+msgid "error running"
+msgstr "erreurs trouvées"
+
+#: views/packages/details/detail.php:97
+msgid "Runtime"
+msgstr "Temps d&rsquo;exécution"
+
+#: views/packages/details/detail.php:89
+msgid "PHP"
+msgstr "PHP"
+
+#: views/packages/details/detail.php:90
+msgid "Mysql"
+msgstr "Mysql"
+
+#: views/packages/details/detail.php:88 views/packages/details/detail.php:89
+#: views/packages/details/detail.php:91 views/packages/details/detail.php:92
+#: views/packages/details/detail.php:106
+msgid "- unknown -"
+msgstr "- inconnu -"
+
+#: views/packages/details/detail.php:84
+msgid "Versions"
+msgstr "Versions"
+
+#: views/packages/details/detail.php:81 views/packages/main/s2.scan3.php:325
+msgid "- no notes -"
+msgstr "- pas de note -"
+
+#: views/packages/details/detail.php:75
+msgid "Full Name"
+msgstr "Nom complet"
+
+#: views/packages/details/detail.php:73
+msgid "ID"
+msgstr "ID"
+
+#: views/packages/details/detail.php:51
+msgid "Invlaid Package ID request.  Please try again!"
+msgstr "Requête invalide sur un ID de paquet. Veuillez réessayer&nbsp;!"
+
+#: views/packages/details/controller.php:44
+msgid "Transfer"
+msgstr "Transférer"
+
+#: views/packages/details/controller.php:34
+msgid " and "
+msgstr "et"
+
+#: views/packages/details/controller.php:34
+msgid "For help visit the "
+msgstr "Pour plus d&rsquo;aide, visitez la"
+
+#: views/packages/details/controller.php:33
+msgid " for details."
+msgstr "pour plus de détails."
+
+#: views/packages/details/controller.php:33
+msgid "This package contains an error.  Please review the "
+msgstr "Ce paquet contient une erreur. Consultez le"
+
+#: views/packages/details/controller.php:14
+msgid "resources page"
+msgstr "page de ressources"
+
+#: views/packages/details/controller.php:13
+msgid "FAQ"
+msgstr "FAQ"
+
+#: views/packages/details/controller.php:12
+msgid "package log"
+msgstr "journal de paquet"
+
+#: views/help/gopro.php:138
+msgid "Active Customer Support"
+msgstr "Support client réactif"
+
+#: views/help/gopro.php:133
+msgid "Manual Transfers"
+msgstr "Transferts manuels"
+
+#: views/help/gopro.php:128
+msgid "Custom Search & Replace"
+msgstr "Rechercher & remplacer personnalisé"
+
+#: views/help/gopro.php:52 views/packages/main/s2.scan3.php:350
+msgid "File Filters"
+msgstr "Filtres de fichiers"
+
+#: views/help/gopro.php:123
+msgid "Email Alerts"
+msgstr "Alertes emails"
+
+#: views/help/gopro.php:117
+msgid "Multisite Backup"
+msgstr "Sauvegarde multisite"
+
+#: views/help/gopro.php:112
+msgid "Larger Package Support"
+msgstr "Support des paquets plus volumineux"
+
+#: views/help/gopro.php:93
+msgid "Remote FTP Storage"
+msgstr "Stockage FTP distant"
+
+#: views/help/gopro.php:85
+msgid "Google Drive Storage"
+msgstr "Stockage Google Drive"
+
+#: views/help/gopro.php:77
+msgid "Dropbox Storage "
+msgstr "Stockage Dropbox"
+
+#: views/help/gopro.php:69
+msgid "Amazon S3 Storage"
+msgstr "Amazon S3 Stockage"
+
+#: views/help/gopro.php:42
+msgid "Feature"
+msgstr "Caractéristique"
+
+#: views/help/gopro.php:37
+msgid "with power for the professional."
+msgstr "avec la puissance dont les pros ont besoin."
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.lifeinthegrid.com/duplicator/"
+msgstr "http://www.lifeinthegrid.com/duplicator/"
+
+#. Plugin Name of the plugin/theme
+msgid "Duplicator"
+msgstr "Duplicator"
+
+#: views/tools/logging.php:178
+msgid "Auto Refresh"
+msgstr "Rafraîchissement automatique"
+
+#: views/tools/logging.php:175
+msgid "Refresh"
+msgstr "Rafraîchir"
+
+#: views/tools/logging.php:168 views/tools/logging.php:173
+msgid "Options"
+msgstr "Options"
+
+#: views/tools/logging.php:148
+msgid "The process that PHP runs under does not have enough permissions to create files.  Please contact your hosting provider for more details"
+msgstr "Le processus PHP n&rsquo;a pas assez de droits pour créer les fichiers. Contactez votre hébergeur pour plus de détails"
+
+#: views/tools/logging.php:147
+msgid "The snapshots directory does not have the correct permissions to write files.  Try setting the permissions to 755"
+msgstr "Le répertoire des instantanés n&rsquo;a pas les droits pour écrire les fichiers. Essayez de les passer à 755"
+
+#: views/tools/logging.php:146
+msgid "The web server does not support returning .log file extentions"
+msgstr "Le serveur ne prend pas en charge les fichiers avec les extensions .log"
+
+#: views/tools/logging.php:145
+msgid "Reasons for log file not showing"
+msgstr "Raisons pour lesquelles le fichier journal ne s&rsquo;affiche pas"
+
+#: views/tools/logging.php:144
+msgid "Try to create a package, since no log files were found in the snapshots directory with the extension *.log"
+msgstr "Essayez de créer un paquet puisqu&rsquo;aucun fichier journal n&rsquo;a été trouvé dans le répertoire des instantanés avec l&rsquo;extension *.log"
+
+#: views/tools/logging.php:143
+msgid "Log file not found or unreadable"
+msgstr "Fichier journal introuvable ou illisible"
+
+#: views/tools/diagnostics.php:445
+msgid "Delete this option value"
+msgstr "Effacer la valeur de cette option"
+
+#: views/tools/diagnostics/inc.phpinfo.php:19 views/tools/diagnostics.php:392
+msgid "PHP Information"
+msgstr "Information PHP"
+
+#: views/tools/diagnostics/inc.data.php:17 views/tools/diagnostics.php:327
+msgid "Options Values"
+msgstr "Valeurs des options"
+
+#: views/tools/diagnostics/inc.data.php:12 views/tools/diagnostics.php:322
+msgid "Stored Data"
+msgstr "Données stockées"
+
+#: views/tools/diagnostics/inc.settings.php:194 views/tools/diagnostics.php:306
+msgid "On shared hosts check your control panel for the 'TRUE' disk space quota value."
+msgstr "Pour les hébergements mutualisés, vérifiez dans votre tableau de bord la &laquo;&nbsp;vraie&nbsp;&raquo; taille d'espace disque."
+
+#: views/tools/diagnostics/inc.settings.php:193 views/tools/diagnostics.php:305
+msgid "Note: This value is the physical servers hard-drive allocation."
+msgstr "Note&nbsp;: Cette valeur est l&rsquo;allocation du disque dur dans le serveur physique."
+
+#: views/tools/diagnostics/inc.settings.php:190 views/tools/diagnostics.php:302
+msgid "Free space"
+msgstr "Espace libre"
+
+#: views/tools/diagnostics/inc.settings.php:187 views/tools/diagnostics.php:299
+msgid "Server Disk"
+msgstr "Disque serveur"
+
+#: views/tools/diagnostics/inc.settings.php:183 views/tools/diagnostics.php:295
+msgid "msyqldump Path"
+msgstr "Chemin du mysqldump"
+
+#: views/tools/diagnostics/inc.settings.php:179 views/tools/diagnostics.php:291
+msgid "Max Allowed Packets"
+msgstr "Nombre maximum de paquets de données"
+
+#: views/tools/diagnostics/inc.settings.php:175 views/tools/diagnostics.php:287
+msgid "Wait Timeout"
+msgstr "Temps d&rsquo;attente dépassé"
+
+#: views/tools/diagnostics/inc.settings.php:152 views/tools/diagnostics.php:272
+msgid "Shell Exec Zip"
+msgstr "Shell Exec Zip"
+
+#: views/tools/diagnostics/inc.settings.php:149
+#: views/tools/diagnostics/inc.settings.php:153 views/tools/diagnostics.php:269
+#: views/tools/diagnostics.php:273
+msgid "Not Supported"
+msgstr "N&rsquo;est plus compatible"
+
+#: views/tools/diagnostics/inc.settings.php:149
+#: views/tools/diagnostics/inc.settings.php:153 views/tools/diagnostics.php:269
+#: views/tools/diagnostics.php:273
+msgid "Is Supported"
+msgstr "Est compatible"
+
+#: views/tools/diagnostics/inc.settings.php:148 views/tools/diagnostics.php:268
+msgid "Shell Exec"
+msgstr "Shell Exec"
+
+#: views/tools/diagnostics/inc.settings.php:129 views/tools/diagnostics.php:260
+msgid "Memory In Use"
+msgstr "Mémoire utilisée"
+
+#: views/tools/diagnostics/inc.settings.php:125 views/tools/diagnostics.php:256
+msgid "Memory Limit"
+msgstr "Limite de mémoire"
+
+#: views/tools/diagnostics/inc.settings.php:120 views/tools/diagnostics.php:251
+msgid "Off"
+msgstr "Off"
+
+#: views/tools/diagnostics/inc.settings.php:120 views/tools/diagnostics.php:251
+msgid "On"
+msgstr "On"
+
+#: views/tools/diagnostics/inc.settings.php:116 views/tools/diagnostics.php:247
+msgid "Safe Mode"
+msgstr "Mode sécurité"
+
+#: views/tools/diagnostics/inc.settings.php:94 views/tools/diagnostics.php:225
+msgid "Max"
+msgstr "Max"
+
+#: views/tools/diagnostics/inc.settings.php:93 views/tools/diagnostics.php:224
+msgid "Memory Limit "
+msgstr "Limite de mémoire "
+
+#: views/tools/diagnostics/inc.settings.php:89
+#: views/tools/diagnostics/inc.settings.php:171 views/tools/diagnostics.php:220
+#: views/tools/diagnostics.php:283
+msgid "Charset"
+msgstr "Jeu de caractères"
+
+#: views/tools/diagnostics/inc.settings.php:85 views/tools/diagnostics.php:216
+msgid "Language"
+msgstr "Langue"
+
+#: views/tools/diagnostics/inc.settings.php:74 views/tools/diagnostics.php:205
+msgid "Client IP"
+msgstr "IP client"
+
+#: views/tools/diagnostics/inc.settings.php:70 views/tools/diagnostics.php:201
+msgid "Server IP"
+msgstr "IP du serveur"
+
+#: views/tools/diagnostics/inc.settings.php:66 views/tools/diagnostics.php:197
+msgid "Loaded PHP INI"
+msgstr "Charger PHP INI"
+
+#: views/tools/diagnostics/inc.settings.php:62 views/tools/diagnostics.php:193
+msgid "Plugins Path"
+msgstr "Chemin des extensions"
+
+#: views/tools/diagnostics/inc.settings.php:58 views/tools/diagnostics.php:189
+msgid "ABSPATH"
+msgstr "Chemin absolu"
+
+#: views/packages/main/s2.scan3.php:3
+#: views/tools/diagnostics/inc.settings.php:54 views/tools/diagnostics.php:185
+msgid "Root Path"
+msgstr "Chemin vers la racine"
+
+#: views/tools/diagnostics/inc.settings.php:50 views/tools/diagnostics.php:181
+msgid "APC Enabled"
+msgstr "APC activé"
+
+#: views/tools/diagnostics/inc.settings.php:42 views/tools/diagnostics.php:173
+msgid "Server Time"
+msgstr "Fuseau du serveur"
+
+#: views/tools/diagnostics/inc.settings.php:38 views/tools/diagnostics.php:169
+msgid "Timezone"
+msgstr "Fuseau horaire"
+
+#: views/tools/diagnostics/inc.settings.php:34 views/tools/diagnostics.php:165
+msgid "Operating System"
+msgstr "Système d&rsquo;exploitation"
+
+#: views/tools/diagnostics/inc.settings.php:30 views/tools/diagnostics.php:161
+msgid "Duplicator Version"
+msgstr "Version de Duplicator"
+
+#: views/tools/diagnostics/inc.settings.php:21 views/tools/diagnostics.php:152
+msgid "Server Settings"
+msgstr "Paramètres serveur"
+
+#: views/tools/diagnostics/main.php:27 views/tools/diagnostics.php:112
+msgid "Active package settings reset."
+msgstr "Activer la remise à zéro des paramètres des paquets."
+
+#: views/tools/diagnostics/main.php:26 views/tools/diagnostics.php:111
+msgid "View state settings reset."
+msgstr "Voir l&rsquo;état de la remise à zéro des paramètres."
+
+#: views/tools/diagnostics/main.php:25 views/tools/diagnostics.php:110
+msgid "Plugin settings reset."
+msgstr "Paramètres de l'&rsquo;extension remis à zéro."
+
+#: views/tools/diagnostics/inc.settings.php:4
+#: views/tools/diagnostics/inc.settings.php:5 views/tools/diagnostics.php:88
+#: views/tools/diagnostics.php:89
+msgid "unknow"
+msgstr "inconnu"
+
+#: views/tools/controller.php:20
+msgid "Cleanup"
+msgstr "Nettoyage"
+
+#: views/tools/controller.php:18
+msgid "Logging"
+msgstr "Connexion"
+
+#: views/tools/cleanup.php:145
+msgid "This process will remove all build cache files.  Be sure no packages are currently building or else they will be cancelled."
+msgstr "Ce processus va supprimer tous les fichiers de cache. Vérifiez qu&rsquo;aucun paquet ne soit en cours de création car sinon il serait supprimé."
+
+#: views/tools/cleanup.php:135
+msgid "Removes all build data from:"
+msgstr "Supprimer toutes les données de&nbsp;:"
+
+#: views/tools/cleanup.php:132
+msgid "Clear Build Cache"
+msgstr "Supprimer le cache"
+
+#: views/tools/cleanup.php:109
+msgid "Removes all reserved installer files."
+msgstr "Retire tous les fichiers d'installation."
+
+#: views/tools/cleanup.php:100
+msgid "Data Cleanup"
+msgstr "Nettoyage des données"
+
+#: views/tools/cleanup.php:26
+msgid "Build cache removed."
+msgstr "Cache supprimé."
+
+#: views/tools/cleanup.php:22 views/tools/diagnostics/main.php:30
+#: views/tools/diagnostics.php:115
+msgid "Legacy data removed."
+msgstr "Version originale supprimée."
+
+#: views/tools/cleanup.php:17
+msgid "Installer file cleanup ran!"
+msgstr "Le nettoyage des fichiers d'installation a eu lieu&nbsp;!"
+
+#: views/settings/general.php:101
+msgid "this feature."
+msgstr "cette fonctionnalité."
+
+#: views/settings/general.php:100
+msgid "must be installed to use"
+msgstr "doit être installé"
+
+#: views/help/gopro.php:44 views/packages/details/detail.php:191
+#: views/packages/main/s1.setup2.php:97 views/packages/main/s1.setup2.php:403
+#: views/packages/main/s2.scan3.php:131 views/packages/main/s3.build.php:108
+#: views/settings/general.php:99
+msgid "Professional"
+msgstr "Pro"
+
+#: views/settings/general.php:98
+msgid "or"
+msgstr "ou"
+
+#: views/help/gopro.php:43 views/settings/general.php:97
+msgid "Free"
+msgstr "Gratuit"
+
+#: views/settings/general.php:96
+msgid "The User Role Editor Plugin"
+msgstr "L&rsquo;extension User Role Editor"
+
+#: views/settings/general.php:91
+msgid "Enable User Role Editor Plugin Integration"
+msgstr "Activer l&rsquo;intégration avec l&rsquo;extension User Role Editor"
+
+#: views/settings/general.php:88
+msgid "Custom Roles"
+msgstr "Rôles personnalisés"
+
+#: views/settings/packages.php:131
+msgid "Working Path:"
+msgstr "Chemin fonctionnel&nbsp;:"
+
+#: views/settings/packages.php:101 views/settings/packages.php:125
+msgid "Use mysqldump"
+msgstr "Utiliser mysqldump"
+
+#: views/settings/packages.php:169
+msgid "Query Limit Size"
+msgstr "Limite de taille des requêtes"
+
+#: views/settings/packages.php:188
+msgid "This will attempt to keep a network connection established for large archives."
+msgstr "Ceci va essayer de garder une connexion réseau pour les archives volumineuses."
+
+#: views/settings/packages.php:185
+msgid "Attempt Network Keep Alive"
+msgstr "Tenter de garder le réseau en ligne"
+
+#: views/settings/packages.php:182
+msgid "Archive Flush"
+msgstr "Effacement des archives"
+
+#: views/settings/general.php:83
+msgid "Disable if issues occur when downloading installer/archive files."
+msgstr "Désactivez-le si vous n&rsquo;arrivez pas à télécharger l&rsquo;installer ou les fichiers d&rsquo;archive."
+
+#: views/settings/general.php:81
+msgid "Disable .htaccess File In Storage Directory"
+msgstr "Désactiver le fichier .htaccess dans le répertoire de stockage"
+
+#: views/settings/general.php:78
+msgid "Full Path"
+msgstr "Chemin complet"
+
+#: views/settings/general.php:71
+msgid "Delete Entire Storage Directory"
+msgstr "Effacer tout le répertoire de stockage"
+
+#: views/settings/general.php:68
+msgid "Delete Plugin Settings"
+msgstr "Effacer les paramètres de l&rsquo;extension"
+
+#: views/settings/general.php:65
+msgid "Uninstall"
+msgstr "Désinstallation"
+
+#: views/settings/general.php:57
+msgid "Plugin"
+msgstr "Extension"
+
+#: views/packages/details/detail.php:63 views/settings/controller.php:22
+#: views/tools/diagnostics/inc.settings.php:27 views/tools/diagnostics.php:158
+msgid "General"
+msgstr "Général"
+
+#: views/packages/main/s3.build.php:157
+msgid "Package Log"
+msgstr "Journaux des paquets"
+
+#: views/packages/main/s3.build.php:145
+msgid "Build Folder:"
+msgstr "Répertoires de l&rsquo;assemblage&nbsp;:"
+
+#: views/packages/main/s2.scan1.php:332 views/packages/main/s3.build.php:142
+msgid "Notice"
+msgstr "Notification"
+
+#: views/packages/main/s3.build.php:120
+msgid "Try Again"
+msgstr "Réessayer"
+
+#: views/packages/main/s3.build.php:121
+msgid "Diagnose"
+msgstr "Diagnostic"
+
+#: views/packages/main/s3.build.php:88
+msgid "Process Time"
+msgstr "Temps d&rsquo;exécution"
+
+#: views/packages/main/s3.build.php:83
+msgid "Package Completed"
+msgstr "Paquet assemblé"
+
+#: views/packages/main/s3.build.php:76
+msgid "Build Status"
+msgstr "Statut de l&rsquo;assemblage"
+
+#: views/packages/main/s3.build.php:72
+msgid "This may take several minutes."
+msgstr "Cela peut prendre plusieurs minutes."
+
+#: views/packages/main/s3.build.php:71
+msgid "Keep this window open during the build process."
+msgstr "Gardez cette fenêtre ouverte pendant le processus d&rsquo;assemblage."
+
+#: views/packages/main/s3.build.php:68
+msgid "Building Package"
+msgstr "Assemblage du paquet en cours"
+
+#: views/packages/main/s3.build.php:51
+msgid "Step 3: Build Package"
+msgstr "Étape 3 : Assemblage du paquet"
+
+#: views/packages/main/s2.scan3.php:639
+msgid "Unable to report on database stats"
+msgstr "Impossible d&rsquo;acquérir les statistiques de la base de données"
+
+#: views/packages/main/s2.scan3.php:613
+msgid "Unable to report on any tables"
+msgstr "Impossible d&rsquo;acquérir une quelconque table"
+
+#: views/packages/main/s2.scan1.php:208
+msgid "Rescan"
+msgstr "Re-scanner"
+
+#: views/packages/main/s2.scan1.php:207
+msgid "Back"
+msgstr "Retour"
+
+#: views/packages/main/s2.scan1.php:161 views/packages/main/s3.build.php:135
+msgid "Error Message:"
+msgstr "Message d&rsquo;erreur&nbsp;:"
+
+#: views/packages/main/s2.scan1.php:158 views/packages/main/s3.build.php:131
+msgid "Server Status:"
+msgstr "Statut serveur&nbsp;:"
+
+#: views/packages/main/s2.scan1.php:156
+msgid "Please try again!"
+msgstr "Merci de réessayer&nbsp;!"
+
+#: views/packages/main/s2.scan1.php:155
+msgid "Scan Error"
+msgstr "Erreurs de scan"
+
+#: views/packages/main/s2.scan1.php:200
+msgid "Please review the details for each section by clicking on the detail title."
+msgstr "﻿Veuillez consulter les détails de chaque avertissement en cliquant sur leurs titres."
+
+#: views/packages/main/s2.scan1.php:198
+msgid "Scan checks are not required to pass, however they could cause issues on some systems."
+msgstr "Il n&rsquo;est pas nécessaire que tous les résultats du scan soient positifs, cependant cela pourrait poser des problèmes sur certains systèmes."
+
+#: views/packages/main/s2.scan1.php:188
+msgid "A notice status has been detected, are you sure you want to continue?"
+msgstr "﻿Une alerte a été détectée, souhaitez-vous continuer ?"
+
+#: views/packages/main/s2.scan3.php:334
+msgid "Build Mode:"
+msgstr "Mode d’assemblage :"
+
+#: views/packages/main/s2.scan3.php:332
+msgid "Host:"
+msgstr "Hébergeur&nbsp;:"
+
+#: views/packages/main/s2.scan3.php:331
+msgid "Name:"
+msgstr "Nom&nbsp;:"
+
+#: views/packages/main/s2.scan3.php:280
+msgid "repair and optimization"
+msgstr "réparer et optimiser"
+
+#: views/packages/main/s2.scan3.php:257
+msgid "Records"
+msgstr "Enregistrements"
+
+#: views/packages/details/detail.php:294 views/packages/main/s2.scan3.php:256
+msgid "Tables"
+msgstr "Tables"
+
+#: views/packages/main/s2.scan3.php:375
+msgid "No file extension filters have been set."
+msgstr "Aucun filtre d&rsquo;extension de fichier n&rsquo;a été activé."
+
+#: views/packages/main/s2.scan3.php:80
+msgid "Large Files"
+msgstr "Fichiers volumineux"
+
+#: views/packages/main/s2.scan3.php:156 views/packages/main/s2.scan3.php:172
+msgid "Name Checks"
+msgstr "Vérification des noms"
+
+#: views/packages/main/s2.scan3.php:46
+msgid "Directory Count"
+msgstr "Nombre de répertoires"
+
+#: views/packages/main/s2.scan3.php:45
+msgid "File Count"
+msgstr "Nombre de fichiers"
+
+#: views/packages/main/s2.scan3.php:30 views/packages/main/s2.scan3.php:242
+#: views/packages/main/s2.scan3.php:351
+#: views/tools/diagnostics/inc.settings.php:157
+msgid "Enabled"
+msgstr "Activé"
+
+#: views/packages/main/s2.scan2.php:78
+msgid "Cache Path"
+msgstr "Chemin du cache"
+
+#: views/packages/main/s2.scan2.php:73
+msgid "If the scanner is unable to locate the wp-config.php file in the root directory, then you will need to manually copy it to its new location."
+msgstr "Si le scanner n&rsquo;est pas en mesure de trouver le fichier wp-config.php dans le répertoire racine alors vous devrez le copier manuellement à son nouvel emplacement."
+
+#: views/packages/main/s2.scan2.php:72
+msgid "Core Files"
+msgstr "Fichiers source"
+
+#: views/packages/main/s2.scan2.php:69
+msgid "It is recommended to have a version of WordPress that is greater than %1$s"
+msgstr "Nous vous recommandons d&rsquo;avoir une version de WordPress supérieure à %1$s"
+
+#: views/packages/main/s2.scan2.php:68
+msgid "WordPress Version"
+msgstr "Version de WordPress"
+
+#: views/packages/details/detail.php:88 views/packages/main/s2.scan2.php:62
+msgid "WordPress"
+msgstr "WordPress"
+
+#: views/tools/diagnostics/inc.settings.php:133
+#: views/tools/diagnostics/inc.settings.php:142 views/tools/diagnostics.php:264
+msgid "Max Execution Time"
+msgstr "Temps maximum d&rsquo;exécution"
+
+#: views/packages/details/detail.php:284 views/packages/main/s1.setup2.php:274
+#: views/packages/main/s2.scan2.php:34 views/packages/main/s2.scan2.php:45
+#: views/packages/main/s2.scan2.php:52 views/packages/main/s2.scan2.php:88
+#: views/packages/main/s2.scan2.php:92 views/packages/main/s2.scan3.php:341
+msgid "details"
+msgstr "détails"
+
+#: views/packages/main/s2.scan2.php:33
+msgid "Issues might occur when [open_basedir] is enabled. Work with your server admin to disable this value in the php.ini file if you’re having issues building a package."
+msgstr "Duplicator peut rencontrer des problèmes quand [open_basedir] est activé. Merci de voir avec votre administrateur réseau s&rsquo;il peut désactiver cette fonction dans le fichier php.ini, si vous avez des problèmes pour générer des paquets."
+
+#: views/packages/main/s2.scan2.php:22
+msgid "Supported web servers: "
+msgstr "Serveurs web compatibles :"
+
+#: views/packages/main/s2.scan2.php:21
+#: views/tools/diagnostics/inc.settings.php:46 views/tools/diagnostics.php:177
+msgid "Web Server"
+msgstr "Serveur"
+
+#: views/tools/controller.php:19
+msgid "Diagnostics"
+msgstr "Diagnostics"
+
+#: views/packages/main/s2.scan2.php:4
+msgid "Server"
+msgstr "Serveur"
+
+#: views/packages/main/s2.scan1.php:172
+msgid "Process Time:"
+msgstr "Durée du processus&nbsp;:"
+
+#: views/packages/main/s2.scan1.php:170
+msgid "Scan Complete"
+msgstr "Scan terminé"
+
+#: views/packages/main/s2.scan1.php:148 views/packages/main/s3.build.php:70
+msgid "Please Wait..."
+msgstr "Merci de patienter..."
+
+#: views/packages/main/s2.scan1.php:146
+msgid "Scanning Site"
+msgstr "Scan en cours"
+
+#: views/packages/main/s2.scan1.php:129
+msgid "Step 2: System Scan"
+msgstr "Étape 2&nbsp;: Scan du système"
+
+#: views/packages/main/s1.setup2.php:428
+msgid "This will clear and reset all of the current package settings.  Would you like to continue?"
+msgstr "Cela va remettre à zéro tous les réglages des paquets. Voulez-vous continuer ?"
+
+#: views/packages/main/s1.setup2.php:417
+msgid "Next"
+msgstr "Suivant"
+
+#: views/packages/main/s1.setup2.php:416
+msgid "Reset"
+msgstr "Remise à zéro"
+
+#: views/packages/main/s1.setup2.php:327
+msgid "The installer can have these fields pre-filled at install time."
+msgstr "L&rsquo;installeur peut avoir ces champs pré-remplis au moment de l&rsquo;installation."
+
+#: views/packages/details/detail.php:330 views/packages/main/s1.setup2.php:394
+msgid "New URL"
+msgstr "Nouvelle URL"
+
+#: views/packages/main/s1.setup2.php:379
+msgid "Keep Home Path"
+msgstr "Garder le chemin de l&nbsp;accueil"
+
+#: views/packages/main/s1.setup2.php:375
+msgid "Keep Enabled"
+msgstr "Garder activé"
+
+#: views/packages/main/s1.setup2.php:372
+msgid "Cache"
+msgstr "Cache"
+
+#: views/packages/main/s1.setup2.php:368
+msgid "Enforce on Logins"
+msgstr "Forcer lors des connexions"
+
+#: views/packages/main/s1.setup2.php:364
+msgid "Enforce on Admin"
+msgstr "Forcer à l&rsquo;administration"
+
+#: views/packages/main/s1.setup2.php:361
+msgid "SSL"
+msgstr "SSL"
+
+#: views/packages/main/s1.setup2.php:355
+msgid "Advanced Options"
+msgstr "Options avancées"
+
+#: views/packages/main/s1.setup2.php:343
+msgid "Host Port"
+msgstr "Port de l&rsquo;hébergement"
+
+#: views/packages/details/detail.php:318 views/packages/main/s1.setup2.php:339
+msgid "Host"
+msgstr "Hébergement"
+
+#: views/packages/main/s1.setup2.php:336
+msgid " MySQL Server"
+msgstr "Serveur MySQL"
+
+#: views/packages/main/s1.setup2.php:225
+msgid "Checked tables will not be added to the database script.  Excluding certain tables can possibly cause your site or plugins to not work correctly after install!"
+msgstr "Les tables sélectionnées ne seront pas ajoutées au script de la base de données. Exclure certaines tables peut potentiellement empêcher votre site ou vos extensions de ne pas fonctionner correctement après l&rsquo;installation&nbsp;!"
+
+#: views/packages/main/s1.setup2.php:232
+msgid "Exclude All"
+msgstr "Tout exclure"
+
+#: views/packages/main/s1.setup2.php:231
+msgid "Include All"
+msgstr "Tout inclure"
+
+#: views/packages/main/s1.setup2.php:222
+msgid "Enable Table Filters"
+msgstr "Activer les filtres de tables"
+
+#: views/packages/main/s1.setup2.php:181
+msgid "Use the full path for directories and files with semicolons to separate all paths."
+msgstr "Utilisez le chemin complet pour les dossiers et les fichiers, en les séparant par des points-virgules."
+
+#: views/packages/main/s1.setup2.php:180
+msgid "The directory, file and extensions paths above will be excluded from the archive file if enabled is checked."
+msgstr "Les chemins vers les dossiers, fichiers et extensions ci-dessous seront exclus de l’archive si vous cochez la case « activer »."
+
+#: views/packages/main/s1.setup2.php:167
+msgid "archive"
+msgstr "archive"
+
+#: views/packages/main/s1.setup2.php:166
+msgid "media"
+msgstr "media"
+
+#: views/packages/main/s1.setup2.php:164
+msgid "File extensions"
+msgstr "Extensions de fichiers"
+
+#: views/packages/main/s1.setup2.php:160 views/packages/main/s1.setup2.php:168
+#: views/packages/main/s1.setup2.php:175
+msgid "(clear)"
+msgstr "(effacer)"
+
+#: views/packages/main/s1.setup2.php:159
+msgid "cache"
+msgstr "cache"
+
+#: views/packages/main/s1.setup2.php:158
+msgid "wp-uploads"
+msgstr "wp-uploads"
+
+#: views/packages/main/s1.setup2.php:157
+msgid "root path"
+msgstr "Chemin vers la racine"
+
+#: views/packages/details/detail.php:237 views/packages/main/s1.setup2.php:155
+#: views/packages/main/s2.scan3.php:358 views/packages/main/s2.scan3.php:417
+msgid "Directories"
+msgstr "Répertoires"
+
+#: views/packages/main/s1.setup2.php:155 views/packages/main/s1.setup2.php:164
+#: views/packages/main/s1.setup2.php:172
+msgid "Separate all filters by semicolon"
+msgstr "Séparez tous les filtres par des points-virgules"
+
+#: views/packages/main/s1.setup2.php:147
+msgid "Enable File Filters"
+msgstr "Activer les filtres de fichiers"
+
+#: views/packages/details/detail.php:134 views/packages/details/detail.php:322
+#: views/packages/main/s1.setup2.php:131 views/packages/main/s1.setup2.php:347
+#: views/packages/main/s2.scan3.php:233 views/packages/main/s2.scan3.php:329
+msgid "Database"
+msgstr "Base de Données"
+
+#: views/packages/details/detail.php:109 views/packages/details/detail.php:256
+#: views/packages/main/s1.setup2.php:130 views/packages/main/s1.setup2.php:172
+#: views/packages/main/s2.scan3.php:19 views/packages/main/s2.scan3.php:380
+#: views/packages/main/s2.scan3.php:426
+msgid "Files"
+msgstr "Fichiers"
+
+#: views/packages/main/s1.setup2.php:120
+msgid "Database filter enabled"
+msgstr "Filtre de base de données activé"
+
+#: views/packages/main/s1.setup2.php:119
+msgid "File filter enabled"
+msgstr "Filtre de fichier activé"
+
+#: views/packages/details/detail.php:180 views/packages/main/s1.setup2.php:85
+msgid "Local"
+msgstr "Local"
+
+#: views/packages/details/detail.php:179 views/packages/main/s1.setup2.php:84
+msgid "Default"
+msgstr "Défaut"
+
+#: views/packages/details/detail.php:174 views/packages/main/s1.setup2.php:79
+msgid "Location"
+msgstr "Emplacement"
+
+#: views/packages/details/detail.php:173 views/packages/details/detail.php:273
+#: views/packages/main/s1.setup2.php:78
+msgid "Type"
+msgstr "Type"
+
+#: views/packages/details/detail.php:165 views/packages/main/s1.setup2.php:70
+#: views/settings/controller.php:25 views/settings/general.php:76
+msgid "Storage"
+msgstr "Stockage"
+
+#: views/packages/main/s1.setup1.php:211
+msgid "For additional help please see the "
+msgstr "Pour plus d&rsquo;aide en ligne, allez sur"
+
+#: views/packages/main/s1.setup1.php:202
+msgid "Remove Files Now"
+msgstr "Supprimer les fichiers maintenant"
+
+#: views/packages/main/s1.setup1.php:188
+msgid "Reserved Files"
+msgstr "Fichiers réservés"
+
+#: views/packages/main/s1.setup1.php:179 views/tools/cleanup.php:110
+msgid "more info"
+msgstr "plus d&rsquo;information"
+
+#: views/packages/main/s1.setup1.php:172
+msgid "MySQLi Support"
+msgstr "Compatibilité MySQLi"
+
+#: views/packages/main/s1.setup1.php:168
+msgid "MySQL Version"
+msgstr "Version de MySQL"
+
+#: views/packages/main/s1.setup1.php:162
+msgid "Server Support"
+msgstr "Compatibilité avec le serveur"
+
+#: views/packages/main/s1.setup1.php:139
+msgid "Required Paths"
+msgstr "Chemins"
+
+#: views/packages/main/s1.setup1.php:118 views/packages/main/s1.setup1.php:122
+#: views/packages/main/s1.setup1.php:126
+msgid "Function"
+msgstr "Fonction"
+
+#: views/packages/main/s1.setup1.php:114
+msgid "Safe Mode Off"
+msgstr "Mode sécurité désactivé"
+
+#: views/packages/main/s1.setup1.php:110
+msgid "Zip Archive Enabled"
+msgstr "Zip Archive activé"
+
+#: views/packages/main/s1.setup1.php:106 views/packages/main/s2.scan2.php:26
+msgid "PHP Version"
+msgstr "Version de PHP"
+
+#: views/packages/main/s1.setup1.php:100
+msgid "PHP Support"
+msgstr "Support de PHP"
+
+#: views/packages/main/s1.setup1.php:94
+msgid "System requirements must pass for the Duplicator to work properly.  Click each link for details."
+msgstr "Les exigences système doivent être validées pour que Duplicator fonctionne convenablement. Cliquez sur chaque lien pour en voir les détails."
+
+#: views/packages/main/s1.setup1.php:85
+msgid "Requirements:"
+msgstr "Exigences&nbsp;:"
+
+#: views/packages/main/s1.setup1.php:63
+msgid "Step 1: Package Setup"
+msgstr "Étape 1&nbsp;: Configurer un paquet"
+
+#: views/packages/main/s1.setup1.php:60 views/packages/main/s2.scan1.php:126
+#: views/packages/main/s2.scan1.php:209 views/packages/main/s3.build.php:48
+msgid "Build"
+msgstr "Création"
+
+#: views/packages/main/s1.setup1.php:59 views/packages/main/s2.scan1.php:125
+#: views/packages/main/s3.build.php:47
+msgid "Scan"
+msgstr "Scan"
+
+#: views/packages/main/s1.setup1.php:58 views/packages/main/s2.scan1.php:124
+#: views/packages/main/s2.scan2.php:14 views/packages/main/s3.build.php:46
+msgid "Setup"
+msgstr "Configuration"
+
+#: views/packages/main/s1.setup1.php:12
+msgid "Package settings have been reset."
+msgstr "Les paramètres des paquets ont été remis à zéro."
+
+#: views/packages/details/detail.php:362
+msgid "LOG"
+msgstr "JOURNAL"
+
+#: views/packages/details/detail.php:361
+msgid "INSTALLER"
+msgstr "INSTALLEUR"
+
+#: views/packages/details/detail.php:360
+msgid "PACKAGE"
+msgstr "PAQUET"
+
+#: views/packages/details/detail.php:270 views/packages/details/detail.php:359
+msgid "DATABASE"
+msgstr "BASE DE DONNEES"
+
+#: views/packages/details/detail.php:356
+msgid "Package File Links"
+msgstr "Liens vers les paquets"
+
+#: views/packages/main/packages.php:218
+msgid "Are you sure, you want to delete the selected package(s)?"
+msgstr "Êtes-vous sûr de vouloir effacer le paquet sélectionné&nbsp;?"
+
+#: views/packages/main/packages.php:213
+msgid "Please select at least one package to delete!"
+msgstr "Merci de sélectionner au moins un paquet à effacer."
+
+#: views/packages/details/detail.php:157
+msgid "The database SQL script is a quick link to your database backup script.  An exact copy is also stored in the package."
+msgstr "Le script de base de données SQL est un lien rapide vers votre script de sauvegarde de base de données. Une copie exacte est également dans le paquet."
+
+#: views/packages/details/detail.php:151
+msgid "The following links contain sensitive data.  Please share with caution!"
+msgstr "Les liens suivants contiennent des informations sensibles. Partagez-les avec parcimonie&nbsp;!"
+
+#: views/packages/details/detail.php:148
+msgid "Download Links"
+msgstr "Liens de téléchargement"
+
+#: views/packages/main/packages.php:195
+msgid "Total Size"
+msgstr "Taille totale"
+
+#: views/packages/details/detail.php:339
+msgid "View Package Object"
+msgstr "Voir le paquet"
+
+#: views/packages/details/detail.php:80 views/packages/main/s1.setup2.php:60
+#: views/packages/main/s2.scan3.php:325
+msgid "Notes"
+msgstr "Notes"
+
+#: views/packages/details/detail.php:74
+msgid "Hash"
+msgstr "Découpage"
+
+#: views/packages/details/detail.php:105 views/packages/details/detail.php:326
+#: views/packages/main/s1.setup2.php:351
+#: views/tools/diagnostics/inc.settings.php:108 views/tools/diagnostics.php:239
+msgid "User"
+msgstr "Utilisateur"
+
+#: views/settings/general.php:61 views/tools/diagnostics/inc.settings.php:81
+#: views/tools/diagnostics/inc.settings.php:100
+#: views/tools/diagnostics/inc.settings.php:163 views/tools/diagnostics.php:212
+#: views/tools/diagnostics.php:231 views/tools/diagnostics.php:279
+msgid "Version"
+msgstr "Version"
+
+#: views/packages/details/detail.php:126 views/packages/details/detail.php:213
+#: views/packages/main/packages.php:149 views/packages/main/s1.setup2.php:117
+#: views/packages/main/s2.scan3.php:13 views/packages/main/s3.build.php:96
+msgid "Archive"
+msgstr "Archive"
+
+#: views/packages/details/detail.php:130 views/packages/details/detail.php:312
+#: views/packages/main/packages.php:146 views/packages/main/s1.setup2.php:319
+#: views/packages/main/s3.build.php:92
+msgid "Installer"
+msgstr "Installeur"
+
+#: views/packages/main/packages.php:101 views/packages/main/s2.scan3.php:323
+msgid "Package"
+msgstr "Paquet"
+
+#: views/packages/details/detail.php:69 views/packages/details/detail.php:172
+#: views/packages/main/packages.php:99 views/packages/main/s1.setup2.php:51
+#: views/packages/main/s1.setup2.php:77 views/packages/main/s2.scan3.php:324
+#: views/packages/main/s3.build.php:87
+msgid "Name"
+msgstr "Nom"
+
+#: views/packages/main/packages.php:98 views/packages/main/s2.scan3.php:44
+#: views/packages/main/s2.scan3.php:255
+msgid "Size"
+msgstr "Taille"
+
+#: views/packages/main/packages.php:97
+msgid "Created"
+msgstr "Créé"
+
+#: views/packages/details/controller.php:41
+#: views/packages/main/s3.build.php:124
+msgid "Details"
+msgstr "Détails"
+
+#: views/packages/main/packages.php:96
+msgid "Select all packages"
+msgstr "Sélectionner tous les paquets"
+
+#: views/packages/main/packages.php:65 views/packages/main/s1.setup1.php:69
+#: views/packages/main/s2.scan1.php:135 views/packages/main/s3.build.php:57
+#: views/packages/main/s3.build.php:104
+msgid "Create New"
+msgstr "Créer paquet"
+
+#: views/packages/main/s3.build.php:103
+msgid "All Packages"
+msgstr "Tous les paquets"
+
+#: views/packages/main/packages.php:61 views/tools/logging.php:184
+msgid "Package Logs"
+msgstr "Journaux des paquets"
+
+#: views/packages/main/packages.php:58
+msgid "Apply"
+msgstr "Appliquer"
+
+#: views/packages/main/packages.php:56
+msgid "Delete"
+msgstr "Effacer"
+
+#: views/packages/main/packages.php:56
+msgid "Delete selected package(s)"
+msgstr "Effacer le(s) paquet(s) sélectionné(s)"
+
+#: views/packages/main/packages.php:55
+msgid "Bulk Actions"
+msgstr "Actions par lots"
+
+#: views/packages/main/s1.setup1.php:211
+msgid "help page"
+msgstr "la page de support"
+
+#: views/packages/main/packages.php:82
+msgid "Click the 'Create New' button to build a package."
+msgstr "Cliquez sur l'onglet &#34;Créer Paquet&#34; pour en générer un."
+
+#: views/packages/main/packages.php:81
+msgid "No Packages Found."
+msgstr "Aucun paquet trouvé."
+
+#: views/tools/support.php:101
+msgid "Pro Solutions!"
+msgstr "Solutions pro"
+
+#: views/tools/support.php:98
+msgid "Other Commercial Resources"
+msgstr "Autres ressources (commerciales)"
+
+#: views/tools/support.php:95
+msgid "Alternatives"
+msgstr "Alternatives"
+
+#: views/tools/support.php:85
+msgid "Trusted Providers!"
+msgstr "Hébergeurs approuvés"
+
+#: views/tools/support.php:82
+msgid "Servers That Work With Duplicator"
+msgstr "Les serveurs qui fonctionnent avec Duplicator"
+
+#: views/tools/support.php:79
+msgid "Approved Hosting"
+msgstr "Hébergeurs recommandés"
+
+#: views/tools/support.php:65
+msgid "Get Support!"
+msgstr "Obtenir de l’aide&nbsp;!"
+
+#: views/tools/support.php:61
+msgid "Get Help From IT Professionals"
+msgstr "Obtenez l&rsquo;aide de professionnels"
+
+#: views/tools/support.php:58
+msgid "Online Support"
+msgstr "Support"
+
+#: views/tools/support.php:49
+msgid "Change Log"
+msgstr "Notes de version"
+
+#: views/tools/support.php:48
+msgid "FAQs"
+msgstr "FAQs"
+
+#: views/tools/support.php:47
+msgid "User Guide"
+msgstr "Guide Utilisateur"
+
+#: views/tools/support.php:46
+msgid "Quick Start"
+msgstr "Démarrage Rapide"
+
+#: views/tools/support.php:45
+msgid "Choose A Section"
+msgstr "Choisissez une section"
+
+#: views/tools/support.php:43
+msgid "Complete Online Documentation"
+msgstr "Documentation en ligne"
+
+#: views/tools/support.php:40
+msgid "Knowledgebase"
+msgstr "Base de connaissances"
+
+#: views/tools/support.php:29
+msgid "Migrating WordPress is a complex process and the logic to make all the magic happen smoothly may not work quickly with every site.  With over 30,000 plugins and a very complex server eco-system some migrations may run into issues.  This is why the Duplicator includes a detailed knowledgebase that can help with many common issues.  Resources to additional support, approved hosting, and alternatives to fit your needs can be found below."
+msgstr "Migrer un site WordPress est un processus complexe et il n&rsquo;est pas facile de rendre cette opération rapide à 100%. Avec plus de 30 000 extensions et un écosystème serveur complexe, il est courant que tout ne fonctionne pas comme prévu. C&rsquo;est pourquoi Duplicator contient une documentation détaillée (en anglais seulement) pour vous aider à résoudre les problèmes les plus fréquents. Les liens pour du support additionnel (en anglais), les hébergeurs &laquo;&nbsp;approuvés&nbsp;&raquo; et les solutions alternatives se trouvent ci-dessous."
+
+#: views/help/gopro.php:152
+msgid "Check It Out!"
+msgstr "Jetez-y un oeil&nbsp;!"
+
+#: views/help/gopro.php:107
+msgid "Scheduled Backups"
+msgstr "Sauvegardes programmées"
+
+#: views/packages/main/s2.scan3.php:66
+msgid "Duplicator Pro."
+msgstr "Duplicator Pro."
+
+#: views/help/gopro.php:62
+msgid "Migration Wizard"
+msgstr "Assistant de Migration"
+
+#: views/help/gopro.php:57
+msgid "Database Table Filters"
+msgstr "Filtres de bases de données"
+
+#: views/help/gopro.php:47
+msgid "Backup Files & Database"
+msgstr "Sauvegarde des fichiers &amp; de la base de données"
+
+#: views/help/gopro.php:36
+msgid "The simplicity of Duplicator"
+msgstr "La simplicité de Duplicator"
+
+#: views/settings/about-info.php:160
+msgid "Get More Great Tools"
+msgstr "Obtenez d&rsquo;autres super outils"
+
+#: views/settings/about-info.php:90
+msgid "Duplicate Your WordPress"
+msgstr "Dupliquer votre WordPress"
+
+#: views/settings/about-info.php:84
+msgid "Spread the Word"
+msgstr "Faites passer le mot"
+
+#: views/settings/about-info.php:72
+msgid "Leave 5 Stars"
+msgstr "Nous donner 5 étoiles"
+
+#: duplicator.php:303
+msgid "Manage"
+msgstr "Gérer"
+
+#: duplicator.php:223
+msgid "Go Pro!"
+msgstr "Version Pro"
+
+#: duplicator.php:214 views/tools/controller.php:15
+msgid "Tools"
+msgstr "Outils"
+
+#: duplicator.php:219 views/settings/controller.php:19
+msgid "Settings"
+msgstr "Paramètres"
+
+#: duplicator.php:209 views/packages/details/controller.php:47
+#: views/packages/main/packages.php:64 views/packages/main/packages.php:194
+#: views/packages/main/s1.setup1.php:68 views/packages/main/s2.scan1.php:134
+#: views/packages/main/s3.build.php:56 views/settings/controller.php:23
+msgid "Packages"
+msgstr "Paquets"
+
+#: views/settings/controller.php:26
+msgid "About"
+msgstr "A propos"
+
+#: duplicator.php:320
+msgid "Get Help"
+msgstr "Contactez le support"
+
+#: classes/utilities/class.u.php:409
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Vous n&#39;avez pas les droits suffisants pour accéder à cette page"

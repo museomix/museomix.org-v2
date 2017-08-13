@@ -37,11 +37,32 @@ class Meow_WPMC_Checkers {
 		return false;
 	}
 
-	function check_in_gallery( $file ) {
+	function check_in_gallery( $file, $attachment_id = 0 ) {
 
 		if ( !get_option( 'wpmc_galleries', false ) )
 			return false;
 
+		// Galleries in Visual Composer (WPBakery)
+		if ( class_exists( 'Vc_Manager' ) ) {
+			$galleries_images_vc = get_transient( "wpmc_galleries_images_visualcomposer" );
+			if ( in_array( $attachment_id, $galleries_images_vc ) ) {
+				if ( $this->core->debug )
+					error_log( "Media {$attachment_id} found in a Visual Composer gallery" );
+				return true;
+			}
+		}
+
+		// Check in WooCommerce Galleries
+		if ( class_exists( 'WooCommerce' ) ) {
+			$galleries_images_wc = get_transient( "wpmc_galleries_images_woocommerce" );
+			if ( in_array( $attachment_id, $galleries_images_wc ) ) {
+				if ( $this->core->debug )
+					error_log( "Media {$attachment_id} found in a WooCommerce gallery" );
+				return true;
+			}
+		}
+
+		// Check in standard WP Galleries
 		$file = $this->core->wpmc_clean_uploaded_filename( $file );
 		$uploads = wp_upload_dir();
 		$parsedURL = parse_url( $uploads['baseurl'] );
@@ -110,6 +131,34 @@ class Meow_WPMC_Checkers {
 
 		// Check in Posts Content
 		if ( get_option( 'wpmc_posts', true ) ) {
+
+			// Galleries in Visual Composer (WPBakery)
+			if ( class_exists( 'Vc_Manager' ) ) {
+				$posts_images_vc = get_transient( "wpmc_posts_images_visualcomposer" );
+				if ( in_array( $mediaId, $posts_images_vc ) ) {
+					if ( $this->core->debug )
+						error_log( "Media {$mediaId} found in post_content (Visual Composer)" );
+					return true;
+				}
+			}
+
+			// Search through the CSS class
+			if ( !empty( $mediaId ) ) {
+				$sql = $wpdb->prepare( "SELECT ID
+					FROM $wpdb->posts
+					WHERE post_type <> 'revision'
+					AND post_type <> 'attachment'
+					AND post_content LIKE %s", "%wp-image-$mediaId%" );
+				$foundIds = $wpdb->get_col( $sql );
+				$this->core->last_analysis_ids = $foundIds;
+				$mediaCount = count( $foundIds );
+				if ( $this->core->debug && $mediaCount > 0 )
+					error_log( "Media {$mediaId} found in post_content, $mediaCount time(s)" );
+				if ( $mediaCount > 0 )
+					return true;
+			}
+
+			// Search through the filename
 			$file = $this->core->wpmc_clean_uploaded_filename( $file );
 			$uploads = wp_upload_dir();
 			$parsedURL = parse_url( $uploads['baseurl'] );
@@ -138,21 +187,6 @@ class Meow_WPMC_Checkers {
 				error_log( "File {$file} found in post_content, $mediaCount time(s)" );
 			if ( $mediaCount > 0 )
 				return true;
-
-			if ( !empty( $mediaId ) ) {
-				$sql = $wpdb->prepare( "SELECT ID
-					FROM $wpdb->posts
-					WHERE post_type <> 'revision'
-					AND post_type <> 'attachment'
-					AND post_content LIKE %s", "%wp-image-$mediaId%" );
-				$foundIds = $wpdb->get_col( $sql );
-				$this->core->last_analysis_ids = $foundIds;
-				$mediaCount = count( $foundIds );
-				if ( $this->core->debug && $mediaCount > 0 )
-					error_log( "Media {$mediaId} found in post_content, $mediaCount time(s)" );
-				if ( $mediaCount > 0 )
-					return true;
-			}
 		}
 
 		// Shortcode analysis

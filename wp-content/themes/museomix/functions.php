@@ -1,4 +1,6 @@
 <?php
+add_filter( 'automatic_updates_is_vcs_checkout', '__return_false', 1 );  
+
 add_filter( 'redirect_canonical', '__return_false' );
 add_theme_support( 'menus' );
 function wpdocs_child_theme_setup() {

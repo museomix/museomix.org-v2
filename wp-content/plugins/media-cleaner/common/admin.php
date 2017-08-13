@@ -5,7 +5,7 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 	class MeowApps_Admin {
 
 		public static $loaded = false;
-		public static $admin_version = "1.2";
+		public static $admin_version = "1.3";
 
 		public $prefix; 		// prefix used for actions, filters (mfrh)
 		public $mainfile; 	// plugin main file (media-file-renamer.php)
@@ -161,6 +161,8 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 
 			$plugin_file = $plugin . '/' . $plugin . '.php';
 			if ( is_plugin_active( $plugin_file ) ) {
+				if ( $plugin == 'wplr-sync' )
+					$pro = true;
 				if ( $pro )
 					return "<small><span style='float: right;'><span class='dashicons dashicons-heart' style='color: rgba(255, 63, 0, 1); font-size: 30px !important; margin-right: 10px;'></span></span></small>";
 				else
@@ -237,26 +239,24 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 						<h3 class=""><span class="dashicons dashicons-camera"></span> UI Plugins </h3>
 						<ul class="">
 							<li><b>WP/LR Sync</b> <?php echo $this->check_install( 'wplr-sync' ) ?><br />
-								Bring synchronization from Lightroom to WordPress.</li>
+								Synchronize photos (folders, collections, keywords) from Lightroom to WordPress.</li>
 							<li><b>Meow Lightbox</b> <?php echo $this->check_install( 'meow-lightbox' ) ?><br />
-								Lightbox with EXIF information nicely displayed.</li>
+								Light but powerful lightbox that can also display photo information (EXIF).</li>
 							<li><b>Meow Gallery</b> <?php echo $this->check_install( 'meow-gallery' ) ?><br />
-								Simple gallery to make your photos look better (Masonry and others).</li>
-							<li><b>Audio Story for Images</b> <?php echo $this->check_install( 'audio-story-images' ) ?><br />
-								Add audio to your images.</li>
+								Gallery (using the built-in WP gallery) that makes your website look better.</li>
+							<!-- <li><b>Audio Story for Images</b> <?php echo $this->check_install( 'audio-story-images' ) ?><br />
+								Add audio (music, explanation, ambiance) to your images.</li> -->
 						</ul>
 					</div>
 					<div class="meow-box meow-col meow-span_1_of_2">
 						<h3 class=""><span class="dashicons dashicons-admin-tools"></span> System Plugins</h3>
 						<ul class="">
 							<li><b>Media File Renamer</b> <?php echo $this->check_install( 'media-file-renamer' ) ?><br />
-								Nicer filenames and better SEO, automatically.</li>
+								For nicer filenames and better SEO.</li>
 							<li><b>Media Cleaner</b> <?php echo $this->check_install( 'media-cleaner' ) ?><br />
 								Detect the files which are not in use.</li>
 							<li><b>WP Retina 2x</b> <?php echo $this->check_install( 'wp-retina-2x' ) ?><br />
 								The famous plugin that adds Retina support.</li>
-							<li><b>WP Category Permalink</b> <?php echo $this->check_install( 'wp-category-permalink' ) ?><br />
-								Allows you to select a main category (or taxonomy) for nicer permalinks.</li>
 						</ul>
 					</div>
 				</div>
