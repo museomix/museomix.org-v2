@@ -83,7 +83,7 @@ function CommunitiesMapdoCustomModule() {
             function init() {
                 $this->name       = esc_html__( 'Liste des communautés', 'et_builder' ); // Le nom
                 $this->slug       = 'et_pb_communities_list'; // Le slug /!\ doit être unique
-                $this->fb_support = true; // Utilisable dans le Visual Builder
+                //$this->fb_support = true; // Utilisable dans le Visual Builder
 
                 // Ici on déclare nos champs pour notre module en admin
                 $this->whitelisted_fields = array(
@@ -138,13 +138,6 @@ function CommunitiesMapdoCustomModule() {
                         ),
                     ),
                 );
-
-                // Je charge ici du CSS à ajouter éventuellement dans le style principal du thème
-                wp_register_style( 'community-list-css', get_stylesheet_directory_uri() . '/includes/community-list-css.css' );
-
-                if(!is_admin()) {
-                    wp_enqueue_style('community-list-css');
-                }
             }
 
             // La fonction get_fields sert à définir nos champs précédemment déclarés dans la fonction init()
@@ -161,8 +154,7 @@ function CommunitiesMapdoCustomModule() {
                     'include_country_list' => array(
                         'label'           => esc_html__( 'Pays à afficher', 'et_builder' ),
                         'type'            => 'multiple_checkboxes', // Des cases à cocher
-                        'option_category' => 'basic_option',
-                        // Tu notes ici le paramètres 'renderer', en effet nous devons afficher la liste de nos pays
+                        // On note ici le paramètres 'renderer', en effet nous devons afficher la liste de nos pays
                         // Et dynamiquement tant qu'à faire ! Ce paramètre permet d'aller chercher nos valeurs via une fonction
                         // Pour cela on appelle la fonction et_builder_include_country_list_option() (voir plus bas)
                         'renderer'         => $this->et_builder_include_country_list_option(),  
@@ -227,7 +219,7 @@ function CommunitiesMapdoCustomModule() {
 
                 // On vérifie qu'il y a bien des pays cochés dans notre module
                 if ( '' !== $country_list ) {
-                    // Le soucis avec Divi c'est que comme il utilise des shortcodes, toutes nos valeurs sont des chaines de caractères !
+                    // Le soucis avec Divi c'est que comme il utilise des shortcodes, toutes nos valeurs sont des chaînes de caractères !
                     // Donc on récupère non pas un tableau des pays cochés en admin, mais une liste séparée par des virgules
                     // On va donc se construire notre propre tableau :
                     $include_countries = explode(',', $country_list);
@@ -246,7 +238,7 @@ function CommunitiesMapdoCustomModule() {
                 // On va chercher nos posts avec le tableau d'arguments précédemment créé
                 $the_query = new WP_Query( $args );
                 
-                // Et on loop !
+                // Et on boucle !
                 if ( $the_query->have_posts() ) {
                     while ( $the_query->have_posts() ) {
                         $the_query->the_post(); ?>
@@ -271,7 +263,7 @@ function CommunitiesMapdoCustomModule() {
                         %1$s
                         %2$s
                     </ul>',
-                    ( '' !== $title ? sprintf( '<h1>%1$s</h1>', esc_html( $title ) ) : '' ), // le titre du module
+                    ( '' !== $title ? sprintf( '<h3>%1$s</h3>', esc_html( $title ) ) : '' ), // le titre du module
                     $posts, // les posts (notre tampon)
                     esc_attr( $module_class ), //  la classe du module (s'il y a)
                     ( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ) // l'ID du module (s'il y a)
@@ -322,10 +314,9 @@ function CommunitiesMapdoCustomModule() {
             }
         }
         new ET_Builder_Module_Communities_List;
-        
+        // On vide le cache Divi lorsque les groupes de champs sont mis à jour pour actualiser la liste des pays dans notre module en admin
         add_action( 'acf/update_field_group', 'et_pb_force_regenerate_templates' );
     }
 }
 
 add_action('et_builder_ready', 'CommunitiesMapdoCustomModule');
-

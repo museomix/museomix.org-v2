@@ -1,0 +1,106 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Elegant Themes Updater\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-06-19 04:21+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ElegantThemes\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: _x;_e;__;esc_html__;esc_html_e;esc_attr__;esc_attr_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.6.3\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: ..\n"
+
+#: ../elegant-themes-support.php:76
+#, fuzzy, php-format
+msgid "%s is a singleton class and you cannot create a second instance."
+msgstr "by %1$s | Powered by %2$s"
+
+#: ../elegant-themes-support.php:114
+msgid "Settings"
+msgstr ""
+
+#: ../elegant-themes-support.php:184 ../elegant-themes-support.php:254
+msgid "Elegant Themes Support Account"
+msgstr ""
+
+#: ../elegant-themes-support.php:210
+msgid "Support account has been created already."
+msgstr ""
+
+#: ../elegant-themes-support.php:223
+msgid "Token can't be regenerated. Support account doesn't exist."
+msgstr ""
+
+#: ../elegant-themes-support.php:255
+msgid "Regenerate Token"
+msgstr ""
+
+#: ../elegant-themes-support.php:255
+msgid "Generate New Token"
+msgstr ""
+
+#: ../elegant-themes-support.php:256
+#, fuzzy
+msgid ""
+"This plugins is used to securely create an admin account that our support "
+"team can use to log in to your WordPress Dashboard. The purpose of this "
+"plugin is to be able to create an account without sharing the password. "
+"Instead, a secret token is created that can be shared with our team that "
+"will allow them access for a limited time. After we have finished assisting "
+"you, you can disable the plugin to automatically remove the new account. "
+"Tokens created using this plugin will expire after 4 days, after which a new "
+"token will need to be generated to grant access once more. <br><br> Please "
+"click the button below to generate a new token, and then send it to the "
+"moderator who has requested access using a Private Message on our support "
+"forums."
+msgstr "Više informacija"
+
+#: ../elegant-themes-support.php:258
+msgid "Delete Token"
+msgstr ""
+
+#: ../elegant-themes-support.php:297
+msgid "Token expiration date is not set. You should regenerate the token."
+msgstr ""
+
+#: ../elegant-themes-support.php:328
+#, fuzzy, php-format
+msgid ""
+"Current Token: <br/><code style=\"padding: 10px; display: inline-block; font-"
+"size: 18px; font-style: italic; margin-top: 10px;\">%1$s</code>"
+msgstr "by %1$s | Powered by %2$s"
+
+#: ../elegant-themes-support.php:336
+msgid "This token will expire on "
+msgstr ""
+
+#: ../elegant-themes-support.php:362
+msgid "Token has been regenerated succesfully."
+msgstr ""
+
+#: ../elegant-themes-support.php:362
+msgid "Token has been created succesfully."
+msgstr ""
+
+#: ../elegant-themes-support.php:406
+msgid "Support account doesn't exist."
+msgstr ""
+
+#: ../elegant-themes-support.php:415
+msgid "Support account hasn't been removed. Try to regenerate token again."
+msgstr ""
+
+#: ../elegant-themes-support.php:422
+msgid "Cannot get the support account data. Try to regenerate token again."
+msgstr ""
+
+#: ../elegant-themes-support.php:428
+msgid "Token has been deleted successfully. "
+msgstr ""
