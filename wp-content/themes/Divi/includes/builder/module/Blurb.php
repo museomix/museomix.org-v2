@@ -40,6 +40,13 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			'icon_font_size_tablet',
 			'icon_font_size_phone',
 			'icon_font_size_last_edited',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 		);
 
 		$et_accent_color = et_builder_accent_color();
@@ -190,6 +197,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				),
 				'toggle_slug'     => 'image',
 				'affects'         => array(
+					'box_shadow_style_image',
 					'font_icon',
 					'image_max_width',
 					'use_icon_font_size',
@@ -461,6 +469,15 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			),
 		);
 
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'              => '_image',
+			'label'               => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category'     => 'layout',
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'icon_settings',
+			'depends_show_if'     => 'off',
+		) ) );
+
 		return $fields;
 	}
 
@@ -629,6 +646,25 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		);
 
 		return $output;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector = sprintf( '.%1$s', self::get_module_order_class( $function_name ) );
+
+		if (
+			isset( $this->shortcode_atts['use_icon'] )
+			&&
+			$this->shortcode_atts['use_icon'] !== 'on'
+		) {
+			self::set_style( $function_name, $boxShadow->get_style(
+				$selector . ' .et_pb_main_blurb_image',
+				$this->shortcode_atts,
+				array( 'suffix' => '_image' )
+			) );
+		}
+
+		parent::process_box_shadow( $function_name );
 	}
 }
 

@@ -199,6 +199,10 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	protected function _add_button_box_shadow_fields( $fields, $option_name, $tab_slug, $toggle_slug ) {
+		return $fields;
+	}
 }
 
 new ET_Builder_Module_Button;

@@ -298,6 +298,15 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		self::set_style( $function_name, $boxShadow->get_style(
+			'.' . self::get_module_order_class( $function_name ),
+			$this->shortcode_atts
+		) );
+	}
 }
 
 new ET_Builder_Module_Video;

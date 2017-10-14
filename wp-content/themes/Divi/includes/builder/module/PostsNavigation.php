@@ -418,6 +418,19 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
+		 */
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector = sprintf( '.%1$s .nav-previous, .%1$s .nav-next', self::get_module_order_class( $function_name ) );
+		self::set_style( $function_name, $boxShadow->get_style(
+			$selector,
+			$this->shortcode_atts,
+			array( 'important' => true )
+		) );
+	}
 }
 
 new ET_Builder_Module_Posts_Navigation;

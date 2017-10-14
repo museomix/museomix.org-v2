@@ -712,6 +712,22 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		$selectors = array(
+			'%%order_class%% input',
+			'%%order_class%% select',
+			'%%order_class%% textarea',
+			'%%order_class%% .et_pb_contact_field_options_list label > i',
+		);
+		self::set_style( $function_name, array(
+				'selector'    => implode( ', ', $selectors ),
+				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'important' => true ) )
+			)
+		);
+	}
 }
 
 new ET_Builder_Module_Contact_Form_Item;

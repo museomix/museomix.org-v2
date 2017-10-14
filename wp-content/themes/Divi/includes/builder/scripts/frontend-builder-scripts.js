@@ -4722,7 +4722,7 @@
 				if ( $current_module.find( '.et-waypoint, .et_pb_circle_counter, .et_pb_number_counter' ).length > 0 ) {
 					$current_module.find( '.et-waypoint, .et_pb_circle_counter, .et_pb_number_counter' ).each( function() {
 						var $waypoint_module = $( this );
-						
+
 						if ( $waypoint_module.hasClass( 'et_pb_circle_counter' ) ) {
 							window.et_pb_reinit_circle_counters( $waypoint_module );
 						}
@@ -5167,4 +5167,8 @@
 	} else {
 		window.et_pb_init_modules();
 	}
-})(jQuery)
+
+	$(document).ready(function(){
+		( et_pb_box_shadow_elements||[] ).map(et_pb_box_shadow_apply_overlay);
+	})
+})(jQuery);

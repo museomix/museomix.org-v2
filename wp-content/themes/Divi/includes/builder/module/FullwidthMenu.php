@@ -496,6 +496,12 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector = sprintf('.%1$s, .%1$s .sub-menu', self::get_module_order_class( $function_name ));
+		self::set_style( $function_name, $boxShadow->get_style( $selector, $this->shortcode_atts ) );
+	}
 }
 
 new ET_Builder_Module_Fullwidth_Menu;

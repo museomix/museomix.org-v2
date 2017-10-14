@@ -20,6 +20,13 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 			'zoom_icon_color',
 			'hover_overlay_color',
 			'hover_icon',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 		);
 
 		$this->fields_defaults = array(
@@ -48,6 +55,7 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
 					),
+					'image'   => esc_html__( 'Image', 'et_builder' ),
 				),
 			),
 		);
@@ -288,6 +296,15 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 				),
 			),
 		);
+
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => '_image',
+			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => 'advanced',
+			'toggle_slug'     => 'image',
+		) ) );
+
 		return $fields;
 	}
 
@@ -514,7 +531,9 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 					<?php if ( '' !== $post->post_thumbnail ) { ?>
 					<a href="<?php echo esc_url( $post->post_permalink ); ?>" title="<?php echo esc_attr( get_the_title() ); ?>">
 						<?php if ( 'on' === $fullwidth ) { ?>
-							<img src="<?php echo esc_url( $post->post_thumbnail ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" width="1080" height="9999" />
+							<span class="et_portfolio_image">
+								<img src="<?php echo esc_url( $post->post_thumbnail ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" width="1080" height="9999" />
+							</span>
 						<?php } else { ?>
 							<span class="et_portfolio_image">
 								<img src="<?php echo esc_url( $post->post_thumbnail ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" width="400" height="284" />
@@ -629,6 +648,18 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 		);
 
 		return $output;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		self::set_style( $function_name, $boxShadow->get_style(
+			sprintf( '.%1$s .project .et_portfolio_image', self::get_module_order_class( $function_name ) ),
+			$this->shortcode_atts,
+			array( 'suffix' => '_image' )
+		) );
+
+		parent::process_box_shadow( $function_name );
 	}
 }
 

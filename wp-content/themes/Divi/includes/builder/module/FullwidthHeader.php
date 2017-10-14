@@ -773,6 +773,28 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$button_1  = sprintf( '.%1$s .et_pb_button_one', self::get_module_order_class( $function_name ) );
+		$button_2  = sprintf( '.%1$s .et_pb_button_two', self::get_module_order_class( $function_name ) );
+
+		if ( isset( $this->shortcode_atts['custom_button_one'] ) && $this->shortcode_atts['custom_button_one'] == 'on' ) {
+			self::set_style( $function_name, array(
+				'selector'    => $button_1,
+				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button_one' ) )
+			) );
+		}
+
+		if ( isset( $this->shortcode_atts['custom_button_two'] ) && $this->shortcode_atts['custom_button_two'] == 'on' ) {
+			self::set_style( $function_name, array(
+				'selector'    => $button_2,
+				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button_two' ) )
+			) );
+		}
+
+		parent::process_box_shadow( $function_name );
+	}
 }
 
 new ET_Builder_Module_Fullwidth_Header;

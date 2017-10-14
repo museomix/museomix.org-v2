@@ -4,6 +4,8 @@ define( 'ET_BUILDER_AJAX_TEMPLATES_AMOUNT', apply_filters( 'et_pb_templates_load
 
 add_action( 'init', array( 'ET_Builder_Element', 'set_media_queries' ), 11 );
 
+require_once 'module/field/Factory.php';
+
 class ET_Builder_Element {
 	public $name;
 	public $slug;
@@ -143,6 +145,7 @@ class ET_Builder_Element {
 		if ( ! isset( $this->main_css_element ) ) {
 			$this->main_css_element = '%%order_class%%';
 		}
+
 
 		$this->_shortcode_callback_num = 0;
 
@@ -613,10 +616,42 @@ class ET_Builder_Element {
 		return $address;
 	}
 
+	/**
+	 * Resolves conditional defaults
+	 *
+	 * @param array $values Fields.
+	 * @return array
+	 */
+	function resolve_conditional_defaults( $values ) {
+		global $et_fb_processing_shortcode_object;
+
+		// VB handles conditional defaults itself in settings-modal.jsx
+		if ( $et_fb_processing_shortcode_object ) {
+			// Shortcode trimming for conditional defaults requires them to be resolved here too.
+			// I'm leaving this code in place in case trimming has to be disabled for whatever reason.
+			// return $this->get_shortcode_fields();
+		}
+
+		// Resolve conditional defaults for the FE
+		$resolved = $this->get_shortcode_fields();
+		foreach ( $resolved as $field_name => $field_default ) {
+			if ( is_array( $field_default ) && ! empty( $field_default[0] ) && is_array( $field_default[1] ) ) {
+				// Looks like we have a conditional default
+				// Get $depend_field value or use the first default if undefined.
+				list ( $depend_field, $conditional_defaults ) = $field_default;
+				reset( $conditional_defaults );
+				$default_key = isset( $values[ $depend_field ] ) ? $values[ $depend_field ] : key( $conditional_defaults );
+				// Set the resolved default
+				$resolved[ $field_name ] = isset( $conditional_defaults[ $default_key ] ) ? $conditional_defaults[ $default_key ] : null;
+			}
+		}
+		return $resolved;
+	}
+
 	function _shortcode_callback( $atts, $content = null, $function_name, $parent_address = '', $global_parent = '', $global_parent_type = '' ) {
 		global $et_fb_processing_shortcode_object;
 
-		$this->shortcode_atts = shortcode_atts( $this->get_shortcode_fields(), $atts );
+		$this->shortcode_atts = shortcode_atts( $this->resolve_conditional_defaults($atts), $atts );
 
 		$this->_decode_double_quotes();
 
@@ -1265,6 +1300,7 @@ class ET_Builder_Element {
 
 		// Add animation fields to all modules
 		$this->_add_additional_animation_fields();
+		$this->_add_additional_shadow_fields();
 
 		if ( ! isset( $this->_additional_fields_options ) ) {
 			return false;
@@ -2037,6 +2073,7 @@ class ET_Builder_Element {
 					"{$option_name}_border_color_hover",
 					"{$option_name}_border_radius_hover",
 					"{$option_name}_letter_spacing_hover",
+					"box_shadow_style_{$option_name}",
 				),
 				'shortcode_default' => 'off',
 				'tab_slug'          => $tab_slug,
@@ -2349,9 +2386,27 @@ class ET_Builder_Element {
 					'shortcut_index'  => $option_name,
 				);
 			}
+
+			$additional_options = $this->_add_button_box_shadow_fields(
+				$additional_options,
+				$option_name,
+				$tab_slug,
+				$toggle_slug
+			);
 		}
 
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
+	protected function _add_button_box_shadow_fields( $fields, $option_name, $tab_slug, $toggle_slug ) {
+		return array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => "_{$option_name}",
+			'label'           => esc_html__( 'Button Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => $tab_slug,
+			'toggle_slug'     => $toggle_slug,
+			'depends_default' => true,
+		) ) );
 	}
 
 	private function _add_additional_animation_fields() {
@@ -2847,6 +2902,22 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
+	protected function _add_additional_shadow_fields() {
+		$this->options_toggles['advanced']['toggles']['box_shadow'] = array(
+			'title'    => esc_html__( 'Box Shadow', 'et_builder' ),
+			'priority' => 100,
+		);
+
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+				'option_category' => 'layout',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'box_shadow',
+			) )
+		);
+	}
+
 	private function _add_custom_css_fields() {
 		if ( isset( $this->custom_css_tab ) && ! $this->custom_css_tab ) {
 			return;
@@ -3013,6 +3084,10 @@ class ET_Builder_Element {
 	 * }
 	 */
 	function get_fields() { return array(); }
+
+	function get_style_priority() {
+		return $this->_style_priority;
+	}
 
 	function hex2rgb( $color ) {
 		if ( substr( $color, 0, 1 ) == '#' ) {
@@ -3275,6 +3350,7 @@ class ET_Builder_Element {
 				';
 				break;
 
+			case 'none':
 			case 'animation-none':
 				$icon = '
 					<g>
@@ -4052,6 +4128,7 @@ class ET_Builder_Element {
 	}
 
 	function render_field( $field ) {
+		$utils = ET_Core_Data_Utils::instance();
 		$classes = array();
 		$hidden_field = '';
 		$field_el = '';
@@ -4098,10 +4175,26 @@ class ET_Builder_Element {
 			$field_name = "data.{$field_name}";
 		}
 
-		$default = isset( $field['default'] ) ? $field['default'] : '';
+		$default_arr = isset( $field['default'] ) ? $field['default'] : '';
+
+		if ( is_array( $default_arr ) && isset( $default_arr[1] ) && is_array( $default_arr[1] ) ) {
+			list($default_parent_id, $defaults_list) = $default_arr;
+			$default = esc_attr( json_encode( $default_arr ) );
+			$default_value = sprintf(
+				'(typeof(%1$s) !== \'undefined\' ? (%2$s)[%1$s] : \'\')',
+				"et_pb_$default_parent_id",
+				json_encode( $defaults_list )
+			);
+
+			$default_is_arr = true;
+		} else {
+			$default = $default_value = $default_arr;
+			$default_is_arr = false;
+		}
 
 		if ( 'font' === $field['type'] ) {
-			$default = '' === $default ? '||||' : $default;
+			$default       = '' === $default ? '||||' : $default;
+			$default_value = '' === $default_value ? '||||' : $default_value;
 		}
 
 		$font_icon_options = array( 'et_pb_font_icon', 'et_pb_button_icon', 'et_pb_button_one_icon', 'et_pb_button_two_icon' );
@@ -4112,12 +4205,14 @@ class ET_Builder_Element {
 			$field_value = esc_attr( $field_name ) . '.replace(/%91/g, "[").replace(/%93/g, "]").replace(/%22/g, "\"")';
 		}
 
-		$value_html = ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : \'%3$s\' %%>" ';
+		$value_html = $default_is_arr
+			? ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : %3$s %%>" '
+			: ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : \'%3$s\' %%>" ';
 		$value = sprintf(
 			$value_html,
 			esc_attr( $field_name ),
 			$field_value,
-			$default
+			$default_value
 		);
 
 		$attributes = '';
@@ -4143,7 +4238,7 @@ class ET_Builder_Element {
 			$field['class'] .= ' et-pb-font-select';
 		}
 
-		if ( in_array( $field['type'], array( 'font', 'hidden', 'multiple_checkboxes', 'select_with_option_groups', 'select_animation' ) ) && ! $only_options ) {
+		if ( in_array( $field['type'], array( 'font', 'hidden', 'multiple_checkboxes', 'select_with_option_groups', 'select_animation', 'presets', 'select_box_shadow' ) ) && ! $only_options ) {
 			$hidden_field = sprintf(
 				'<input type="hidden" name="%1$s" id="%2$s" class="et-pb-main-setting %3$s" data-default="%4$s" %5$s %6$s/>',
 				esc_attr( $field['name'] ),
@@ -4331,10 +4426,14 @@ class ET_Builder_Element {
 				}
 
 				if ( isset( $field['default'] ) ) {
-					$attributes .= sprintf( ' data-default="%1$s"', esc_attr( $field['default'] ) );
+					$attributes .= sprintf( ' data-default="%1$s"', esc_attr( $default ) );
 				}
 
-				$select = $this->render_select( $field_name, $field['options'], $field['id'], $field['class'], $attributes, $field['type'], $button_options, $default, $only_options );
+				//If default is an array, then $default_value value is an js expression, so it doesn't need to be encoded
+				//In other case it needs to be encoded
+				$select_default = $default_is_arr ? $default_value : json_encode( $default_value );
+
+				$select = $this->render_select( $field_name, $field['options'], $field['id'], $field['class'], $attributes, $field['type'], $button_options, $select_default, $only_options );
 
 				if ( $only_options ) {
 					$field_el = $select;
@@ -4408,6 +4507,63 @@ class ET_Builder_Element {
 					</div>',
 					$animation_buttons,
 					$hidden_field
+				);
+				break;
+			case 'select_box_shadow':
+			case 'presets':
+				$presets         = $field['presets'];
+				$presets_buttons = '';
+
+				foreach ( $presets as $preset ) {
+					$fields = isset( $preset['fields'] )
+						? htmlspecialchars( json_encode( $preset['fields'] ), ENT_QUOTES, 'UTF-8' )
+						: '[]';
+					$presets_buttons .= sprintf(
+						'<div class="et-preset" data-value="%1$s" data-fields="%2$s">',
+						esc_attr( $preset['value'] ),
+						esc_attr( $fields )
+					);
+					if ( isset( $preset['title'] ) && ! empty( $preset['title'] ) ) {
+						$presets_buttons .= sprintf(
+							'<span class="et-preset-title" >%1$s</span>',
+							$preset['title']
+						);
+					}
+
+					if ( isset( $preset['icon'] ) && ! empty( $preset['icon'] ) ) {
+						$presets_buttons .= sprintf(
+							'<span class="et-preset-icon">%1$s</span>',
+							$this->get_icon( $preset['icon'] )
+						);
+					}
+
+					if ( isset( $preset['content'] ) && ! empty( $preset['content'] ) ) {
+						if ( is_array( $preset['content'] ) ) {
+							$content = isset( $preset['content']['content'] ) ? $preset['content']['content'] : '';
+							$class   = isset( $preset['content']['class'] ) ? ' ' . $preset['content']['class'] : '';
+						} else {
+							$content = $preset['content'];
+							$class = '';
+						}
+
+						$presets_buttons .= sprintf(
+							'<span class="et-preset-content%2$s">%1$s</span>',
+							$content,
+							$class
+						);
+					}
+
+					$presets_buttons .= '</div>';
+				}
+
+				$field_el = sprintf(
+					'<div class="et-presets et-preset-container et-pb-main-setting %3$s" data-default="none">
+						%1$s
+						%2$s
+					</div>',
+					$presets_buttons,
+					$hidden_field,
+					esc_attr( $field['type'] )
 				);
 				break;
 			case 'color':
@@ -4537,7 +4693,7 @@ class ET_Builder_Element {
 							$value_html,
 							esc_attr( $field_name . '_' . $device ),
 							esc_attr( $field_name . '_' . $device ),
-							$default
+							$default_value
 						);
 						$has_saved_value[] = sprintf( ' data-has_saved_value="<%%- typeof( %1$s ) !== \'undefined\' ? \'yes\' : \'no\' %%>" ',
 							esc_attr( $field_name . '_' . $device )
@@ -4677,7 +4833,7 @@ class ET_Builder_Element {
 							$value_html,
 							esc_attr( $field_name . '_' . $device_type ),
 							esc_attr( $field_name . '_' . $device_type ),
-							$default
+							$default_value
 						);
 						// additional data attribute to handle default values for the responsive options
 						$has_saved_value = sprintf( ' data-has_saved_value="<%%- typeof( %1$s ) !== \'undefined\' ? \'yes\' : \'no\' %%>" ',
@@ -4735,11 +4891,14 @@ class ET_Builder_Element {
 				}
 
 				if ( 'range' === $field['type'] ) {
+					$range_value_html = $default_is_arr
+						? ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s :parseFloat(%3$s) %%>" '
+						: ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : parseFloat(\'%3$s\') %%>" ';
 					$value = sprintf(
-						$value_html,
+						$range_value_html,
 						esc_attr( $field_name ),
 						esc_attr( sprintf( 'parseFloat( %1$s )', $field_name ) ),
-						( '' !== $default ? floatval( $default ) : '' )
+						$default_value
 					);
 					$fixed_range = isset($field['fixed_range']) && $field['fixed_range'];
 
@@ -4774,7 +4933,7 @@ class ET_Builder_Element {
 								$value_html,
 								esc_attr( $field_name . '_' . $device_type ),
 								esc_attr( sprintf( 'parseFloat( %1$s )', $field_name . '_' . $device_type ) ),
-								( '' !== $default ? floatval( $default ) : '' )
+								$default_value
 							);
 							$range_el .= sprintf(
 								'<input type="range" class="et-pb-main-setting et-pb-range et_pb_setting_mobile et_pb_setting_mobile_%3$s%6$s" data-default="%1$s"%4$s%2$s data-device="%3$s"%5$s/>',
@@ -4869,11 +5028,12 @@ class ET_Builder_Element {
 				$option_group_name = esc_attr( $option_group_name );
 				$options_output   .= '0' !== $option_group_name ? "<optgroup label='{$option_group_name}'>" : '';
 				$options_output   .= sprintf( '<%%= window.et_builder.options_template_output("select",%1$s,this.model.toJSON()) %%>',
-					json_encode( array(
-						'select_name' => $name,
-						'list'        => $option_group,
-						'default'     => $default,
-					) )
+					sprintf(
+						'{select_name: "%1$s", list: %2$s, default: %3$s, }',
+						$name,
+						json_encode($option_group),
+						$default
+					)
 				);
 				$options_output   .= '0' !== $option_group_name ? '</optgroup>' : '';
 			}
@@ -4885,11 +5045,12 @@ class ET_Builder_Element {
 		} else {
 			$class           = rtrim( 'et-pb-main-setting ' . $class );
 			$options_output .= sprintf( '<%%= window.et_builder.options_template_output("select",%1$s,this.model.toJSON()) %%>',
-				json_encode( array(
-					'select_name' => $name,
-					'list'        => $options,
-					'default'     => $default,
-				) )
+				sprintf(
+					'{select_name: "%1$s", list: %2$s, default: %3$s, }',
+					$name,
+					json_encode($options),
+					$default
+				)
 			);
 		}
 
@@ -5475,6 +5636,8 @@ class ET_Builder_Element {
 		$this->process_advanced_custom_margin_options( $function_name );
 
 		$this->process_advanced_button_options( $function_name );
+
+		$this->process_box_shadow( $function_name );
 	}
 
 	function process_inline_fonts_option( $fonts_list ) {
@@ -6866,6 +7029,18 @@ class ET_Builder_Element {
 				) );
 			}
 		}
+	}
+
+	function process_box_shadow( $function_name ) {
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
+		 */
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		self::set_style( $function_name, array(
+			'selector'    => '%%order_class%%',
+			'declaration' => $boxShadow->get_value( $this->shortcode_atts )
+		) );
 	}
 
 	function make_options_filterable() {

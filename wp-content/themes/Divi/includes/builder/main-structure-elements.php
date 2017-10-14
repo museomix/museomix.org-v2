@@ -1248,6 +1248,24 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 
 	}
 
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$style = $boxShadow->get_value( $this->shortcode_atts );
+
+		if ( empty( $style ) || $style === 'none' ) {
+			return;
+		}
+
+		if ( strpos( $style, 'inset' ) === false ) {
+			self::set_style( $function_name, $boxShadow->get_style(
+				sprintf( '.%1$s', self::get_module_order_class( $function_name ) ),
+				$this->shortcode_atts,
+				array( 'always_overlay' => true )
+			) );
+		} else {
+			parent::process_box_shadow( $function_name );
+		}
+	}
 }
 new ET_Builder_Section;
 
@@ -2666,6 +2684,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			'et_pb_column_parallax' => $et_pb_column_parallax,
 			'et_pb_column_css' => $et_pb_column_css,
 		);
+
 
 		$current_row_position = $et_pb_rendering_column_content ? 'internal_row' : 'regular_row';
 

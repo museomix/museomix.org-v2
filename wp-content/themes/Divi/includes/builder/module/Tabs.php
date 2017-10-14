@@ -206,6 +206,22 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$style     = $boxShadow->get_value( $this->shortcode_atts );
+
+		if ( empty( $style ) ) {
+			return;
+		}
+
+		$selector = $boxShadow->is_inset( $style ) ? '%%order_class%% .et-pb-active-slide' : '%%order_class%%';
+
+		self::set_style( $function_name, array(
+			'selector'    => $selector,
+			'declaration' => $style
+		) );
+	}
 }
 
 new ET_Builder_Module_Tabs;

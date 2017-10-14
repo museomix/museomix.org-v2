@@ -1211,6 +1211,20 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
+		 */
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector = '.' . self::get_module_order_class( $function_name );
+
+		if ( isset( $this->shortcode_atts['fullwidth'] ) && $this->shortcode_atts['fullwidth'] === 'off' ) {
+			$selector .= ' article.et_pb_post';
+		}
+
+		self::set_style( $function_name, $boxShadow->get_style( $selector, $this->shortcode_atts ) );
+	}
 }
 
 new ET_Builder_Module_Blog;

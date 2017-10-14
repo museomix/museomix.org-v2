@@ -26,6 +26,13 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 			'admin_label',
 			'module_id',
 			'module_class',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 		);
 
 		$this->main_css_element = '%%order_class%%';
@@ -46,6 +53,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
 					),
+					'image'   => esc_html__( 'Image', 'et_builder' ),
 				),
 			),
 			'custom_css' => array(
@@ -280,6 +288,15 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 				),
 			),
 		);
+
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => '_image',
+			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => 'advanced',
+			'toggle_slug'     => 'image',
+		) ) );
+
 		return $fields;
 	}
 
@@ -518,6 +535,21 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 		);
 
 		return $output;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector = sprintf( '.%1$s .et_pb_portfolio_image', self::get_module_order_class( $function_name ) );
+		self::set_style( $function_name, $boxShadow->get_style(
+			$selector,
+			$this->shortcode_atts,
+			array( 'suffix' => '_image' )
+		) );
+
+		self::set_style( $function_name, $boxShadow->get_style(
+			'.' . self::get_module_order_class( $function_name ),
+			$this->shortcode_atts
+		) );
 	}
 }
 

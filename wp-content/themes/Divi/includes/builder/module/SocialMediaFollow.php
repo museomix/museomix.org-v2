@@ -226,6 +226,15 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector  = sprintf( '.%1$s .et_pb_social_icon a', self::get_module_order_class( $function_name ) );
+		self::set_style( $function_name, array(
+			'selector'    => $selector,
+			'declaration' => $boxShadow->get_value( $this->shortcode_atts )
+		) );
+	}
 }
 
 new ET_Builder_Module_Social_Media_Follow;

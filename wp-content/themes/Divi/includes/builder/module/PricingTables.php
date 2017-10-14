@@ -538,6 +538,24 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		);
 		return $output;
 	}
+
+	function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		if (
+			isset( $this->shortcode_atts['custom_button'] )
+			&&
+			$this->shortcode_atts['custom_button'] === 'on'
+		) {
+			self::set_style( $function_name, array(
+					'selector'    => '%%order_class%% .et_pb_button',
+					'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )
+				)
+			);
+		}
+
+		parent::process_box_shadow( $function_name );
+	}
 }
 
 new ET_Builder_Module_Pricing_Tables;

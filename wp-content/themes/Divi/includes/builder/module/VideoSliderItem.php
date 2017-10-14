@@ -252,6 +252,10 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function _add_additional_shadow_fields() {
+
+	}
 }
 
 new ET_Builder_Module_Video_Slider_Item;

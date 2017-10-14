@@ -25,6 +25,13 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 			'hover_overlay_color',
 			'hover_icon',
 			'orientation',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 		);
 
 		$this->fields_defaults = array(
@@ -53,6 +60,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
 					),
+					'image'   => esc_html__( 'Image', 'et_builder' ),
 				),
 			),
 			'custom_css' => array(
@@ -362,6 +370,14 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 			),
 		);
 
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => '_image',
+			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => 'advanced',
+			'toggle_slug'     => 'image',
+		) ) );
+
 		return $fields;
 	}
 
@@ -496,7 +512,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 
 		$output = sprintf(
 			'<div%1$s class="et_pb_module et_pb_gallery%2$s%3$s%4$s%6$s%7$s%8$s clearfix">
-				<div class="et_pb_gallery_items et_post_gallery" data-per_page="%5$d">',
+				<div class="et_pb_gallery_items et_post_gallery clearfix" data-per_page="%5$d">',
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( ltrim( $module_class ) ) ) : '' ),
 			esc_attr( $fullwidth_class ),
@@ -569,6 +585,27 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		$output .= "</div><!-- .et_pb_gallery -->";
 
 		return $output;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		if ( isset( $this->shortcode_atts['fullwidth']) && $this->shortcode_atts['fullwidth'] === 'on' ) {
+			self::set_style( $function_name, $boxShadow->get_style(
+				'.' . self::get_module_order_class( $function_name ),
+				$this->shortcode_atts
+			) );
+			return;
+		}
+
+		$selector = sprintf( '.%1$s .et_pb_gallery_image', self::get_module_order_class( $function_name ) );
+		self::set_style( $function_name, $boxShadow->get_style(
+			$selector,
+			$this->shortcode_atts,
+			array( 'suffix' => '_image' )
+		) );
+
+		parent::process_box_shadow( $function_name );
 	}
 }
 

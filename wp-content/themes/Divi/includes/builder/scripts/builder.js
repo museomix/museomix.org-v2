@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.80';
+window.et_builder_version = '3.0.82';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -2826,6 +2826,7 @@ window.et_builder_product_name = 'Divi';
 			performSaving : function( option_tabs_selector ) {
 				var thisClass  = this,
 					attributes = {},
+					unsetAttrs = [],
 					defaults   = {},
 					options_selector = typeof option_tabs_selector !== 'undefined' && '' !== option_tabs_selector ? option_tabs_selector : 'input, select, textarea, #et_pb_content_main';
 
@@ -2888,11 +2889,13 @@ window.et_builder_product_name = 'Divi';
 						setting_value,
 						checked_values = [],
 						name = $this_el.is('#et_pb_content_main') ? 'et_pb_content_new' : $this_el.attr('id'),
-						default_value = $this_el.data('default') || '',
-						custom_css_option_value;
-
-					// convert default value to string to make sure current and default values have the same type
-					default_value = default_value + '';
+						default_value = et_pb_get_default_setting_value($this_el) || '',
+						custom_css_option_value,
+						isEqualToDefault = function (v1, v2) {
+							return $this_el.hasClass('et-pb-range-input')
+								? _.isEqual(parseFloat(v1), parseFloat(v2))
+								: _.isEqual(v1, v2);
+						};
 
 					// name attribute is used in normal html checkboxes, use it instead of ID
 					if ( $this_el.is( ':checkbox' ) ) {
@@ -2975,7 +2978,11 @@ window.et_builder_product_name = 'Divi';
 					}
 
 					// save the attribute value
-					attributes[name] = setting_value;
+					if ( ! isEqualToDefault(setting_value, default_value) ) {
+						attributes[name] = setting_value;
+					} else {
+						unsetAttrs.push(name);
+					}
 				} );
 
 				// add defaults object
@@ -3027,6 +3034,7 @@ window.et_builder_product_name = 'Divi';
 
 				// set model attributes
 				this.model.set( attributes );
+				unsetAttrs.map(this.model.unset.bind(this.model));
 			},
 
 			saveTemplate : function( event ) {
@@ -12175,6 +12183,7 @@ window.et_builder_product_name = 'Divi';
 			var $options_wrapper            = $container.find( '.et_options_list:not(.et_conditional_logic)' );
 			var $conditional_logic          = $container.find( '.et_conditional_logic' );
 			var $select_animation           = $container.find( '.et_select_animation' );
+			var $presets                    = $container.find( '.et-preset-container' );
 			var $background_fields          = $container.find( '.et-pb-option--background, .et-pb-option--background-field' );
 			var $regular_input              = $container.find( 'input.regular-text.et_pb_setting_mobile' );
 			var hidden_class                = 'et_pb_hidden';
@@ -13055,6 +13064,47 @@ window.et_builder_product_name = 'Divi';
 				})
 			});
 
+			$presets.each(function() {
+				var $this = $(this);
+				var $style = $this.find('input[type="hidden"]');
+				var active_class = 'et-preset-active';
+				var change_value = function(id, value){
+					var el = $this.closest('.et-pb-options-toggle-container').find('#et_pb_' + id);
+					el.val(value);
+					el.trigger('change');
+				};
+				var update_presets = function () {
+					$this.find('.et-preset').removeClass(active_class);
+					$this.find('.et-preset[data-value="' + $style.val() + '"]').addClass(active_class);
+				};
+
+				$this.on('click', '.et-preset', function(event) {
+					var $preset = $(this);
+					var type = $preset.attr('data-value').trim();
+					var fields = {};
+					event.preventDefault();
+
+					if ( $preset.hasClass(active_class) ) {
+						return;
+					}
+
+					$this.find('.et-preset').removeClass(active_class);
+
+					$preset.addClass(active_class);
+					$style.val( type ).trigger('change');
+
+					try	{
+						fields = JSON.parse($preset.attr('data-fields'));
+					} catch(e){
+						fields = [];
+					}
+
+					$.each(fields, change_value);
+				});
+				$style.on('change', update_presets);
+				update_presets();
+			});
+
 			$yes_no_button.click( function() {
 				var $this_el = $( this ),
 					$this_select = $this_el.closest( '.et_pb_yes_no_button_wrapper' ).find( 'select' );
@@ -13547,7 +13597,6 @@ window.et_builder_product_name = 'Divi';
 				$range_input.val( range_value ).trigger( 'et_pb_setting:change' );
 
 				et_pb_update_mobile_defaults( $this_el, range_value );
-
 			} );
 
 			if ( $range_field.length ) {
@@ -13626,9 +13675,14 @@ window.et_builder_product_name = 'Divi';
 						this_device       = typeof $this_el.data( 'device' ) === 'undefined' ? 'all' : $this_el.data( 'device' ),
 						$option_container = $this_el.closest( '.et-pb-option-container' ),
 						$reset_button    = $option_container.find( '.et-pb-reset-setting' ),
-						is_range_option  = $this_el.hasClass( 'et-pb-range' );
+						is_range_option  = $this_el.hasClass( 'et-pb-range' ),
+						is_preset  = $this_el.hasClass( 'et-presets' ) || $this_el.hasClass( 'et_select_animation' );
 
 					var $current_element = is_range_option && 'all' === this_device ? $this_el.siblings( '.et-pb-range-input' ) : $this_el;
+
+					if (is_preset) {
+						$current_element = $this_el.children('input');
+					}
 
 					$current_element = is_range_option && 'all' !== this_device ? $this_el.siblings( '.et-pb-range-input.et_pb_setting_mobile_' + this_device ) : $current_element;
 
@@ -14079,6 +14133,14 @@ window.et_builder_product_name = 'Divi';
 
 			// need to check for 'undefined' type instead of $element.data( default_data_name ) || '' because default value maybe 0
 			default_value = typeof $element.data( default_data_name ) !== 'undefined' ? $element.data( default_data_name ) : '';
+
+			if (_.isArray(default_value) && default_value.length > 0) {
+				var target = $element.closest('.et-pb-options-toggle-container').find('#et_pb_' + default_value[0]);
+				var values = default_value[1] || {};
+
+				default_value = values['' + target.val()];
+			}
+
 			// convert any type to string
 			default_value = default_value + '';
 
@@ -14235,6 +14297,11 @@ window.et_builder_product_name = 'Divi';
 			if ( $main_setting.hasClass('et_select_animation') ) {
 				$main_setting.find('.et_animation_button > a.et_active_animation').removeClass('et_active_animation');
 				$main_setting.find('.et_animation_button:first > a').addClass('et_active_animation');
+			}
+
+			if ( $main_setting.hasClass('et-presets') ) {
+				// When presets control is resetted, remove the active class and add it to its first preset
+				$main_setting.find('.et-preset').removeClass('et-preset-active').first().addClass('et-preset-active');
 			}
 		}
 

@@ -19,6 +19,13 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			'icon_hover_color',
 			'hover_overlay_color',
 			'hover_icon',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 			'show_pagination',
 		);
 
@@ -43,6 +50,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				'toggles' => array(
 					'overlay' => esc_html__( 'Overlay', 'et_builder' ),
 					'badge'   => esc_html__( 'Sale Badge', 'et_builder' ),
+					'image'   => esc_html__( 'Image', 'et_builder' ),
 				),
 			),
 		);
@@ -383,6 +391,15 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				),
 			),
 		);
+
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => '_image',
+			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => 'advanced',
+			'toggle_slug'     => 'image',
+		) ) );
+
 		return $fields;
 	}
 
@@ -697,6 +714,19 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		}
 
 		return $args;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector  = sprintf( '.%1$s .et_shop_image', self::get_module_order_class( $function_name ) );
+
+		self::set_style( $function_name, $boxShadow->get_style(
+			$selector,
+			$this->shortcode_atts,
+			array( 'suffix' => '_image' )
+		) );
+
+		parent::process_box_shadow( $function_name );
 	}
 }
 

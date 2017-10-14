@@ -26,6 +26,13 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			'portrait_border_radius',
 			'portrait_width',
 			'portrait_height',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 		);
 
 		$this->fields_defaults = array(
@@ -297,6 +304,14 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			),
 		);
 
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => '_image',
+			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => 'advanced',
+			'toggle_slug'     => 'portrait',
+		) ) );
+
 		return $fields;
 	}
 
@@ -457,6 +472,18 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 		);
 
 		return $output;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector  = sprintf( '.%1$s .et_pb_testimonial_portrait:before', self::get_module_order_class( $function_name ) );
+
+		self::set_style( $function_name, array(
+			'selector' => $selector,
+			'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_image' ) )
+		) );
+
+		parent::process_box_shadow( $function_name );
 	}
 }
 

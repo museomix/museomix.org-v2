@@ -20,6 +20,13 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 			'hover_icon',
 			'zoom_icon_color',
 			'hover_overlay_color',
+			'box_shadow_style_image',
+			'box_shadow_horizontal_image',
+			'box_shadow_vertical_image',
+			'box_shadow_blur_image',
+			'box_shadow_spread_image',
+			'box_shadow_color_image',
+			'box_shadow_position_image',
 		);
 
 		$this->fields_defaults = array(
@@ -48,6 +55,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
 					),
+					'icon_settings' => esc_html__( 'Image', 'et_builder' ),
 				),
 			),
 		);
@@ -322,6 +330,15 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 				'option_class'    => 'et_pb_custom_css_regular',
 			),
 		);
+
+		$fields = array_merge( $fields, ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( array(
+			'suffix'          => '_image',
+			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
+			'option_category' => 'layout',
+			'tab_slug'        => 'advanced',
+			'toggle_slug'     => 'icon_settings',
+		) ) );
+
 		return $fields;
 	}
 
@@ -537,9 +554,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 
 					if ( '' !== $thumb ) : ?>
 						<a href="<?php echo esc_url( $permalink ); ?>">
-						<?php if ( 'on' !== $fullwidth ) : ?>
 							<span class="et_portfolio_image">
-						<?php endif; ?>
 								<?php print_thumbnail( $thumb, $thumbnail["use_timthumb"], $titletext, $width, $height ); ?>
 						<?php if ( 'on' !== $fullwidth ) :
 
@@ -556,8 +571,8 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 								);
 
 						?>
-							</span>
 						<?php endif; ?>
+							</span>
 						</a>
 				<?php
 					endif;
@@ -626,7 +641,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
 			esc_attr( $posts_number),
-			('on' === $show_pagination ? '' : 'no_pagination' ),
+			('on' === $show_pagination ? 'clearfix' : 'no_pagination' ),
 			('on' === $show_pagination ? '<div class="et_pb_portofolio_pagination"></div>' : '' ),
 			is_rtl() ? ' data-rtl="true"' : '',
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
@@ -637,6 +652,18 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 		);
 
 		return $output;
+	}
+
+	public function process_box_shadow( $function_name ) {
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+
+		self::set_style( $function_name, $boxShadow->get_style(
+			sprintf( '.%1$s .project .et_portfolio_image', self::get_module_order_class( $function_name ) ),
+			$this->shortcode_atts,
+			array( 'suffix' => '_image' )
+		) );
+
+		parent::process_box_shadow( $function_name );
 	}
 }
 

@@ -294,6 +294,36 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	public function process_box_shadow( $function_name ) {
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
+		 */
+		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector = sprintf( '.%1$s span.et_pb_counter_container', self::get_module_order_class( $function_name ) );
+		$value = $boxShadow->get_value( $this->shortcode_atts );
+
+		if ( empty( $value ) || $value === 'none' ) {
+			return;
+		}
+
+		if ( strpos( $value, 'inset' ) === false ) {
+			self::set_style( $function_name, array(
+				'selector' => "$selector>.box-shadow-overlay",
+				'declaration' => 'box-shadow: none;',
+			) );
+		} else {
+			self::set_style( $function_name, array(
+				'selector' => $selector,
+				'declaration' => 'box-shadow: none;',
+			) );
+		}
+
+		self::set_style( $function_name, $boxShadow->get_style(
+			$selector,
+			$this->shortcode_atts
+		) );
+	}
 }
 
 new ET_Builder_Module_Bar_Counters_Item;
