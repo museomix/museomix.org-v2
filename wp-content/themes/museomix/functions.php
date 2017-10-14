@@ -40,6 +40,7 @@ require_once(dirname(__FILE__).'/includes/rewrite_rules.php');
 require_once(dirname(__FILE__).'/includes/menus.php');
 require_once(dirname(__FILE__).'/includes/permalinks.php');
 require_once(dirname(__FILE__).'/includes/locations.php');
+require_once(dirname(__FILE__).'/includes/taxonomies.php');
 
 add_image_size('community_image', 528,297, true);
 add_image_size('news_thumbnail', 346,200, true);
@@ -71,3 +72,73 @@ function locations_nopaging( $query ){
     }
 }
 add_action( 'pre_get_posts', 'locations_nopaging' );
+
+
+
+/*
+    MENU ANYWHERE
+*/
+function menu_function($atts, $content = null) {
+    extract(
+        shortcode_atts(
+            array( 'name' => null, ),
+            $atts
+        )
+    );
+    return wp_nav_menu(
+        array(
+            'menu' => $name,
+            'echo' => false
+        )
+    );
+}
+add_shortcode('menu', 'menu_function');
+
+/* FACET WP PAGINATION */
+function my_facetwp_pager_html( $output, $params ) {
+    $output = '';
+    $page = $params['page'];
+    $total_pages = $params['total_pages'];
+    
+
+    $text_page      = __( 'Page', 'fwp' );
+    $text_of        = __( 'of', 'fwp' );
+
+    // "Page 5 of 150"
+    $output .= '<span class="facetwp-pager-label">' . "$text_page $page $text_of $total_pages</span>";
+    if ( $page > 1 ) {
+        $output .= '<a class="facetwp-page" data-page="' . ($page - 1) . '">&lt;</a>';
+    }
+    if ( 3 < $page ) {
+        $output .= '<a class="facetwp-page first-page" data-page="1">&lt;&lt;</a>';
+    }
+    if ( 1 < ( $page - 10 ) ) {
+        $output .= '<a class="facetwp-page" data-page="' . ($page - 10) . '">' . ($page - 10) . '</a>';
+    }
+    for ( $i = 2; $i > 0; $i-- ) {
+        if ( 0 < ( $page - $i ) ) {
+            $output .= '<a class="facetwp-page" data-page="' . ($page - $i) . '">' . ($page - $i) . '</a>';
+        }
+    }
+
+    // Current page
+    $output .= '<a class="facetwp-page active" data-page="' . $page . '">' . $page . '</a>';
+
+    for ( $i = 1; $i <= 2; $i++ ) {
+        if ( $total_pages >= ( $page + $i ) ) {
+            $output .= '<a class="facetwp-page" data-page="' . ($page + $i) . '">' . ($page + $i) . '</a>';
+        }
+    }
+    if ( $total_pages > ( $page + 10 ) ) {
+        $output .= '<a class="facetwp-page" data-page="' . ($page + 10) . '">' . ($page + 10) . '</a>';
+    }
+    if ( $page < $total_pages && $total_pages > 1 ) {
+        $output .= '<a class="facetwp-page" data-page="' . ($page + 1) . '">&gt;</a>';
+    }
+    if ( $total_pages > ( $page + 2 ) ) {
+        $output .= '<a class="facetwp-page last-page" data-page="' . $total_pages . '">&gt;&gt;</a>';
+    }
+    return $output;
+}
+
+add_filter( 'facetwp_pager_html', 'my_facetwp_pager_html', 10, 2 );

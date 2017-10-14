@@ -28,14 +28,17 @@ $community_museums = get_posts(
 					'compare' => 'LIKE',
 				),
 			),
+			'posts_per_page' => -1,
 			'suppress_filters' => false,
 		)
 );
 if ($community_museums):
 	$community_museums_tmp = array();
+	$i = 0;
 	foreach($community_museums as $museum):
 		$edition = get_field('edition', $museum);
-		$community_museums_tmp[$edition->post_title] = $museum;
+		$community_museums_tmp[$edition->post_title.'_'.$i] = $museum;
+		$i++;
 	endforeach;
 	if ($community_museums_tmp):
 		$community_museums = $community_museums_tmp;
@@ -91,16 +94,19 @@ add_subitems_to_menu(__('Community menu','museomix'),0,  $items);
 		<div class="container ">
 			<div class="breadcrumb">
 				<?php
-				if(function_exists('bcn_display'))
-				{
-					bcn_display();
+				if ( function_exists('yoast_breadcrumb') ) {
+					yoast_breadcrumb('
+					<p id="breadcrumbs">','</p>
+					');
 				}
-				wp_nav_menu(
-					array(
-							'menu' => __('Community menu','museomix'),
-							'menu_class' => 'page_menu'
-					)
-				);
+				if (!empty($items)) {
+					wp_nav_menu(
+						array(
+								'menu' => __('Community menu','museomix'),
+								'menu_class' => 'page_menu'
+						)
+					);
+				}				
 				?>
 				</div>
 				<?php the_field('introduction'); ?>

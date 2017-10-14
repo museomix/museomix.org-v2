@@ -47,7 +47,6 @@ if ($resume || $gallery):
 	);
 endif;
 
-add_subitems_to_menu(__('Location menu','museomix'),0,  $items);
 
 /* Prototypes */
 $museum_prototypes = get_posts(
@@ -56,13 +55,22 @@ $museum_prototypes = get_posts(
 			'meta_query' => array(
 				array(
 					'key'     => 'museomix',
-					'value'   =>	get_the_ID(),
+					'value'   => get_the_ID(),
 					'compare' => 'LIKE',
 				),
 			),
+			'posts_per_page' => -1,
 			'suppress_filters' => false,
 		)
 );
+if ($museum_prototypes):
+	$items[] = array(
+		'text' => __('Prototypes', 'museomix'),
+		'url' => get_the_permalink().'#museum-prototypes'
+	);
+endif;
+add_subitems_to_menu(__('Location menu','museomix'),0,  $items);
+
 ?>
 
 <div id="main-content">
@@ -100,11 +108,12 @@ $museum_prototypes = get_posts(
 		<div class="container ">
 			<div class="breadcrumb">
 				<?php
-				if(function_exists('bcn_display'))
-				{
-					bcn_display();
+				if ( function_exists('yoast_breadcrumb') ) {
+					yoast_breadcrumb('
+					<p id="breadcrumbs">','</p>
+					');
 				}
-				if ($playgrounds):
+				if ($items):
 					wp_nav_menu(
 						array(
 								'menu' => __('Location menu','museomix'),
@@ -219,7 +228,7 @@ $museum_prototypes = get_posts(
   <?php
   $community_news = $community_museums = false;
 
-  if ($playgrounds || $community_museums):
+  if ($playgrounds || $community_museums || $museum_prototypes):
   ?>
   	<div class="et_pb_section et_section_regular sep_section" id="playgrounds">
 			<?php if ($playgrounds): ?>
@@ -267,7 +276,7 @@ $museum_prototypes = get_posts(
 					</div>
 				</div>
 				<?php
-
+				endif;
 				if ($team):
 				?>
 				<div class=" et_pb_row tricolumn_block" id="team">
@@ -382,7 +391,6 @@ $museum_prototypes = get_posts(
 				<?php endif; ?>
 				</div>
 			</div>
-			<?php endif; ?>
   	</div>
   <?php endif; ?>
 </div> <!-- #main-content -->

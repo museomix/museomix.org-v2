@@ -18,7 +18,11 @@ function display_news($data, $link_text = null) {
 			$post_thumbnail = get_field('vignette_lieu', $item->ID);
 		endif;
 		if ($item->post_type == 'prototype'):
-			$post_thumbnail = (int)get_attachment_id_from_url(get_field('visuel_prototype', $item->ID));
+			if (is_integer(get_field('visuel_prototype', $item->ID)) && get_field('visuel_prototype', $item->ID)) {
+				$post_thumbnail = get_field('visuel_prototype', $item->ID);
+			} else {
+				$post_thumbnail = (int)get_attachment_id_from_url(get_field('visuel_prototype', $item->ID));
+			}
 		endif;
 		if (!$post_thumbnail):
 			$post_thumbnail = get_the_post_thumbnail($item);

@@ -112,9 +112,10 @@ if ((bool)$top_banner && $museum): ?>
 	<div class="container ">
 		<div class="breadcrumb">
 			<?php
-			if(function_exists('bcn_display'))
-			{
-				bcn_display();
+			if ( function_exists('yoast_breadcrumb') ) {
+				yoast_breadcrumb('
+				<p id="breadcrumbs">','</p>
+				');
 			}
 			wp_nav_menu(
 				array(

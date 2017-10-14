@@ -135,6 +135,7 @@ function TypesPagesPrototype(){
 			'hierarchical' => true,
 			'has_archive' => true,
 			'rewrite' => array('slug'=>'prototypes'),
+			'taxonomies' => array('post_tag', 'theme_prototype', 'technologie', 'perimetre'),
 			'supports' => array('title', 'editor', 'author', 'thumbnail','revisions'),
 		)
 	);

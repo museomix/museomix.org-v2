@@ -1,5 +1,5 @@
 <?php exit; ?>{
-    "version": "0.9.5.2",
+    "version": "0.9.5.4",
     "cluster.messagebus.debug": false,
     "cluster.messagebus.enabled": false,
     "cluster.messagebus.sns.region": "",
@@ -7,7 +7,7 @@
     "cluster.messagebus.sns.api_secret": "",
     "cluster.messagebus.sns.topic_arn": "",
     "dbcache.configuration_overloaded": false,
-    "dbcache.debug": false,
+    "dbcache.debug": "0",
     "dbcache.enabled": "1",
     "dbcache.engine": "file",
     "dbcache.file.gc": 3600,
@@ -55,7 +55,7 @@
         "\\bfound_rows\\(\\)"
     ],
     "objectcache.configuration_overloaded": false,
-    "objectcache.enabled": "0",
+    "objectcache.enabled": "1",
     "objectcache.debug": false,
     "objectcache.enabled_for_wp_admin": true,
     "objectcache.fallback_transients": true,
@@ -98,7 +98,7 @@
     "pgcache.configuration_overloaded": false,
     "pgcache.enabled": "1",
     "pgcache.comment_cookie_ttl": 1800,
-    "pgcache.debug": false,
+    "pgcache.debug": "0",
     "pgcache.engine": "file_generic",
     "pgcache.file.gc": 3600,
     "pgcache.file.nfs": false,
@@ -262,10 +262,12 @@
     "minify.csstidy.options.lowercase_s": false,
     "minify.csstidy.options.optimise_shorthands": 1,
     "minify.csstidy.options.remove_last_;": false,
+    "minify.csstidy.options.remove_space_before_important": false,
     "minify.csstidy.options.case_properties": 1,
     "minify.csstidy.options.sort_properties": false,
     "minify.csstidy.options.sort_selectors": false,
     "minify.csstidy.options.merge_selectors": 2,
+    "minify.csstidy.options.discard_invalid_selectors": false,
     "minify.csstidy.options.discard_invalid_properties": false,
     "minify.csstidy.options.css_level": "CSS2.1",
     "minify.csstidy.options.preserve_css": false,
@@ -436,6 +438,7 @@
     "browsercache.cssjs.etag": "1",
     "browsercache.cssjs.w3tc": "1",
     "browsercache.cssjs.replace": "0",
+    "browsercache.cssjs.querystring": "0",
     "browsercache.html.compression": "1",
     "browsercache.html.last_modified": "1",
     "browsercache.html.expires": "1",
@@ -455,6 +458,7 @@
     "browsercache.other.etag": "1",
     "browsercache.other.w3tc": "1",
     "browsercache.other.replace": "0",
+    "browsercache.other.querystring": "0",
     "browsercache.replace.exceptions": [
         ""
     ],
@@ -641,12 +645,17 @@
     "common.force_master": true,
     "extensions.active": {
         "newrelic": "w3-total-cache\/Extension_NewRelic_Plugin.php",
-        "fragmentcache": "w3-total-cache\/Extension_FragmentCache_Plugin.php"
+        "fragmentcache": "w3-total-cache\/Extension_FragmentCache_Plugin.php",
+        "swarmify": "w3-total-cache\/Extension_Swarmify_Plugin.php"
     },
     "extensions.active_frontend": [],
     "plugin.license_key": "",
     "plugin.type": "",
     "fragmentcache": {
         "engine": ""
+    },
+    "pgcache.bad_behavior_path": "",
+    "newrelic": {
+        "monitoring_type": "apm"
     }
 }

@@ -51,6 +51,9 @@ if ( ! is_page_template( 'page-template-blank.php' ) ) : ?>
 
 					echo et_get_footer_credits();
 				?>
+				
+				<?php get_sidebar('footerwidget'); ?>
+				
 					</div>	<!-- .container -->
 				</div>
 			</footer> <!-- #main-footer -->

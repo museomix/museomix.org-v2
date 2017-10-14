@@ -36,7 +36,6 @@ if ((bool)$post_thumbnail_id): ?>
 <?php endif; ?>
 
 			<?php while ( have_posts() ) : the_post(); ?>
-
 				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
 				<?php if ( ! $is_page_builder_used ) : ?>

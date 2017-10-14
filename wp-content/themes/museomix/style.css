@@ -4,7 +4,7 @@
  Description:  Museomix Child Theme
  Author:       Samy Rabih
  Author URI:   http://lahaut.info
- Template:     divi
+ Template:     Divi
  Version:      1.0.0
  License:      GNU General Public License v2 or later
  License URI:  http://www.gnu.org/licenses/gpl-2.0.html
@@ -20,4 +20,7 @@ ul.et_pb_communities_list li.et_pb_community span a {
     color: #ffffff;
     background-color: #000000;
     padding: 2px 5px;
+}
+.single-community .tricolumn_block .post_type-museomix {
+	min-height:360px;
 }
