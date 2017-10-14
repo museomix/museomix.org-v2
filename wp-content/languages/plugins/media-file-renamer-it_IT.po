@@ -1,0 +1,255 @@
+# Translation of Stable (latest release) in Italian
+# This file is distributed under the same license as the Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2016-06-28 13:26:14+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.1.0-alpha\n"
+"Project-Id-Version: Stable (latest release)\n"
+
+#. Description of the plugin/theme
+msgid "Auto-rename the files when titles are modified and update and the references (links). Manual Rename is a Pro option. Please read the description."
+msgstr "Rinomina automaticamente i file quando i titoli sono modificati e aggiorna i riferimenti (link). La ridenominazione manuale è un'opzione a pagamento. Per favore leggi la descrizione."
+
+#: media-file-renamer.php:844
+msgid "Force Rename (Pro)"
+msgstr "Forza la ridenominazione (Pro)"
+
+#: media-file-renamer.php:845
+msgid "Update the references to the file even if the file renaming itself was not successful.<br /><small>You might want to use that option if your install is broken and you are trying to link your Media to files for which the filenames has been altered (after a migration for exemple)</small>"
+msgstr "Aggiorna i riferimenti al file anche se la ridenominazione del file non ha avuto successo.<br /><small>Potresto voler usare questa opzione se la tua installazione è danneggiata e stai cercandi di collegare i tuoi Media ai file per i quali il nome è stato modificato (per esempio dopo una migrazione)</small>"
+
+#: media-file-renamer.php:126
+msgid "Manually renamed."
+msgstr "Rinominato manualmente"
+
+#: media-file-renamer.php:128
+msgid "Locked to manual only. Click to unlock it."
+msgstr "Bloccato su manuale. Clicca per sbloccarlo."
+
+#: media-file-renamer.php:131
+msgid "Automatically renamed."
+msgstr "Rinominato automaticamente."
+
+#: media-file-renamer.php:133 media-file-renamer.php:416
+msgid "Click to lock it to manual only."
+msgstr "Clicca per bloccarlo alla modalità manuale."
+
+#: media-file-renamer.php:450
+msgid "Unlock & Rename all %d media"
+msgstr "Sblocca e rinomina tutti %d media"
+
+#: media-file-renamer.php:764
+msgid "If the plugin considers that it is too dangerous to rename the file directly at some point, it will be flagged internally as <b>to be renamed</b>. The list of those flagged files can be found in Media > File Renamer and they can be renamed from there."
+msgstr "Se ad un certo punto il plugin considera troppo pericoloso rinominare il file direttamente, sarà contrassegnato internamente come <b>da rinominare</b>. La lista di questi file contrassegnati può essere trovata in Media > File Renamer e possono essere rinominati da lì."
+
+#: media-file-renamer.php:768
+msgid "None<br /><small>Disabled. Only manual renaming can be used.</small><br />"
+msgstr "Niente<br /><small>Disabilitato. Solo la ridenominazione manuale può essere usata.</small><br />"
+
+#: media-file-renamer.php:769
+msgid "Media Title<br /><small>The filename will be renamed automatically depending on the title of the media. <b>This is the recommended method.</b></small><br />"
+msgstr "Titolo del file media<br /><small>Il nome del file sarà rinominato automaticamente in base al titolo del media.<b>Questo è il metodo raccomandato.</b></small><br />"
+
+#: media-file-renamer.php:770
+msgid "Post Title (Pro)<br /><small>The filename will be renamed automatically depending on the title of the post the media <b>is attached to</b>.</small><br />"
+msgstr "Titolo del Post<br /><small>Il nome del file sarà cambiato in base al nome del titolo del post a cui il file<b>è collegato</b>.</small><br />"
+
+#: media-file-renamer.php:406
+msgid "The ideal filename already exists. If you would like to use a count and rename it, enable the <b>Numbered Files</b> option in the plugin settings."
+msgstr "Il nome del file ideale è già utilizzato. Se vuoi usare un contatore e rinominarlo, abilita l'opzione <b>File Numerati</b> nelle opzioni del plugin."
+
+#: media-file-renamer.php:780
+msgid "Numbered Files (Pro)"
+msgstr "File numerati (Pro)"
+
+#: media-file-renamer.php:781
+msgid "Identical filenames will be allowed and a number will be added.<br /><small>This is useful if your titles the same ones for many of your images (myfile.jpg, myfile-2.jpg, myfile-3.jpg, etc).</small>"
+msgstr "I nomi di file identici saranno consentiti ed un umero sarà aggiunto. <br /><small>Questo è utile se dai lo stesso titolo a molte tue immagini (myfile.jpg, myfile-2.jpg, myfile-3.jpg, etc).</small>"
+
+#: media-file-renamer.php:74 media-file-renamer.php:77
+#: media-file-renamer.php:115
+msgid "Rename"
+msgstr "Rinomina"
+
+#: media-file-renamer.php:169
+msgid "Done. Please <a href='javascript:history.go(0)'>refresh</a> this page."
+msgstr "Fatto. Per favore <a href='javascript:history.go(0)'>ricarica</a> questa pagina.."
+
+#: media-file-renamer.php:178
+msgid "Please wait..."
+msgstr "Attendere prego..."
+
+#: media-file-renamer.php:230
+msgid "File Renamer"
+msgstr "Ridenominatore di file"
+
+#: media-file-renamer.php:403 media-file-renamer.php:406
+msgid "Edit Media"
+msgstr "Modifica Media"
+
+#: media-file-renamer.php:403
+msgid "This title cannot be used for a filename."
+msgstr "Questo titolo non può essere usato per il nome di un file."
+
+#: media-file-renamer.php:415
+msgid "Auto-Rename"
+msgstr "Auto-Rename"
+
+#: media-file-renamer.php:419
+msgid "Rename to %s. You can also <a href=\"%s\">edit this media</a>."
+msgstr "Rinomina a %s. Puoi anche <a href=\"%s\">modificare questo file media</a>."
+
+#: media-file-renamer.php:440 media-file-renamer.php:444
+msgid "Rename <span class='mfrh-flagged'>%d</span> flagged media"
+msgstr "Rinomina <span class='mfrh-flagged'>%d</span> i file contrassegnati"
+
+#: media-file-renamer.php:461 media-file-renamer.php:464
+msgid "Title"
+msgstr "Titolo"
+
+#: media-file-renamer.php:461 media-file-renamer.php:464
+msgid "Current Filename"
+msgstr "Nome del file attuale"
+
+#: media-file-renamer.php:461 media-file-renamer.php:464
+msgid "Desired Filename"
+msgstr "Nome del file desiderato"
+
+#: media-file-renamer.php:461 media-file-renamer.php:464
+msgid "Action"
+msgstr "Azione"
+
+#: media-file-renamer.php:486
+msgid "Scan All & Show Issues"
+msgstr "Scansiona e mostra tutti i problemi"
+
+#: media-file-renamer.php:640
+msgid "Your serial does not seem right."
+msgstr "Il tuo seriale sembra errato."
+
+#: media-file-renamer.php:642
+msgid "Your subscription is not active."
+msgstr "La tua sottoscrizione non è attiva."
+
+#: media-file-renamer.php:644
+msgid "Too many URLs are linked to your subscription."
+msgstr "Troppi URL sono collegati alla tua sottoscrizione."
+
+#: media-file-renamer.php:652
+msgid "Your subscription is enabled."
+msgstr "La tua sottoscrizione è abilitata."
+
+#: media-file-renamer.php:752
+msgid "Basics"
+msgstr "Basi"
+
+#: media-file-renamer.php:756
+msgid "Pro"
+msgstr "Pro"
+
+#: media-file-renamer.php:763
+msgid "Auto Rename"
+msgstr "Ridenominazione Automatica"
+
+#: media-file-renamer.php:774
+msgid "Manual Rename (Pro)"
+msgstr "Ridenominazione Manuale (Pro)"
+
+#: media-file-renamer.php:775
+msgid "Enable manual renaming in the Media edit screen.<br /><small>This feature is only for Pro users (check the Pro tab).</small>"
+msgstr "Abilita la ridenominazione manuale nella sezione di modifica dei Media.<br /><small>Questa funzione è solo per gli utenti Pro (controlla la scheda Pro)</small>"
+
+#: media-file-renamer.php:787
+msgid "<h1>Side-Updates</h1><small>When the files are renamed, many links to them on your WordPress might be broken. By default, the plugin updates all the references in the posts. As the plugin evolves (thanks to the Pro version), more and more plugins/themes will be covered by those updates as we discover them together.</small>"
+msgstr "<h1>Update aggiuntivi</h1><small>Quando i file sono rinominati, molti link ad essi sul tuo sito Wordpress potrebbero non funzionare più. Di default, questo plugin aggiorna tutti i collegamenti nei post. Quando il plugin si sviluppa (grazie alla versione Pro), più e più plugin/temi saranno coperti da questo aggiornamenti quando li scopriamo insieme</small>"
+
+#: media-file-renamer.php:791
+msgid "Update Posts"
+msgstr "Aggiorna i Post"
+
+#: media-file-renamer.php:792
+msgid "Update the references to the renamed files in the posts (pages and custom types included)."
+msgstr "Aggiorna i riferimenti ai file rinominati nei post (includendo le pagine e i tipi personalizzati di post) "
+
+#: media-file-renamer.php:797
+msgid "Update Post Meta"
+msgstr "Aggiorna i Meta del Post"
+
+#: media-file-renamer.php:798
+msgid "Update the references in the posts metadata (including pages and custom types metadata)."
+msgstr "Aggiora i riferimenti nei metadati dei post (includendo i metadati delle pagine e dei tipi personalizzati di post)"
+
+#: media-file-renamer.php:804
+msgid "<i>Something is not updated when you rename a file? Please <a href=\"http://apps.meow.fr/contact/\">contact me</a> and I will add support for it.</i>"
+msgstr "<i>Qualcosa non viene aggiornato quando rinomini un file? Per favore <a href=\"http://apps.meow.fr/contact/\">contattami</a> ed io aggiungerò il supporto.</i>"
+
+#: media-file-renamer.php:809
+msgid "Rename Slug"
+msgstr "Rinomina lo slug"
+
+#: media-file-renamer.php:810
+msgid "The image slug will be renamed like the new filename.<br /><small>Better to keep this un-checked as the link might have been referenced somewhere else.</small>"
+msgstr "Lo slug dell'immagine sarà rinominato come il nuovo nome del file.<br /><small>Meglio non abilitare questa funzione poiché ci potrebbe essere un collegamento al link da qualche parte.</small>"
+
+#: media-file-renamer.php:821
+msgid "Alt. Text = Title (Pro)<br /><small>Sync Alternative Text</small>"
+msgstr "Testo Alternativo = Titolo (Pro)<br /><small>Sincronizza Testo Alternativo</small>"
+
+#: media-file-renamer.php:822
+msgid "The Alternative Text will always be synchronized with the Title.<br /><small>Keep in mind that the HTML in your posts and pages will be however not modified, that is too dangerous!</small>"
+msgstr "Il Testo Alternativo sarà sempre sincronizzato con il titolo.<br /><small>Ricorda che comunque l'HTML nei tuoi post e pagine non sarà modificato, sarebbe troppo pericoloso!</small>"
+
+#: media-file-renamer.php:828
+msgid "<h1>Advanced</h1><small>If you are geeky this section might be more interesting for you. <b>Want to clear/reset the logs? Click <a href=\"?page=mfrh_settings&reset=true\">here</a>.</b></small>"
+msgstr "<h1>Avanzato</h1><small>Se sei un geek questa sezione potrebbe essere più interessante per te. <b>Vuoi pulire/resettare i log? Clicca <a href=\"?page=mfrh_settings&reset=true\">qio</a>.</b></small>"
+
+#: media-file-renamer.php:832
+msgid "Rename On Save"
+msgstr "Rinomina al salvataggio"
+
+#: media-file-renamer.php:833
+msgid "Attachments will be renamed automatically when published posts/pages are saved.<br /><small>You can change the names of your media while editing a post but that wouldn't let the plugin updates the HTML, of course. With this option, the plugin will check for any changes in the media names and will update your post right after you saved it.</small>"
+msgstr "Gli allegati saranno rinominati automaticamente quando i post/pagine pubblicati sono salvati. <br /><small>Puoi cambiare i nomi dei tuoi file media mentre modifichi un post ma questo non consentirebbe al plugin di aggiornare l'HTML. Con questa opzione, il plugin cercherà eventuali cambiamenti nei nomi dei media e aggiornerà il tuo post dopo che l'hai salvato</small>"
+
+#: media-file-renamer.php:838
+msgid "UTF-8 Filename (Pro)"
+msgstr "Nome file in UTF-8 (Pro)"
+
+#: media-file-renamer.php:839
+msgid "The plugin will be allowed to use non-ASCII characters in the filenames.<br /><small>This usually doesn't work well on Windows installs.</small>"
+msgstr "Il plugin sarà autorizzato ad usare caratteri non ASCII nei nomi dei file.<br /><small>Questo di solito non funziona bene sulle installazioni su WIndows.</small>"
+
+#: media-file-renamer.php:850
+msgid "Logs"
+msgstr "Log"
+
+#: media-file-renamer.php:856
+msgid "SQL Logs (Pro)<br />+ Revert SQL"
+msgstr "Log SQL (Pro)<br />+ Revert SQL"
+
+#: media-file-renamer.php:871
+msgid "Serial"
+msgstr "Seriale"
+
+#: media-file-renamer.php:872
+msgid "<br />Enter your serial or subscription ID here. If you don't have one yet, get one <a target=\"_blank\" href=\"http://apps.meow.fr/media-file-renamer/\">right here</a>."
+msgstr "<br />Inserisci il tuo seriale o l'ID della sottoscrizione qui. Se non ne hai ancora uno, ne puoi ottenere uno <a target=\"_blank\" href=\"http://apps.meow.fr/media-file-renamer/\">qui</a>."
+
+#. Plugin Name of the plugin/theme
+msgid "Media File Renamer"
+msgstr "Media File Renamer"
+
+#. #-#-#-#-#  tmp-media-file-renamer.pot (Media File Renamer 2.7.4)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  tmp-media-file-renamer.pot (Media File Renamer 2.7.4)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://www.meow.fr"
+msgstr "http://www.meow.fr"
+
+#. Author of the plugin/theme
+msgid "Jordy Meow"
+msgstr "Jordy Meow"

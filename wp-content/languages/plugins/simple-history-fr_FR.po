@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Simple History - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-06-27 08:59:10+0000\n"
+"PO-Revision-Date: 2017-09-13 10:47:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -565,7 +565,7 @@ msgstr "Journaux de connexion des utilisateurs, et des connexions échouées"
 
 #: loggers/SimpleCategoriesLogger.php:25
 msgid "Edited term \"{to_term_name}\" in taxonomy \"{to_term_taxonomy}\""
-msgstr "A modifié le terme « {to_term_name » de la taxinomie « {to_term_taxonomy} »"
+msgstr "A modifié le terme « {to_term_name} » de la taxonomie « {to_term_taxonomy} »"
 
 #: loggers/SimpleCategoriesLogger.php:24
 msgid "Deleted term \"{term_name}\" from taxonomy \"{term_taxonomy}\""
@@ -573,7 +573,7 @@ msgstr "A supprimé le terme « {term_name} » de la taxinomie « {term_taxon
 
 #: loggers/SimpleCategoriesLogger.php:23
 msgid "Added term \"{term_name}\" in taxonomy \"{term_taxonomy}\""
-msgstr "A ajouté le terme « {term_name » dans la taxinomie « {term_taxonomy} »"
+msgstr "A ajouté le terme « {term_name} » dans la taxonomie « {term_taxonomy} »"
 
 #: loggers/SimpleUserLogger.php:45
 msgid "Requested a password reset link for user with login '{user_login}' and email '{user_email}'"
@@ -1578,6 +1578,11 @@ msgstr "Connecté"
 msgctxt "PluginUltimateMembersLogger"
 msgid "Logs actions from the Ultimate Members plugin"
 msgstr "Enregistre les actions de l’extension « Ultimate Members »"
+
+#: loggers/PluginUserSwitchingLogger.php:32
+msgctxt "PluginUserSwitchingLogger"
+msgid "Switched off user \"{user_login}\""
+msgstr "A « éteint » l’utilisateur « {user_login} »"
 
 #: loggers/PluginUserSwitchingLogger.php:31
 msgctxt "PluginUserSwitchingLogger"

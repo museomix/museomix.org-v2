@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Duplicator &#8211; WordPress Migration Plugin - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-07-20 18:49:18+0000\n"
+"PO-Revision-Date: 2017-10-03 19:05:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -205,7 +205,7 @@ msgstr "Filtros rápidos"
 
 #: views/packages/main/s2.scan3.php:65
 msgid "Consider trying multi-threaded support in "
-msgstr "Considera intentar la compatibilidad de multihilo en"
+msgstr "Considera intentar la compatibilidad de multihilo en "
 
 #: views/packages/main/s2.scan3.php:64
 msgid "What can I try for Timeout Issues?"
@@ -313,7 +313,7 @@ msgstr "Ves a: Duplicator > Herramientas > Limpiar > y haz clic en el botón ¡E
 
 #: classes/ui/class.ui.notice.php:69
 msgid "Reserved Duplicator installation still exist in the root directory.  Please remove these installation files to complete setup and avoid security issues. <br/>"
-msgstr "La instalación reservada de Duplicator todavía existe en el directorio raíz. Elimina estos archivos de instalación para completar la configuración y evitar problemas de seguridad. <br/>"
+msgstr "La instalación de reserva de Duplicator todavía existe en el directorio raíz. Elimina estos archivos de instalación para completar la configuración y evitar problemas de seguridad. <br/>"
 
 #: classes/ui/class.ui.notice.php:61
 msgid "Remove Installation Files Now!"

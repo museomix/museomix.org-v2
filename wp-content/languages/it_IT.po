@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.8.x package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-08-04 08:42:00+0000\n"
+"PO-Revision-Date: 2017-09-30 11:12:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,15 +38,15 @@ msgstr ","
 
 #: wp-includes/widgets/class-wp-widget-text.php:366
 msgid "This widget may have contained code that may work better in the new &#8220;Custom HTML&#8221; widget. If you haven&#8217;t yet, how about trying that widget instead?"
-msgstr "Questo widget può contenere codice che potrebbe funzionare meglio nel nuovo widget &#8220;HTML personalizzato&#8221;. Se non l'hai già fatto, che ne diresti di provarlo?"
+msgstr "Può darsi che questo widget contenesse codice che potrebbe funzionare meglio nel nuovo widget &#8220;HTML personalizzato&#8221;. Se non l'hai già fatto, che ne diresti di provarlo?"
 
 #: wp-includes/widgets/class-wp-widget-text.php:419
 msgid "Hey there, looks like you just pasted HTML into the &#8220;Visual&#8221; tab of the Text widget. You may want to paste your code into the &#8220;Text&#8221; tab instead. Alternately, try out the new &#8220;Custom HTML&#8221; widget!"
-msgstr "Sembra che tu abbia incollato del testo HTML all'interno del scheda &#8220;Visuale#8221; del widget di testo. Puoi invece incollare il tuo codice nella scheda &#8220;Testo&#8221;. In alternativa puoi provare il nuovo widget &#8220;HTML personalizzato&#8221;!"
+msgstr "Sembra che tu abbia incollato testo HTML all'interno della scheda &#8220;Visuale#8221; del widget di testo. Puoi invece incollare il tuo codice nella scheda &#8220;Testo&#8221;. In alternativa puoi provare il nuovo widget &#8220;HTML personalizzato&#8221;!"
 
 #: wp-includes/widgets/class-wp-widget-text.php:418
 msgid "Did you just paste HTML?"
-msgstr "Hai incollato solo HTML?"
+msgstr "Hai appena incollato codice HTML?"
 
 #: wp-includes/widgets/class-wp-widget-text.php:403
 msgid "Hey, did you hear we have a &#8220;Custom HTML&#8221; widget now? You can find it by scanning the list of available widgets on this screen. Check it out to add some custom code to your site!"
@@ -117,7 +117,7 @@ msgstr "(nessun autore)"
 #. translators: %s is the name of a city.
 #: wp-includes/script-loader.php:1062
 msgid "City updated. Listing events near %s."
-msgstr "Aggiornamenti per città. Elenca gli eventi vicino a %s."
+msgstr "Città aggiornata. L'elenco eventi mostra quelli vicino a %s."
 
 #. translators: %s is the name of the city we couldn't locate. Replace the
 #. examples with cities related to your locale. Test that they match the
@@ -145,7 +145,7 @@ msgstr "Inserisci la città più vicina a te per trovare gli eventi locali."
 #: wp-includes/script-loader.php:360
 msgctxt "no captions/subtitles"
 msgid "None"
-msgstr "Nulla"
+msgstr "Nessuno"
 
 #. translators: %s: network settings URL
 #: wp-signup.php:842
@@ -9999,7 +9999,7 @@ msgstr "&laquo; Indietro"
 
 #: wp-includes/functions.php:2602 wp-includes/ms-functions.php:2011
 msgid "Please try again."
-msgstr "Riprova di nuovo."
+msgstr "Prova di nuovo."
 
 #. translators: %s: logout URL
 #: wp-includes/functions.php:2593
@@ -10690,7 +10690,7 @@ msgstr "Aggiorna"
 
 #: wp-includes/script-loader.php:564
 msgid "Schedule"
-msgstr "Pianificazioni"
+msgstr "Programma"
 
 #: wp-includes/script-loader.php:569
 msgid "Public"

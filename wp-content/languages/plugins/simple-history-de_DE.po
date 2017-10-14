@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Simple History - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-07-24 11:16:40+0000\n"
+"PO-Revision-Date: 2017-09-19 09:00:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -612,7 +612,7 @@ msgstr "Support"
 
 #: dropins/SimpleHistoryDonateDropin.php:74
 msgid "If you find Simple History useful please <a href=\"%1$s\">donate</a>."
-msgstr "Wenn du Simple History nützlich findest, <a href=\"%1$s\">spende</a> bitte."
+msgstr "Wenn du Simple History nützlich findest, bitten wir dich um eine <a href=\"%1$s\">Spende</a>."
 
 #: loggers/SimpleUserLogger.php:28
 msgid "Failed to login with username \"{failed_username}\" (username does not exist)"
@@ -2016,7 +2016,7 @@ msgstr "Wenn dir Simple History gefällt, <a href=\"%1$s\">verfasse doch bei wor
 #: dropins/SimpleHistorySidebarDropin.php:68
 msgctxt "Sidebar box"
 msgid "Review this plugin if you like it"
-msgstr "Schreibe ein Rezension über dieses Plugin, wenn es Dir gefällt"
+msgstr "Schreibe eine Rezension über dieses Plugin, wenn es Dir gefällt"
 
 #: dropins/SimpleHistorySidebarDropin.php:54
 msgctxt "Sidebar box"
