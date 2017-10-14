@@ -13,62 +13,6 @@ msgstr ""
 "Language:en\n"
 "MIME-Version: 1.0\n"
 
-# $this->admin_notice = '<div class="error wpml-admin-notice">';
-# $this->admin_notice .= '<h3>' . __( 'WPML Update is Incomplete', 'sitepress' ) . '</h3>';
-# $this->admin_notice .= '<p>' . implode( '</p><p>', $notice_paragraphs ) . '</p>';
-
-msgid "WPML Update is Incomplete"
-msgstr ""
-
-# if ( count( $this->valid_plugins ) === 1 ) {
-# $paragraph = __( 'You are running updated %s, but the following component is not updated:', 'sitepress' );
-# $paragraph = sprintf( $paragraph, '<strong>' . $this->valid_plugins[0] . '</strong>' );
-
-msgid "You are running updated %s, but the following component is not updated:"
-msgstr ""
-
-# } else {
-# $paragraph           = __( 'You are running updated %s and %s, but the following components are not updated:', 'sitepress' );
-# $first_valid_plugins = implode( ', ', array_slice( $this->valid_plugins, 0, - 1 ) );
-
-msgid "You are running updated %s and %s, but the following components are not updated:"
-msgstr ""
-
-# } else {
-# $paragraph = __( 'The following components are not updated:', 'sitepress' );
-# }
-
-msgid "The following components are not updated:"
-msgstr ""
-
-# private function get_invalid_plugins_report_footer() {
-# $wpml_org_url = '<a href="https://wpml.org/account/" title="WPML.org account">' . __( 'WPML.org account', 'sitepress' ) . '</a>';
-#
-
-msgid "WPML.org account"
-msgstr ""
-
-#
-# $notice_paragraph = __( 'Your site will not work as it should in this configuration', 'sitepress' );
-# $notice_paragraph .= ' ';
-
-msgid "Your site will not work as it should in this configuration"
-msgstr ""
-
-# $notice_paragraph .= ' ';
-# $notice_paragraph .= __( 'Please update all components which you are using.', 'sitepress' );
-# $notice_paragraph .= ' ';
-
-msgid "Please update all components which you are using."
-msgstr ""
-
-# $notice_paragraph .= ' ';
-# $notice_paragraph .= sprintf( __( 'For WPML components you can receive updates from your %s or automatically, after you register WPML.', 'sitepress' ), $wpml_org_url );
-#
-
-msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
-msgstr ""
-
 # } else {
 # $post_title                               = __( 'The original has been deleted!', 'wpml-translation-management' );
 # $edit_url                                 = '';

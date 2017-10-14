@@ -112,6 +112,8 @@ return array(
     'WPML_TM_Post_Actions' => $baseDir . '/inc/actions/wpml-tm-post-actions.class.php',
     'WPML_TM_Post_Data' => $baseDir . '/classes/helpers/class-wpml-tm-post-data.php',
     'WPML_TM_Post_Edit_Link_Anchor' => $baseDir . '/classes/menu-elements/class-wpml-tm-post-edit-link-anchor.php',
+    'WPML_TM_Post_Edit_Notices' => $baseDir . '/classes/notices/wpml-tm-post-edit-notices.php',
+    'WPML_TM_Post_Edit_Notices_Factory' => $baseDir . '/classes/notices/wpml-tm-post-edit-notices-factory.php',
     'WPML_TM_Post_Link' => $baseDir . '/classes/menu-elements/class-wpml-tm-post-link.php',
     'WPML_TM_Post_Link_Anchor' => $baseDir . '/classes/menu-elements/class-wpml-tm-post-link-anchor.php',
     'WPML_TM_Post_Link_Factory' => $baseDir . '/classes/menu-elements/class-wpml-tm-post-link-factory.php',

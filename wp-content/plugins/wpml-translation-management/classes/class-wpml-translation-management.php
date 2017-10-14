@@ -152,7 +152,8 @@ class WPML_Translation_Management {
 				FILTER_NULL_ON_FAILURE
 			);
 			if ( ( $pagenow == 'post-new.php' || $pagenow == 'post.php' ) && ( $request_get_trid || $request_get_post ) && $request_get_lang ) {
-				add_action( 'admin_notices', array( $this, '_warn_editing_icl_translation' ) );
+				$post_edit_notices_factory = new WPML_TM_Post_Edit_Notices_Factory();
+				$post_edit_notices_factory->create()->add_hooks();
 			}
 			add_action( 'wp_ajax_dismiss_icl_side_by_site', array( $this, 'dismiss_icl_side_by_site' ) );
 			add_action( 'wp_ajax_icl_tm_parent_filter', array( $this, '_icl_tm_parent_filter' ) );
@@ -164,7 +165,7 @@ class WPML_Translation_Management {
 		}
 
 	  if ( $wpml_wp_api->is_admin() || ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST ) ) {
-			$page_builder_hooks = new WPML_TM_Page_Builders_Hooks();
+			$page_builder_hooks = new WPML_TM_Page_Builders_Hooks( null, $this->sitepress );
 			$page_builder_hooks->init_hooks();
 		}
 
@@ -509,62 +510,6 @@ class WPML_Translation_Management {
         if($found){
             $submenu[WPML_TM_FOLDER . '/menu/main.php'][] = $found;
         }
-    }
-
-    function _warn_editing_icl_translation(){
-        global $wpdb, $sitepress, $iclTranslationManagement;
-				$request_get_trid = filter_input(INPUT_GET, 'trid', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE);
-				$request_get_post = filter_input(INPUT_GET, 'post', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-				$request_get_lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-
-		$post_type = false;
-        if($request_get_trid){
-            $translation_id = $wpdb->get_var($wpdb->prepare("
-                    SELECT t.translation_id
-                        FROM {$wpdb->prefix}icl_translations t
-                        JOIN {$wpdb->prefix}icl_translation_status s ON t.translation_id = s.translation_id
-                        WHERE t.trid=%d AND t.language_code=%s"
-                , $request_get_trid, $request_get_lang));
-        }else{
-            $post_type = $wpdb->get_var($wpdb->prepare("SELECT post_type FROM {$wpdb->posts} WHERE ID=%d", $request_get_post));
-            $translation_id = $wpdb->get_var($wpdb->prepare("
-                    SELECT translation_id FROM {$wpdb->prefix}icl_translations WHERE element_id=%d AND element_type=%s AND language_code=%s"
-                , $request_get_post, 'post_' . $post_type, $request_get_lang));
-        }
-
-        if($translation_id){
-            $translation_status = $wpdb->get_var($wpdb->prepare("
-                SELECT status FROM {$wpdb->prefix}icl_translation_status WHERE translation_id=%d"
-            , $translation_id));
-            if(!is_null($translation_status) && $translation_status > 0 && $translation_status != ICL_TM_DUPLICATE && $translation_status < ICL_TM_COMPLETE){
-                echo '<div class="error fade"><p id="icl_side_by_site">'.
-                    sprintf(__('<strong>Warning:</strong> You are trying to edit a translation that is currently in the process of being added using WPML.' , 'wpml-translation-management')) . '<br /><br />'.
-                    sprintf(__('Please refer to the <a href="%s">Translation Management dashboard</a> for the exact status of this translation.' , 'wpml-translation-management'),
-                    admin_url('admin.php?page='.WPML_TM_FOLDER.'/menu/main.php&')) . '</p></div>';
-            }else{
-				$is_original = false;
-				if($post_type) {
-					$element_language_details = $sitepress->get_element_language_details($request_get_post, 'post_' . $post_type);
-					$is_original = !$element_language_details->source_language_code;
-				}
-                if(!$is_original && $iclTranslationManagement->settings['doc_translation_method'] == ICL_TM_TMETHOD_EDITOR){
-                ?>
-                <div class="error">
-                    <p><?php _e('<strong>Warning:</strong> You are trying to edit a translation using the standard WordPress editor but your site is configured to use the WPML Translation Editor.' , 'wpml-translation-management')?></p>
-                </div>
-                <?php
-                }
-            }
-        }elseif(($post_type && $sitepress->is_translated_post_type($post_type)) && $iclTranslationManagement->settings['doc_translation_method'] == ICL_TM_TMETHOD_EDITOR){
-            ?>
-            <div class="error">
-                <p><?php _e('<strong>Warning:</strong> You are trying to add a translation using the standard WordPress editor but your site is configured to use the WPML Translation Editor.' , 'wpml-translation-management')?></p>
-                <p><?php printf(__('You should use <a href="%s">Translation management dashboard</a> to send the original document to translation.' , 'wpml-translation-management'), admin_url('admin.php?page='.WPML_TM_FOLDER.'/menu/main.php')); ?>
-                </p>
-            </div>
-            <?php
-            }
-
     }
 
     function dismiss_icl_side_by_site(){

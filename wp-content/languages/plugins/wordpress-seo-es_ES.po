@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Yoast SEO - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-10-10 07:57:00+0000\n"
+"PO-Revision-Date: 2017-10-12 08:19:35+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -814,7 +814,7 @@ msgstr "Variables disponibles"
 msgid "If you want more help creating awesome content, check out our %2$sSEO copywriting course%3$s. Do you want to know all about the features of the plugin, consider doing our %1$s!"
 msgstr "Si quieres más ayuda para crear contenido impactante revisa nuestro %2$scurso de escritura SEO%3$s. ¿Quieres conocer todas las características del plugin?, ¡plantéate hacer  nuestro %1$s!"
 
-#: admin/class-admin.php:392
+#: admin/class-admin.php:404
 msgid "Scroll to see the table content."
 msgstr "Navega para ver el contenido de la tabla."
 
@@ -840,7 +840,7 @@ msgstr "Ocurrió un error en la evaluación '%1$s'"
 #. recommended maximum number of syllables.
 #: languages/yoast-seo-js.php:113
 msgid "%1$s of the words contain %2$sover %3$s syllables%4$s, which is more than the recommended maximum of %5$s."
-msgstr "%1$s de las palabras contienen %2$smás %3$s sílabas%4$s, , que es más que el máximo recomendado de %5$s."
+msgstr "%1$s de las palabras contiene %2$smás de %3$s sílabas%4$s, que es más que el máximo recomendado: %5$s."
 
 #. Translators: %1$s expands to the percentage of complex words, %2$s expands
 #. to a link on yoast.com, 	   %3$d expands to the recommended maximum number
@@ -2081,7 +2081,7 @@ msgstr "Abre el artículo de la base de conocimiento en una nueva ventana o lée
 msgid "Search results"
 msgstr "Resultados de búsqueda"
 
-#: admin/class-admin.php:391
+#: admin/class-admin.php:403
 msgid "Yoast SEO video tutorial"
 msgstr "Tutorial en vídeo de Yoast SEO"
 
@@ -3610,8 +3610,8 @@ msgstr "Importar y exportar"
 msgid "This tool allows you to quickly change titles and descriptions of your posts and pages without having to go into the editor for each page."
 msgstr "Esta herramienta te permite modificar rápidamente títulos y descripciones de entradas y páginas sin necesidad de editar cada página."
 
-#: admin/pages/tools.php:21 admin/views/tool-bulk-editor.php:39
-#: admin/views/tool-bulk-editor.php:42
+#: admin/pages/tools.php:21 admin/views/tool-bulk-editor.php:37
+#: admin/views/tool-bulk-editor.php:40
 msgid "Bulk editor"
 msgstr "Editor masivo"
 
@@ -3658,7 +3658,7 @@ msgid "Copy home meta description"
 msgstr "Copiar la meta description de la portada"
 
 #: admin/views/tabs/advanced/rss.php:34 admin/views/tabs/social/facebook.php:31
-#: admin/views/tool-bulk-editor.php:81 inc/class-wpseo-replace-vars.php:1035
+#: admin/views/tool-bulk-editor.php:79 inc/class-wpseo-replace-vars.php:1035
 msgid "Description"
 msgstr "Descripción"
 
@@ -3863,7 +3863,7 @@ msgid "Date archives"
 msgstr "Archivo por fechas"
 
 #: admin/views/tabs/metas/post-types.php:66
-#: admin/views/tabs/social/facebook.php:30 admin/views/tool-bulk-editor.php:79
+#: admin/views/tabs/social/facebook.php:30 admin/views/tool-bulk-editor.php:77
 msgid "Title"
 msgstr "Título"
 
@@ -5050,27 +5050,27 @@ msgstr "Meta description de Yoast actual"
 msgid "a,about,above,after,again,against,all,am,an,and,any,are,as,at,be,because,been,before,being,below,between,both,but,by,could,did,do,does,doing,down,during,each,few,for,from,further,had,has,have,having,he,he'd,he'll,he's,her,here,here's,hers,herself,him,himself,his,how,how's,i,i'd,i'll,i'm,i've,if,in,into,is,it,it's,its,itself,let's,me,more,most,my,myself,nor,of,on,once,only,or,other,ought,our,ours,ourselves,out,over,own,same,she,she'd,she'll,she's,should,so,some,such,than,that,that's,the,their,theirs,them,themselves,then,there,there's,these,they,they'd,they'll,they're,they've,this,those,through,to,too,under,until,up,very,was,we,we'd,we'll,we're,we've,were,what,what's,when,when's,where,where's,which,while,who,who's,whom,why,why's,with,would,you,you'd,you'll,you're,you've,your,yours,yourself,yourselves"
 msgstr "un,sobre,encima,después,de nuevo,contra,todo,soy,un,y,cualquiera,son,como,en,ser,porque,sido,antes, siendo,a continuación,entre,ambos,pero,por,podría,hizo,hacer,hace,haciendo,abajo,durante,cada,pocos,para,de,adicional,tenía,tiene,tener,teniendo,él,él,él,él es,su,aquí,aquí está,sus,ella misma,de él,él mismo,su,cómo,cómo es,yo,yo he,voy a,soy,tengo,si,en,en,es,esto,es,su,el mismo,vamos a,yo,más,el más,mi,yo mismo,ni,de,en,una vez,solamente,o,otro,debe,nuestro,nuestros,nosotros mismos,fuera,sobre,propia,mismo,ella,ella,ella,ella es,debería,por lo que,algunos,como,que,eso,eso es,el,su,sus,ellos,ellos mismos,entonces,allí,hay,éstos,ellos,habían,ellos harán,son,han,esto,esos,a través de,a,también,bajo,hasta,arriba,muy,era,nosotros,habíamos,vamos, somos,hemos,eran,qué,qué es,cuándo,cuándo es,dónde,dónde está,cual,mientras,quién,quién es,a quién,por qué,por qué es,con,haría,tu,deberías,vas a,eres,has,su,sus,tu mismo,vosotros mismos"
 
-#: admin/class-admin.php:314
+#: admin/class-admin.php:326
 msgid "Facebook profile URL"
 msgstr "URL del perfil  de Facebook"
 
-#: admin/class-admin.php:312
+#: admin/class-admin.php:324
 msgid "Twitter username (without @)"
 msgstr "Usuario de Twitter (sin @)"
 
-#: admin/class-admin.php:310 admin/pages/social.php:20
+#: admin/class-admin.php:322 admin/pages/social.php:20
 msgid "Google+"
 msgstr "Google+"
 
-#: admin/class-admin.php:275
+#: admin/class-admin.php:287
 msgid "FAQ"
 msgstr "Preguntas frecuentes"
 
-#: admin/class-admin.php:271
+#: admin/class-admin.php:283
 msgid "Premium Support"
 msgstr "Soporte premium"
 
-#: admin/class-admin.php:259
+#: admin/class-admin.php:271
 #: admin/google_search_console/class-gsc-platform-tabs.php:40
 #: admin/taxonomy/class-taxonomy-metabox.php:151
 #: admin/taxonomy/class-taxonomy-metabox.php:159
@@ -5088,7 +5088,7 @@ msgstr "Debes %1$sir a tus ajustes de lectura%2$s y desactivar la casilla de vis
 msgid "Huge SEO Issue: You're blocking access to robots."
 msgstr "Gran problema de SEO: Estás bloqueando el acceso a los robots."
 
-#: admin/class-admin.php:223
+#: admin/class-admin.php:235
 msgid "Posts"
 msgstr "Entradas"
 
@@ -5101,37 +5101,37 @@ msgstr "Editar archivos"
 msgid "MultiSite Settings"
 msgstr "Ajustes multisitio"
 
-#: admin/class-admin.php:207 admin/class-admin.php:208 admin/pages/metas.php:75
+#: admin/class-admin.php:219 admin/class-admin.php:220 admin/pages/metas.php:75
 msgid "Advanced Variables"
 msgstr "Variables avanzadas"
 
-#: admin/class-admin.php:199 admin/class-admin.php:200 admin/pages/metas.php:69
+#: admin/class-admin.php:211 admin/class-admin.php:212 admin/pages/metas.php:69
 msgid "Basic Variables"
 msgstr "Variables básicas"
 
-#: admin/class-admin.php:192 admin/pages/metas.php:64
+#: admin/class-admin.php:204 admin/pages/metas.php:64
 msgid "Note that not all variables can be used in every template."
 msgstr "Ten en cuenta que no todas las variables pueden usarse en cada plantilla."
 
 #. translators: %1$s expands to Yoast SEO.
-#: admin/class-admin.php:190
+#: admin/class-admin.php:202
 msgid "The title &amp; metas settings for %1$s are made up of variables that are replaced by specific values from the page when the page is displayed. The tabs on the left explain the available variables."
 msgstr "Los ajustes de título y metas de %1$s están creadas con variables que son reemplazadas por valores específicos de la página cuando la página se muestra. Las pestañas de la izquierda explican las variables disponibles. "
 
-#: admin/class-admin.php:186 admin/class-admin.php:187 admin/pages/metas.php:41
+#: admin/class-admin.php:198 admin/class-admin.php:199 admin/pages/metas.php:41
 #: admin/pages/metas.php:62
 msgid "Template explanation"
 msgstr "Explicación de la plantilla"
 
-#: admin/class-admin.php:180
+#: admin/class-admin.php:192
 msgid "Why Google won't display the right page title"
 msgstr "Por qué Google no muestra el título correcto de la página"
 
-#: admin/class-admin.php:179
+#: admin/class-admin.php:191
 msgid "Title optimization"
 msgstr "Optimización del título"
 
-#: admin/class-admin.php:178
+#: admin/class-admin.php:190
 msgid "For more information:"
 msgstr "Para mas información:"
 

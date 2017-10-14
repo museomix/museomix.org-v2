@@ -5,13 +5,17 @@ class WPML_TM_Page_Builders_Hooks {
 	/* @var WPML_TM_Page_Builders $worker */
 	private $worker;
 
+	/** @var SitePress $sitepress */
+	private $sitepress;
+
 	/**
 	 * WPML_TM_Page_Builders constructor.
 	 *
 	 * @param WPML_TM_Page_Builders $worker
 	 */
-	public function __construct( WPML_TM_Page_Builders $worker = null ) {
-		$this->worker = $worker;
+	public function __construct( WPML_TM_Page_Builders $worker = null, SitePress $sitepress ) {
+		$this->worker    = $worker;
+		$this->sitepress = $sitepress;
 	}
 
 	public function init_hooks() {
@@ -113,7 +117,7 @@ class WPML_TM_Page_Builders_Hooks {
 	 */
 	private function get_worker() {
 		if ( ! $this->worker ) {
-			$this->worker = new WPML_TM_Page_Builders();
+			$this->worker = new WPML_TM_Page_Builders( $this->sitepress );
 		}
 
 		return $this->worker;

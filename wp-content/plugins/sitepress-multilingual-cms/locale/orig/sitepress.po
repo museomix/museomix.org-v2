@@ -3404,14 +3404,14 @@ msgstr ""
 msgid "To install and update %s, please %sregister%s %s for this site."
 msgstr ""
 
-# if ( self::CHANNEL_DEVELOPMENT === $id || self::channel_id( self::CHANNEL_DEVELOPMENT ) === $id ) {
+# if ( self::CHANNEL_DEVELOPMENT === $id ) {
 # $channel = __( 'Development', 'installer' );
-# } elseif ( self::CHANNEL_BETA === $id || self::channel_id( self::CHANNEL_BETA ) === $id  ) {
+# } elseif ( self::CHANNEL_BETA === $id ) {
 
 msgid "Development"
 msgstr ""
 
-# } elseif ( self::CHANNEL_BETA === $id || self::channel_id( self::CHANNEL_BETA ) === $id  ) {
+# } elseif ( self::CHANNEL_BETA === $id ) {
 # $channel = __( 'Beta', 'installer' );
 # } else {
 
@@ -5902,6 +5902,13 @@ msgid "Custom language switchers"
 msgstr ""
 
 # 'section_description'    => sprintf( $description, $description_link ),
+# 'show'                   => __( 'Enable', 'sitepress' ),
+# 'customize_button_label' => __( 'Customize', 'sitepress' ),
+
+msgid "Enable"
+msgstr ""
+
+# 'show'                   => __( 'Enable', 'sitepress' ),
 # 'customize_button_label' => __( 'Customize', 'sitepress' ),
 # 'dialog_title'           => __( 'Edit Shortcode Actions Language Switcher', 'sitepress' ),
 
@@ -6087,7 +6094,7 @@ msgstr ""
 
 # 'label_position'             => _x( 'Position', 'Language switcher preview', 'sitepress' ),
 # 'label_actions'              => _x( 'Actions', 'Language switcher preview', 'sitepress' ),
-# 'label_actions'              => _x( 'Actions', 'Language switcher preview', 'sitepress' ),
+# 'label_action'               => _x( 'Action', 'Language switcher preview', 'sitepress' ),
 
 msgctxt "Language switcher preview"
 msgid "Actions"
@@ -7267,6 +7274,30 @@ msgstr ""
 # location_menu_id.css('font-style','italic');
 
 msgid "not translated in current language"
+msgstr ""
+
+# private function get_message() {
+# $msg = esc_html_x(
+# 'You are using DIVI theme, and you have chosen to use the standard editor for translating content.',
+
+msgctxt "Use Translation Editor notice 1/3"
+msgid "You are using DIVI theme, and you have chosen to use the standard editor for translating content."
+msgstr ""
+
+#
+# $msg .= ' ' . esc_html_x(
+# 'Some functionalities may not work properly. We encourage you to switch to use the Translation Editor.',
+
+msgctxt "Use Translation Editor notice 2/3"
+msgid "Some functionalities may not work properly. We encourage you to switch to use the Translation Editor."
+msgstr ""
+
+# $msg .= ' ' . sprintf(
+# esc_html_x(
+# 'You can find more information here: %s',
+
+msgctxt "Use Translation Editor notice 2/3"
+msgid "You can find more information here: %s"
 msgstr ""
 
 # //success

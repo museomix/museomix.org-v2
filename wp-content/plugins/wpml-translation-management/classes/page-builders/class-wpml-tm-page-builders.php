@@ -8,6 +8,13 @@ class WPML_TM_Page_Builders {
 	const FIELD_STYLE_VISUAL = 'VISUAL';
 	const FIELD_STYLE_LINK = 'LINK';
 
+	/** @var SitePress $sitepress */
+	private $sitepress;
+
+	public function __construct( SitePress $sitepress ) {
+		$this->sitepress = $sitepress;
+	}
+
 	/**
 	 * @param array $translation_package
 	 * @param mixed $post
@@ -17,7 +24,18 @@ class WPML_TM_Page_Builders {
 	public function translation_job_data_filter( array $translation_package, $post ) {
 
 		if ( self::PACKAGE_TYPE_EXTERNAL !== $translation_package['type'] && isset( $post->ID ) ) {
-			$string_packages = apply_filters( 'wpml_st_get_post_string_packages', false, $post->ID );
+			$post_element        = new WPML_Post_Element( $post->ID, $this->sitepress );
+			$source_post_id      = $post->ID;
+			$source_post_element = $post_element->get_source_element();
+			$job_lang_from       = $post_element->get_language_code();
+
+			if ( $source_post_element ) {
+				$source_post_id = $source_post_element->get_id();
+			}
+
+			$job_source_is_not_post_source = $post->ID !== $source_post_id;
+
+			$string_packages = apply_filters( 'wpml_st_get_post_string_packages', false, $source_post_id );
 
 			if ( $string_packages ) {
 
@@ -26,16 +44,27 @@ class WPML_TM_Page_Builders {
 				foreach ( $string_packages as $package_id => $string_package ) {
 
 					/* @var WPML_Package $string_package */
-					$strings = $string_package->get_package_strings();
+					$strings             = $string_package->get_package_strings();
+					$string_translations = array();
+					
+					if ( $job_source_is_not_post_source ) {
+						$string_translations = $string_package->get_translated_strings( array() );
+					}
 
 					foreach ( $strings as $string ) {
 
 						if ( $string->type != self::FIELD_STYLE_LINK ) {
+							$string_value = $string->value;
+
+							if ( isset( $string_translations[ $string->name ][ $job_lang_from ]['value'] ) ) {
+								$string_value = $string_translations[ $string->name ][ $job_lang_from ]['value'];
+							}
+
 							$field_name = WPML_TM_Page_Builders_Field_Wrapper::generate_field_slug( $package_id, $string->id );
 
 							$translation_package['contents'][ $field_name ] = array(
 								'translate' => 1,
-								'data'      => base64_encode( $string->value ),
+								'data'      => base64_encode( $string_value ),
 								'format'    => 'base64',
 							);
 						}

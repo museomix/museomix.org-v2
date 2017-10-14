@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit4d9d4d9fc5b3eff1cf059fe3b15655e8
+class ComposerStaticInit0566bf1e3809250c1e2c14a47c7ac62a
 {
     public static $prefixesPsr0 = array (
         'x' => 
@@ -123,6 +123,8 @@ class ComposerStaticInit4d9d4d9fc5b3eff1cf059fe3b15655e8
         'WPML_TM_Post_Actions' => __DIR__ . '/../..' . '/inc/actions/wpml-tm-post-actions.class.php',
         'WPML_TM_Post_Data' => __DIR__ . '/../..' . '/classes/helpers/class-wpml-tm-post-data.php',
         'WPML_TM_Post_Edit_Link_Anchor' => __DIR__ . '/../..' . '/classes/menu-elements/class-wpml-tm-post-edit-link-anchor.php',
+        'WPML_TM_Post_Edit_Notices' => __DIR__ . '/../..' . '/classes/notices/wpml-tm-post-edit-notices.php',
+        'WPML_TM_Post_Edit_Notices_Factory' => __DIR__ . '/../..' . '/classes/notices/wpml-tm-post-edit-notices-factory.php',
         'WPML_TM_Post_Link' => __DIR__ . '/../..' . '/classes/menu-elements/class-wpml-tm-post-link.php',
         'WPML_TM_Post_Link_Anchor' => __DIR__ . '/../..' . '/classes/menu-elements/class-wpml-tm-post-link-anchor.php',
         'WPML_TM_Post_Link_Factory' => __DIR__ . '/../..' . '/classes/menu-elements/class-wpml-tm-post-link-factory.php',
@@ -246,8 +248,8 @@ class ComposerStaticInit4d9d4d9fc5b3eff1cf059fe3b15655e8
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit4d9d4d9fc5b3eff1cf059fe3b15655e8::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit4d9d4d9fc5b3eff1cf059fe3b15655e8::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit0566bf1e3809250c1e2c14a47c7ac62a::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit0566bf1e3809250c1e2c14a47c7ac62a::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -16,6 +16,7 @@ class Meow_MFRH_Core {
 	function init() {
 
 		include( 'mfrh_custom.php' );
+		include( 'api.php' );
 
     global $mfrh_version;
 		load_plugin_textdomain( 'media-file-renamer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
@@ -923,6 +924,10 @@ class Meow_MFRH_Core {
 		 do_action( 'mfrh_url_renamed', $post, str_replace( $upload_dir, "", $orig_image_url ),
 		 	str_replace( $upload_dir, "", $new_image_url ) );
 	 }
+
+	function rename( $mediaId ) {
+		return $this->rename_media( get_post( $mediaId, ARRAY_A ) );
+	}
 
 	function rename_media( $post, $attachment, $disableMediaLibraryMode = false, $forceFilename = null ) {
 		$force = !empty( $forceFilename );

@@ -9,7 +9,18 @@ var WPML_TM = WPML_TM || {};
 		tagName: 'div',
 		className: 'wpml-form-row',
 		events: {
-			'click .icl_tm_copy_link': 'copyField'
+			'click .icl_tm_copy_link': 'copyField',
+			'click .js-toggle-diff': 'toggleDiff'
+		},
+		toggleDiff: function(e) {
+			e.preventDefault();
+			var diff = this.$el.find('.diff');
+			if(diff.is(':visible')) {
+				diff.fadeOut();
+			} else {
+				diff.fadeIn();
+			}
+			this.updateUI();
 		},
 		copyField: function () {
 			var self = this;
@@ -58,6 +69,7 @@ var WPML_TM = WPML_TM || {};
 				self.translationCompleteCheckbox.hide();
 				self.translationCompleteCheckbox.parent().hide();
 			}
+			self.$el.find('.field-diff').find('.diff').hide();
 
 			jQuery(document).trigger('WPML_TM.editor.field_view_ready', self);
 		},

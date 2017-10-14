@@ -93,8 +93,12 @@ abstract class WPML_Translation_Element extends WPML_SP_User {
 			$this->element_translations = array();
 			$translations               = $this->get_element_translations();
 			foreach ( $translations as $language_code => $element_data ) {
-				$instance                                     = $this->get_new_instance( $element_data );
-				$this->element_translations[ $language_code ] = $instance;
+
+				if ( ! isset( $element_data->element_id ) ) {
+					continue;
+				}
+
+				$this->element_translations[ $language_code ] = $this->get_new_instance( $element_data );
 			}
 		}
 

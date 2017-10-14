@@ -44,7 +44,7 @@ class WPML_Translation_Editor_UI {
 		$this->job_factory  = $job_factory;
 		$this->job_layout   = $job_layout;
 		if ( $job_instance->get_translator_id() <= 0 ) {
-			$job_instance->assign_to( $sitepress->get_wp_api()->get_current_user_id(), 'local' );
+			$job_instance->assign_to( $sitepress->get_wp_api()->get_current_user_id() );
 		}
 		$job_instance->maybe_load_terms_from_post_into_job( $sitepress->get_setting( 'tm_block_retranslating_terms' ) );
 
@@ -124,7 +124,7 @@ class WPML_Translation_Editor_UI {
 		$model = array(
 			'requires_translation_complete_for_each_field' => true,
 			'hide_empty_fields'                            => true,
-			'translation_is_complete'                      => $this->job->status === ICL_TM_COMPLETE,
+			'translation_is_complete'                      => ICL_TM_COMPLETE === (int) $this->job->status,
 			'show_media_button'                            => false,
 			'is_duplicate'                                 => $this->is_duplicate,
 		);
@@ -147,13 +147,13 @@ class WPML_Translation_Editor_UI {
 			true
 		);
 
-		$this->fields             = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
-		$this->fields             = $this->add_titles_and_adjust_styles( $this->fields );
-		$this->fields             = $this->add_rtl_attributes( $this->fields );
-		$model['fields']          = $this->fields;
-		$model['layout']          = $this->job_layout->run( $model['fields'], $this->tm_instance );
-		$model['rtl_original']    = $this->rtl_original;
-		$model['rtl_translation'] = $this->rtl_translation;
+	  $this->fields             = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
+	  $this->fields             = $this->add_titles_and_adjust_styles( $this->fields );
+	  $this->fields             = $this->add_rtl_attributes( $this->fields );
+	  $model['fields']          = $this->fields;
+	  $model['layout']          = $this->job_layout->run( $model['fields'], $this->tm_instance );
+	  $model['rtl_original']    = $this->rtl_original;
+	  $model['rtl_translation'] = $this->rtl_translation;
 
 		$model = $this->filter_the_model( $model );
 		?>
@@ -316,8 +316,6 @@ class WPML_Translation_Editor_UI {
 
 	/**
 	 * @param array $field
-	 *
-	 * @return array
 	 */
 	private function adjust_field_style_for_unsafe_content( array &$field ) {
 		$black_list         = array( 'script', 'style', 'iframe' );

@@ -520,6 +520,7 @@ return array(
     'WPML_Slug_Filter' => $baseDir . '/inc/url-handling/wpml-slug-filter.class.php',
     'WPML_Slug_Resolution' => $baseDir . '/inc/query-filtering/wpml-slug-resolution.class.php',
     'WPML_Sunrise_Lang_In_Domains' => $baseDir . '/inc/tools/sunrise.php',
+    'WPML_Super_Globals_Validation' => $baseDir . '/classes/request-handling/class-wpml-super-globals-validation.php',
     'WPML_Support_Info' => $baseDir . '/classes/support/class-wpml-support-info.php',
     'WPML_Support_Info_UI' => $baseDir . '/classes/support/class-wpml-support-info-ui.php',
     'WPML_Support_Info_UI_Factory' => $baseDir . '/classes/support/class-wpml-support-info-ui-factory.php',
