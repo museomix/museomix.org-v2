@@ -498,16 +498,13 @@ class IWP_Dropbox_API {
 	 * @return object stdClass
 	 */
 	public function metaData($path = null, $rev = null, $limit = 10000, $hash = false, $list = true, $deleted = false) {
-		$call = 'metadata/' . $this->root . '/' . $this->encodePath($path);
+		$call = '2/files/get_metadata' ;
 		$params = array(
-			'file_limit' => ($limit < 1) ? 1 : (($limit > 10000) ? 10000 : (int) $limit),
-			'hash' => (is_string($hash)) ? $hash : 0,
-			'list' => (int) $list,
-			'include_deleted' => (int) $deleted,
-			'rev' => (is_string($rev)) ? $rev : null,
+			'path' => '/' . $this->normalisePath($path),
+			'api_v2' => true
 		);
 
-		return $this->fetch('POST', self::API_URL, $call, $params);
+		return $this->fetch('POST', self::API_URL_V2, $call, $params);
 	}
 
 	/**

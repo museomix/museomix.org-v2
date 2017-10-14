@@ -1,0 +1,592 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: tinymce-custom-styles\n"
+"POT-Creation-Date: 2017-08-09 22:39+0200\n"
+"PO-Revision-Date: 2017-08-09 22:41+0200\n"
+"Last-Translator: Tim Reeves\n"
+"Language-Team: David Stöckl, Tim Reeves <info@timreeves.de>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.1\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: tinymce-custom-styles.php\n"
+
+#: tinymce-custom-styles.php:29
+#, php-format
+msgid ""
+"This Plugin requires WordPress version 3.0 or higher. %sPlease update!%s"
+msgstr ""
+"Dieses Plugin benötigt mindestens WordPress 3.0 oder höher. %sBitte "
+"aktualisiere WordPress!%s"
+
+#: tinymce-custom-styles.php:117
+msgid "Settings saved successfully."
+msgstr "Einstellungen erfolgreich gespeichert."
+
+#: tinymce-custom-styles.php:133
+msgid "No (valid) location for CSS files selected."
+msgstr "Kein (gültiger) Speicherort für CSS-Dateien gewählt."
+
+#: tinymce-custom-styles.php:140
+#, php-format
+msgid "A stub file %s has been created automatically."
+msgstr "Eine Datei %s mit Anfangsinhalten wurde automatisch erzeugt."
+
+#: tinymce-custom-styles.php:213
+#, php-format
+msgid ""
+"Could not create one or both CSS stub files. The folder %s must exist on "
+"your server and be writable for WordPress."
+msgstr ""
+"Konnte eine oder beide CSS-Anfangsdateien nicht erzeugen. Das Verzeichnis %s "
+"muss auf dem Server vorliegen und für Wordpress schreibbar sein."
+
+#: tinymce-custom-styles.php:226
+#, php-format
+msgid "%s Settings %s"
+msgstr "%s Einstellungen %s"
+
+#: tinymce-custom-styles.php:317
+msgid "Settings: TinyMCE Custom Styles"
+msgstr "Einstellungen: TinyMCE Custom Styles"
+
+#: tinymce-custom-styles.php:379
+#, php-format
+msgid "Settings row %d not saved: No Type Option was checked."
+msgstr "Einstellungenreihe %d nicht gespeichert: Kein Typ ausgewählt."
+
+#: tinymce-custom-styles.php:385
+#, php-format
+msgid "Settings row %d not saved: No Type Value was entered."
+msgstr "Einstellungenreihe %d nicht gespeichert: Kein Typwert angegeben."
+
+#: tinymce-custom-styles.php:441
+msgid "Enhance the visual style of your TinyMCE"
+msgstr "Verbessere die visuelle Präsentation deines TinyMCE"
+
+#: tinymce-custom-styles.php:442
+msgid ""
+"This plugin adds two stylesheets to upgrade the appearance of your TinyMCE "
+"visual editor: editor-style.css (TinyMCE only) and editor-style-shared.css "
+"(for TinyMCE AND your theme)."
+msgstr ""
+"Das Plugin fügt zwei Stylesheets hinzu, um die Inhaltsdarstellung deines "
+"TinyMCE visuellen Editors aufzuwerten: editor-style.css (nur TinyMCE) und "
+"editor-style-shared.css (für TinyMCE UND dein Theme)."
+
+#: tinymce-custom-styles.php:443
+msgid "Please choose a location for your stylesheet files:"
+msgstr "Bitte den Speicherort für deine Stylesheet-Dateien wählen:"
+
+#: tinymce-custom-styles.php:444
+#, php-format
+msgid ""
+"Directory of current Theme (do %snot%s choose in case of automatically "
+"updated theme)"
+msgstr ""
+"Verzeichnis des aktuellen Themes (%snicht%s wählen bei automatisch "
+"aktualisiertem Theme)"
+
+#: tinymce-custom-styles.php:445
+#, php-format
+msgid ""
+"Directory of current Child Theme (do %snot%s choose in case of automatically "
+"updated child theme)"
+msgstr ""
+"Verzeichnis des aktuellen Kind-Themes (%snicht%s wählen bei automatisch "
+"aktualisiertem Kind-Theme)"
+
+#: tinymce-custom-styles.php:446
+#, php-format
+msgid "Use a custom directory (recommended) at %s/"
+msgstr "Nutze ein eigenes Verzeichnis (empfohlen) unter %s/"
+
+#: tinymce-custom-styles.php:447
+#, php-format
+msgid ""
+"%sYour custom directory must pre-exist and your input above must begin "
+"without a slash, and include one at the end of each directory.%sAny "
+"characters after the last slash will be prepended to the file names."
+msgstr ""
+"%sDein Custom-Verzeichnis muss vorhanden sein und deine Eingabe muss ohne "
+"Schrägstrich beginnen, und ein Schrägstrich am Ende jedes Verzeichnisnamens "
+"enthalten. %sEtwaige Zeichen hinter dem letzten Schrägstrich werden den "
+"Dateinamen vorangestellt."
+
+#: tinymce-custom-styles.php:451
+msgid "Error: "
+msgstr "Fehler: "
+
+#: tinymce-custom-styles.php:453
+msgid ""
+"Please choose a location for the editor css files (select a radio button "
+"above)."
+msgstr ""
+"Bitte einen Speicherort für die CSS-Dateien wählen (klicke oben auf ein "
+"Radio-Button)."
+
+#: tinymce-custom-styles.php:457
+#, php-format
+msgid ""
+"The file \"%s\" was not found and could not be created in the specified "
+"directory. The directory must exist and be writable for WordPress."
+msgstr ""
+"Die Datei \"%s\" wurde nicht vorgefunden und konnte nicht im gewählten "
+"Verzeichnis angelegt werden. Das Verzeichnis muss existieren und für "
+"WordPress beschreibbar sein."
+
+#: tinymce-custom-styles.php:469
+#, php-format
+msgid "Edit your %s editor-style.css %s for the editor-only styles here."
+msgstr "Bearbeite deine %s editor-style.css %s für die Nur-Editor styles hier."
+
+#: tinymce-custom-styles.php:471
+#, php-format
+msgid ""
+"Edit your %s editor-style-shared.css %s for the common editor AND theme "
+"styles here."
+msgstr ""
+"Bearbeite %s editor-style-shared.css %s here, um Styles zu erstellen die "
+"sowohl im Editor als auch in deinem Theme angewendet werden sollen."
+
+#: tinymce-custom-styles.php:473
+#, php-format
+msgid "Edit your editor-only styles located at %s on your server."
+msgstr ""
+"Bearbeite deine Nur-Editor Styles, die sich am Server unter %s befinden."
+
+#: tinymce-custom-styles.php:475
+#, php-format
+msgid "Edit your theme/editor shared styles located at %s on your server."
+msgstr ""
+"Bearbeite deine Theme/Editor gemeinsamen Styles, die sich am Server unter %s "
+"befinden."
+
+#: tinymce-custom-styles.php:477
+#, php-format
+msgid "Your editor-only styles are located at %s"
+msgstr "Deine Nur-Editor Styles befinden sich hier: %s"
+
+#: tinymce-custom-styles.php:479
+#, php-format
+msgid "Your theme/editor shared styles are located at %s"
+msgstr "Deine Theme/Editor gemeinsamen Styles befinden sich hier: %s"
+
+#: tinymce-custom-styles.php:486
+msgid "Select to add the styles in a submenu \"Custom Styles\"."
+msgstr ""
+"Auswählen um die Styles in einem Untermenü \"Custom Styles\" einzufügen."
+
+#: tinymce-custom-styles.php:488
+msgid ""
+"Select to remove the standard styles from the menu (overridden by WP Edit > "
+"Add Predefined Styles)."
+msgstr ""
+"Auswählen um die Standard-Styles vom Menü zu entfernen (überbuttert von WP "
+"Edit > Add Predefined Styles)."
+
+#: tinymce-custom-styles.php:490 tinymce-custom-styles.php:762
+msgid "Save all settings"
+msgstr "Alle Einstellungen speichern"
+
+#: tinymce-custom-styles.php:492
+msgid "Manage your custom formats and styles for TinyMCE"
+msgstr "Benutzerdefinierte Formate / Styles für TinyMCE verwalten"
+
+#: tinymce-custom-styles.php:494
+#, php-format
+msgid ""
+"%s This part %s of the official TinyMCE documentation will help you "
+"understanding this table."
+msgstr ""
+"%s Dieser Teil %s der offiziellen TinyMCE Dokumentation kann dir helfen, die "
+"nachfolgende Tabelle zu verstehen."
+
+#: tinymce-custom-styles.php:499
+msgid "Column"
+msgstr "Spalte"
+
+#: tinymce-custom-styles.php:500
+msgid "Description"
+msgstr "Beschreibung"
+
+#: tinymce-custom-styles.php:505
+msgid "Title"
+msgstr "Titel"
+
+#: tinymce-custom-styles.php:505 tinymce-custom-styles.php:509
+#: tinymce-custom-styles.php:517
+msgid "required"
+msgstr "benötigt"
+
+#: tinymce-custom-styles.php:506
+msgid "The label (name) for this dropdown item."
+msgstr "Das Label (Name) für dieses Dropdown-Element."
+
+#: tinymce-custom-styles.php:509
+#, php-format
+msgid "Type%s (radios) [%s]"
+msgstr "Typ%s (Radios) [%s]"
+
+#: tinymce-custom-styles.php:511
+#, php-format
+msgid ""
+"%sInline%s: Enter one %s HTML inline element %s (e.g. span) to create, with "
+"the classes/styles of the row applied, which will wrap the current editor "
+"selection, not replacing any tags."
+msgstr ""
+"%sInline%s: Gib ein %s HTML Inline-Element %s (z.B. span) ein, das samt den "
+"Klassen/Styles der Reihe zu erzeugen ist. Es wird die aktuelle Markierung im "
+"Editor umschließen, ohne vorhandene Tags zu ersetzen."
+
+#: tinymce-custom-styles.php:512
+#, php-format
+msgid ""
+"%sBlock%s: Enter one %s HTML block-level element %s (e.g. blockquote) to "
+"create with the classes/styles of the row applied. It will REPLACE the "
+"existing block element at cursor."
+msgstr ""
+"%sBlock%s: Gib ein %s HTML Block-Level-Element %s (z.B. blockquote) ein, das "
+"samt den Klassen/Styles der Reihe zu erzeugen ist. Es wird das vorhandene "
+"Block-Element am Cursor ERSETZEN."
+
+#: tinymce-custom-styles.php:513
+#, php-format
+msgid ""
+"%sSelector%s: Enter %s a valid CSS 3 selector %s to select existing HTML "
+"tags to which the classes/styles of the row will be applied. Can select "
+"complex things like odd rows in a table."
+msgstr ""
+"%sSelektor%s: Gib einen %s gültigen CSS 3 Selektor %s ein, um vorhandene "
+"HTML-Tags auszuwählen, die die Klassen/Styles erhalten. Komplexe Ausdrücke "
+"wie gerade Reihen einer Tabelle möglich."
+
+#: tinymce-custom-styles.php:517
+msgid "Type Value"
+msgstr "Typwert"
+
+#: tinymce-custom-styles.php:518
+msgid "The HTML-Element to create or CSS 3 selector pattern to apply."
+msgstr "Das HTML-Element zu erzeugen oder CSS 3 Selektor anzuwenden."
+
+#: tinymce-custom-styles.php:521 tinymce-custom-styles.php:557
+#: tinymce-custom-styles.php:676
+msgid "CSS Class(es)"
+msgstr "CSS Klasse(n)"
+
+#: tinymce-custom-styles.php:521 tinymce-custom-styles.php:525
+#: tinymce-custom-styles.php:533 tinymce-custom-styles.php:537
+#: tinymce-custom-styles.php:541
+msgid "optional"
+msgstr "optional"
+
+#: tinymce-custom-styles.php:522
+msgid "A space-separated list of classes to apply to the element."
+msgstr ""
+"Eine durch Leerzeichen getrennte Liste von Klassen die auf das Element "
+"angewendet werden sollen."
+
+#: tinymce-custom-styles.php:525 tinymce-custom-styles.php:558
+#: tinymce-custom-styles.php:677
+msgid "CSS Styles"
+msgstr "CSS Styles"
+
+#: tinymce-custom-styles.php:527
+msgid ""
+"You can enter CSS here which will be applied directly to the element in its "
+"style attribute."
+msgstr ""
+"Hier kannst Du CSS eingeben, das das Element direkt in seinem style-Attribut "
+"erhalten soll."
+
+#: tinymce-custom-styles.php:528 tinymce-custom-styles.php:529
+msgid "Note:"
+msgstr "Beachte:"
+
+#: tinymce-custom-styles.php:528
+#, php-format
+msgid ""
+"Multi-word attributes, like %sfont-size%s, are written in Javascript-"
+"friendly camel case: %sfontSize%s."
+msgstr ""
+"Zusammengesetzte Attribute, wie %sfont-size%s, werden in Javascript-"
+"freundlicher Camel-Case Schreibweise notiert: %sfontSize%s."
+
+#: tinymce-custom-styles.php:529
+msgid ""
+"It is more recommendable to use classes of your editor-style.css / editor-"
+"style-shared.css in most cases."
+msgstr ""
+"In den meisten Fällen ist es empfehlenswerter die Klassen aus editor-style."
+"css / editor-style-shared.css zu verwenden."
+
+#: tinymce-custom-styles.php:533 tinymce-custom-styles.php:559
+#: tinymce-custom-styles.php:678
+msgid "Attributes"
+msgstr "Attribute"
+
+#: tinymce-custom-styles.php:534
+msgid ""
+"You can define HTML-Attributes here which will be applied to the element(s)."
+msgstr ""
+"Hier kannst Du HTML-Attribute definieren, die auf das Element / die Elemente "
+"angewendet werden."
+
+#: tinymce-custom-styles.php:537 tinymce-custom-styles.php:560
+#: tinymce-custom-styles.php:679
+msgid "Exact"
+msgstr "Exakt"
+
+#: tinymce-custom-styles.php:538
+msgid ""
+"Checking this option disables the \"merge similar styles\" feature, needed "
+"for some CSS inheritance issues."
+msgstr ""
+"Ein Häkchen hier deaktiviert das  \"merge similar styles\" -Feature, das für "
+"einige CSS Vererbungskonflikte eingesetzt wird."
+
+#: tinymce-custom-styles.php:541 tinymce-custom-styles.php:561
+#: tinymce-custom-styles.php:680
+msgid "Wrapper"
+msgstr "Wrapper"
+
+#: tinymce-custom-styles.php:542
+msgid ""
+"If you check this, selecting the style creates a new block-level element "
+"around any selected block-level elements."
+msgstr ""
+"Falls mit Häkchen, erstellt das Auswählen dieses Styles im Editor ein neues "
+"Block-Level Element um die selektierten Block-Level-Elemente herum."
+
+#: tinymce-custom-styles.php:545 tinymce-custom-styles.php:562
+#: tinymce-custom-styles.php:681
+msgid "Remove"
+msgstr "Entfernen"
+
+#: tinymce-custom-styles.php:545
+msgid "action"
+msgstr "Aktion"
+
+#: tinymce-custom-styles.php:546
+msgid ""
+"Clicking the \"X\" removes the row. Multiple rows can be deleted by saving "
+"with empty titles."
+msgstr ""
+"Ein Klick auf das \"X\" entfernt die Reihe. Mehrere Reihen können durch "
+"Speichern mit leeren Titeln entfernt werden."
+
+#: tinymce-custom-styles.php:554 tinymce-custom-styles.php:673
+msgid "Title *"
+msgstr "Titel *"
+
+#: tinymce-custom-styles.php:555 tinymce-custom-styles.php:674
+msgid "Type *"
+msgstr "Typ *"
+
+#: tinymce-custom-styles.php:556 tinymce-custom-styles.php:675
+msgid "Type Value *"
+msgstr "Typwert *"
+
+#: tinymce-custom-styles.php:605 tinymce-custom-styles.php:636
+msgid "Value"
+msgstr "Wert"
+
+#: tinymce-custom-styles.php:606 tinymce-custom-styles.php:637
+msgid "Delete"
+msgstr "Löschen"
+
+#: tinymce-custom-styles.php:629 tinymce-custom-styles.php:687
+#: tinymce-custom-styles.php:735
+msgid "Add new style"
+msgstr "Neuen Style hinzufügen"
+
+#: tinymce-custom-styles.php:635
+msgid "Attribute"
+msgstr "Attribut"
+
+#: tinymce-custom-styles.php:660 tinymce-custom-styles.php:748
+msgid "Add new attribute"
+msgstr "Neues Attribut hinzufügen"
+
+#~ msgid ""
+#~ "The Plugin does not have the required permissions to create the files "
+#~ "editor-style.css and editor-style-shared.css automatically. Please create "
+#~ "these files manually to the specified folder on your server."
+#~ msgstr ""
+#~ "WordPress hat nicht die nötigen Befugnisse im Dateisystem, um die Dateien "
+#~ "editor-style.css und editor-style-shared.css automatisch anzulegen. Bitte "
+#~ "lege diese Dateien (schreibbar) im spezifizierten Verzeichnis auf dem "
+#~ "Server an."
+
+#~ msgid "Settings row not saved: Row "
+#~ msgstr "Reihe nicht gespeichert: Reihe"
+
+#~ msgid "Change the visual style of your TinyMCE"
+#~ msgstr "Aussehen des TinyMCE verändern"
+
+#~ msgid ""
+#~ "To change the visual style appearance of your TinyMCE visual editor, we "
+#~ "have to create two stylesheets: editor-style.css (TinyMCE only) and "
+#~ "editor-style-shared.css (for TinyMCE AND your theme)."
+#~ msgstr ""
+#~ "Für das visuelle Styling gibt es zwei Stylesheet-Dateien: editor-style."
+#~ "css (nur TinyMCE) und editor-style-shared.css (für TinyMCE UND dein "
+#~ "Theme)."
+
+#~ msgid "Please choose a location for your files:"
+#~ msgstr "Bitte bestimme einen Speicherort für die CSS-Stylesheets:"
+
+#~ msgid "Use a custom directory below wp-content"
+#~ msgstr "Nutze ein Custom-Verzeichnis unterhalb von wp-content"
+
+#~ msgid ""
+#~ "The file \"editor-style.css\" was not found/could not be created in the "
+#~ "directory you have specified. Please create this file."
+#~ msgstr ""
+#~ "Die Datei \"editor-style.css\" wurde unter dem ausgewählten Pfad  nicht "
+#~ "gefunden/konnte nicht automatisch erstellt werden. Bitte erstelle diese "
+#~ "Datei."
+
+#~ msgid ""
+#~ "The file \"editor-style-shared.css\" was not found/could not be created "
+#~ "in the directory you have specified. Please create this file."
+#~ msgstr ""
+#~ "Die Datei \"editor-style-shared.css\" wurde unter dem ausgewählten Pfad  "
+#~ "nicht gefunden/konnte nicht automatisch erstellt werden. Bitte erstelle "
+#~ "diese Datei."
+
+#~ msgid "Edit your %s editor-style.css %s for the editor styles here."
+#~ msgstr ""
+#~ "Bearbeite %s editor-style.css %s hier, um das Aussehen des Editors zu "
+#~ "verändern."
+
+#~ msgid "Create/edit your editor style located at %s on your server."
+#~ msgstr ""
+#~ "Erstelle/Bearbeite das CSS-Stylesheet für deinen Editor unter folgendem "
+#~ "Server-Pfad: %s."
+
+#~ msgid ""
+#~ "Create/edit your theme/editor shared style located at %s on your server."
+#~ msgstr ""
+#~ "Erstelle/Bearbeite die gemeinsamen CSS-Stylesheets für Theme und Editor "
+#~ "unter folgendem Serverpfad: %s."
+
+#~ msgid ""
+#~ "Your custom directory input must begin without a slash, and include one "
+#~ "at the end of each directory."
+#~ msgstr ""
+#~ "Die Eingabe eines Custom-Verzeichnisses muss ohne Slash anfangen, und ein "
+#~ "Slash am Ende von jedem Verzeichnisnamen enthalten."
+
+#~ msgid "The label for this dropdown item."
+#~ msgstr "Das Label für dieses Dropdown Item."
+
+#~ msgid "Selector"
+#~ msgstr "Selektor"
+
+#~ msgid "Block"
+#~ msgstr "Block"
+
+#~ msgid "Inline"
+#~ msgstr "Inline"
+
+#~ msgid ""
+#~ "%sSelector%s: Choose %s a valid CSS selector %s to limit this style to a "
+#~ "specific HTML tag which will be applied to the style of an existing tag "
+#~ "instead of creating a new one."
+#~ msgstr ""
+#~ "%sSelektor%s: Wähle %s einen gültigen CSS Selektor %s um alle "
+#~ "entsprechenden HTML Tags im selektierten Bereich mit diesem format zu "
+#~ "kennzeichnen, anstatt ein neues HTML Tag zu erstellen."
+
+#~ msgid ""
+#~ "%sBlock%s: Choose %s a valid HTML block level element %s (f.e. "
+#~ "blockquote) to create this new element with the style applied, which will "
+#~ "replace the existing block element in TinyMCE around the cursor."
+#~ msgstr ""
+#~ "%sBlock%s: Wähle %s ein gültiges HTML block-level Element %s (z.B. "
+#~ "blockquote) um ein neues Element mit den entsprechenden Eigenschaften zu "
+#~ "erstellen, das das existierende Block-Level Element um die Auswahl "
+#~ "ersetzt."
+
+#~ msgid ""
+#~ "%sInline%s: Choose %s a new HTML inline element %s (f.e. span) to create "
+#~ "this new element with the style applied, which will wrap whatever is "
+#~ "selected in the editor, not replacing any tags."
+#~ msgstr ""
+#~ "%sInline%s: Wähle %s ein gültiges HTML inline Element %s (z.B. span) um "
+#~ "ein neues Inline-Element mit den entsprechenden Eigenschaften zu "
+#~ "erstellen, das egal was ausgewählt ist in ein neues Inline-Element "
+#~ "einschließt, ohne andere HTML-Tags zu ersetzen."
+
+#~ msgid ""
+#~ "Here you have the possibility to define CSS styles, which will be "
+#~ "directly applied to the element."
+#~ msgstr ""
+#~ "Hier können CSS Styles definiert werden, die direkt auf das entsprechende "
+#~ "Element angewandt werden."
+
+#~ msgid ""
+#~ "Multi-word attributes, like %sfont-size%s, are written in Javascript-"
+#~ "friendly camel case: %sfontSize%s)"
+#~ msgstr ""
+#~ "Zusammengesetzte Attribute, wie %sfont-size%s werden in Javascript-"
+#~ "freundlicher Camel-Case Schreibweise geschrieben: %sfontSize%s)"
+
+#~ msgid ""
+#~ "Here you have the possibility to define HTML-Attributes, which will be "
+#~ "applied to the element(s)."
+#~ msgstr ""
+#~ "Hier gibt es die Möglichkeit HTML-Attribute zu definieren, die auf das "
+#~ "Element / die Elemente angewendet werden."
+
+#~ msgid "Add/Remove"
+#~ msgstr "Hinzufügen/Entfernen"
+
+#~ msgid "Save Settings"
+#~ msgstr "Einstellungen speichern"
+
+#~ msgid ""
+#~ "The Plugin does not have the required permissions to create the files "
+#~ "edtior-style.css and editor-style-shared.css automatically. Please create "
+#~ "these files manually to the specified folder on your server."
+#~ msgstr ""
+#~ "Leider konnten die Dateien editor-style.css und editor-style-shared.css "
+#~ "in dem Wurzelordner deines Templates nicht erzeugt werden. Bitte erstelle "
+#~ "diese Dateien manuell im angegebenen Ordner auf deinem Server."
+
+#~ msgid "%s Donate %s"
+#~ msgstr "%s Spenden %s"
+
+#~ msgid "Settings: TinyMCE Advanced Professional Styles"
+#~ msgstr "Einstellungen: TinyMCE Advanced Professional Styles"
+
+#~ msgid ""
+#~ "A good WordPress Plugin means a lot of work. Please consider %s donating "
+#~ "%s if you like it. Thank you."
+#~ msgstr ""
+#~ "Ein gutes WordPress Plugin ist eine Menge Arbeit. Bitte %s erwäge eine "
+#~ "Spende %s. Danke."
+
+#~ msgid ""
+#~ "To change the visual style appearance of your TinyMCE visual editor, we "
+#~ "have to create two stylesheets: editor-style.css (TinyMCE only) and "
+#~ "editor-style-shared.css (both, TinyMCE and your theme)."
+#~ msgstr ""
+#~ "Um das visuelle Erscheinungsbild deines TinyMCE zu ändern, müssen zwei "
+#~ "CSS-Stylesheets erstellt werden: editor-style.css (nur TinyMCE) und "
+#~ "editor-style-shared.css (gültig im TinyMCE und auch deinem Theme)."
+
+#~ msgid ""
+#~ "Note: Make sure that the files editor-style.css and editor-style-shared."
+#~ "css exist in your themes' root directory."
+#~ msgstr ""
+#~ "Beachte: Die Dateien editor-style.css und editor-style-shared.css müssen "
+#~ "im Wurzelverzeichnis deines Themes vorhanden sein."
+
+#~ msgid "Please consider %s donating %s. Thank you."
+#~ msgstr "Bitte überlege dir für dieses Plu"

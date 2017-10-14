@@ -20,12 +20,13 @@ class WPML_Media
 	 */
 	private $sitepress;
 
-	function __construct( $ext = false, &$sitepress, &$wpdb ) {
-		$this->sitepress = &$sitepress;
-		$this->wpdb      = &$wpdb;
+	private $languages_to_clear = array();
+
+	function __construct( $ext = false, $sitepress, $wpdb ) {
+		$this->sitepress = $sitepress;
+		$this->wpdb      = $wpdb;
 		add_action( 'wpml_loaded', array( $this, 'loaded' ), 2 );
-		add_action( 'init', array($this, 'verify_wpml') );
-		
+		add_action( 'init', array( $this, 'verify_wpml' ) );
 	}
 
 	function verify_wpml() {
@@ -42,6 +43,8 @@ class WPML_Media
 
 	function loaded()
 	{
+	  add_action( 'shutdown', array( $this, 'invalidate_cache' ), - PHP_INT_MAX );
+
 		$this->plugin_localization();
 
 		if ( is_admin() ) {
@@ -115,7 +118,7 @@ class WPML_Media
 					add_action( 'media_upload_library', array( $this, 'language_filter' ), 1 );
 					add_action( 'pre_get_posts', array( $this, 'filter_media_upload_items' ), 10, 1 );
 				}
-				add_action( 'wpml_media_create_duplicate_attachment', array( $this, 'invalidate_cache' ) );
+		  add_action( 'wpml_media_create_duplicate_attachment', array( $this, 'queue_for_cache_invalidation' ), 10, 2 );
 
 				if ( $pagenow == 'media.php' ) {
 					add_action( 'admin_footer', array( $this, 'media_language_options' ) );
@@ -1784,7 +1787,7 @@ class WPML_Media
 	 * @param $ids
 	 * @param $target_language
 	 *
-	 * @return array
+	 * @return array|string
 	 */
 	public function translate_attachment_ids( $ids, $target_language )
 	{
@@ -1819,9 +1822,9 @@ class WPML_Media
 
 		if ( $return_string ) {
 			return implode( ',', $translated_ids );
-		} else {
-			return $translated_ids;
 		}
+		return $translated_ids;
+
 	}
 
 	private function get_original_post_id() {
@@ -1873,13 +1876,30 @@ class WPML_Media
 	}
 
 	/**
-	 * Invalidate cache when new attachment is created.
+	 * @param int $attachment_id
+	 * @param int $duplicated_attachment_id
 	 */
+	public function queue_for_cache_invalidation( $attachment_id, $duplicated_attachment_id ) {
+	  foreach ( array( $attachment_id, $duplicated_attachment_id ) as $id ) {
+		  $‌attachment_language = $this->sitepress->get_element_language_details( $id, 'post_attachment' );
+		  if ( isset( $‌attachment_language->language_code ) ) {
+			  $this->languages_to_clear[] = $‌attachment_language->language_code;
+		  }
+	  }
+	  $this->languages_to_clear = array_unique( $this->languages_to_clear );
+	}
+
 	public function invalidate_cache() {
-		global $sitepress;
-		$active_languages = $sitepress->get_active_languages();
-		foreach ( $active_languages as $active_language ) {
-			icl_cache_clear( '_media_upload_attachments' . $active_language['code'] );
+	  global $wp_object_cache;
+	  if ( $wp_object_cache && $this->languages_to_clear ) {
+			$this->languages_to_clear = array_unique( $this->languages_to_clear );
+			foreach ( $this->languages_to_clear as $language_to_clear ) {
+				icl_cache_clear( '_media_upload_attachments' . $language_to_clear );
+			}
 		}
+	}
+
+	function __destruct() {
+		$this->invalidate_cache();
 	}
 }

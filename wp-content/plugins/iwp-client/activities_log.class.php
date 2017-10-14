@@ -28,6 +28,8 @@ class IWP_MMB_Activities_log {
 			add_action('automatic_updates_complete', array( &$this, 'iwp_mmb_automatic_updates_complete'), 10, 1); // It is available since wordpress 3.8. It is for automatic translation updates.
 			add_action('updated_option', array( &$this, 'iwp_mmb_check_and_update_all_plugins_themes_history'), 10, 3);  
 			add_action( 'init', array( &$this, 'iwp_mmb_register_custom_post_type' ),10,1,1 ); 
+    		// add_action('sucuriscan_scheduled_scan', array( &$this, 'iwp_mmb_save_sucuri_activity_log'),99999); // We can use this action if sucuri implement schedule remote scan 
+
 		}
 
 		if(function_exists('add_filter')) {
@@ -41,6 +43,7 @@ class IWP_MMB_Activities_log {
 			add_filter('upgrader_post_install', array( &$this, 'iwp_mmb_upgrader_post_install'), 10, 3); 
 			// We couldn't get the error for failure translations updates (in wordpress 3.7 DE) when individual plugin updates happened. But the above line solved it.
 			// Activities log for automatic translation updates wont work in wordpress 3.7. Because, wordpress 3.7 hasnt given any option to achieve it. But the above line solved it.
+
 		}		
 	}
 	
@@ -153,6 +156,10 @@ class IWP_MMB_Activities_log {
 				}
 				$actions = 'backups';
 			break;
+			case 'scan':
+				$actions = 'sucuri';
+				$details = serialize($params);
+				break;
 		}
 		
 		if(!function_exists('update_post_meta')) {
@@ -583,6 +590,7 @@ class IWP_MMB_Activities_log {
 		$from_key = 'from';
 		$to_key = 'to';
 		$translations_updated = 'translations-updated';
+		$sucuri = 'sucuri';
 		
 		if(
 			!is_array($params['originalActions']) 
@@ -643,7 +651,10 @@ class IWP_MMB_Activities_log {
 				}
 				$return['detailed'][$activities_log['actions']]['details'][$return['detailed'][$activities_log['actions']][$count_key]][$type_key] = $backup_what_type;
 				$return['detailed'][$activities_log['actions']][$count_key]++;
-			} else {
+			} elseif($activities_log['actions']==$sucuri){
+				$return['detailed'][$sucuri][$count_key]++;
+				$return['detailed'][$sucuri]['details'][]=$activities_log_details;
+			}else {
 				
 				$return['detailed'][$updated_key][$count_key]++;
 
@@ -679,7 +690,6 @@ class IWP_MMB_Activities_log {
 				}
 			}
 		}
-
 		iwp_mmb_response($return, true);		
 	}
 	
@@ -702,6 +712,15 @@ class IWP_MMB_Activities_log {
 
 	function iwp_mmb_register_custom_post_type(){
 		register_post_type('iwp-log');	
+	}
+	function iwp_mmb_save_sucuri_activity_log(){
+		$object = new IWP_MMB_Sucuri();
+		$details = $object->getScannedCacheResult(1);
+		if (!empty($details)) {
+			$info = $details['info'];
+			$userid = $this->iwp_mmb_get_current_user_id();
+			$this->iwp_mmb_save_iwp_activities('sucuri', 'scan', 'automatic',$info, $userid);
+		}
 	}
 }
 

@@ -35,6 +35,7 @@ class IWP_MMB_Core extends IWP_MMB_Helper
     var $user_instance;
     var $backup_instance;
 	var $wordfence_instance;
+	var $sucuri_instance;
     var $installer_instance;
     var $iwp_mmb_multisite;
     var $network_admin_install;
@@ -182,11 +183,14 @@ class IWP_MMB_Core extends IWP_MMB_Helper
             'put_redirect_url_again'=>  'iwp_mmb_gwmt_redirect_url_again',
 			'wordfence_scan' => 'iwp_mmb_wordfence_scan',
 			'wordfence_load' => 'iwp_mmb_wordfence_load',
+			'sucuri_fetch_result' => 'iwp_mmb_sucuri_fetch_result',
 			'backup_test_site' => 'iwp_mmb_backup_test_site',
 			'ithemes_security_check' => 'iwp_phx_ithemes_security_check',
 			'get_seo_info' => 'iwp_mmb_yoast_get_seo_info',
 			'save_seo_info' => 'iwp_mmb_yoast_save_seo_info',
-			'fetch_activities_log' => 'iwp_mmb_fetch_activities_log'
+			'fetch_activities_log' => 'iwp_mmb_fetch_activities_log',
+			'sucuri_scan' => 'iwp_mmb_sucuri_scan',
+			'sucuri_change_alert' => 'iwp_mmb_sucuri_change_alert'
 		);
 		
 		add_action('rightnow_end', array( &$this, 'add_right_now_info' ));       
@@ -624,7 +628,16 @@ class IWP_MMB_Core extends IWP_MMB_Helper
         }
         return $this->wordfence_instance;
 	 }
-	
+	/*
+	 * Get an instance of WordFence 
+	 */
+	 function get_sucuri_instance()
+	 {
+	 	if (!isset($this->sucuri_instance)) {
+            $this->sucuri_instance = new IWP_MMB_Sucuri();
+        }
+        return $this->sucuri_instance;
+	 }
 	
     /**
      * Plugin install callback function

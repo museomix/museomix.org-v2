@@ -89,7 +89,7 @@ STEP 1
 			</td>
 		</tr>
 		<tr>
-			<td>Config Files</td>
+			<td>Config Files <sup>pro</sup></td>
 			<td>
 				Inside the archive.zip should be a copy of the original .htaccess (Apache) or the web.config (IIS) files that were setup with your packaged site.
 				When the installer runs it will backup and then reset all <i>.htaccess, user.ini, and web.config</i> files.   It will then create blank copies of
@@ -240,11 +240,25 @@ STEP 2
 			<th>Details</th>
 		</tr>
 		<tr>
-			<td>Prefix:<sup>pro*</sup></td>
+			<td>Prefix<sup>pro*</sup></td>
 			<td>By default, databases are prefixed with the cPanel account's username (for example, myusername_databasename).  However you can ignore this option if
 			your host does not use the default cPanel username prefix schema.  Check the 'Ignore cPanel Prefix' and the username prefixes will be ignored.
 			This will still require you to enter in the cPanels required setup prefix if they require one.  The checkbox will be set to read-only if your host has
 			disabled prefix settings.  Please see your host full requirements when using the cPanel options.</td>
+		</tr>
+		<tr>
+			<td>Legacy</td>
+			<td>When creating a database table, the Mysql version being used may not support the collation type of the Mysql version where the table was created.
+			In this scenario, the installer will fallback to a legacy collation type to try and create the table. This value should only be checked if you receive an error when
+			testing the database.
+			<br/><br/>
+			For example, if the database was created on MySQL 5.7 and the tables collation type was 'utf8mb4_unicode_520_ci', however your trying to run the installer
+			on an older MySQL 5.5 engine that does not support that type then an error will be thrown.  If this option is checked  then the legacy setting will try to
+			use 'utf8mb4_unicode_520', then 'utf8mb4', then 'utf8' and so on until it runs out of options.
+			<br/><br/>
+			For more information about this feature see the online FAQ question titled
+			<a href="https://snapcreek.com/duplicator/docs/faqs-tech/#faq-installer-110-q" target="_blank">"What is Compatibility mode & ' collation' errors"</a>
+			</td>
 		</tr>
 		<tr>
 			<td>Spacing</td>
@@ -259,12 +273,12 @@ STEP 2
 		<tr>
 			<td>Charset</td>
 			<td>When the database is populated from the SQL script it will use this value as part of its connection.  Only change this value if you know what your
-			databases character  set should be.</td>
+			databases character set should be.</td>
 		</tr>
 		<tr>
 			<td>Collation</td>
 			<td>When the database is populated from the SQL script it will use this value as part of its connection.  Only change this value if you know what your
-			databases character  set should be.</td>
+			databases collation set should be.</td>
 		</tr>
 	</table>
 	<sup>*cPanel Only Option</sup>
@@ -384,7 +398,7 @@ STEP 3
 		<tr>
 			<td>Config SSL</td>
 			<td>Turn off SSL support for WordPress. This sets FORCE_SSL_ADMIN in your wp-config file to false if true, otherwise it will create the setting if not set.  The "Enforce on Login"
-				will turn off SSL support for WordPress Logins. </td>
+				will turn off SSL support for WordPress Logins.</td>
 		</tr>
 		<tr>
 			<td>Config Cache</td>

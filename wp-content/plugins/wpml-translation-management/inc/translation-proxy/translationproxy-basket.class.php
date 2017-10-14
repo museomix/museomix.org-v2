@@ -362,15 +362,6 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 										                   $language_name )
 									);
 									$send_to_basket    = false;
-								} elseif ( $job_details->status == ICL_TM_WAITING_FOR_TRANSLATOR ) {
-									self::$messages[ ] = array(
-										'type' => 'update',
-										'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already waiting for translator.',
-										                       'wpml-translation-management' ),
-										                   $post_title,
-										                   $language_name )
-									);
-									$send_to_basket    = false;
 								}
 							}
 						} else {

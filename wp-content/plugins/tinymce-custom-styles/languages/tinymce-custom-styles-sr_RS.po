@@ -1,0 +1,354 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: tinymce-advanced-professional-formats-and-styles\n"
+"POT-Creation-Date: 2013-08-07 18:59+0100\n"
+"PO-Revision-Date: 2014-02-21 13:32+0100\n"
+"Last-Translator: Borisa Djuraskovic <borisad@webhostinghub.com>\n"
+"Language-Team: David Stöckl <admin@blackbam.at>\n"
+"Language: deutsch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: C:\\xampp\\htdocs\\wp-cis\\local\\wp-content\\plugins"
+"\\tinymce-and-tinymce-advanced-professsional-formats-and-styles\n"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:27
+#, php-format
+msgid ""
+"This Plugin requires WordPress version 3.0 or higher. %sPlease update!%s"
+msgstr "Plugin zahteva WordPress verziju 3.0 ili veću.%supdatujte%s"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:133
+msgid ""
+"The Plugin does not have the required permissions to create the files edtior-"
+"style.css and editor-style-shared.css automatically. Please create these "
+"files manually to the specified folder on your server."
+msgstr ""
+"Plugin nema potrebne dozvole da automatski kreirate fajlove edtior-style."
+"css  i fajlove edtior-style.css . Molimo da ručno kreirate ove fajlove u "
+"navedenu fasciklu na vašem serveru ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:139
+#, php-format
+msgid "%s Settings %s"
+msgstr "%sPostavke%s"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:140
+#, php-format
+msgid "%s Donate %s"
+msgstr "%sDonirajte%s"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:205
+msgid "Settings: TinyMCE Advanced Professional Styles"
+msgstr "Postavke:  TinyMCE Advanced profeionalni Stilovi"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:238
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:243
+msgid "Settings row not saved: Row "
+msgstr "Red sa postavkama nije sačuvan: Red"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:302
+msgid "Settings saved successfully."
+msgstr "Postavke su sačuvane."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:312
+#, php-format
+msgid ""
+"A good WordPress Plugin means a lot of work. Please consider %s donating %s "
+"if you like it. Thank you."
+msgstr ""
+"Dobra WordPress plugin zanči dosta posla. Razmislite da %s donirate%s  ako "
+"vam se dopada. Hvala."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:314
+msgid "Change the visual style of your TinyMCE"
+msgstr "Promeniti vizualni stil TinyMCE"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:315
+msgid ""
+"To change the visual style appearance of your TinyMCE visual editor, we have "
+"to create two stylesheets: editor-style.css (TinyMCE only) and editor-style-"
+"shared.css (both, TinyMCE and your theme)."
+msgstr ""
+"Da biste promenili izgled vašeg vizuelnog TiniMCE  editora , moramo stvoriti "
+"dva opisa stilova : editor-style.css (TinyMCE) i editor-style-shared.css "
+"(oba, TinyMCE i vaša tema)."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:316
+msgid "Please choose a location for your files:"
+msgstr "Izaberite lokaciju vašeg fajla:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:324
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:329
+msgid "Error: "
+msgstr "Greška:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:324
+msgid ""
+"The file \"editor-style.css\" was not found/could not be created in the "
+"directory you have specified. Please create this file."
+msgstr ""
+" \"editor-style.css\" fajl nije pronađen / ne može da se kreira u "
+"direktorijumu koji ste odredili . Molimo vas da kreirate ovaj fajl ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:329
+msgid ""
+"The file \"editor-style-shared.css\" was not found/could not be created in "
+"the directory you have specified. Please create this file."
+msgstr ""
+"Fajl \"editor-style-shared.css\" nije pronađen / ne može da se kreira u "
+"direktorijumu koji ste odredili . Molimo vas da kreirate ovaj fajl ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:334
+#, php-format
+msgid "Edit your %s editor-style.css %s for the editor styles here."
+msgstr "Uredite svoj  %s veditor-style-shared.css %s za editor stilova ovde ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:336
+#, php-format
+msgid ""
+"Edit your %s editor-style-shared.css %s for the common editor AND theme "
+"styles here."
+msgstr ""
+"Uredite svoj%s editor-style-shared.css %s za zajedničku editora i teme "
+"stilova ovde ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:339
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:343
+#, php-format
+msgid "Create/edit your editor style located at %s on your server."
+msgstr ""
+"Napravite / izmenite stil editor koji se nalazi na% s na Vašem serveru ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:340
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:344
+#, php-format
+msgid ""
+"Create/edit your theme/editor shared style located at %s on your server."
+msgstr ""
+"Napravite / izmenite vašu temu / editora deljeni stil nalazi na% s na Vašem "
+"serveru ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:351
+msgid "Manage your custom formats and styles for TinyMCE"
+msgstr "Organizujte svoje prilagođene oblike i stilove za TiniMCE"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:352
+#, php-format
+msgid ""
+"%s This part %s of the official TinyMCE documentation will help you "
+"understanding this table."
+msgstr ""
+"% sOvaj deo  % s  zvanične dokumentacije TiniMCE će vam pomoći da bolje "
+"razumete ovu tabelu ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:357
+msgid "Column"
+msgstr "Kolona"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:358
+msgid "Description"
+msgstr "Opis"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:363
+msgid "Title"
+msgstr "Naslov"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:363
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "required"
+msgstr "potrebno"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:364
+msgid "The label for this dropdown item."
+msgstr "Oznaka ove dropdown stavke."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "Selector"
+msgstr "Selektor"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "Block"
+msgstr "Blok"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "Inline"
+msgstr "Inline"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:370
+#, php-format
+msgid ""
+"%sSelector%s: Choose %s a valid CSS selector %s to limit this style to a "
+"specific HTML tag which will be applied to the style of an existing tag "
+"instead of creating a new one."
+msgstr ""
+"%sSelector%s:  Izaberite % sa validnim CSS selektorom % s da ograničite ovaj "
+"stil u određenom HTML tag koji će biti primenjen na stilu postojeće oznake "
+"umesto stvaranja novog ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:371
+#, php-format
+msgid ""
+"%sBlock%s: Choose %s a valid HTML block level element %s (f.e. blockquote) "
+"to create this new element with the style applied, which will replace the "
+"existing block element in TinyMCE around the cursor."
+msgstr ""
+"%sBlock%s : Izaberite %s SA Valid HTML nivo blok elementa % s (f.e. "
+"blockquote)  da stvorite ovaj novi element sa primenjenim stilom, koji će "
+"zameniti postojeće blok elemente u TiniMCE oko kursora ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:372
+#, php-format
+msgid ""
+"%sInline%s: Choose %s a new HTML inline element %s (f.e. span) to create "
+"this new element with the style applied, which will wrap whatever is "
+"selected in the editor, not replacing any tags."
+msgstr ""
+"%sInline%s : Izaberite  % s novi HTML inline element % s ( raspon ) da "
+"stvorite ovaj novi element sa primenom stila , što će biti umotano u "
+"editoru , ne zamenjujići nijednu oznake ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:377
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:411
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:424
+msgid "CSS Class(es)"
+msgstr "CSS Class(es)"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:377
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:381
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:390
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:394
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:398
+msgid "optional"
+msgstr "opcije"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:378
+msgid "A space-separated list of classes to apply to the element."
+msgstr "Prostorom razdvojena lista klasa za primenjivanje elementa ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:381
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:412
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:425
+msgid "CSS Styles"
+msgstr "CSS Stilovi"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:383
+msgid ""
+"Here you have the possibility to define CSS styles, which will be directly "
+"applied to the element."
+msgstr ""
+"Ovde imate mogućnost da definišete CSS stilove koji će se direktno ptomniti "
+"elementu."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:384
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:385
+msgid "Note:"
+msgstr "Beleška:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:384
+#, php-format
+msgid ""
+"Multi-word attributes, like %sfont-size%s, are written in Javascript-"
+"friendly camel case: %sfontSize%s)"
+msgstr ""
+"Atributi sa više reči, kao %sfont-size%s, su napisani u Javascript-friendly "
+"camel predmetu: %sfontSize%s)"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:385
+msgid ""
+"It is more recommendable to use classes of your editor-style.css / editor-"
+"style-shared.css in most cases."
+msgstr ""
+"Preporučuje se da koristite klase vašeg editor-style.css / editor-style-"
+"shared.css u većini slučajeva"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:390
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:413
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:426
+msgid "Attributes"
+msgstr "Atributi"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:391
+msgid ""
+"Here you have the possibility to define HTML-Attributes, which will be "
+"applied to the element(s)."
+msgstr ""
+"Ovde imate mogućnost da definišete HTML atribute koji će biti primenjeni "
+"elementima."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:394
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:415
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:428
+msgid "Wrapper"
+msgstr "Omot"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:395
+msgid ""
+"If you check this, selecting the style creates a new block-level element "
+"around any selected block-level elements."
+msgstr ""
+"Ako ste čekirali ovo , biranje stila stvara novi blok - nivo elementa oko "
+"odabranih blok nivo elemenata."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:398
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:414
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:427
+msgid "Exact"
+msgstr "Tačno"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:399
+msgid ""
+"Checking this option disables the \"merge similar styles\" feature, needed "
+"for some CSS inheritance issues."
+msgstr ""
+"Čekiranjem ove opcije onemogućavate  \"Merenje sličnih stilova  \" "
+"funkciju , potreban za neke CSS nasledjene probleme ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:408
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:421
+msgid "Title *"
+msgstr "Naslov *"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:409
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:422
+msgid "Type *"
+msgstr "Tip *"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:410
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:423
+msgid "Type Value *"
+msgstr "Tip vrednosti *"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:416
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:429
+msgid "Add/Remove"
+msgstr "Dodati/Ukloniti"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:489
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:534
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:587
+msgid "Add new style"
+msgstr "Dodati novi stil"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:519
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:600
+msgid "Add new attribute"
+msgstr "Dodati novi atribut"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:615
+msgid "Save Settings"
+msgstr "Sačuvati postavke"
+
+#~ msgid ""
+#~ "Note: Make sure that the files editor-style.css and editor-style-shared."
+#~ "css exist in your themes' root directory."
+#~ msgstr ""
+#~ "Beachte: Die Dateien editor-style.css und editor-style-shared.css müssen "
+#~ "im Wurzelverzeichnis deines Themes vorhanden sein."
+
+#~ msgid "Please consider %s donating %s. Thank you."
+#~ msgstr "Bitte überlege dir für dieses Plu"

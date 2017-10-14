@@ -37,7 +37,7 @@ class WPML_Translation_Proxy_Basket_Networking {
 		$basket_data = $this->basket->get_basket();
 		$batch  = (bool) $batch === true ? $batch : $this->generate_batch( $basket_data );
 		if ( (bool) $batch === false ) {
-			return array( true, false, array( __( 'Batch is empty', 'sitepress' ) ) );
+			return array( true, false, array( __( 'Batch is empty', 'wpml-translation-management' ) ) );
 		}
 
 		foreach ( $batch as $batch_item ) {

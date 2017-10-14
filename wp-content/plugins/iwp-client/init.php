@@ -4,7 +4,7 @@ Plugin Name: InfiniteWP - Client
 Plugin URI: http://infinitewp.com/
 Description: This is the client plugin of InfiniteWP that communicates with the InfiniteWP Admin panel.
 Author: Revmakx
-Version: 1.6.5
+Version: 1.6.6.3
 Author URI: http://www.revmakx.com
 */
 /************************************************************
@@ -28,7 +28,7 @@ if(basename($_SERVER['SCRIPT_FILENAME']) == "init.php"):
     exit;
 endif;
 if(!defined('IWP_MMB_CLIENT_VERSION'))
-	define('IWP_MMB_CLIENT_VERSION', '1.6.5');
+	define('IWP_MMB_CLIENT_VERSION', '1.6.6.3');
 	
 
 
@@ -66,7 +66,6 @@ require_once("$iwp_mmb_plugin_dir/addons/wp_optimize/optimize.class.php");
 require_once("$iwp_mmb_plugin_dir/api.php");
 require_once("$iwp_mmb_plugin_dir/plugins/search/search.php");
 require_once("$iwp_mmb_plugin_dir/plugins/cleanup/cleanup.php");
-
 
 
 if( !function_exists ( 'iwp_mmb_filter_params' )) {
@@ -110,12 +109,11 @@ if( !function_exists ('iwp_mmb_parse_request')) {
 			$data = trim(base64_decode($request_raw_data));
 			$GLOBALS['IWP_JSON_COMMUNICATION'] = 1;
 		}else{
+			$data = false;
 			$request_raw_data = $HTTP_RAW_POST_DATA_LOCAL;
-			$data = trim(base64_decode($request_raw_data));
-			if (is_serialized($data)) {
+			$serialized_data = trim(base64_decode($request_raw_data));
+			if (is_serialized($serialized_data)) {
 					iwp_mmb_response(array('error' => 'Please update your IWP Admin Panel to latest version', 'error_code' => 'update_panel'), false, true);
-			}else{
-				return false;
 			}
 		}
 		
@@ -1263,6 +1261,54 @@ if( !function_exists('iwp_mmb_wordfence_load')){
  *WordFence Addon End 
  */
 
+/*
+ * Sucuri Addon Start
+ */
+
+if( !function_exists('iwp_mmb_sucuri_fetch_result')){
+	function iwp_mmb_sucuri_fetch_result($params){
+		global $iwp_mmb_core,$iwp_mmb_plugin_dir;
+                require_once("$iwp_mmb_plugin_dir/addons/malware_scanner_sucuri/malware_scanner_sucuri.class.php");
+		$iwp_mmb_core->get_sucuri_instance();
+		
+		$return = $iwp_mmb_core->sucuri_instance->getScannedCacheResult();
+		if (is_array($return) && array_key_exists('error', $return))
+			iwp_mmb_response($return, false);
+		else {
+			iwp_mmb_response($return, true);
+		}
+	}
+}
+
+if( !function_exists('iwp_mmb_sucuri_scan')){
+	function iwp_mmb_sucuri_scan($params){
+		global $iwp_mmb_core,$iwp_mmb_plugin_dir;
+                require_once("$iwp_mmb_plugin_dir/addons/malware_scanner_sucuri/malware_scanner_sucuri.class.php");
+		$iwp_mmb_core->get_sucuri_instance();
+		
+		$return = $iwp_mmb_core->sucuri_instance->runAndSaveScanResult();
+		if (is_array($return) && array_key_exists('error', $return))
+			iwp_mmb_response($return, false);
+		else {
+			iwp_mmb_response($return, true);
+		}
+	}
+}
+
+if( !function_exists('iwp_mmb_sucuri_change_alert')){
+	function iwp_mmb_sucuri_change_alert($params){
+		global $iwp_mmb_core,$iwp_mmb_plugin_dir;
+                require_once("$iwp_mmb_plugin_dir/addons/malware_scanner_sucuri/malware_scanner_sucuri.class.php");
+		$iwp_mmb_core->get_sucuri_instance();
+		
+		$return = $iwp_mmb_core->sucuri_instance->changeAlertEmail($params);
+		if (is_array($return) && array_key_exists('error', $return))
+			iwp_mmb_response($return, false);
+		else {
+			iwp_mmb_response($return, true);
+		}
+	}
+}
 
 /*
  * iTheams Security Addon Start here

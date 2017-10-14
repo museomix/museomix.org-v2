@@ -73,6 +73,10 @@ class Meow_WPMC_Admin extends MeowApps_Admin {
 				array( $this, 'admin_utf8_callback' ),
 				'wpmc_settings-menu', 'wpmc_settings' );
 
+			add_settings_field( 'wpmc_debuglogs', "Logs",
+				array( $this, 'admin_debuglogs_callback' ),
+				'wpmc_settings-menu', 'wpmc_settings', array( "Enable" ) );
+
 			// SUBMENU > Settings > UI
 			add_settings_section( 'wpmc_ui_settings', null, null, 'wpmc_ui_settings-menu' );
 			add_settings_field( 'wpmc_hide_thumbnails', "Thumbnails",
@@ -106,6 +110,7 @@ class Meow_WPMC_Admin extends MeowApps_Admin {
 		register_setting( 'wpmc_settings', 'wpmc_media_library' );
 		register_setting( 'wpmc_settings', 'wpmc_postmeta' );
 		register_setting( 'wpmc_settings', 'wpmc_utf8' );
+		register_setting( 'wpmc_settings', 'wpmc_debuglogs' );
 
 		register_setting( 'wpmc_ui_settings', 'wpmc_hide_thumbnails' );
 		register_setting( 'wpmc_ui_settings', 'wpmc_hide_warning' );
@@ -211,14 +216,15 @@ class Meow_WPMC_Admin extends MeowApps_Admin {
 							<?php
 								global $shortcode_tags;
 						    try {
-						      $allshortcodes = array_diff( $shortcode_tags, array(  ) );
-						      $my_shortcodes = array();
-						      foreach ( $allshortcodes as $sc )
-						        if ( $sc != '__return_false' ) {
-						          if ( is_string( $sc ) )
-						            array_push( $my_shortcodes, str_replace( '_shortcode', '', (string)$sc ) );
-						        }
-						      $my_shortcodes = implode( '<br />', $my_shortcodes );
+									if ( is_array( $shortcode_tags ) ) {
+							      $my_shortcodes = array();
+							      foreach ( $shortcode_tags as $sc )
+							        if ( $sc != '__return_false' ) {
+							          if ( is_string( $sc ) )
+							            array_push( $my_shortcodes, str_replace( '_shortcode', '', (string)$sc ) );
+							        }
+							      $my_shortcodes = implode( '<br />', $my_shortcodes );
+									}
 						    }
 						    catch (Exception $e) {
 						      $my_shortcodes = "";
@@ -256,7 +262,7 @@ class Meow_WPMC_Admin extends MeowApps_Admin {
     $value = get_option( 'wpmc_shortcode', null );
 		$html = '<input ' . disabled( $this->is_registered(), false, false ) . ' type="checkbox" id="wpmc_shortcode" name="wpmc_shortcode" value="1" ' .
 			checked( 1, get_option( 'wpmc_shortcode' ), false ) . '/>';
-    $html .= '<label>Analyze</label><br /><small>The shortcodes you are using in your <b>posts</b> and/or <b>widgets</b> (depending on your options) will be resolved and analyzed. This process takes resources and if the scanning suddenly stops, this might be the cause. You don\'t need to have this option enabled for the WP Gallery (this is covered by the Galleries option).</small>';
+    $html .= '<label>Resolve</label><br /><small>The shortcodes you are using in your <b>posts</b> and/or <b>widgets</b> (depending on your options) will be resolved and analyzed. You don\'t need to have this option enabled for the WP Gallery (as it is covered by the Galleries option).</small>';
     echo $html;
   }
 
@@ -267,6 +273,22 @@ class Meow_WPMC_Admin extends MeowApps_Admin {
     $html .= __( '<label>Do not skip UTF-8 filenames</label><br /><small>PHP does not always work well with UTF-8 on all systems. If the scanning suddenly stops, this might be the cause.</small>', 'media-cleaner' );
     echo $html;
   }
+
+	function admin_debuglogs_callback( $args ) {
+		$clearlogs = isset ( $_GET[ 'clearlogs' ] ) ? $_GET[ 'clearlogs' ] : 0;
+		if ( $clearlogs && file_exists( plugin_dir_path( __FILE__ ) . '/media-cleaner.log' ) ) {
+			file_put_contents( plugin_dir_path( __FILE__ ) . '/media-cleaner.log', '' );
+		}
+		$html = '<input type="checkbox" id="wpmc_debuglogs" name="wpmc_debuglogs" value="1" ' .
+			checked( 1, get_option( 'wpmc_debuglogs' ), false ) . '/>';
+		$html .= '<label for="wpmc_debuglogs"> '  . $args[0] . '</label><br>';
+		$html .= '<span class="description">' . __( 'Create an internal log file. For advanced users only.', 'media-cleaner' );
+		if ( file_exists( plugin_dir_path( __FILE__ ) . '/media-cleaner.log' ) ) {
+			$html .= sprintf( __( '<br />The <a target="_blank" href="%smedia-cleaner.log">log file</a> is available. You can also <a href="?page=wpmc_settings-menu&clearlogs=true">clear</a> it.', 'media-cleaner' ), plugin_dir_url( __FILE__ ) );
+		}
+		$html .= '</span>';
+		echo $html;
+	}
 
 	function admin_media_library_callback( $args ) {
     $value = get_option( 'wpmc_media_library', null );

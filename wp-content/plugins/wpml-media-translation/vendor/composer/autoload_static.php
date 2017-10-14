@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit46cfcf3859e5cd832470333287ef6f7d
+class ComposerStaticInit041cd9ca35894c268a45f640e8693d51
 {
     public static $prefixesPsr0 = array (
         'x' => 
@@ -23,6 +23,8 @@ class ComposerStaticInit46cfcf3859e5cd832470333287ef6f7d
         'WPML_Media_Attachments_Duplication' => __DIR__ . '/../..' . '/classes/class-wpml-media-attachments-duplication.php',
         'WPML_Media_Attachments_Query' => __DIR__ . '/../..' . '/classes/class-wpml-media-attachments-query.php',
         'WPML_Media_Dependencies' => __DIR__ . '/../..' . '/inc/wpml-media-dependencies.class.php',
+        'WPML_Media_Edit_Hooks' => __DIR__ . '/../..' . '/classes/hooks/wpml-media-edit-hooks.php',
+        'WPML_Media_Edit_Hooks_Factory' => __DIR__ . '/../..' . '/classes/factory/wpml-media-edit-hooks-factory.php',
         'WPML_Media_Exception' => __DIR__ . '/../..' . '/classes/class-wpml-media-exception.php',
         'WPML_Media_Upgrade' => __DIR__ . '/../..' . '/inc/wpml-media-upgrade.class.php',
         'WPML_Model_Attachments' => __DIR__ . '/../..' . '/classes/model/class-wpml-model-attachments.php',
@@ -33,8 +35,8 @@ class ComposerStaticInit46cfcf3859e5cd832470333287ef6f7d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit46cfcf3859e5cd832470333287ef6f7d::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit46cfcf3859e5cd832470333287ef6f7d::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit041cd9ca35894c268a45f640e8693d51::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit041cd9ca35894c268a45f640e8693d51::$classMap;
 
         }, null, ClassLoader::class);
     }

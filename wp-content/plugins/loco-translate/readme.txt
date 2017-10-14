@@ -2,8 +2,8 @@
 Contributors: timwhitlock
 Tags: translation, translators, localization, localisation, l10n, i18n, Gettext, PO, MO, productivity, multilingual
 Requires at least: 4.1
-Tested up to: 4.8.1
-Stable tag: 2.0.15
+Tested up to: 4.8.2
+Stable tag: 2.0.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,16 @@ Help is provided via the [plugin support forum](https://wordpress.org/support/pl
 
 
 == Changelog ==
+
+= 2.0.16 =
+* File writer observes wp_is_file_mod_allowed
+* Fixed progress bug in editor for locales with nplurals=1
+* Made plural form categories translatable for editor UI
+* Sync-from-source raises warning when files are skipped
+* Added hack for extracting from .twig as per .php
+* Added warning when child themes declare parent text domain
+* Added option to control PO line wrapping
+* Bumped WP compatibility to 4.8.2
 
 = 2.0.15 =
 * Permanently removed legacy version 1.x
@@ -188,7 +198,7 @@ Help is provided via the [plugin support forum](https://wordpress.org/support/pl
 
 == Upgrade Notice ==
 
-= 2.0.15 =
+= 2.0.16 =
 * Various bug fixes and improvements
 
 

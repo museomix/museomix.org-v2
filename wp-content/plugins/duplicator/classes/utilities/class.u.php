@@ -41,7 +41,7 @@ class DUP_Util
     public static $PHP7_plus;
 
     /**
-     *  Inited on load (see end of file)
+     *  Initialized on load (see end of file)
      */
     public static function init()
     {
@@ -49,6 +49,35 @@ class DUP_Util
         self::$on_php_53_plus  = version_compare(PHP_VERSION, '5.3.0') >= 0;
         self::$on_php_54_plus  = version_compare(PHP_VERSION, '5.4.0') >= 0;
 		self::$PHP7_plus = version_compare(PHP_VERSION, '7.0.0', '>=');
+    }
+
+
+    public static function getWPCoreDirs()
+    {
+        $wp_core_dirs = array(get_home_path().'wp-admin',get_home_path().'wp-includes');
+
+        //if wp_content is overrided
+        $wp_path = get_home_path()."wp-content";
+        if(get_home_path().'wp-content' != WP_CONTENT_DIR){
+            $wp_path = WP_CONTENT_DIR;
+        }
+        $wp_path = str_replace("\\", "/", $wp_path);
+
+        $wp_core_dirs[] = $wp_path;
+        $wp_core_dirs[] = $wp_path.'/plugins';
+        $wp_core_dirs[] = $wp_path.'/themes';
+
+
+        return $wp_core_dirs;
+    }
+    /**
+     * return absolute path for the files that are core directories
+     * @return string array
+     */
+    public static function getWPCoreFiles()
+    {
+        $wp_cored_dirs = array(get_home_path().'wp-config.php');
+        return $wp_cored_dirs;
     }
 
 	/**
@@ -536,7 +565,7 @@ class DUP_Util
                 );
 
                 foreach ($possible_paths as $path) {
-                    if (file_exists($path)) {
+                    if (@file_exists($path)) {
                         $filepath = $path;
                         break;
                     }
@@ -552,7 +581,7 @@ class DUP_Util
 	 * Returns a GUIDv4 string
 	 *
 	 * Uses the best cryptographically secure method
-	 * for all supported pltforms with fallback to an older,
+	 * for all supported platforms with fallback to an older,
 	 * less secure version.
 	 *
 	 * @param bool $trim	Trim '}{' curly
@@ -605,6 +634,56 @@ class DUP_Util
 
 		return $guidv4;
 	}
+
+	/**
+     * Returns an array of the WordPress core tables.
+     *
+     * @return array  Returns all WP core tables
+     */
+    public static function getWPCoreTables()
+    {
+		global $wpdb;
+		return array(
+			"{$wpdb->prefix}commentmeta",
+			"{$wpdb->prefix}comments",
+			"{$wpdb->prefix}links",
+			"{$wpdb->prefix}options",
+			"{$wpdb->prefix}postmeta",
+			"{$wpdb->prefix}posts",
+			"{$wpdb->prefix}term_relationships",
+			"{$wpdb->prefix}term_taxonomy",
+			"{$wpdb->prefix}termmeta",
+			"{$wpdb->prefix}terms",
+			"{$wpdb->prefix}usermeta",
+			"{$wpdb->prefix}users");
+    }
+	
+	/**
+     * Runs esc_html and sanitize_textarea_field on a string
+	 *
+	 * @param string   The string to process
+     *
+     * @return string  Returns and escaped and sanitized string
+     */
+    public static function escSanitizeTextAreaField($string)
+    {
+		if (!function_exists('sanitize_textarea_field')) {
+			return esc_html(sanitize_text_field($string));
+		} else {
+			return esc_html(sanitize_textarea_field($string));
+		}	
+    }
+
+	/**
+     * Runs esc_html and sanitize_text_field on a string
+	 *
+	 * @param string   The string to process
+     *
+     * @return string  Returns and escaped and sanitized string
+     */
+    public static function escSanitizeTextField($string)
+    {
+		return esc_html(sanitize_text_field($string));
+    }
 }
 DUP_Util::init();
-?>

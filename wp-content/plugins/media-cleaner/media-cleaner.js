@@ -101,7 +101,9 @@ function wpmc_delete_all(isTrash) {
 	});
 }
 
-function wpmc_update_progress(current, totalcount, isDeleting = false) {
+function wpmc_update_progress(current, totalcount, isDeleting) {
+	if (isDeleting === undefined)
+  	isDeleting = false;
 	var action = isDeleting ? "Deleting" : "Analyzing";
 	jQuery('#wpmc_progression').html('<span class="dashicons dashicons-controls-play"></span> ' + action + ' ' + current + "/" + totalcount + " (" + Math.round(current / totalcount * 100) + "%)");
 }

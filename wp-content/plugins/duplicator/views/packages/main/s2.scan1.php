@@ -1,4 +1,9 @@
 <?php
+	//Nonce Check
+	if (! isset( $_POST['dup_form_opts_nonce_field'] ) || ! wp_verify_nonce( $_POST['dup_form_opts_nonce_field'], 'dup_form_opts' ) ) {
+		DUP_UI_Notice::redirect('admin.php?page=duplicator&tab=new1');
+	}
+
 	global $wp_version;
 	wp_enqueue_script('dup-handlebars');
 
@@ -27,22 +32,24 @@
 	div#dup-msg-success div.details {padding:10px 15px 10px 15px; margin:5px 0 15px 0; background:#fff; border-radius:5px; border:1px solid #ddd; box-shadow:0 8px 6px -6px #999; }
 	div#dup-msg-success div.details-title {font-size:20px; border-bottom:1px solid #dfdfdf; padding:5px; margin:0 0 10px 0; font-weight:bold}
 	div#dup-msg-success-subtitle {color:#999; margin:0; font-size:11px}
-	div.dup-scan-filter-status {display:inline; float:right; font-size:11px; margin-right:10px; color:#630f0f;}
+	div.dup-scan-filter-status {display:inline; font-size:11px; margin-right:10px; color:#630f0f;}
 	div#dup-msg-error {color:#A62426; padding:5px; max-width:790px;}
 	div#dup-msg-error-response-text { max-height:500px; overflow-y:scroll; border:1px solid silver; border-radius:3px; padding:10px;background:#fff}
 	div.dup-hdr-error-details {text-align:left; margin:20px 0}
 	i[data-tooltip].fa-question-circle {color:#555}
 
 	/*SCAN ITEMS: Sections */
-	div.scan-header { font-size:16px; padding:7px 5px 5px 7px; font-weight:bold; background-color:#E0E0E0; border-bottom:0px solid #C0C0C0 }
+	div.scan-header { font-size:16px; padding:7px 5px 7px 7px; font-weight:bold; background-color:#E0E0E0; border-bottom:0px solid #C0C0C0 }
+	div.scan-header-details {float:right; margin-top:-5px}
 	div.scan-item {border:1px solid #E0E0E0; border-bottom:none;}
 	div.scan-item-first { border-top-right-radius:4px; border-top-left-radius:4px}
 	div.scan-item-last {border-bottom:1px solid #E0E0E0}
 	div.scan-item div.title {background-color:#F1F1F1; width:100%; padding:4px 0 4px 0; cursor:pointer; height:20px;}
 	div.scan-item div.title:hover {background-color:#ECECEC;}
 	div.scan-item div.text {font-weight:bold; font-size:14px; float:left;  position:relative; left:10px}
-	div.scan-item div.badge-pass {float:right; background:green; border-radius:5px; color:#fff; min-width:45px; text-align:center; position:relative; right:10px; font-size:12px}
-	div.scan-item div.badge-warn {float:right; background:#630f0f; border-radius:5px; color:#fff; min-width:45px; text-align:center; position:relative; right:10px; font-size:12px}
+	div.scan-item div.badge {float:right; border-radius:4px; color:#fff; min-width:40px; text-align:center; position:relative; right:10px; font-size:12px; padding:0 3px 0 3px}
+	div.scan-item div.badge-pass {background:green;}
+	div.scan-item div.badge-warn {background:#630f0f;}
 	div.scan-item div.info {display:none; padding:10px; background:#fff}
 	div.scan-good {display:inline-block; color:green;font-weight:bold;}
 	div.scan-warn {display:inline-block; color:#630f0f;font-weight:bold;}
@@ -52,8 +59,9 @@
 	div.dup-more-details:hover {color:#777; cursor:pointer}
 
 	/*FILES */
-	div#data-arc-size1 {display:inline-block; float:right; font-size:11px; margin-right:5px;}
-	i.data-size-help { float:right; margin-right:5px; display:block; font-size:11px}
+	div#data-arc-size1 {display:inline-block; font-size:11px; margin-right:1px;}
+	i.data-size-help { font-size:12px; display:inline-block;  margin:0; padding:0}
+	div.dup-data-size-uncompressed {font-size:10px; text-align: right; padding:0; margin:-7px 0 0 0; font-style: italic; font-weight: normal; border:0px solid red; clear:both}
 	div.hb-files-style div.container {border:1px solid #E0E0E0; border-radius:4px; margin:5px 0 10px 0}
 	div.hb-files-style div.container b {font-weight:bold}
 	div.hb-files-style div.container div.divider {margin-bottom:2px; font-weight:bold}
@@ -75,7 +83,8 @@
 	div.hb-files-style div.files i.size {font-style:normal; display:inline-block; min-width:50px}
 	div.hb-files-style div.files label {font-weight: normal; font-size:11px; vertical-align:top;display:inline-block;width:450px; white-space: nowrap; overflow:hidden; text-overflow:ellipsis;}
 	div.hb-files-style div.files label:hover {color:#025d02; cursor: pointer}
-	div.hb-files-style div.apply-btn {text-align:right; margin: 1px 0 10px 0}
+	div.hb-files-style div.apply-btn {text-align:right; margin: 1px 0 10px 0; width:100%}
+	div.hb-files-style div.apply-warn {float:left; font-size:11px; color:maroon; margin-top:-7px; font-style: italic; display:none; text-align: left}
 
 	div#size-more-details {display:none; margin:5px 0 20px 0; border:1px solid #dfdfdf; padding:8px; border-radius: 4px; background-color: #F1F1F1}
 	div#size-more-details ul {list-style-type:circle; padding-left:20px; margin:0}
@@ -85,14 +94,14 @@
 	div#dup-scan-db-info {margin-top:5px}
 	div#data-db-tablelist {max-height:250px; overflow-y:scroll; border:1px solid silver; padding:8px; background: #efefef; border-radius: 4px}
 	div#data-db-tablelist td{padding:0 5px 3px 20px; min-width:100px}
-	div#data-db-size1 {display:inline-block; float:right; font-size:11px; margin-right:5px;}
+	div#data-db-size1 {display:inline-block; font-size:11px; margin-right:1px;}
 	
 	/*WARNING-CONTINUE*/
 	div#dup-scan-warning-continue {display:none; text-align:center; padding:0 0 15px 0}
 	div#dup-scan-warning-continue div.msg1 label{font-size:16px; color:#630f0f}
 	div#dup-scan-warning-continue div.msg2 {padding:2px; line-height:13px}
 	div#dup-scan-warning-continue div.msg2 label {font-size:11px !important}
-	div.dup-pro-support {text-align:center; font-style:italic; font-size:12px; margin-top:20px}
+	div.dup-pro-support {text-align:center; font-style:italic; font-size:13px; margin-top:20px;font-weight:bold}
 
 	/*DIALOG WINDOWS*/
 	div#arc-details-dlg {font-size:12px}
@@ -113,6 +122,7 @@
 	/*FOOTER*/
 	div.dup-button-footer {text-align:center; margin:0}
 	button.button {font-size:15px !important; height:30px !important; font-weight:bold; padding:3px 5px 5px 5px !important;}
+        i.scan-warn {color:#630f0f;}
 </style>
 
 <!-- =========================================
@@ -141,6 +151,7 @@ TOOL BAR:STEPS -->
 
 
 <form id="form-duplicator" method="post" action="?page=duplicator&tab=new3">
+<?php wp_nonce_field('dup_form_opts', 'dup_form_opts_nonce_field', false); ?>
 
 	<!--  PROGRESS BAR -->
 	<div id="dup-progress-bar-area">
@@ -178,7 +189,7 @@ TOOL BAR:STEPS -->
 			<?php
 				include ('s2.scan2.php');
 				echo '<br/>';
-				include ('s2.scan3.php')
+				include ('s2.scan3.php');
 			?>
 		</div>
 
@@ -219,7 +230,7 @@ jQuery(document).ready(function($)
 	// Performs ajax call to get scanner retults via JSON response
 	Duplicator.Pack.runScanner = function()
 	{
-		var data = {action : 'duplicator_package_scan'}
+		var data = {action : 'duplicator_package_scan',file_notice:'<?= $core_file_notice; ?>',dir_notice:'<?= $core_dir_notice; ?>'}
 		$.ajax({
 			type: "POST",
 			cache: false,
@@ -330,9 +341,9 @@ jQuery(document).ready(function($)
 		var result;
 		switch (status) {
 			case false :    result = '<div class="scan-warn"><i class="fa fa-exclamation-triangle"></i></div>'; break;
-			case 'Warn' :   result = '<div class="badge-warn"><?php _e("Notice", 'duplicator') ?></div>'; break;
+			case 'Warn' :   result = '<div class="badge badge-warn"><?php _e("Notice", 'duplicator') ?></div>'; break;
 			case true :     result = '<div class="scan-good"><i class="fa fa-check"></i></div>'; break;
-			case 'Good' :   result = '<div class="badge-pass"><?php _e("Good", 'duplicator') ?></div>'; break;
+			case 'Good' :   result = '<div class="badge badge-pass"><?php _e("Good", 'duplicator') ?></div>'; break;
 			default :
 				result = 'unable to read';
 		}

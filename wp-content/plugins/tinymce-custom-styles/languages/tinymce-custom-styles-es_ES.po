@@ -1,0 +1,355 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: tinymce-advanced-professional-formats-and-styles\n"
+"POT-Creation-Date: 2013-08-07 19:00+0100\n"
+"PO-Revision-Date: 2014-01-23 09:39+0100\n"
+"Last-Translator: jelena kovacevic <jecajeca260@gmail.com>\n"
+"Language-Team: David Stöckl <admin@blackbam.at>\n"
+"Language: englisch\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: C:\\xampp\\htdocs\\wp-cis\\local\\wp-content\\plugins"
+"\\tinymce-and-tinymce-advanced-professsional-formats-and-styles\n"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:27
+#, php-format
+msgid ""
+"This Plugin requires WordPress version 3.0 or higher. %sPlease update!%s"
+msgstr ""
+"Este plugin de WordPress requiere la versión 3.0 o superior. %s¡Por favor "
+"actualice!%s"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:133
+msgid ""
+"The Plugin does not have the required permissions to create the files edtior-"
+"style.css and editor-style-shared.css automatically. Please create these "
+"files manually to the specified folder on your server."
+msgstr ""
+"El Plugin no tiene los permisos necesarios para crear los archivos edtior-"
+"style.css y editor-style-shared.css automáticamente. Por favor, cree estos "
+"archivos manualmente a la carpeta especificada en el servidor."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:139
+#, php-format
+msgid "%s Settings %s"
+msgstr "%sConfiguración%s"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:140
+#, php-format
+msgid "%s Donate %s"
+msgstr "%sDonar%s"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:205
+msgid "Settings: TinyMCE Advanced Professional Styles"
+msgstr "Configuración de Estilos TinyMCE Advanced profesionales"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:238
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:243
+msgid "Settings row not saved: Row "
+msgstr "La fila de configuración no se guardó: Row"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:302
+msgid "Settings saved successfully."
+msgstr "Configuración guardada correctamente:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:312
+#, php-format
+msgid ""
+"A good WordPress Plugin means a lot of work. Please consider %s donating %s "
+"if you like it. Thank you."
+msgstr ""
+"Un buen Plugin WordPress significa un montón de trabajo. Por favor, "
+"considere %s donar %s si le gusta. Gracias."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:314
+msgid "Change the visual style of your TinyMCE"
+msgstr "Cambiar el estilo visual de su TinyMCE"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:315
+msgid ""
+"To change the visual style appearance of your TinyMCE visual editor, we have "
+"to create two stylesheets: editor-style.css (TinyMCE only) and editor-style-"
+"shared.css (both, TinyMCE and your theme)."
+msgstr ""
+"Para cambiar la apariencia de estilo visual de su editor visual TinyMCE, "
+"tenemos que crear dos hojas de estilo: editor-style.css (TinyMCE solamente) "
+"y editor-style-shared.css (ambos, TinyMCE . y su tema)"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:316
+msgid "Please choose a location for your files:"
+msgstr "Por favor, elige una ubicación para los archivos:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:324
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:329
+msgid "Error: "
+msgstr "Error:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:324
+msgid ""
+"The file \"editor-style.css\" was not found/could not be created in the "
+"directory you have specified. Please create this file."
+msgstr ""
+"No se encontró/pudo crearse el archivo \"editor-style.css\" en el directorio "
+"que ha especificado. Por favor, cree este archivo."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:329
+msgid ""
+"The file \"editor-style-shared.css\" was not found/could not be created in "
+"the directory you have specified. Please create this file."
+msgstr ""
+"No se encontró el archivo \"editor-style-shared.css\"/ no pudo ser creado en "
+"el directorio que ha especificado. Por favor, cree este archivo."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:334
+#, php-format
+msgid "Edit your %s editor-style.css %s for the editor styles here."
+msgstr "Edite su %s editor-style.css %s para los estilos de edición aquí."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:336
+#, php-format
+msgid ""
+"Edit your %s editor-style-shared.css %s for the common editor AND theme "
+"styles here."
+msgstr ""
+"Edite su %s editor-style-shared.css %s para el editor común y estilos de "
+"tema aquí."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:339
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:343
+#, php-format
+msgid "Create/edit your editor style located at %s on your server."
+msgstr "Crear/editar su estilo de editor ubicado en %s en su servidor."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:340
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:344
+#, php-format
+msgid ""
+"Create/edit your theme/editor shared style located at %s on your server."
+msgstr ""
+"Crear/editar su tema/editor de estilo compartido ubicado en %s en su "
+"servidor."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:351
+msgid "Manage your custom formats and styles for TinyMCE"
+msgstr "Administre sus formatos y estilos personalizados para TinyMCE"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:352
+#, php-format
+msgid ""
+"%s This part %s of the official TinyMCE documentation will help you "
+"understanding this table."
+msgstr ""
+"%s Esta parte %s de la documentación oficial TinyMCE le ayudará a entender "
+"esta tabla ."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:357
+msgid "Column"
+msgstr "Columna"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:358
+msgid "Description"
+msgstr "Descripción"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:363
+msgid "Title"
+msgstr "Título"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:363
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "required"
+msgstr "Requerido"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:364
+msgid "The label for this dropdown item."
+msgstr "La etiqueta por este elemento desplegable."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "Selector"
+msgstr "Selector"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "Block"
+msgstr "Bloque"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:367
+msgid "Inline"
+msgstr "En línea"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:370
+#, php-format
+msgid ""
+"%sSelector%s: Choose %s a valid CSS selector %s to limit this style to a "
+"specific HTML tag which will be applied to the style of an existing tag "
+"instead of creating a new one."
+msgstr ""
+"%sSelector%s:  Elegir %s a selector CSS válido %s para limitar este estilo a "
+"una etiqueta HTML específica que se aplicará al estilo de una etiqueta "
+"existente en lugar de crear uno nuevo."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:371
+#, php-format
+msgid ""
+"%sBlock%s: Choose %s a valid HTML block level element %s (f.e. blockquote) "
+"to create this new element with the style applied, which will replace the "
+"existing block element in TinyMCE around the cursor."
+msgstr ""
+"%sBLOCK%s  Elegir %s un elemento de nivel de bloque HTML válido %s (p.ej. "
+"blockquote) para crear este nuevo elemento con el estilo aplicado, que "
+"sustituirá al elemento de bloque existente en TinyMCE alrededor del cursor."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:372
+#, php-format
+msgid ""
+"%sInline%s: Choose %s a new HTML inline element %s (f.e. span) to create "
+"this new element with the style applied, which will wrap whatever is "
+"selected in the editor, not replacing any tags."
+msgstr ""
+"%sInline%s: Elegir %s un nuevo elemento HTML en línea %s (p.ej. span) para "
+"crear este nuevo elemento con el estilo aplicado, que envuelva lo que esté "
+"seleccionado en el editor, sin reemplazar las etiquetas."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:377
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:411
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:424
+msgid "CSS Class(es)"
+msgstr "Clase (s) CSS"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:377
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:381
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:390
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:394
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:398
+msgid "optional"
+msgstr "opcional"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:378
+msgid "A space-separated list of classes to apply to the element."
+msgstr "Una lista de clases separadas por espacio para aplicar al elemento"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:381
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:412
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:425
+msgid "CSS Styles"
+msgstr "Estilos CSS"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:383
+msgid ""
+"Here you have the possibility to define CSS styles, which will be directly "
+"applied to the element."
+msgstr ""
+"Aquí tienes la posibilidad de definir los estilos CSS, que se aplicarán "
+"directamente sobre el elemento"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:384
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:385
+msgid "Note:"
+msgstr "Nota:"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:384
+#, php-format
+msgid ""
+"Multi-word attributes, like %sfont-size%s, are written in Javascript-"
+"friendly camel case: %sfontSize%s)"
+msgstr ""
+"Los atributos multi-palabra, como %sfont-size%s, están escritos en fuente "
+"camel amigable para Javascript:%sfontSize%s)"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:385
+msgid ""
+"It is more recommendable to use classes of your editor-style.css / editor-"
+"style-shared.css in most cases."
+msgstr ""
+"Es más recomendable utilizar las clases de su editor-style.css / editor-"
+"style-shared.css en la mayoría de los casos."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:390
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:413
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:426
+msgid "Attributes"
+msgstr "Atributos"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:391
+msgid ""
+"Here you have the possibility to define HTML-Attributes, which will be "
+"applied to the element(s)."
+msgstr ""
+"Aquí tienes la posibilidad dedefinir Atributos HTML, que serán  aplicados al "
+"elemento(s)."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:394
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:415
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:428
+msgid "Wrapper"
+msgstr "Envoltura"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:395
+msgid ""
+"If you check this, selecting the style creates a new block-level element "
+"around any selected block-level elements."
+msgstr ""
+"Si marca esta opción, al seleccionar el estilo crea un nuevo elemento a "
+"nivel de bloque en torno a los elementos a nivel de bloque seleccionados."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:398
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:414
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:427
+msgid "Exact"
+msgstr "Exacto"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:399
+msgid ""
+"Checking this option disables the \"merge similar styles\" feature, needed "
+"for some CSS inheritance issues."
+msgstr ""
+"Al marcar esta opción deshabilita la función \"fusionar estilos similares\", "
+"necesaria para algunas problemas de herencia CSS."
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:408
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:421
+msgid "Title *"
+msgstr "Título *"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:409
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:422
+msgid "Type *"
+msgstr "Tipo *"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:410
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:423
+msgid "Type Value *"
+msgstr "Valor de Tipo *"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:416
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:429
+msgid "Add/Remove"
+msgstr "Agregar / Quitar"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:489
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:534
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:587
+msgid "Add new style"
+msgstr "Agregar nuevo estilo"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:519
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:600
+msgid "Add new attribute"
+msgstr "Añadir nuevo atributo"
+
+#: C:\xampp\htdocs\wp-cis\local\wp-content\plugins\tinymce-and-tinymce-advanced-professsional-formats-and-styles/tinymce-advanced-professional-formats-and-styles.php:615
+msgid "Save Settings"
+msgstr "Guardar Configuración"
+
+#~ msgid ""
+#~ "Note: Make sure that the files editor-style.css and editor-style-shared."
+#~ "css exist in your themes' root directory."
+#~ msgstr ""
+#~ "Note: Make sure that the files editor-style.css and editor-style-shared."
+#~ "css exist in your themes' root directory."
+
+#~ msgid "Please consider %s donating %s. Thank you."
+#~ msgstr "Please consider %s donating %s. Thank you."

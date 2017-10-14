@@ -99,7 +99,7 @@ class WPML_TM_Unsent_Jobs_Notice {
 	 * @param WPML_Notice $notice
 	 */
 	private function add_actions( WPML_Notice $notice ) {
-		$dismiss_action = new WPML_Notice_Action( __( 'Dismiss', 'sitepress' ), '#', true, false, false, true );
+		$dismiss_action = new WPML_Notice_Action( __( 'Dismiss', 'wpml-translation-management' ), '#', true, false, false, true );
 		$notice->add_action( $dismiss_action );
 	}
 

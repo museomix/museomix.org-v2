@@ -93,6 +93,21 @@ class Yoast_Form {
 	}
 
 	/**
+	 * Sets a value in the options.
+	 *
+	 * @since 5.4
+	 *
+	 * @param string $key       The key of the option to set.
+	 * @param mixed  $value     The value to set the option to.
+	 * @param bool   $overwrite Whether to overwrite existing options. Default is false.
+	 */
+	public function set_options_value( $key, $value, $overwrite = false ) {
+		if ( $overwrite || ! array_key_exists( $key, $this->options ) ) {
+			$this->options[ $key ] = $value;
+		}
+	}
+
+	/**
 	 * Retrieve options based on whether we're on multisite or not.
 	 *
 	 * @since 1.2.4
@@ -147,18 +162,16 @@ class Yoast_Form {
 		if ( ( defined( 'WP_DEBUG' ) && WP_DEBUG === true ) ) {
 			$xdebug = ( extension_loaded( 'xdebug' ) ? true : false );
 			echo '
-			<div id="poststuff">
-			<div id="wpseo-debug-info" class="postbox">
+			<div id="wpseo-debug-info" class="yoast-container">
 
-				<h2 class="hndle"><span>' . __( 'Debug Information', 'wordpress-seo' ) . '</span></h2>
-				<div class="inside">
+				<h2>' . __( 'Debug Information', 'wordpress-seo' ) . '</h2>
+				<div>
 					<h3 class="wpseo-debug-heading">' . esc_html( __( 'Current option:', 'wordpress-seo' ) ) . ' <span class="wpseo-debug">' . esc_html( $this->option_name ) . '</span></h3>
 					' . ( ( $xdebug ) ? '' : '<pre>' );
 			var_dump( $this->get_option() );
 			echo '
 					' . ( ( $xdebug ) ? '' : '</pre>' ) . '
 				</div>
-			</div>
 			</div>';
 		}
 
@@ -186,7 +199,7 @@ class Yoast_Form {
 		$banner_renderer = new WPSEO_Admin_Banner_Renderer;
 		$banner_renderer->set_base_path( plugins_url( 'images/banner/', WPSEO_FILE ) );
 
-		$sidebar = new WPSEO_Admin_Banner_Sidebar( sprintf( '%1s recommendations for you', 'Yoast' ), $banner_renderer );
+		$sidebar = new WPSEO_Admin_Banner_Sidebar( sprintf( __( '%1s recommendations for you', 'wordpress-seo' ), 'Yoast' ), $banner_renderer );
 		$sidebar->initialize( new WPSEO_Features() );
 
 		echo $sidebar_renderer->render( $sidebar );

@@ -211,7 +211,7 @@ class TranslationProxy_Translator {
 		}
 
 		$action_link_args = array(
-			'title'     => __( 'Contact translator', 'sitepress' ),
+			'title'     => __( 'Contact translator', 'wpml-translation-management' ),
 			'unload_cb' => 'icl_thickbox_refresh',
 			'ar'        => 1
 		);
@@ -235,7 +235,7 @@ class TranslationProxy_Translator {
 						$url                                          = $project->translator_contact_iframe_url( $translator['id'] );
 						$action_link                                  = '';
 						if ( $url ) {
-							$action_link = TranslationProxy_Popup::get_link( $url, $action_link_args ) . __( 'Contact translator', 'sitepress' ) . '</a>';
+							$action_link = TranslationProxy_Popup::get_link( $url, $action_link_args ) . __( 'Contact translator', 'wpml-translation-management' ) . '</a>';
 						}
 						$translator_item['action'] = $action_link;
 					}

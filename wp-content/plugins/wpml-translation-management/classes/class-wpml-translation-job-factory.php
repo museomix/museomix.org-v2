@@ -186,12 +186,12 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				$jobs[ $job_index ]->original_doc_id      = $doc->ID;
 				$jobs[ $job_index ]->language_code_source = $language_from_code;
 			} else {
-				$post_title                               = __( 'The original has been deleted!', 'sitepress' );
+				$post_title                               = __( 'The original has been deleted!', 'wpml-translation-management' );
 				$edit_url                                 = '';
 				$jobs[ $job_index ]->original_doc_id      = 0;
 				$jobs[ $job_index ]->language_code_source = null;
 
-				$ldf[ 'display_name' ] = __( 'Deleted', 'sitepress' );
+				$ldf[ 'display_name' ] = __( 'Deleted', 'wpml-translation-management' );
 			}
 
 			$jobs[ $job_index ]->post_title = $post_title;

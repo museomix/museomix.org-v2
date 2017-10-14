@@ -21,9 +21,9 @@ class WPML_Dashboard_Ajax {
 
 	private function get_wpml_tm_script_js_strings() {
 		$wpml_tm_strings = array(
-			'BB_default'                     => __( 'Add to translation basket', 'wpml-translation-management' ),
+			'BB_default'                     => __( 'Add selected content to translation basket', 'wpml-translation-management' ),
 			'BB_mixed_actions'               => __(
-				'Add to translation basket / Duplicate',
+				'Add selected content to translation basket / Duplicate',
 				'wpml-translation-management'
 			),
 			'BB_duplicate_all'               => __( 'Duplicate', 'wpml-translation-management' ),

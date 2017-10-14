@@ -134,9 +134,9 @@ class TranslationProxy {
 		if ( $service ) {
 			$service_info = array();
 			if ( icl_do_not_promote() ) {
-				$service_info['name']        = __( 'Translation Service', 'sitepress' );
+				$service_info['name']        = __( 'Translation Service', 'wpml-translation-management' );
 				$service_info['logo']        = false;
-				$service_info['header']      = __( 'Translation Service', 'sitepress' );
+				$service_info['header']      = __( 'Translation Service', 'wpml-translation-management' );
 				$service_info['description'] = false;
 				$service_info['contact_url'] = false;
 			} else {
@@ -327,7 +327,7 @@ class TranslationProxy {
 	public static function get_current_service_name() {
 
 		if ( icl_do_not_promote() ) {
-			return __( 'Translation Service', 'sitepress' );
+			return __( 'Translation Service', 'wpml-translation-management' );
 		}
 
 		$translation_service = self::get_current_service();

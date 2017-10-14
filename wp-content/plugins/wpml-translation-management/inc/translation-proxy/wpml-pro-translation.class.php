@@ -67,13 +67,13 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 			case 'set_pickup_mode':
 				$response = $this->update_pm->update_pickup_method( $data, $this->get_current_project() );
 				if ( 'no-ts' === $response ) {
-					wp_send_json_error( array( 'message' => __( 'Please activate translation service first.', 'sitepress' ) ) );
+					wp_send_json_error( array( 'message' => __( 'Please activate translation service first.', 'wpml-translation-management' ) ) );
 				}
 				if ( 'cant-update' === $response ) {
-					wp_send_json_error( array( 'message' => __( 'Could not update the translation pickup mode.', 'sitepress' ) ) );
+					wp_send_json_error( array( 'message' => __( 'Could not update the translation pickup mode.', 'wpml-translation-management' ) ) );
 				}
 
-				wp_send_json_success( array( 'message' => __( 'Ok', 'sitepress' ) ) );
+				wp_send_json_success( array( 'message' => __( 'Ok', 'wpml-translation-management' ) ) );
 				break;
 		}
 	}
@@ -606,8 +606,11 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 						$fragment = '#' . $pass_on_fragments[ $link_idx ];
 					}
 					if ( ! empty( $pass_on_query_vars[ $link_idx ] ) ) {
-						$url_glue = ( strpos( $rep['to'], '?' ) === false ) ? '?' : '&';
-						$rep_to   = $rep['to'] . $url_glue . join( '&', $pass_on_query_vars[ $link_idx ] );
+						foreach ( $pass_on_query_vars[ $link_idx ] as $query_fragment ) {
+							$query_pair = array();
+							wp_parse_str( $query_fragment, $query_pair );
+							$rep_to = add_query_arg( $query_pair, $rep_to );
+						}
 					}
 				}
 
@@ -683,7 +686,7 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 
 		echo '<p id="icl_minor_change_box" style="float:left;padding:0;margin:3px;'.$show_box.'">';
 		echo '<label><input type="checkbox" name="icl_minor_edit" value="1" style="min-width:15px;" />&nbsp;';
-		echo __('Minor edit - don\'t update translation','sitepress');
+		echo __('Minor edit - don\'t update translation','wpml-translation-management');
 		echo '</label>';
 		echo '<br clear="all" />';
 		echo '</p>';

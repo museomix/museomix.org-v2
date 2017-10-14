@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Translation Management
 Plugin URI: https://wpml.org/
-Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-3-1/">WPML Translation Management 2.3.1 release notes</a>
+Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-4-1/">WPML Translation Management 2.4.1 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.3.1
+Version: 2.4.1
 Plugin Slug: wpml-translation-management
 */
 
@@ -26,7 +26,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
 	}
 }
 
-define( 'WPML_TM_VERSION', '2.3.1' );
+define( 'WPML_TM_VERSION', '2.4.1' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -89,6 +89,15 @@ function wpml_tm_load_ui() {
 			}
 		}
 
+		$action_filter_loader = new WPML_Action_Filter_Loader();
+
+		if ( class_exists( 'WPML_TF_Settings_Read' ) ) {
+			$tf_settings_read = new WPML_TF_Settings_Read();
+			/** @var WPML_TF_Settings $tf_settings */
+			$tf_settings = $tf_settings_read->get( 'WPML_TF_Settings' );
+			$translation_feedback_module = new WPML_TM_TF_Module( $action_filter_loader, $tf_settings );
+			$translation_feedback_module->run();
+		}
 	}
 }
 
@@ -100,12 +109,34 @@ function wpml_tm_word_count_init() {
 	$wpml_wp_api = $sitepress->get_wp_api();
 	$wpml_tm_words_count = new WPML_TM_Words_Count( $wpdb, $sitepress );
 	$wpml_tm_words_count->init();
-	new WPML_TM_Words_Count_Resources( $wpml_wp_api );
-	new WPML_TM_Words_Count_Box_UI( $wpml_wp_api );
-	$wpml_tm_words_count_summary = new WPML_TM_Words_Count_Summary_UI( $wpml_tm_words_count, $wpml_wp_api );
-	new WPML_TM_Words_Count_AJAX( $wpml_tm_words_count, $wpml_tm_words_count_summary, $wpml_wp_api );
+
+	if ( $wpml_wp_api->is_dashboard_tab() ) {
+		new WPML_TM_Words_Count_Resources( $wpml_wp_api );
+		new WPML_TM_Words_Count_Box_UI( $wpml_wp_api );
+	}
+
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		$wpml_tm_words_count_summary = new WPML_TM_Words_Count_Summary_UI( $wpml_tm_words_count, $wpml_wp_api );
+		new WPML_TM_Words_Count_AJAX( $wpml_tm_words_count, $wpml_tm_words_count_summary, $wpml_wp_api );
+	}
 }
 
 if ( is_admin() && isset( $GLOBALS['sitepress'] ) ) {
 	add_action( 'wpml_tm_loaded', 'wpml_tm_word_count_init' );
 }
+
+/**
+ * @param array $blocks
+ *
+ * @return array
+ */
+function wpml_tm_support_info( array $blocks ) {
+	$support_info = new WPML_TM_Support_Info();
+
+	$ui = new WPML_TM_Support_Info_Filter( $support_info );
+
+	return $ui->filter_blocks( $blocks );
+}
+
+/** This filter is documented WPML Core in classes/support/class-wpml-support-info-ui.php */
+add_filter( 'wpml_support_info_blocks', 'wpml_tm_support_info' );

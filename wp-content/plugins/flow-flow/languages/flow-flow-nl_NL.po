@@ -1,0 +1,160 @@
+# Copyright (C) 2016 Looks Awesome
+# This file is distributed under the same license as the Flow-Flow package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Flow-Flow 2.8.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/flow-flow\n"
+"POT-Creation-Date: 2016-06-15 13:46+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-06-15 13:52+0200\n"
+"Language-Team: Team Name <team@example.com>\n"
+"X-Generator: Poedit 1.8.8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl\n"
+
+#: flow-flow.php:166
+msgid "Social Stream"
+msgstr "Social Stream"
+
+#: flow-flow.php:170
+msgid "Flow-Flow plugin social stream"
+msgstr "Flow-Flow plugin social stream"
+
+#: flow-flow.php:172
+msgid "Social"
+msgstr "Sociaal"
+
+#: flow-flow.php:181
+msgid "Choose stream to place on page:"
+msgstr "Kies een stream om op de pagina te plaatsen"
+
+#: includes/FlowFlow.php:441
+msgid "All"
+msgstr "Alles"
+
+#: includes/FlowFlow.php:442
+msgid "Search"
+msgstr "zoeken"
+
+#: includes/FlowFlow.php:443
+msgid "Expand"
+msgstr "Uitklappen"
+
+#: includes/FlowFlow.php:444
+msgid "Collapse"
+msgstr "Vouw in"
+
+#: includes/FlowFlow.php:445
+msgid "Posted on"
+msgstr "Gepost op"
+
+#: includes/FlowFlow.php:446
+msgid "Show more"
+msgstr "Toon meer"
+
+#: includes/FlowFlow.php:449
+msgid "Yesterday"
+msgstr "Gisteren"
+
+#: includes/FlowFlow.php:450
+msgid "s"
+msgstr "s"
+
+#: includes/FlowFlow.php:451
+msgid "m"
+msgstr "m"
+
+#: includes/FlowFlow.php:452
+msgid "h"
+msgstr "h"
+
+#: includes/FlowFlow.php:453
+msgid "ago"
+msgstr "geleden"
+
+#: includes/FlowFlow.php:455
+msgid "Jan"
+msgstr "Jan"
+
+#: includes/FlowFlow.php:455
+msgid "Feb"
+msgstr "Feb"
+
+#: includes/FlowFlow.php:455
+msgid "March"
+msgstr "Maart"
+
+#: includes/FlowFlow.php:456
+msgid "April"
+msgstr "April"
+
+#: includes/FlowFlow.php:456
+msgid "May"
+msgstr "Mei"
+
+#: includes/FlowFlow.php:456
+msgid "June"
+msgstr "Juni"
+
+#: includes/FlowFlow.php:457
+msgid "July"
+msgstr "Juli"
+
+#: includes/FlowFlow.php:457
+msgid "Aug"
+msgstr "Aug"
+
+#: includes/FlowFlow.php:457
+msgid "Sept"
+msgstr "Sept"
+
+#: includes/FlowFlow.php:458
+msgid "Oct"
+msgstr "Oct"
+
+#: includes/FlowFlow.php:458
+msgid "Nov"
+msgstr "Nov"
+
+#: includes/FlowFlow.php:458
+msgid "Dec"
+msgstr "Dec"
+
+#: includes/FlowFlow.php:461
+msgid "Navigate with arrow keys"
+msgstr "Naviger met pijltoetsen"
+
+#: includes/FlowFlowWPWidget.php:48
+msgid "Title:"
+msgstr "Titel:"
+
+#: includes/FlowFlowWPWidget.php:52
+msgid "Stream:"
+msgstr "Stream:"
+
+#: includes/LAAdminBase.php:81
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Je heb niet genoeg rechten om deze pagina te bezoeken"
+
+#. Plugin Name of the plugin/theme
+msgid "Flow-Flow"
+msgstr "Flow-Flow"
+
+#. Plugin URI of the plugin/theme
+msgid "flow.looks-awesome.com"
+msgstr "flow.looks-awesome.com"
+
+#. Description of the plugin/theme
+msgid "Awesome social streams on your site"
+msgstr "Fantastische sociale streams op je website"
+
+#. Author of the plugin/theme
+msgid "Looks Awesome"
+msgstr "Looks Awesome"
+
+#. Author URI of the plugin/theme
+msgid "looks-awesome.com"
+msgstr "looks-awesome.com"

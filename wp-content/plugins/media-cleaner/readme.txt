@@ -3,7 +3,7 @@ Contributors: TigrouMeow
 Tags: management, admin, file, files, images, image, media, library, upload, clean, cleaning
 Requires at least: 4.2
 Tested up to: 4.8
-Stable tag: 4.1.0
+Stable tag: 4.2.3
 
 Clean your Media Library and Uploads directory. It has an internal trash and recovery features. Please read the description.
 
@@ -49,6 +49,17 @@ It re-creates the Media Cleaner table in the database. You will need to re-run t
 1. Media -> Media Cleaner
 
 == Changelog ==
+
+= 4.2.3 =
+* Fix: Meta search issue.
+* Fix: SQL typo for WooCommerce detection.
+* Fix: Avoid checking the empty arrays.
+
+= 4.2.0 =
+* Info: This is a MAJOR UPDATE both in term of optimization and detection. Keep my motivation up and give a good review to the plugin here: https://wordpress.org/support/plugin/media-cleaner/reviews/?rate=5#new-post. That helps me a lot.
+* Add: Support for Fusion Builder (Avada).
+* Add: Cache the results found in posts to analyze them much faster later.
+* Add: Debugging log file (option).
 
 = 4.1.0 =
 * Add: Support for WooCommerce Gallery.

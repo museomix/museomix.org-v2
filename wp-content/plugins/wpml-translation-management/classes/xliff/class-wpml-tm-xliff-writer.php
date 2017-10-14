@@ -168,7 +168,7 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 			$field_data            = str_replace( "\n", '<br class="xliff-newline" />', $field_data );
 			$field_data_translated = str_replace( "\n", '<br class="xliff-newline" />', $field_data_translated );
 		}
-		$translation_unit .= '         <trans-unit resname="' . $field_name . '" restype="string" datatype="html" id="' . $field_id . '">' . "\n";
+		$translation_unit .= '         <trans-unit resname="' . esc_attr( $field_name ) . '" restype="string" datatype="html" id="' . esc_attr( $field_id ) . '">' . "\n";
 		$translation_unit .= '            <source><![CDATA[' . $field_data . ']]></source>' . "\n";
 		$translation_unit .= '            <target><![CDATA[' . $field_data_translated . ']]></target>' . "\n";
 		$translation_unit .= '         </trans-unit>' . "\n";

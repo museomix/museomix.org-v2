@@ -11,24 +11,40 @@ class Meow_WPMC_Checkers {
 		$this->core = $core;
 	}
 
-	function has_background_or_header( $file ) {
+	function has_background_or_header( $file, $mediaId = null ) {
 		if ( current_theme_supports( 'custom-header' ) ) {
 			$custom_header = get_custom_header();
 			if ( $custom_header && $custom_header->url ) {
 				if ( strpos( $custom_header->url, $file ) !== false ) {
-					if ($this->core->debug)
-						error_log("{$file} found in header");
+					$this->core->log( "{$file} found in theme (Custom Header)" );
 					return true;
 				}
 			}
 		}
 
 		if ( current_theme_supports( 'custom-background' ) ) {
-			$custom_background = get_theme_mod('background_image');
+			$custom_background = get_theme_mod( 'background_image' );
 			if ( $custom_background ) {
 				if ( strpos( $custom_background, $file ) !== false ) {
-					if ($this->core->debug)
-						error_log("{$file} found in background");
+					$this->core->log( "{$file} found in theme (Custom Background)" );
+					return true;
+				}
+			}
+		}
+
+		// Support for Kantan Theme
+		if ( $mediaId ) {
+			$photography_hero_image = get_theme_mod( 'photography_hero_image' );
+			if ( !empty( $photography_hero_image ) ) {
+				if ( $photography_hero_image == $mediaId ) {
+					$this->core->log( "{$file} found in theme (Photography Hero Image)" );
+					return true;
+				}
+			}
+			$author_profile_picture = get_theme_mod( 'author_profile_picture' );
+			if ( !empty( $author_profile_picture ) ) {
+				if ( $author_profile_picture == $mediaId ) {
+					$this->core->log( "{$file} found in theme (Author Profile Photo)" );
 					return true;
 				}
 			}
@@ -37,17 +53,30 @@ class Meow_WPMC_Checkers {
 		return false;
 	}
 
-	function check_in_gallery( $file, $attachment_id = 0 ) {
+	function check_in_gallery( $file, $mediaId = 0 ) {
 
 		if ( !get_option( 'wpmc_galleries', false ) )
 			return false;
 
+		$file = $this->core->wpmc_clean_uploaded_filename( $file );
+		$pinfo = pathinfo( $file );
+		$url = $pinfo['dirname'] . '/' . $pinfo['filename'] .
+			( isset( $pinfo['extension'] ) ? ( '.' . $pinfo['extension'] ) : '' );
+
 		// Galleries in Visual Composer (WPBakery)
 		if ( class_exists( 'Vc_Manager' ) ) {
 			$galleries_images_vc = get_transient( "wpmc_galleries_images_visualcomposer" );
-			if ( in_array( $attachment_id, $galleries_images_vc ) ) {
-				if ( $this->core->debug )
-					error_log( "Media {$attachment_id} found in a Visual Composer gallery" );
+			if ( is_array( $galleries_images_vc ) && in_array( $mediaId, $galleries_images_vc ) ) {
+				$this->core->log( "Media {$mediaId} found in a Visual Composer gallery" );
+				return true;
+			}
+		}
+
+		// Galleries in Fusion Builder (Avada Theme)
+		if ( function_exists( 'fusion_builder_map' ) ) {
+			$galleries_images_fb = get_transient( "wpmc_galleries_images_fusionbuilder" );
+			if ( is_array( $galleries_images_fb ) && in_array( $mediaId, $galleries_images_fb ) ) {
+				$this->core->log( "Media {$mediaId} found in post_content (Fusion Builder)" );
 				return true;
 			}
 		}
@@ -55,35 +84,23 @@ class Meow_WPMC_Checkers {
 		// Check in WooCommerce Galleries
 		if ( class_exists( 'WooCommerce' ) ) {
 			$galleries_images_wc = get_transient( "wpmc_galleries_images_woocommerce" );
-			if ( in_array( $attachment_id, $galleries_images_wc ) ) {
-				if ( $this->core->debug )
-					error_log( "Media {$attachment_id} found in a WooCommerce gallery" );
+			if ( is_array( $galleries_images_wc ) && in_array( $mediaId, $galleries_images_wc ) ) {
+				$this->core->log( "Media {$mediaId} found in a WooCommerce gallery" );
 				return true;
 			}
 		}
 
-		// Check in standard WP Galleries
-		$file = $this->core->wpmc_clean_uploaded_filename( $file );
-		$uploads = wp_upload_dir();
-		$parsedURL = parse_url( $uploads['baseurl'] );
-		$regex_match_file = '(' . preg_quote( $file ) . ')';
-		$regex = addcslashes( '(?:(?:http(?:s)?\\:)?//' .
-			preg_quote( $parsedURL['host'] ).')?' .
-			preg_quote( $parsedURL['path'] ) . '/' . $regex_match_file, '/');
-		$images = get_transient( "wpmc_galleries_images" );
-		if ( !empty( $images ) ) {
-			foreach ( $images as $image ) {
-				$found = preg_match('/' . $regex . '/i', $image);
-				if ( $this->core->debug && $found )
-					error_log("{$file} found in a gallery");
-				if ( $found )
-					return true;
-			}
+		// Check in standard WP Galleries (URLS)
+		$galleries_images = get_transient( "wpmc_galleries_images" );
+		if ( is_array( $galleries_images ) && in_array( $file, $galleries_images ) ) {
+			$this->core->log( "URL {$file} found in a standard WP Gallery" );
+			return true;
 		}
+
 		return false;
 	}
 
-	function has_meta( $file, $attachment_id = 0 ) {
+	function has_meta( $file, $mediaId = 0 ) {
 
 		if ( !get_option( 'wpmc_postmeta', true ) )
 			return false;
@@ -97,14 +114,14 @@ class Meow_WPMC_Checkers {
 			preg_quote( $parsedURL['host']) . ')?(?:' .
 			preg_quote( $parsedURL['path']) . '/)|^)' . $regex_match_file, '/');
 		$regex_mysql = str_replace( '(?:', '(', $regex );
-		if ( $attachment_id > 0 ) {
+		if ( $mediaId > 0 ) {
 			$mediaCount = $wpdb->get_var(
 				$wpdb->prepare( "SELECT COUNT(*)
 					FROM $wpdb->postmeta
 					WHERE post_id != %d
 					AND meta_key != '_wp_attached_file'
 					AND (meta_value REGEXP %s OR meta_value = %d)",
-					$attachment_id, $regex_mysql, $attachment_id
+					$mediaId, $regex_mysql, $mediaId
 				)
 			);
 		} else {
@@ -117,8 +134,8 @@ class Meow_WPMC_Checkers {
 				)
 			);
 		}
-		if ( $this->core->debug && $mediaCount > 0 )
-			error_log("{$file} found in POSTMETA");
+		if ( $mediaCount > 0 )
+			$this->core->log( "{$file} found in Post Meta" );
 		return $mediaCount > 0;
 	}
 
@@ -128,132 +145,50 @@ class Meow_WPMC_Checkers {
 		global $wpdb;
 		$this->core->last_analysis_ids = null;
 		$shortcode_support = get_option( 'wpmc_shortcode', false );
+		$file = $this->core->wpmc_clean_uploaded_filename( $file );
+		$pinfo = pathinfo( $file );
+		$url = $pinfo['dirname'] . '/' . $pinfo['filename'] .
+			( isset( $pinfo['extension'] ) ? ( '.' . $pinfo['extension'] ) : '' );
 
 		// Check in Posts Content
 		if ( get_option( 'wpmc_posts', true ) ) {
 
-			// Galleries in Visual Composer (WPBakery)
-			if ( class_exists( 'Vc_Manager' ) ) {
-				$posts_images_vc = get_transient( "wpmc_posts_images_visualcomposer" );
-				if ( in_array( $mediaId, $posts_images_vc ) ) {
-					if ( $this->core->debug )
-						error_log( "Media {$mediaId} found in post_content (Visual Composer)" );
+			if ( !empty( $mediaId ) ) {
+				// Search through the CSS class
+				$posts_images_ids = get_transient( "wpmc_posts_images_ids" );
+				if ( in_array( $mediaId, $posts_images_ids ) ) {
+					$this->core->log( "Media {$mediaId} found in content (Posts Images IDs)" );
 					return true;
 				}
-			}
 
-			// Search through the CSS class
-			if ( !empty( $mediaId ) ) {
-				$sql = $wpdb->prepare( "SELECT ID
-					FROM $wpdb->posts
-					WHERE post_type <> 'revision'
-					AND post_type <> 'attachment'
-					AND post_content LIKE %s", "%wp-image-$mediaId%" );
-				$foundIds = $wpdb->get_col( $sql );
-				$this->core->last_analysis_ids = $foundIds;
-				$mediaCount = count( $foundIds );
-				if ( $this->core->debug && $mediaCount > 0 )
-					error_log( "Media {$mediaId} found in post_content, $mediaCount time(s)" );
-				if ( $mediaCount > 0 )
-					return true;
+				// Posts in Visual Composer (WPBakery)
+				if ( class_exists( 'Vc_Manager' ) ) {
+					$posts_images_vc = get_transient( "wpmc_posts_images_visualcomposer" );
+					if ( in_array( $mediaId, $posts_images_vc ) ) {
+						$this->core->log( "Media {$mediaId} found in content (Visual Composer)" );
+						return true;
+					}
+				}
 			}
 
 			// Search through the filename
-			$file = $this->core->wpmc_clean_uploaded_filename( $file );
-			$uploads = wp_upload_dir();
-			$parsedURL = parse_url( $uploads['baseurl'] );
-			$pinfo = pathinfo( $file );
-			$regex_match_file = '(' . $pinfo['dirname'] . '/' . $pinfo['filename'] . "(\\-[0-9]{1,8}x[0-9]{1,8})?\\." .
-				( isset( $pinfo['extension'] ) ? $pinfo['extension'] : '' ) . ')';
-
-			// SUPER STRICT MODE
-			// $regex = addcslashes('=[\'"](?:(?:http(?:s)?\\:)?//'
-			// 	. preg_quote( $parsedURL['host'] ) . ')?'
-			// 	. preg_quote( $parsedURL['path'] ) . '/'
-			// 	. $regex_match_file . '(?:\\?[^\'"]*)*[\'"]', '/' );
-
-			// NORMAL REGEX
-			$regex = addcslashes( preg_quote( $parsedURL['path']) . '/' . $regex_match_file . '(?:\\?[^\'"]*)*[\'"]', '/' );
-			$regex_mysql = str_replace('(?:', '(', $regex);
-			$sql = $wpdb->prepare( "SELECT ID
-				FROM $wpdb->posts
-				WHERE post_type <> 'revision'
-				AND post_type <> 'attachment'
-				AND post_content REGEXP %s", $regex_mysql );
-			$foundIds = $wpdb->get_col( $sql );
-			$this->core->last_analysis_ids = $foundIds;
-			$mediaCount = count( $foundIds );
-			if ( $this->core->debug && $mediaCount > 0 )
-				error_log( "File {$file} found in post_content, $mediaCount time(s)" );
-			if ( $mediaCount > 0 )
+			$posts_images_urls = get_transient( "wpmc_posts_images_urls" );
+			if ( in_array( $url, $posts_images_urls ) ) {
+				$this->core->log( "URL {$url} found in content (Posts Images URLs)" );
 				return true;
-		}
-
-		// Shortcode analysis
-		global $shortcode_tags;
-		$active_tags = array_keys( $shortcode_tags );
-		if ( !empty( $active_tags ) ) {
-			$post_contents = get_transient( 'wpmc_posts_with_shortcode' );
-			if ( $post_contents === false ) {
-
-				$post_contents = array();
-
-				// Resolve shortcodes from posts
-				if ( $shortcode_support ) {
-					$query = array();
-					$query[] = "SELECT ID, post_content FROM {$wpdb->posts}";
-					$query[] = "WHERE post_type <> 'revision' AND post_type <> 'attachment'";
-					$sub_query = array();
-					foreach ( $active_tags as $tag ) {
-						$sub_query[] = "post_content LIKE '%[" .  esc_sql( $wpdb->esc_like( $tag ) ) . "%'";
-					}
-					$query[] = "AND (" . implode ( " OR ", $sub_query ) . ")";
-					$sql = join( ' ', $query );
-					$results = $wpdb->get_results( $sql );
-					foreach ( $results as $key => $data ) {
-						$post_contents['post_' . $data->ID] = do_shortcode( $data->post_content );
-					}
-				}
-
-				// Read Widgets
-				if ( get_option( 'wpmc_widgets', false ) ) {
-					global $wp_registered_widgets;
-					$active_widgets = get_option( 'sidebars_widgets' );
-					foreach ( $active_widgets as $sidebar_name => $sidebar_widgets ) {
-						if ( $sidebar_name != 'wp_inactive_widgets' && !empty( $sidebar_widgets ) && is_array( $sidebar_widgets ) ) {
-							$i = 0;
-							foreach ( $sidebar_widgets as $widget_instance ) {
-								$widget_class = $wp_registered_widgets[$widget_instance]['callback'][0]->option_name;
-								$instance_id = $wp_registered_widgets[$widget_instance]['params'][0]['number'];
-								$widget_data = get_option($widget_class);
-								if ( !empty( $widget_data[$instance_id]['text'] ) ) {
-
-									// Resolve Widgets or just get them
-									if ( $shortcode_support )
-										$post_contents['widget_' . $i] = do_shortcode( $widget_data[$instance_id]['text'] );
-									else
-										$post_contents['widget_' . $i] = $widget_data[$instance_id]['text'];
-								}
-								$i++;
-							}
-						}
-					}
-				}
-
-				if ( !empty( $post_contents ) )
-					set_transient( 'wpmc_posts_with_shortcode', $post_contents, 2 * 60 * 60 );
-			}
-
-			if ( !empty( $post_contents ) ) {
-				foreach ( $post_contents as $key => $content ) {
-					$found = preg_match( '/' . $regex . '/i', $content );
-					if ( $this->core->debug && $found )
-						error_log( "File Cleaner: {$file} found in {$key} shortcode or widget" );
-					if ( $found )
-						return true;
-				}
 			}
 		}
+
+		// Search in widgets
+		if ( get_option( 'wpmc_widgets', false ) ) {
+			$widgets_images = get_transient( "wpmc_widgets_images" );
+			if ( in_array( $url, $widgets_images ) ) {
+				$this->core->log( "URL {$url} found in widgets (Widgets Images)" );
+				$this->core->last_analysis = "WIDGET";
+				return true;
+			}
+		}
+
 		return false;
 	}
 

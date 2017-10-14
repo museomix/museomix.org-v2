@@ -3,7 +3,7 @@
 Plugin Name: Media Cleaner
 Plugin URI: http://meowapps.com
 Description: Clean your Media Library, many options, trash system.
-Version: 4.1.0
+Version: 4.2.3
 Author: Jordy Meow
 Author URI: http://meowapps.com
 Text Domain: media-cleaner
@@ -16,10 +16,18 @@ Originally developed for two of my websites:
 - Haikyo (http://haikyo.org)
 */
 
+if ( class_exists( 'Meow_WPMC_Core' ) ) {
+  function mfrh_admin_notices() {
+    echo '<div class="error"><p>Thanks for installing the Pro version of Media Cleaner :) However, the free version is still enabled. Please disable or uninstall it.</p></div>';
+  }
+  add_action( 'admin_notices', 'mfrh_admin_notices' );
+  return;
+}
+
 if ( is_admin() ) {
 
   global $wpmc_version;
-  $wpmc_version = '4.1.0';
+  $wpmc_version = '4.2.3';
 
   // Admin
   require( 'wpmc_admin.php' );

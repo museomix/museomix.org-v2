@@ -6,7 +6,7 @@ require_once (DUPLICATOR_PLUGIN_PATH.'classes/package/class.pack.archive.zip.php
 require_once (DUPLICATOR_PLUGIN_PATH.'lib/forceutf8/Encoding.php');
 
 /**
- * Class for handleing archive setup and build process
+ * Class for handling archive setup and build process
  *
  * Standard: PSR-2 (almost)
  * @link http://www.php-fig.org/psr/psr-2
@@ -425,7 +425,7 @@ class DUP_Archive
      *  - error 'too many files open' for recursion
      *  - $file->getExtension() is not reliable as it silently fails at least in php 5.2.17
      *  - issues with when a file has a permission such as 705 and trying to get info (had to fallback to pathinfo)
-     *  - basic conclusion wait on the SPL libs untill after php 5.4 is a requiremnt
+     *  - basic conclusion wait on the SPL libs until after php 5.4 is a requirments
      *  - tight recursive loop use caution for speed
      *
      * @return array	Returns an array of directories to include in the archive

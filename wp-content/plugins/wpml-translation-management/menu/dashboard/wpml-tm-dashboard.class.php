@@ -53,8 +53,6 @@ class WPML_TM_Dashboard {
 			'sort_by'     => 'date',
 			'sort_order'  => 'DESC',
 			'limit_no'    => ICL_TM_DOCS_PER_PAGE,
-			'parent_type' => 'any',
-			'parent_id'   => false,
 			'type'        => '',
 			'title'       => '',
 			'status'      => array( 'publish', 'pending', 'draft', 'future', 'private', 'inherit' ),
@@ -64,11 +62,12 @@ class WPML_TM_Dashboard {
 		$args = $this->remove_empty_arguments( $args );
 		$args = wp_parse_args( $args, $defaults );
 
-		$documents = $this->add_string_packages( $documents, $args );
-		$documents = $this->add_translatable_posts( $documents, $args );
-		$documents = array_slice( $documents, 0, $args['limit_no'] );
-		$results['documents'] = $documents;
-		$results['found_documents'] = $this->found_documents;
+		$documents                  = $this->add_string_packages( $documents, $args );
+		$documents                  = $this->add_translatable_posts( $documents, $args );
+		$filtered_documents         = apply_filters( 'wpml_tm_dashboard_documents', $documents );
+		$filtered_documents         = array_slice( $filtered_documents, 0, $args['limit_no'] );
+		$results['documents']       = $filtered_documents;
+		$results['found_documents'] = $this->found_documents - ( count( $documents ) - count( $filtered_documents ) );
 
 		return $results;
 	}
@@ -123,23 +122,6 @@ class WPML_TM_Dashboard {
 			'offset'                   => $offset,
 		);
 
-		if ( 'any' !== $args['parent_type'] ) {
-			switch ( $args['parent_type'] ) {
-				case 'page':
-					$query_args['post_parent'] = (int) $args['parent_id'];
-					break;
-				case 'category':
-					$query_args['tax_query'] = array(
-						array(
-							'taxonomy' => 'category',
-							'field'    => 'term_id',
-							'terms'    => (int) $args['parent_id'],
-						),
-					);
-					break;
-			}
-		}
-
 		if ( ! empty( $args['title'] ) ) {
 			$query_args['post_title_like'] = $args['title'];
 		}
@@ -147,7 +129,7 @@ class WPML_TM_Dashboard {
 		$lang = $this->sitepress->get_current_language();
 		$this->sitepress->switch_lang( $args['from_lang'] );
 		$query_args = apply_filters( 'wpml_tm_dashboard_post_query_args', $query_args, $args );
-		$query = new WP_Query( $query_args );
+		$query = new WPML_TM_WP_Query( $query_args );
 		$this->sitepress->switch_lang( $lang );
 		if ( ! empty( $query->posts ) ) {
 			foreach ( $query->posts as $post ) {
@@ -162,7 +144,7 @@ class WPML_TM_Dashboard {
 				$results[]                          = $post_obj;
 			}
 		}
-		$this->found_documents += $query->found_posts;
+		$this->found_documents += $query->get_found_count();
 		wp_reset_query();
 		return $results;
 	}
@@ -269,7 +251,7 @@ class WPML_TM_Dashboard {
 	 * @return string
 	 */
 	private function create_string_packages_where( $args ) {
-		$where = " AND t.element_type LIKE 'package%'";
+		$where = " AND t.element_type LIKE 'package%' AND st_table.post_id IS NULL";
 		if ( ! $this->is_cpt_type( $args ) && ! empty( $args['type'] ) ) {
 			$where .= $this->wpdb->prepare( " AND kind_slug='%s'", $args['type'] );
 		}

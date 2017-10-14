@@ -17,7 +17,7 @@ var WPML_TM = WPML_TM || {};
 		getTranslation: function () {
 			var self = this;
 			var editor = tinymce.get(self.field.field_type);
-			if (editor && editor instanceof tinyMCE.Editor) {
+			if (editor && editor instanceof tinyMCE.Editor && !editor.isHidden()) {
 				return editor.getContent();
 			} else {
 				return self.getTextAreaElement().val();
@@ -26,11 +26,20 @@ var WPML_TM = WPML_TM || {};
 
 		setTranslation: function (value) {
 			var self = this;
+
 			var editor = tinymce.get(self.field.field_type);
-			if (editor && editor instanceof tinyMCE.Editor) {
-				editor.setContent(value.replace(/\r?\n/g, '<br />'));
-			}
+			var shouldToggle = editor && editor instanceof tinyMCE.Editor && !editor.isHidden();
+
+            if (shouldToggle) {
+                tinymce.execCommand('mceToggleEditor', false, self.field.field_type);
+            }
+
 			self.getTextAreaElement().val(value);
+
+            if (shouldToggle) {
+                tinymce.execCommand('mceToggleEditor', false, self.field.field_type);
+            }
+
 			this.updateUI();
 		},
 

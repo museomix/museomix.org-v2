@@ -41,6 +41,7 @@ class WPML_TM_Batch_Report_Email_Process {
 		$headers[] = 'Content-type: text/html; charset=iso-8859-1';
 
 		foreach ( $this->email_builder->get_emails() as $email ) {
+			$email['attachment'] = isset( $email['attachment'] ) ? $email['attachment'] : array();
 			$email_sent = wp_mail( $email['email'], $email['subject'], $email['body'], $headers, $email['attachment'] );
 
 			if ( $email_sent ) {
