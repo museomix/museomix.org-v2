@@ -11,7 +11,6 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 			'module_id',
 			'module_class',
 			'form_background_color',
-			'input_border_radius',
 			'show_count',
 			'show_reply',
 			'show_avatar',
@@ -19,7 +18,6 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		);
 
 		$this->fields_defaults = array(
-			'input_border_radius' => array( '0px', 'add_default_setting' ),
 			'background_layout'   => array( 'light' ),
 			'show_count'          => array( 'on' ),
 			'show_reply'          => array( 'on' ),
@@ -52,6 +50,15 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 				),
 			),
 			'fonts' => array(
+				'header' => array(
+					'label'          => esc_html__( 'Title', 'et_builder' ),
+					'css'            => array(
+						'main' => "{$this->main_css_element} h1.page_title, {$this->main_css_element} h2.page_title, {$this->main_css_element} h3.page_title, {$this->main_css_element} h4.page_title, {$this->main_css_element} h5.page_title, {$this->main_css_element} h6.page_title",
+					),
+					'header_level' => array(
+						'default' => 'h1',
+					),
+				),
 				'body' => array(
 					'label'          => esc_html__( 'Comment', 'et_builder' ),
 					'css'            => array(
@@ -101,16 +108,6 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 					),
 				),
 			),
-			'border' => array(
-				'label'    => esc_html__( 'Field border', 'et_builder' ),
-				'css'      => array(
-					'main'      => "{$this->main_css_element} #commentform textarea, {$this->main_css_element} #commentform input[type='text'], {$this->main_css_element} #commentform input[type='email'], {$this->main_css_element} #commentform input[type='url']",
-					'important' => 'all',
-				),
-				'settings' => array(
-					'color' => 'alpha',
-				),
-			),
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
@@ -124,7 +121,12 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 			),
 			'background' => array(),
 			'max_width'  => array(),
-			'text'       => array(),
+			'text'       => array(
+				'css' => array(
+					'text_shadow' => '%%order_class%% p, %%order_class%% .comment_postinfo, %%order_class%% .page_title, %%order_class%% .comment-reply-title',
+				),
+			),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(
@@ -231,13 +233,6 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 				'toggle_slug'  => 'form_field',
 				'tab_slug'     => 'advanced',
 			),
-			'input_border_radius' => array(
-				'label'           => esc_html__( 'Fields Border Radius', 'et_builder' ),
-				'type'            => 'range',
-				'option_category' => 'layout',
-				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'border',
-			),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
 				'type'            => 'multiple_checkboxes',
@@ -273,7 +268,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'classes',
 				'option_class'    => 'et_pb_custom_css_regular',
-			)
+			),
 		);
 
 		return $fields;
@@ -284,11 +279,14 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 	 *
 	 * @return string of comment section markup
 	 */
-	static function get_comments() {
-		global $et_pb_comments_print;
+	static function get_comments( $header_level ) {
+		global $et_pb_comments_print, $et_comments_header_level;
 
 		// Globally flag that comment module is being printed
 		$et_pb_comments_print = true;
+
+		// set custom header level for comments form
+		$et_comments_header_level = $header_level;
 
 		// remove filters to make sure comments module rendered correctly if the below filters were applied earlier.
 		remove_filter( 'get_comments_number', '__return_zero' );
@@ -302,12 +300,13 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 
 		// Globally flag that comment module has been printed
 		$et_pb_comments_print = false;
+		$et_comments_header_level = '';
 
 		return $comments_content;
 	}
 
 	function et_pb_comments_template() {
-		return dirname(__FILE__) . '/comments_template.php';
+		return realpath( dirname(__FILE__) . '/..' ) . '/comments_template.php';
 	}
 
 	function et_pb_comments_submit_button( $submit_button ) {
@@ -331,11 +330,11 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		$button_custom         = $this->shortcode_atts['custom_button'];
 		$custom_icon           = $this->shortcode_atts['button_icon'];
 		$form_background_color = $this->shortcode_atts['form_background_color'];
-		$input_border_radius   = $this->shortcode_atts['input_border_radius'];
 		$show_avatar           = $this->shortcode_atts['show_avatar'];
 		$show_reply            = $this->shortcode_atts['show_reply'];
 		$show_count            = $this->shortcode_atts['show_count'];
 		$background_layout     = $this->shortcode_atts['background_layout'];
+		$header_level          = $this->shortcode_atts['header_level'];
 
 		$module_class              = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 		$video_background          = $this->video_background();
@@ -349,16 +348,6 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'background-color: %1$s;',
 					esc_html( $form_background_color )
-				),
-			) );
-		}
-
-		if ( ! in_array( $input_border_radius, array( '', '0' ) ) ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% #commentform textarea, %%order_class%% #commentform input[type="text"], %%order_class%% #commentform input[type="email"], %%order_class%% #commentform input[type="url"]',
-				'declaration' => sprintf(
-					'-moz-border-radius: %1$s; -webkit-border-radius: %1$s; border-radius: %1$s;',
-					esc_html( et_builder_process_range_value( $input_border_radius ) )
 				),
 			) );
 		}
@@ -379,7 +368,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		// Modify submit button to be advanced button style ready
 		add_filter( 'comment_form_submit_button', array( $this, 'et_pb_comments_submit_button' ) );
 
-		$comments_content = self::get_comments();
+		$comments_content = self::get_comments( et_pb_process_header_level( $header_level, 'h1' ) );
 
 		// remove all the actions and filters to not break the default comments section from theme
 		remove_filter( 'comments_template', array( $this, 'et_pb_comments_template' ) );
@@ -406,6 +395,20 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	protected function _add_additional_border_fields() {
+		parent::_add_additional_border_fields();
+
+		$this->advanced_options['border']['css'] = array(
+			'main' => array(
+				'border_radii'  => "{$this->main_css_element} #commentform textarea, {$this->main_css_element} #commentform input[type='text'], {$this->main_css_element} #commentform input[type='email'], {$this->main_css_element} #commentform input[type='url']",
+				'border_styles' => "{$this->main_css_element} #commentform textarea, {$this->main_css_element} #commentform input[type='text'], {$this->main_css_element} #commentform input[type='email'], {$this->main_css_element} #commentform input[type='url']",
+			),
+			'important' => 'all',
+		);
+	}
+
+
 }
 
 new ET_Builder_Module_Comments;

@@ -48,11 +48,27 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css'                 => array(
+					'main' => array(
+						'border_radii'  => ".et_pb_pricing .et_pb_pricing_table%%order_class%%",
+						'border_styles' => ".et_pb_pricing .et_pb_pricing_table%%order_class%%",
+					),
+				),
+				'defaults' => array(
+					'border_radii'  => 'on|0px|0px|0px|0px',
+					'border_styles' => array(
+						'width' => '1px',
+						'color' => '#bebebe',
+						'style' => 'solid',
+					),
+				),
+			),
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} .et_pb_pricing_heading h2",
+						'main' => "{$this->main_css_element} .et_pb_pricing_heading h2, {$this->main_css_element} .et_pb_pricing_heading h1.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h3.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h4.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h5.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h6.et_pb_pricing_title",
 						'important' => 'all',
 					),
 					'line_height' => array(
@@ -61,6 +77,9 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 							'max'  => '100',
 							'step' => '1',
 						),
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
@@ -146,8 +165,10 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 			'text'      => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%%.et_pb_pricing_table, %%order_class%% .et_pb_pricing_content',
+					'text_shadow'      => '%%order_class%% .et_pb_pricing_heading, %%order_class%% .et_pb_pricing_content_top, %%order_class%% .et_pb_pricing_content',
 				),
 			),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(
@@ -286,7 +307,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
-		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon, $et_pb_pricing_tables_button_rel;
+		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon, $et_pb_pricing_tables_button_rel, $et_pb_pricing_tables_header_level;
 
 		$featured      = $this->shortcode_atts['featured'];
 		$title         = $this->shortcode_atts['title'];
@@ -299,6 +320,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 		$button_text   = $this->shortcode_atts['button_text'];
 		$button_custom = $this->shortcode_atts['custom_button'];
 		$custom_icon   = $this->shortcode_atts['button_icon'];
+		$header_level  = $this->shortcode_atts['header_level'];
 		$pricing_item_excluded_color = $this->shortcode_atts['pricing_item_excluded_color'];
 
 		// Overwrite button rel with pricin tables' button_rel if needed
@@ -341,6 +363,9 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
+		// inherit header level from parent settings
+		$header_level = '' === $header_level && '' !== $et_pb_pricing_tables_header_level ? $et_pb_pricing_tables_header_level : $header_level;
+
 		$output = sprintf(
 			'<div class="et_pb_pricing_table%1$s%9$s%10$s%12$s">
 				%13$s
@@ -360,7 +385,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 				%5$s
 			</div>',
 			( 'off' !== $featured ? ' et_pb_featured_table' : '' ),
-			( '' !== $title ? sprintf( '<h2 class="et_pb_pricing_title">%1$s</h2>', esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%2$s class="et_pb_pricing_title">%1$s</%2$s>', esc_html( $title ), et_pb_process_header_level( $header_level, 'h2' ) ) : '' ),
 			( '' !== $subtitle ? sprintf( '<span class="et_pb_best_value">%1$s</span>', esc_html( $subtitle ) ) : '' ),
 			do_shortcode( et_pb_fix_shortcodes( et_pb_extract_items( $content ) ) ),
 			$button_text,

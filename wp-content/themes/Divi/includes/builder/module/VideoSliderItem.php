@@ -34,6 +34,10 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 			),
 		);
 
+		$this->advanced_options = array(
+			'filters' => array(),
+		);
+
 		$this->fields_defaults = array(
 			'background_layout' => array( 'dark' ),
 		);
@@ -109,10 +113,11 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 				'type' => 'computed',
 				'computed_callback' => array( 'ET_Builder_Module_Video_Slider_Item', 'get_oembed_thumbnail' ),
 				'computed_depends_on' => array(
+					'src',
 					'image_src',
 				),
 				'computed_minimum' => array(
-					'image_src',
+					'src',
 				),
 			),
 			'__is_oembed' => array(
@@ -141,12 +146,26 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 
 	static function get_oembed_thumbnail( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$defaults = array(
-			'image_src'
+			'image_src' => '',
+			'src' => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
 
-		return et_pb_set_video_oembed_thumbnail_resolution( $args['image_src'], 'high' );
+		if ( '' !== $args['image_src'] ) {
+			return et_pb_set_video_oembed_thumbnail_resolution( $args['image_src'], 'high' );
+		} else {
+			if ( false !== et_pb_check_oembed_provider( esc_url( $args['src'] ) ) ) {
+				add_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
+				// Save thumbnail
+				$thumbnail_track_output = wp_oembed_get( esc_url( $args['src'] ) );
+				// Set back to normal
+				remove_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
+				return $thumbnail_track_output;
+			} else {
+				return '';
+			}
+		}
 	}
 
 	static function is_oembed( $args = array(), $conditional_tags = array(), $current_page = array() ){
@@ -181,7 +200,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 
 		global $et_pb_slider_image_overlay;
 
-		$class  = '';
+		$class  = ET_Builder_Element::add_module_order_class( '', $function_name );
 		$class .= " et_pb_bg_layout_{$background_layout}";
 
 		if ( '' !== $image_src ) {
@@ -256,6 +275,16 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 	public function _add_additional_shadow_fields() {
 
 	}
+
+	protected function _add_additional_border_fields() {
+		return false;
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		return false;
+	}
+
+
 }
 
 new ET_Builder_Module_Video_Slider_Item;

@@ -59,6 +59,9 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'overlay'    => esc_html__( 'Overlay', 'et_builder' ),
 					'navigation' => esc_html__( 'Navigation', 'et_builder' ),
 					'alignment'  => esc_html__( 'Alignment', 'et_builder' ),
+					'image' => array(
+						'title' => esc_html__( 'Image', 'et_builder' ),
+					),
 					'text'       => array(
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
@@ -78,7 +81,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title",
 						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title, .et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title a",
@@ -90,6 +93,9 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 							'max'  => '100',
 							'step' => '0.1',
 						),
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
@@ -114,7 +120,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_button",
 						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_more_button.et_pb_button",
-						'alignment' => ".et_pb_slider {$this->main_css_element} .et_pb_slide_description .et_pb_button_wrapper"
+						'alignment' => ".et_pb_slider {$this->main_css_element} .et_pb_slide_description .et_pb_button_wrapper",
 					),
 					'use_alignment' => true,
 				),
@@ -134,6 +140,21 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 			'text' => array(
 				'css' => array(
 					'text_orientation' => '.et_pb_slides %%order_class%%.et_pb_slide .et_pb_slide_description',
+					'text_shadow'      => '.et_pb_slides %%order_class%%.et_pb_slide .et_pb_slide_description',
+				),
+			),
+			'filters' => array(
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+			),
+			'image' => array(
+				'css' => array(
+					'main' => array(
+						'%%order_class%% .et_pb_slide_image',
+						'%%order_class%% .et_pb_section_video_bg',
+					),
 				),
 			),
 		);
@@ -433,6 +454,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		$use_text_overlay     = $this->shortcode_atts['use_text_overlay'];
 		$text_overlay_color   = $this->shortcode_atts['text_overlay_color'];
 		$text_border_radius   = $this->shortcode_atts['text_border_radius'];
+		$header_level         = $this->shortcode_atts['header_level'];
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
@@ -454,7 +476,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				);
 			}
 
-			$heading = '<h2 class="et_pb_slide_title">' . $heading . '</h2>';
+			$heading = sprintf( '<%1$s class="et_pb_slide_title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), $heading );
 		}
 
 		// Overwrite button rel with pricin tables' button_rel if needed
@@ -569,6 +591,15 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 
 		$class = ET_Builder_Element::add_module_order_class( $class, $function_name );
 
+		// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+			$class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+			);
+		}
+
 		if ( 1 === $et_pb_slider_item_num ) {
 			$class .= " et-pb-active-slide";
 		}
@@ -624,6 +655,16 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 			) )
 		) );
 	}
+
+	protected function _add_additional_border_fields() {
+		return false;
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		return false;
+	}
+
+
 }
 
 new ET_Builder_Module_Slider_Item;

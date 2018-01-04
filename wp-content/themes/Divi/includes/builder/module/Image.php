@@ -68,7 +68,6 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
-			'border'                => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => array( 'custom_margin' ),
@@ -82,6 +81,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 					),
 				),
 			),
+			'filters' => array(),
 		);
 	}
 
@@ -130,13 +130,13 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'type'              => 'yes_no_button',
 				'option_category'   => 'configuration',
 				'options'           => array(
-					'off' => esc_html__( "No", 'et_builder' ),
+					'off' => esc_html__( 'No', 'et_builder' ),
 					'on'  => esc_html__( 'Yes', 'et_builder' ),
 				),
 				'affects'           => array(
 					'url',
 					'url_new_window',
-					'use_overlay'
+					'use_overlay',
 				),
 				'toggle_slug'       => 'link',
 				'description'       => esc_html__( 'Here you can choose whether or not the image should open in Lightbox. Note: if you select to open the image in Lightbox, url options below will be ignored.', 'et_builder' ),
@@ -239,7 +239,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'type'              => 'yes_no_button',
 				'option_category'   => 'layout',
 				'options'           => array(
-					'off' => esc_html__( "No", 'et_builder' ),
+					'off' => esc_html__( 'No', 'et_builder' ),
 					'on'  => esc_html__( 'Yes', 'et_builder' ),
 				),
 				'tab_slug'    => 'advanced',
@@ -254,7 +254,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'option_category'   => 'layout',
 				'options'           => array(
 					'on'  => esc_html__( 'Yes', 'et_builder' ),
-					'off' => esc_html__( "No", 'et_builder' ),
+					'off' => esc_html__( 'No', 'et_builder' ),
 				),
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'alignment',
@@ -323,6 +323,10 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
+		// Handle svg image behaviour
+		$src_pathinfo = pathinfo( $src );
+		$is_src_svg = isset( $src_pathinfo['extension'] ) ? 'svg' === $src_pathinfo['extension'] : false;
+
 		if ( 'on' === $always_center_on_mobile ) {
 			$module_class .= ' et_always_center_on_mobile';
 		}
@@ -337,7 +341,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			) );
 
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% img',
+				'selector'    => '%%order_class%% .et_pb_image_wrap, %%order_class%% img',
 				'declaration' => 'width: 100%;',
 			) );
 		}
@@ -397,9 +401,16 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			);
 		}
 
+		// Set display block for svg image to avoid disappearing svg image
+		if ( $is_src_svg ) {
+			ET_Builder_Element::set_style( $function_name, array(
+				'selector'    => '%%order_class%% .et_pb_image_wrap',
+				'declaration' => 'display: block;',
+			) );
+		}
+
 		$output = sprintf(
-			'<img src="%1$s" alt="%2$s"%3$s />
-			%4$s',
+			'<span class="et_pb_image_wrap"><img src="%1$s" alt="%2$s"%3$s />%4$s</span>',
 			esc_url( $src ),
 			esc_attr( $alt ),
 			( '' !== $title_text ? sprintf( ' title="%1$s"', esc_attr( $title_text ) ) : '' ),
@@ -445,10 +456,24 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 
 		self::set_style( $function_name, $boxShadow->get_style(
-			'.' . self::get_module_order_class( $function_name ),
+			sprintf( '.%1$s .et_pb_image_wrap', self::get_module_order_class( $function_name ) ),
 			$this->shortcode_atts
 		) );
 	}
+
+	protected function _add_additional_border_fields() {
+		parent::_add_additional_border_fields();
+
+		$this->advanced_options["border"]['css'] = array(
+			'main' => array(
+				'border_radii'  => "%%order_class%% .et_pb_image_wrap",
+				'border_styles' => "%%order_class%% .et_pb_image_wrap",
+			)
+		);
+
+	}
+
+
 }
 
 new ET_Builder_Module_Image;

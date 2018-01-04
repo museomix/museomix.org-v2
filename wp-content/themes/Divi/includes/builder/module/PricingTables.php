@@ -101,15 +101,39 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'additional_elements' => array(
+					array(
+						"{$this->main_css_element} .et_pb_pricing_content_top" => array( 'bottom' ),
+					),
+				),
+				'css'                 => array(
+					'main' => array(
+						'border_radii'  => "{$this->main_css_element} .et_pb_pricing_table",
+						'border_styles' => "{$this->main_css_element} .et_pb_pricing_table",
+					),
+				),
+				'defaults' => array(
+					'border_radii'  => 'on|0px|0px|0px|0px',
+					'border_styles' => array(
+						'width' => '1px',
+						'color' => '#bebebe',
+						'style' => 'solid',
+					),
+				),
+			),
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} .et_pb_pricing_heading h2",
+						'main' => "{$this->main_css_element} .et_pb_pricing_heading h2, {$this->main_css_element} .et_pb_pricing_heading h1.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h3.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h4.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h5.et_pb_pricing_title, {$this->main_css_element} .et_pb_pricing_heading h6.et_pb_pricing_title",
 						'important' => 'all',
 					),
 					'letter_spacing' => array(
 						'default' => '0px',
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
@@ -174,14 +198,6 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 					'color' => 'alpha',
 				),
 			),
-			'border' => array(
-				'css' => array(
-					'main' => "{$this->main_css_element} .et_pb_pricing_table",
-				),
-				'additional_elements' => array(
-					"{$this->main_css_element} .et_pb_pricing_content_top" => array( 'bottom' ),
-				),
-			),
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
@@ -205,8 +221,10 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 			'text'      => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%% .et_pb_pricing_table, %%order_class%% .et_pb_pricing_content',
+					'text_shadow'      => '%%order_class%% .et_pb_pricing_heading, %%order_class%% .et_pb_pricing_content_top, %%order_class%% .et_pb_pricing_content',
 				),
 			),
+			'filters' => array(),
 		);
 	}
 
@@ -360,7 +378,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 	}
 
 	function pre_shortcode_content() {
-		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon, $et_pb_pricing_tab, $et_pb_pricing_tables_button_rel;
+		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon, $et_pb_pricing_tab, $et_pb_pricing_tables_button_rel, $et_pb_pricing_tables_header_level;
 
 		$button_custom = $this->shortcode_atts['custom_button'];
 		$custom_icon   = $this->shortcode_atts['button_icon'];
@@ -370,6 +388,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		$et_pb_pricing_tables_icon = 'on' === $button_custom ? $custom_icon : '';
 
 		$et_pb_pricing_tables_button_rel = $this->shortcode_atts['button_rel'];
+		$et_pb_pricing_tables_header_level = 'h2' === $this->shortcode_atts['header_level'] ? '' : $this->shortcode_atts['header_level'];
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
@@ -387,6 +406,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		$show_featured_drop_shadow              = $this->shortcode_atts['show_featured_drop_shadow'];
 		$center_list_items                      = $this->shortcode_atts['center_list_items'];
 		$show_bullet                            = $this->shortcode_atts['show_bullet'];
+		$featured_table                         = $this->get_featured_table( $content );
 
 		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon;
 
@@ -442,7 +462,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 
 		if ( '' !== $featured_table_header_text_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_pb_featured_table .et_pb_pricing_heading h2',
+				'selector'    => '%%order_class%% .et_pb_featured_table .et_pb_pricing_heading h2, %%order_class%% .et_pb_featured_table .et_pb_pricing_heading .et_pb_pricing_title',
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $featured_table_header_text_color )
@@ -507,7 +527,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		$content = $this->shortcode_content;
 
 		$output = sprintf(
-			'<div%3$s class="et_pb_module et_pb_pricing clearfix%2$s%4$s%5$s%7$s">
+			'<div%3$s class="et_pb_module et_pb_pricing clearfix%2$s%4$s%5$s%7$s %9$s">
 				%8$s
 				%6$s
 				<div class="et_pb_pricing_table_wrap">
@@ -521,7 +541,8 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
-			$parallax_image_background
+			$parallax_image_background,
+			$featured_table
 		);
 
 		return $output;
@@ -555,6 +576,44 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		}
 
 		parent::process_box_shadow( $function_name );
+	}
+
+	private function get_featured_table( $content ) {
+		//Extract `et_pb_pricing_table` shortcode attributes
+		preg_match_all( '/\[et_pb_pricing_table(\s+[^\]]*)\]/', $content, $matches );
+
+		if ( ! isset( $matches[1] ) || 0 === count( $matches[1] ) ) {
+			return array();
+		}
+
+		$list = array();
+
+		foreach ( $matches[1] as $match ) {
+			//Check if the shortcode has the `feature` attribute on
+			//TODO: Find a better way to do that
+			$list[] = (bool) preg_match( '/[\s]featured=[\'|"]on[\'|"]/', $match );
+		}
+
+		//We need to know only the first 4 tables status,
+		//because in a row are maximum 4 tables
+		$count = count( $list ) > 4 ? 4 : count( $list );
+
+		for ( $i = 0; $i < $count; $i ++ ) {
+			if ( true === $list[ $i ] ) {
+				switch ( $i ) {
+					case 0 :
+						return '';
+					case 1 :
+						return 'et_pb_second_featured';
+					case 2 :
+						return 'et_pb_third_featured';
+					case 3 :
+						return 'et_pb_fourth_featured';
+				}
+			}
+		}
+
+		return 'et_pb_no_featured_in_first_row';
 	}
 }
 

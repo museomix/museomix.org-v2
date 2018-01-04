@@ -66,6 +66,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
+			'filters' => array(),
 		);
 	}
 

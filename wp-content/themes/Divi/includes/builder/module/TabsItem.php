@@ -73,6 +73,7 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 					'padding' => '.et_pb_tabs .et_pb_tab%%order_class%%',
 				),
 			),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(
@@ -141,6 +142,16 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 	public function _add_additional_shadow_fields() {
 
 	}
+
+	protected function _add_additional_border_fields() {
+		return false;
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		return false;
+	}
+
+
 }
 
 new ET_Builder_Module_Tabs_Item;

@@ -57,7 +57,13 @@ function et_sanitize_key_based_option( $choosen, $options, $default = false ) {
  * @return string|bool
  */
 function et_sanitize_font_choices( $choosen ) {
-	return et_sanitize_key_based_option( $choosen, et_builder_get_fonts() );
+	$google_fonts = et_builder_get_fonts();
+	$user_fonts = et_builder_get_custom_fonts();
+
+	// combine google fonts with custom user fonts
+	$all_fonts = array_merge( $user_fonts, $google_fonts );
+	
+	return et_sanitize_key_based_option( $choosen, $all_fonts );
 }
 
 /**

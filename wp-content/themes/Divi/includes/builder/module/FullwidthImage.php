@@ -59,7 +59,6 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
-			'border'                => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',
@@ -67,6 +66,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 			),
 			'background' => array(),
 			'max_width' => array(),
+			'filters' => array(),
 		);
 	}
 

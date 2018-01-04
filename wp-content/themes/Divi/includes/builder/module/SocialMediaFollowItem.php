@@ -66,6 +66,22 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 					'important' => 'all',
 				),
 			),
+			'border' => array(
+				'css'      => array(
+					'main' => array(
+						'border_radii'  => "%%order_class%%.et_pb_social_icon a.icon",
+						'border_styles' => "%%order_class%%.et_pb_social_icon a.icon",
+					),
+				),
+				'defaults' => array(
+					'border_radii' => 'on|3px|3px|3px|3px',
+					'border_styles' => array(
+						'width' => '0px',
+						'color' => '#333333',
+						'style' => 'solid',
+					),
+				),
+			),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'padding' => '.et_pb_social_media_follow li%%order_class%% a',
@@ -73,6 +89,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 					'important' => array( 'custom_margin' ), // needed to overwrite last module margin-bottom styling
 				),
 			),
+			'filters' => array(),
 		);
 	}
 
@@ -261,13 +278,15 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
+		// Get custom borders, if any
+		$atts                      = $this->shortcode_atts;
+
 		$output = sprintf(
 			'<li class="et_pb_social_icon et_pb_social_network_link%1$s">
-				<a href="%3$s" class="icon%2$s%8$s%10$s" title="%4$s"%6$s>%11$s%9$s<span class="et_pb_social_media_follow_network_name">%5$s</span></a>
-				%7$s
+				<a href="%2$s" class="icon et_pb_with_border%7$s%8$s" title="%3$s"%5$s>%10$s%9$s<span class="et_pb_social_media_follow_network_name">%4$s</span></a>
+				%6$s
 			</li>',
 			( '' !== $social_network ? sprintf( ' et-social-%s', esc_attr( $social_network ) ) : '' ),
-			( '' !== $et_pb_social_media_follow_link['shape'] ? sprintf( ' %s', esc_attr( $et_pb_social_media_follow_link['shape'] ) ) : '' ),
 			! $is_skype ? esc_url( $url ) : $skype_url,
 			esc_attr( $this->get_network_name( trim( wp_strip_all_tags( $content ) ) ) ),
 			sanitize_text_field( $this->get_network_name( $content ) ),

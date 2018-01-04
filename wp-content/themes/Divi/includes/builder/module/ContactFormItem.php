@@ -44,7 +44,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 		$this->advanced_setting_title_text = esc_html__( 'New Field', 'et_builder' );
 		$this->settings_text               = esc_html__( 'Field Settings', 'et_builder' );
-		$this->main_css_element = '%%order_class%%.et_pb_contact_field .input';
+		$this->main_css_element = '.et_pb_contact_form_container %%order_class%%.et_pb_contact_field';
 
 		$this->options_toggles = array(
 			'general'  => array(
@@ -63,40 +63,36 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css'          => array(
+					'main'      => array(
+						'border_radii'  => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+						'border_styles' => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+					),
+					'important' => 'plugin_only',
+				),
+				'label_prefix' => esc_html__( 'Input', 'et_builder' ),
+			),
 			'fonts' => array(
 				'form_field'   => array(
 					'label'    => esc_html__( 'Field', 'et_builder' ),
 					'css'      => array(
 						'main' => array(
 							"%%order_class%%.et_pb_contact_field .et_pb_contact_field_options_title",
-							"{$this->main_css_element}",
-							"{$this->main_css_element}::-webkit-input-placeholder",
-							"{$this->main_css_element}::-moz-placeholder",
-							"{$this->main_css_element}:-ms-input-placeholder",
-							"{$this->main_css_element}[type=checkbox] + label",
-							"{$this->main_css_element}[type=radio] + label",
+							"{$this->main_css_element} .input",
+							"{$this->main_css_element} .input::-webkit-input-placeholder",
+							"{$this->main_css_element} .input::-moz-placeholder",
+							"{$this->main_css_element} .input:-ms-input-placeholder",
+							"{$this->main_css_element} .input[type=checkbox] + label",
+							"{$this->main_css_element} .input[type=radio] + label",
 						),
 						'important' => 'plugin_only',
 					),
 				),
 			),
-			'border' => array(
-				'css'      => array(
-					'main' => sprintf(
-						'%1$s,
-						%1$s[type="checkbox"] + label i,
-						%1$s[type="radio"] + label i',
-						$this->main_css_element
-					),
-					'important' => 'plugin_only',
-				),
-				'settings' => array(
-					'color' => 'alpha',
-				),
-			),
 			'background' => array(
 				'css' => array(
-					'main' => '%%order_class%%'
+					'main' => '%%order_class%%',
 				),
 			),
 			'custom_margin_padding' => array(
@@ -109,6 +105,15 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			'text'      => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%% input, %%order_class%% textarea, %%order_class%% label',
+				),
+			),
+			'filters' => array(
+				'css' => array(
+					'main' => array(
+						'%%order_class%% input',
+						'%%order_class%% textarea',
+						'%%order_class%% label',
+					),
 				),
 			),
 		);
@@ -297,22 +302,13 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'toggle_slug'       => 'form_field',
 				'tab_slug'          => 'advanced',
 			),
-			'input_border_radius'   => array(
-				'label'             => esc_html__( 'Border Radius', 'et_builder' ),
-				'type'              => 'range',
-				'default'           => '0',
-				'range_settings'    => array(
-					'min'  => '0',
-					'max'  => '100',
-					'step' => '1',
-				),
-				'option_category'   => 'layout',
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'border',
-			),
 		);
+
 		return $fields;
 	}
+
+	// Don't add text-shadow fields since they already are via font-options
+	protected function _add_additional_text_shadow_fields() {}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$field_title                = $this->shortcode_atts['field_title'];
@@ -322,7 +318,6 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		$fullwidth_field            = $this->shortcode_atts['fullwidth_field'];
 		$form_field_text_color      = $this->shortcode_atts['form_field_text_color'];
 		$field_background_color     = $this->shortcode_atts['field_background_color'];
-		$input_border_radius        = $this->shortcode_atts['input_border_radius'];
 		$checkbox_checked           = $this->shortcode_atts['checkbox_checked'];
 		$checkbox_options           = $this->shortcode_atts['checkbox_options'];
 		$radio_options              = $this->shortcode_atts['radio_options'];
@@ -403,17 +398,6 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'background-color: %1$s !important;',
 					esc_html( $field_background_color )
-				),
-			) );
-		}
-
-		if ( ! in_array( $input_border_radius, array( '', '0' ) ) ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% input.input, %%order_class%% input.input[type="checkbox"] + label i',
-				'declaration' => sprintf(
-					'-moz-border-radius: %1$s%2$s; -webkit-border-radius: %1$s%2$s; border-radius: %1$s%2$s;',
-					esc_html( et_builder_process_range_value( $input_border_radius ) ),
-					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}

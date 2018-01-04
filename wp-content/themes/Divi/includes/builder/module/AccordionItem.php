@@ -8,6 +8,7 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 		$this->type                  = 'child';
 		$this->child_title_var       = 'title';
 		$this->no_shortcode_callback = true;
+		$this->main_css_element      = '%%order_class%%.et_pb_toggle';
 
 		$this->whitelisted_fields = array(
 			'title',
@@ -39,6 +40,22 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 
 		$this->advanced_options = array(
 			'background'            => array(),
+			'border'                => array(
+				'css' => array(
+					'main' => array(
+						'border_radii'  => "%%parent_class%% .et_pb_module{$this->main_css_element}",
+						'border_styles' => "%%parent_class%% .et_pb_module{$this->main_css_element}",
+					)
+				),
+				'defaults' => array(
+					'border_radii' => 'on|0px|0px|0px|0px',
+					'border_styles' => array(
+						'width' => '1px',
+						'color' => '#d9d9d9',
+						'style' => 'solid',
+					),
+				)
+			),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',
@@ -54,6 +71,7 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 					'text_orientation' => '%%order_class%%',
 				),
 			),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(

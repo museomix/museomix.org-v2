@@ -68,10 +68,13 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} h4",
+						'main'      => "{$this->main_css_element} h4, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h2.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h4',
 					),
 				),
 				'body'   => array(
@@ -86,7 +89,6 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 					'color' => 'alpha',
 				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',
@@ -98,7 +100,22 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				),
 			),
 			'text'      => array(),
+			'filters' => array(
+				'css' => array(
+					'main' => '%%order_class%%',
+				),
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+			),
+			'image' => array(
+				'css' => array(
+					'main' => '%%order_class%% .et_pb_team_member_image',
+				),
+			),
 		);
+
 		$this->custom_css_options = array(
 			'member_image' => array(
 				'label'    => esc_html__( 'Member Image', 'et_builder' ),
@@ -273,6 +290,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		$background_layout = $this->shortcode_atts['background_layout'];
 		$icon_color        = $this->shortcode_atts['icon_color'];
 		$icon_hover_color  = $this->shortcode_atts['icon_hover_color'];
+		$header_level      = $this->shortcode_atts['header_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -340,13 +358,22 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		}
 
 		if ( '' !== $image_url ) {
+			// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+			if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+				$generate_css_filters_image = $this->generate_css_filters(
+					$function_name,
+					'child_',
+					self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+				);
+			}
 			$image = sprintf(
-				'<div class="et_pb_team_member_image et-waypoint%3$s">
+				'<div class="et_pb_team_member_image et-waypoint%3$s%4$s">
 					<img src="%1$s" alt="%2$s" />
 				</div>',
 				esc_url( $image_url ),
 				esc_attr( $name ),
-				esc_attr( " et_pb_animation_{$animation}" )
+				esc_attr( " et_pb_animation_{$animation}" ),
+				$generate_css_filters_image
 			);
 		}
 
@@ -369,7 +396,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 			( '' !== $image ? $image : '' ),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
-			( '' !== $name ? sprintf( '<h4>%1$s</h4>', esc_html( $name ) ) : '' ),
+			( '' !== $name ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h4' ), esc_html( $name ) ) : '' ),
 			( '' !== $position ? sprintf( '<p class="et_pb_member_position">%1$s</p>', esc_html( $position ) ) : '' ),
 			$social_links,
 			$background_layout,
@@ -396,6 +423,59 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 
 		parent::process_box_shadow( $function_name );
 	}
+
+	protected function _add_additional_border_fields() {
+		parent::_add_additional_border_fields();
+
+		$suffix      = 'image';
+		$tab_slug    = 'advanced';
+		$toggle_slug = 'image';
+
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			ET_Builder_Module_Fields_Factory::get( 'Border' )->get_fields( array(
+				'suffix'       => "_{$suffix}",
+				'label_prefix' => esc_html__( 'Image', 'et_builder' ),
+				'tab_slug'     => $tab_slug,
+				'toggle_slug'  => $toggle_slug,
+			) )
+		);
+
+		$this->advanced_options["border_{$suffix}"]["border_radii_{$suffix}"]  = $this->_additional_fields_options["border_radii_{$suffix}"];
+		$this->advanced_options["border_{$suffix}"]["border_styles_{$suffix}"] = $this->_additional_fields_options["border_styles_{$suffix}"];
+
+		$this->advanced_options["border_{$suffix}"]['css'] = array(
+			'main' => array(
+				'border_radii'  => "{$this->main_css_element} .et_pb_team_member_image",
+				'border_styles' => "{$this->main_css_element} .et_pb_team_member_image",
+			)
+		);
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		parent::process_advanced_border_options( $function_name );
+
+		$suffix = 'image';
+		/**
+		 * @var ET_Builder_Module_Field_Border $border_field
+		 */
+		$border_field = ET_Builder_Module_Fields_Factory::get( 'Border' );
+
+		$css_selector = ! empty( $this->advanced_options["border_{$suffix}"]['css']['main']['border_radii'] ) ? $this->advanced_options["border_{$suffix}"]['css']['main']['border_radii'] : $this->main_css_element;
+		self::set_style( $function_name, array(
+			'selector'    => $css_selector,
+			'declaration' => $border_field->get_radii_style( $this->shortcode_atts, $this->advanced_options, "_{$suffix}" ),
+			'priority'    => $this->_style_priority,
+		) );
+
+		$css_selector = ! empty( $this->advanced_options["border_{$suffix}"]['css']['main']['border_styles'] ) ? $this->advanced_options["border_{$suffix}"]['css']['main']['border_styles'] : $this->main_css_element;
+		self::set_style( $function_name, array(
+			'selector'    => $css_selector,
+			'declaration' => $border_field->get_borders_style( $this->shortcode_atts, $this->advanced_options, "_{$suffix}" ),
+			'priority'    => $this->_style_priority,
+		) );
+	}
+
 }
 
 new ET_Builder_Module_Team_Member;

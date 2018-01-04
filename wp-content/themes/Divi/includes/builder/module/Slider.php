@@ -71,13 +71,16 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title",
 						'plugin_main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title, {$this->main_css_element} .et_pb_slide_description .et_pb_slide_title a",
 						'font_size_tablet' => "{$this->main_css_element} .et_pb_slides .et_pb_slide_description .et_pb_slide_title",
 						'font_size_phone'  => "{$this->main_css_element} .et_pb_slides .et_pb_slide_description .et_pb_slide_title",
 						'important' => array( 'size', 'font-size', 'plugin_all' ),
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
@@ -119,8 +122,10 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'text'      => array(
 				'css'   => array(
 					'text_orientation' => '%%order_class%% .et_pb_slide .et_pb_slide_description',
+					'text_shadow'      => '%%order_class%% .et_pb_slide .et_pb_slide_description',
 				),
 			),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'slide_description' => array(
@@ -304,6 +309,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'background_color_gradient_end'              => $this->shortcode_atts['background_color_gradient_end'],
 			'background_color_gradient_start_position'   => $this->shortcode_atts['background_color_gradient_start_position'],
 			'background_color_gradient_end_position'     => $this->shortcode_atts['background_color_gradient_end_position'],
+			'background_color_gradient_overlays_image'   => $this->shortcode_atts['background_color_gradient_overlays_image'],
 			'background_image'                           => $this->shortcode_atts['background_image'],
 			'background_size'                            => $this->shortcode_atts['background_size'],
 			'background_position'                        => $this->shortcode_atts['background_position'],
@@ -315,6 +321,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'background_video_webm'                      => $this->shortcode_atts['background_video_webm'],
 			'background_video_width'                     => $this->shortcode_atts['background_video_width'],
 			'background_video_height'                    => $this->shortcode_atts['background_video_height'],
+			'header_level'                               => $this->shortcode_atts['header_level'],
 		);
 	}
 

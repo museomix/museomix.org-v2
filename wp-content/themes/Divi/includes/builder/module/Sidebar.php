@@ -44,7 +44,7 @@ class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} h3:first-of-type, {$this->main_css_element} h4:first-of-type, {$this->main_css_element} h5:first-of-type, {$this->main_css_element} h6:first-of-type, {$this->main_css_element} h2:first-of-type, {$this->main_css_element} h1:first-of-type, {$this->main_css_element} .widget-title, {$this->main_css_element} .widgettitle",
 					),
@@ -65,7 +65,8 @@ class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
-			'text' => array()
+			'text' => array(),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'widget' => array(

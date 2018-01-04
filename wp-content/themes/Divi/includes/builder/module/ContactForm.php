@@ -51,11 +51,24 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css'          => array(
+					'main'      => array(
+						'border_radii'  => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+						'border_styles' => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+					),
+					'important' => 'plugin_only',
+				),
+				'label_prefix' => esc_html__( 'Inputs', 'et_builder' ),
+			),
 			'fonts' => array(
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h1",
+						'main' => "{$this->main_css_element} h1, {$this->main_css_element} h2.et_pb_contact_main_title, {$this->main_css_element} h3.et_pb_contact_main_title, {$this->main_css_element} h4.et_pb_contact_main_title, {$this->main_css_element} h5.et_pb_contact_main_title, {$this->main_css_element} h6.et_pb_contact_main_title",
+					),
+					'header_level' => array(
+						'default' => 'h1',
 					),
 				),
 				'form_field'   => array(
@@ -71,20 +84,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 						),
 						'important' => 'plugin_only',
 					),
-				),
-			),
-			'border' => array(
-				'css'      => array(
-					'main' => sprintf(
-						'%1$s .input,
-						%1$s .input[type="checkbox"] + label i,
-						%1$s .input[type="radio"] + label i',
-						$this->main_css_element
-					),
-					'important' => 'plugin_only',
-				),
-				'settings' => array(
-					'color' => 'alpha',
 				),
 			),
 			'button' => array(
@@ -110,8 +109,10 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			'text'      => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%% input, %%order_class%% textarea, %%order_class%% label',
+					'text_shadow'      => '%%order_class%%, %%order_class%% input, %%order_class%% textarea, %%order_class%% label, %%order_class%% select',
 				),
 			),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'contact_title' => array(
@@ -223,19 +224,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'toggle_slug'       => 'form_field',
 				'tab_slug'          => 'advanced',
 			),
-			'input_border_radius'   => array(
-				'label'             => esc_html__( 'Input Border Radius', 'et_builder' ),
-				'type'              => 'range',
-				'default'           => '0',
-				'range_settings'    => array(
-					'min'  => '0',
-					'max'  => '100',
-					'step' => '1',
-				),
-				'option_category'   => 'layout',
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'border',
-			),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
 				'type'            => 'multiple_checkboxes',
@@ -296,7 +284,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$title                 = $this->shortcode_atts['title'];
 		$form_field_text_color = $this->shortcode_atts['form_field_text_color'];
 		$form_background_color = $this->shortcode_atts['form_background_color'];
-		$input_border_radius   = $this->shortcode_atts['input_border_radius'];
 		$button_custom         = $this->shortcode_atts['custom_button'];
 		$custom_icon           = $this->shortcode_atts['button_icon'];
 		$submit_button_text    = $this->shortcode_atts['submit_button_text'];
@@ -304,6 +291,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$use_redirect          = $this->shortcode_atts['use_redirect'];
 		$redirect_url          = $this->shortcode_atts['redirect_url'];
 		$success_message       = $this->shortcode_atts['success_message'];
+		$header_level          = $this->shortcode_atts['title_level'];
 
 		global $et_pb_contact_form_num;
 
@@ -337,17 +325,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'background-color: %1$s%2$s;',
 					esc_html( $form_background_color ),
-					et_is_builder_plugin_active() ? ' !important' : ''
-				),
-			) );
-		}
-
-		if ( ! in_array( $input_border_radius, array( '', '0' ) ) ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .input, %%order_class%% .input[type="checkbox"] + label i',
-				'declaration' => sprintf(
-					'-moz-border-radius: %1$s%2$s; -webkit-border-radius: %1$s%2$s; border-radius: %1$s%2$s;',
-					esc_html( et_builder_process_range_value( $input_border_radius ) ),
 					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
@@ -431,11 +408,13 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			$contact_name = isset( $processed_fields_values['name'] ) ? stripslashes( sanitize_text_field( $processed_fields_values['name']['value'] ) ) : '';
 
 			if ( '' !== $custom_message ) {
-				$message_pattern = et_builder_convert_line_breaks( $custom_message, "\r\n" );
+				// decode html entites to make sure HTML from the message pattern is rendered properly
+				$message_pattern = et_builder_convert_line_breaks( html_entity_decode( $custom_message ), "\r\n" );
 
 				// insert the data from contact form into the message pattern
 				foreach ( $processed_fields_values as $key => $value ) {
-					$message_pattern = str_ireplace( "%%{$key}%%", $value['value'], $message_pattern );
+					// strip all tags from each field. Don't strip tags from the entire message to allow using HTML in the pattern.
+					$message_pattern = str_ireplace( "%%{$key}%%", wp_strip_all_tags( $value['value'] ), $message_pattern );
 				}
 
 				if ( false !== $hidden_form_fields ) {
@@ -463,6 +442,9 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 						);
 					}
 				}
+
+				// strip all tags from the message content
+				$message_pattern = wp_strip_all_tags( $message_pattern );
 			}
 
 			$http_host = str_replace( 'www.', '', $_SERVER['HTTP_HOST'] );
@@ -470,9 +452,10 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			$headers[] = "From: \"{$contact_name}\" <mail@{$http_host}>";
 			$headers[] = "Reply-To: \"{$contact_name}\" <{$contact_email}>";
 
-			add_filter( 'et_get_safe_localization', 'et_allow_ampersand' );
-
-			$email_message = trim( stripslashes( wp_strip_all_tags( $message_pattern ) ) );
+			add_filter( 'et_get_safe_localization', 'et_allow_ampersand' );			
+			
+			// don't strip tags at this point to properly send the HTML from pattern. All the unwanted HTML stripped at this point.
+			$email_message = trim( stripslashes( $message_pattern ) );
 
 			wp_mail( apply_filters( 'et_contact_page_email_to', $et_email_to ),
 				et_get_safe_localization( sprintf(
@@ -553,7 +536,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				%3$s
 			</div> <!-- .et_pb_contact_form_container -->
 			',
-			( '' !== $title ? sprintf( '<h1 class="et_pb_contact_main_title">%1$s</h1>', esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%2$s class="et_pb_contact_main_title">%1$s</%2$s>', esc_html( $title ), et_pb_process_header_level( $header_level, 'h1' ) ) : '' ),
 			'' !== $et_error_message ? $et_error_message : '',
 			$form,
 			( '' !== $module_id

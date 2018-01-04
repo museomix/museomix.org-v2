@@ -27,6 +27,7 @@ if ( wp_doing_ajax() && ! is_customize_preview() ) {
 			'et_fb_process_imported_content',
 			'et_fb_get_saved_templates',
 			'et_fb_retrieve_builder_data',
+			'et_pb_process_custom_font',
 			'et_builder_email_add_account',     // email opt-in module
 			'et_builder_email_remove_account',  // email opt-in module
 			'et_builder_email_get_lists',       // email opt-in module
@@ -81,6 +82,7 @@ if ( wp_doing_ajax() && ! is_customize_preview() ) {
 	}
 
 	$force_builder_load = isset( $_POST['et_load_builder_modules'] ) && '1' === $_POST['et_load_builder_modules'];
+	$force_memory_limit = isset( $_POST['action'] ) && 'et_fb_retrieve_builder_data' === $_POST['action'];
 
 	if ( isset( $_REQUEST['action'] ) && 'heartbeat' == $_REQUEST['action'] ) {
 		// if this is the heartbeat, and if its not packing our heartbeat data, then return
@@ -91,7 +93,7 @@ if ( wp_doing_ajax() && ! is_customize_preview() ) {
 		return;
 	}
 
-	if ( et_should_memory_limit_increase() ) {
+	if ( $force_memory_limit || et_should_memory_limit_increase() ) {
 		et_increase_memory_limit();
 	}
 }
@@ -496,7 +498,7 @@ function et_builder_load_framework() {
 		global $pagenow, $et_current_memory_limit;
 
 		if ( ! empty( $pagenow ) && in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
-			$et_current_memory_limit = intval( @ini_get( 'memory_limit' ) );
+			$et_current_memory_limit = et_core_get_memory_limit();
 		}
 	}
 
@@ -534,15 +536,12 @@ function et_builder_load_framework() {
 endif;
 
 function et_builder_load_frontend_builder() {
-	// set the $et_current_memory_limit if FB is loading
 	global $et_current_memory_limit;
-	$et_current_memory_limit = intval( @ini_get( 'memory_limit' ) );
 
-	// try to increase the memory limit to 128mb silently if it less than 128
-	if ( ! empty( $et_current_memory_limit ) && intval( $et_current_memory_limit ) < 128 ) {
-		if ( true !== strpos( ini_get( 'disable_functions' ), 'ini_set' ) ) {
-			@ini_set( 'memory_limit', '128M' );
-		}
+	$et_current_memory_limit = et_core_get_memory_limit();
+
+	if ( $et_current_memory_limit < 256 ) {
+		@ini_set( 'memory_limit', '256M' );
 	}
 
 	require_once ET_BUILDER_DIR . 'frontend-builder/init.php';

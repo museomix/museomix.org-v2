@@ -33,6 +33,22 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css'      => array(
+					'main' => array(
+						'border_radii'  => "{$this->main_css_element} .et_pb_accordion_item",
+						'border_styles' => "{$this->main_css_element} .et_pb_accordion_item",
+					),
+				),
+				'defaults' => array(
+					'border_radii' => 'on|0px|0px|0px|0px',
+					'border_styles' => array(
+						'width' => '1px',
+						'color' => '#d9d9d9',
+						'style' => 'solid',
+					),
+				),
+			),
 			'fonts' => array(
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
@@ -45,17 +61,15 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 				'toggle' => array(
 					'label'    => esc_html__( 'Toggle', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} h5.et_pb_toggle_title",
+						'main'      => "{$this->main_css_element} h5.et_pb_toggle_title, {$this->main_css_element} h1.et_pb_toggle_title, {$this->main_css_element} h2.et_pb_toggle_title, {$this->main_css_element} h3.et_pb_toggle_title, {$this->main_css_element} h4.et_pb_toggle_title, {$this->main_css_element} h6.et_pb_toggle_title",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h5',
 					),
 				),
 			),
 			'background' => array(),
-			'border' => array(
-				'css'        => array(
-					'main' => "{$this->main_css_element} .et_pb_toggle",
-				),
-			),
 			'custom_margin_padding' => array(
 				'css'        => array(
 					'padding'   => "{$this->main_css_element} .et_pb_toggle_content",
@@ -65,6 +79,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 			),
 			'max_width' => array(),
 			'text'      => array(),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'toggle' => array(
@@ -168,10 +183,10 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 	}
 
 	function pre_shortcode_content() {
-		global $et_pb_accordion_item_number;
+		global $et_pb_accordion_item_number, $et_pb_accordion_header_level;
 
 		$et_pb_accordion_item_number = 1;
-
+		$et_pb_accordion_header_level = $this->shortcode_atts['toggle_level'];
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
@@ -222,7 +237,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 
 		if ( '' !== $closed_toggle_text_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_pb_toggle_close h5.et_pb_toggle_title',
+				'selector'    => '%%order_class%% .et_pb_toggle_close h5.et_pb_toggle_title, %%order_class%% .et_pb_toggle_close h1.et_pb_toggle_title, %%order_class%% .et_pb_toggle_close h2.et_pb_toggle_title, %%order_class%% .et_pb_toggle_close h3.et_pb_toggle_title, %%order_class%% .et_pb_toggle_close h4.et_pb_toggle_title, %%order_class%% .et_pb_toggle_close h6.et_pb_toggle_title',
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $closed_toggle_text_color )
@@ -232,7 +247,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 
 		if ( '' !== $open_toggle_text_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_pb_toggle_open h5.et_pb_toggle_title',
+				'selector'    => '%%order_class%% .et_pb_toggle_open h5.et_pb_toggle_title, %%order_class%% .et_pb_toggle_open h1.et_pb_toggle_title, %%order_class%% .et_pb_toggle_open h2.et_pb_toggle_title, %%order_class%% .et_pb_toggle_open h3.et_pb_toggle_title, %%order_class%% .et_pb_toggle_open h4.et_pb_toggle_title, %%order_class%% .et_pb_toggle_open h6.et_pb_toggle_title',
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $open_toggle_text_color )

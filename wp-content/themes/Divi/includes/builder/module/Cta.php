@@ -54,24 +54,27 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h2",
+						'main' => "{$this->main_css_element} h2, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h4.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header",
 						'important' => 'all',
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'line_height' => "{$this->main_css_element} p",
-						'plugin_main' => "{$this->main_css_element} p"
+						'plugin_main' => "{$this->main_css_element} p",
+						'text_shadow' => "{$this->main_css_element} p",
 					),
 				),
 			),
 			'background' => array(
 				'use_background_color' => false,
 			),
-			'border' => array(),
 			'max_width' => array(
 				'css' => array(
 					'module_alignment' => '%%order_class%%.et_pb_promo.et_pb_module',
@@ -92,7 +95,12 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 					'use_alignment' => true,
 				),
 			),
-			'text' => array(),
+			'text' => array(
+				'css'      => array(
+					'text_shadow' => '%%order_class%% .et_pb_promo_description',
+				),
+			),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'promo_description' => array(
@@ -251,6 +259,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 		$url_new_window       = $this->shortcode_atts['url_new_window'];
 		$custom_icon          = $this->shortcode_atts['button_icon'];
 		$button_custom        = $this->shortcode_atts['custom_button'];
+		$header_level         = $this->shortcode_atts['header_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -270,7 +279,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 				</div>
 				%3$s
 			</div>',
-			( '' !== $title ? '<h2>' . esc_html( $title ) . '</h2>' : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), esc_html( $title ) ) : '' ),
 			$this->shortcode_content,
 			(
 				'' !== $button_url && '' !== $button_text

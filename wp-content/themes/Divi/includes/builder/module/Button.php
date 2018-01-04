@@ -29,7 +29,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 				'label'    => esc_html__( 'Main Element', 'et_builder' ),
 				'selector' => '.et_pb_button.et_pb_module',
 				'no_space_before_selector' => true,
-			)
+			),
 		);
 
 		$this->options_toggles = array(
@@ -66,6 +66,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 					'important' => 'all',
 				),
 			),
+			'filters'               => array(),
 		);
 	}
 
@@ -154,7 +155,12 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 				'option_class'    => 'et_pb_custom_css_regular',
 			),
 		);
+
 		return $fields;
+	}
+
+	protected function _add_additional_text_shadow_fields() {
+		// Text Shadow settings are already included its Custom Style, no need to add them to Text toggle too.
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
@@ -194,7 +200,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
 			$this->get_rel_attributes( $button_rel ),
-			'right' === $button_alignment || 'center' === $button_alignment ? sprintf( ' et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) )  : ''
+			'right' === $button_alignment || 'center' === $button_alignment ? sprintf( ' et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) ) : ''
 		);
 
 		return $output;
@@ -203,6 +209,16 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 	protected function _add_button_box_shadow_fields( $fields, $option_name, $tab_slug, $toggle_slug ) {
 		return $fields;
 	}
+
+	protected function _add_additional_border_fields() {
+		return false;
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		return false;
+	}
+
+
 }
 
 new ET_Builder_Module_Button;

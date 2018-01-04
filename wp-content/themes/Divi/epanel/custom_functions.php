@@ -58,12 +58,6 @@ if ( ! function_exists( 'et_options_stored_in_one_row' ) ) {
 /* sync custom CSS from ePanel with WP custom CSS option introduced in WP 4.7 */
 if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
 	function et_sync_custom_css_options() {
-		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
-
-		if ( 'yes' === $css_synced || ! function_exists( 'wp_get_custom_css' ) ) {
-			return;
-		}
-
 		global $shortname;
 
 		$legacy_custom_css = wp_unslash( et_get_option( "{$shortname}_custom_css" ) );
@@ -74,8 +68,20 @@ if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
 			return;
 		}
 
+		// don't proceed with the sync logic if the custom CSS option does not exist
+		if ( ! function_exists( 'wp_get_custom_css' ) ) {
+			return;
+		}
+
+		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
+
 		// get custom css string from WP customizer
 		$wp_custom_css = wp_get_custom_css();
+
+		// force sync if the current custom CSS is empty
+		if ( 'yes' === $css_synced && '' !== $wp_custom_css ) {
+			return;
+		}
 
 		// ePanel is completely synced with Customizer
 		if ( $wp_custom_css === $legacy_custom_css || false !== strpos( $wp_custom_css, $legacy_custom_css ) ) {
@@ -133,7 +139,7 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 	}
 
 	$post_id        = et_core_page_resource_get_the_ID();
-	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] );
+	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] ) || is_customize_preview();
 	$is_singular    = et_core_page_resource_is_singular();
 
 	$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
@@ -200,7 +206,7 @@ if ( ! function_exists( 'et_get_option' ) ) {
 		} else if ( et_options_stored_in_one_row() ) {
 			$et_theme_options_name = 'et_' . $shortname;
 
-			if ( ! isset( $et_theme_options ) || isset( $_POST['wp_customize'] ) ) {
+			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
 				$et_theme_options = get_option( $et_theme_options_name );
 			}
 			$option_value = isset( $et_theme_options[$option_name] ) ? $et_theme_options[$option_name] : false;
@@ -307,6 +313,9 @@ if ( ! function_exists( 'truncate_post' ) ) {
 
 			// Remove embed shortcode from post content
 			$truncate = preg_replace( '@\[embed[^\]]*?\].*?\[\/embed]@si', '', $truncate );
+
+			// Remove scripts from the post content
+			$truncate = preg_replace( '@\<script(.*?)>(.*?)</script>@si', '', html_entity_decode( $truncate ) );
 
 			if ( $strip_shortcodes ) {
 				$truncate = et_strip_shortcodes( $truncate );

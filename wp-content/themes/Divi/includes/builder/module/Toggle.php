@@ -47,12 +47,31 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css'      => array(
+					'main' => array(
+						'border_radii'  => ".et_pb_module{$this->main_css_element}",
+						'border_styles' => ".et_pb_module{$this->main_css_element}",
+					)
+				),
+				'defaults' => array(
+					'border_radii' => 'on|0px|0px|0px|0px',
+					'border_styles' => array(
+						'width' => '1px',
+						'color' => '#d9d9d9',
+						'style' => 'solid',
+					),
+				)
+			),
 			'fonts' => array(
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h5",
+						'main' => "{$this->main_css_element} h5, {$this->main_css_element} h1.et_pb_toggle_title, {$this->main_css_element} h2.et_pb_toggle_title, {$this->main_css_element} h3.et_pb_toggle_title, {$this->main_css_element} h4.et_pb_toggle_title, {$this->main_css_element} h6.et_pb_toggle_title",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h5',
 					),
 				),
 				'body'   => array(
@@ -61,6 +80,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 						'main'        => "{$this->main_css_element}",
 						'plugin_main' => "{$this->main_css_element}, {$this->main_css_element} p",
 						'line_height' => "{$this->main_css_element} p",
+						'text_shadow' => "{$this->main_css_element} .et_pb_toggle_content",
 					),
 				),
 			),
@@ -69,7 +89,6 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 					'color' => 'alpha',
 				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',
@@ -77,6 +96,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 			),
 			'max_width' => array(),
 			'text'      => array(),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'open_toggle' => array(
@@ -211,6 +231,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		$icon_color                     = $this->shortcode_atts['icon_color'];
 		$closed_toggle_text_color       = $this->shortcode_atts['closed_toggle_text_color'];
 		$open_toggle_text_color         = $this->shortcode_atts['open_toggle_text_color'];
+		$header_level                   = $this->shortcode_atts['title_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -247,7 +268,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 
 		if ( '' !== $closed_toggle_text_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_toggle_close h5.et_pb_toggle_title',
+				'selector'    => '%%order_class%%.et_pb_toggle.et_pb_toggle_close h5.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_close h1.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_close h2.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_close h3.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_close h4.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_close h6.et_pb_toggle_title',
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $closed_toggle_text_color )
@@ -257,7 +278,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 
 		if ( '' !== $open_toggle_text_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_toggle_open h5.et_pb_toggle_title',
+				'selector'    => '%%order_class%%.et_pb_toggle.et_pb_toggle_open h5.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_open h1.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_open h2.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_open h3.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_open h4.et_pb_toggle_title, %%order_class%%.et_pb_toggle.et_pb_toggle_open h6.et_pb_toggle_title',
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $open_toggle_text_color )
@@ -266,11 +287,15 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		}
 
 		if ( 'et_pb_accordion_item' === $function_name ) {
-			global $et_pb_accordion_item_number;
+			global $et_pb_accordion_item_number, $et_pb_accordion_header_level;
 
 			$open = 1 === $et_pb_accordion_item_number ? 'on' : 'off';
 
 			$et_pb_accordion_item_number++;
+
+			$header_level = $et_pb_accordion_header_level;
+
+			$module_class .= ' et_pb_accordion_item';
 		}
 
 		// Adding "_item" class for toggle module for customizer targetting. There's no proper selector
@@ -282,16 +307,18 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
+		$heading = sprintf( '<%1$s class="et_pb_toggle_title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h5' ), esc_html( $title ) );
+
 		$output = sprintf(
 			'<div%4$s class="et_pb_module et_pb_toggle %2$s%5$s%6$s%8$s%10$s">
 				%9$s
 				%7$s
-				<h5 class="et_pb_toggle_title">%1$s</h5>
+				%1$s
 				<div class="et_pb_toggle_content clearfix">
 					%3$s
 				</div> <!-- .et_pb_toggle_content -->
 			</div> <!-- .et_pb_toggle -->',
-			esc_html( $title ),
+			$heading,
 			( 'on' === $open ? 'et_pb_toggle_open' : 'et_pb_toggle_close' ),
 			$this->shortcode_content,
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),

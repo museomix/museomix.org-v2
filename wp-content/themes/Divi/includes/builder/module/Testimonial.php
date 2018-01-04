@@ -58,10 +58,13 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			'advanced' => array(
 				'toggles' => array(
 					'icon'       => esc_html__( 'Quote Icon', 'et_builder' ),
-					'portrait'   => esc_html__( 'Portrait', 'et_builder' ),
 					'text'       => array(
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
+					),
+					'image' => array(
+						'title' => esc_html__( 'Image', 'et_builder' ),
+						'priority' => 51,
 					),
 					'animation' => array(
 						'title'    => esc_html__( 'Animation', 'et_builder' ),
@@ -73,11 +76,12 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 
 		$this->advanced_options = array(
 			'fonts' => array(
-				'body'   => array(
-					'label' => esc_html__( 'Body', 'et_builder' ),
-					'css'   => array(
+				'body' => array(
+					'label'            => esc_html__( 'Body', 'et_builder' ),
+					'css'              => array(
 						'main' => "{$this->main_css_element} *",
 					),
+					'hide_text_shadow' => true,
 				),
 			),
 			'background' => array(
@@ -86,7 +90,6 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 					'color' => 'alpha',
 				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',
@@ -95,6 +98,17 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			'max_width' => array(),
 			'text'      => array(),
 			'animation' => array(),
+			'filters' => array(
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+			),
+			'image' => array(
+				'css' => array(
+					'main' => '%%order_class%% .et_pb_testimonial_portrait',
+				),
+			),
 		);
 
 		$this->custom_css_options = array(
@@ -235,19 +249,12 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'default'           => '#f5f5f5',
 				'shortcode_default' => '#f5f5f5',
 			),
-			'portrait_border_radius' => array(
-				'label'           => esc_html__( 'Portrait Border Radius', 'et_builder' ),
-				'type'            => 'range',
-				'option_category' => 'layout',
-				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'portrait',
-			),
 			'portrait_width' => array(
 				'label'           => esc_html__( 'Portrait Width', 'et_builder' ),
 				'type'            => 'range',
 				'option_category' => 'layout',
 				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'portrait',
+				'toggle_slug'     => 'image',
 				'range_settings'  => array(
 					'min'  => '1',
 					'max'  => '200',
@@ -259,7 +266,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'type'            => 'range',
 				'option_category' => 'layout',
 				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'portrait',
+				'toggle_slug'     => 'image',
 				'range_settings'  => array(
 					'min'  => '1',
 					'max'  => '200',
@@ -309,7 +316,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			'label'           => esc_html__( 'Image Box Shadow', 'et_builder' ),
 			'option_category' => 'layout',
 			'tab_slug'        => 'advanced',
-			'toggle_slug'     => 'portrait',
+			'toggle_slug'     => 'image',
 		) ) );
 
 		return $fields;
@@ -330,21 +337,10 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 		$background_layout      = $this->shortcode_atts['background_layout'];
 		$quote_icon_color       = $this->shortcode_atts['quote_icon_color'];
 		$quote_icon_background_color = $this->shortcode_atts['quote_icon_background_color'];
-		$portrait_border_radius = $this->shortcode_atts['portrait_border_radius'];
 		$portrait_width         = $this->shortcode_atts['portrait_width'];
 		$portrait_height        = $this->shortcode_atts['portrait_height'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
-
-		if ( '' !== $portrait_border_radius ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_pb_testimonial_portrait, %%order_class%% .et_pb_testimonial_portrait:before',
-				'declaration' => sprintf(
-					'-webkit-border-radius: %1$s; -moz-border-radius: %1$s; border-radius: %1$s;',
-					esc_html( et_builder_process_range_value( $portrait_border_radius ) )
-				),
-			) );
-		}
 
 		if ( '' !== $portrait_width ) {
 			ET_Builder_Element::set_style( $function_name, array(
@@ -431,6 +427,15 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			}
 		}
 
+		// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+			$module_class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+			);
+		}
+
 		$output = sprintf(
 			'<div%3$s class="et_pb_testimonial%4$s%5$s%9$s%10$s%12$s%13$s clearfix%15$s"%11$s>
 				%16$s
@@ -484,6 +489,67 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 		) );
 
 		parent::process_box_shadow( $function_name );
+	}
+
+	protected function _add_additional_border_fields() {
+		parent::_add_additional_border_fields();
+
+		$suffix      = 'portrait';
+		$tab_slug    = 'advanced';
+		$toggle_slug = 'image';
+
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			ET_Builder_Module_Fields_Factory::get( 'Border' )->get_fields( array(
+				'suffix'       => "_{$suffix}",
+				'label_prefix' => esc_html__( 'Image', 'et_builder' ),
+				'tab_slug'     => $tab_slug,
+				'toggle_slug'  => $toggle_slug,
+				'defaults'        => array(
+					'border_radii'  => 'on|90px|90px|90px|90px',
+					'border_styles' => array(
+						'width' => '0px',
+						'color' => '#333333',
+						'style' => 'solid',
+					),
+				),
+			) )
+		);
+
+		$this->advanced_options["border_{$suffix}"]["border_radii_{$suffix}"]  = $this->_additional_fields_options["border_radii_{$suffix}"];
+		$this->advanced_options["border_{$suffix}"]["border_styles_{$suffix}"] = $this->_additional_fields_options["border_styles_{$suffix}"];
+
+		$this->advanced_options["border_{$suffix}"]['css'] = array(
+			'main' => array(
+				'border_radii'  => "%%order_class%% .et_pb_testimonial_portrait, %%order_class%% .et_pb_testimonial_portrait:before",
+				'border_styles' => "%%order_class%% .et_pb_testimonial_portrait",
+			)
+		);
+
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		parent::process_advanced_border_options( $function_name );
+
+		$suffix = 'portrait';
+		/**
+		 * @var ET_Builder_Module_Field_Border $border_field
+		 */
+		$border_field = ET_Builder_Module_Fields_Factory::get( 'Border' );
+
+		$css_selector = ! empty( $this->advanced_options["border_{$suffix}"]['css']['main']['border_radii'] ) ? $this->advanced_options["border_{$suffix}"]['css']['main']['border_radii'] : $this->main_css_element;
+		self::set_style( $function_name, array(
+			'selector'    => $css_selector,
+			'declaration' => $border_field->get_radii_style( $this->shortcode_atts, $this->advanced_options, "_{$suffix}" ),
+			'priority'    => $this->_style_priority,
+		) );
+
+		$css_selector = ! empty( $this->advanced_options["border_{$suffix}"]['css']['main']['border_styles'] ) ? $this->advanced_options["border_{$suffix}"]['css']['main']['border_styles'] : $this->main_css_element;
+		self::set_style( $function_name, array(
+			'selector'    => $css_selector,
+			'declaration' => $border_field->get_borders_style( $this->shortcode_atts, $this->advanced_options, "_{$suffix}" ),
+			'priority'    => $this->_style_priority,
+		) );
 	}
 }
 

@@ -121,6 +121,7 @@ function et_fb_backend_helpers() {
 	}
 
 	$google_fonts = array_merge( array( 'Default' => array() ), et_builder_get_google_fonts() );
+	$custom_user_fonts = et_builder_get_custom_fonts();
 	$current_user = wp_get_current_user();
 	$current_url  = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
@@ -171,7 +172,6 @@ function et_fb_backend_helpers() {
 		'builderVersion'               => ET_BUILDER_PRODUCT_VERSION,
 		'commentsModuleMarkup'         => et_fb_get_comments_markup(),
 		'shortcode_tags'               => et_fb_shortcode_tags(),
-		'getFontIconSymbols'           => et_pb_get_font_icon_symbols(),
 		'failureNotification'          => et_builder_get_failure_notification_modal(),
 		'exitNotification'             => et_builder_get_exit_notification_modal(),
 		'browserAutosaveNotification'  => et_builder_get_browser_autosave_notification_modal(),
@@ -186,7 +186,12 @@ function et_fb_backend_helpers() {
 		'googleAPIKey'                 => et_pb_is_allowed( 'theme_options' ) ? get_option( 'et_google_api_settings' ) : '',
 		'googleFontsList'              => array_keys( $google_fonts ),
 		'googleFonts'                  => $google_fonts,
+		'customFonts'                  => $custom_user_fonts,
+		'removedFonts'                 => et_builder_old_fonts_mapping(),
+		'allFontWeights'               => et_builder_get_font_weight_list(),
+		'allFontFormats'               => et_pb_get_supported_font_formats(),
 		'gutterWidth'                  => et_get_option( 'gutter_width', 3 ),
+		'sectionPadding'               => et_get_option( 'section_padding', 4 ),
 		'fontIcons'                    => et_pb_get_font_icon_symbols(),
 		'fontIconsDown'                => et_pb_get_font_down_icon_symbols(),
 		'widgetAreas'                  => et_builder_get_widget_areas_list(),
@@ -230,6 +235,17 @@ function et_fb_backend_helpers() {
 				'colorEnd'             => ET_Global_Settings::get_value( 'all_background_gradient_end' ),
 				'startPosition'        => ET_Global_Settings::get_value( 'all_background_gradient_start_position' ),
 				'endPosition'          => ET_Global_Settings::get_value( 'all_background_gradient_end_position' ),
+			),
+			'filterOptions'            => array(
+				'hue_rotate'     => ET_Global_Settings::get_value( 'all_filter_hue_rotate' ),
+				'saturate'       => ET_Global_Settings::get_value( 'all_filter_saturate' ),
+				'brightness'     => ET_Global_Settings::get_value( 'all_filter_brightness' ),
+				'contrast'       => ET_Global_Settings::get_value( 'all_filter_contrast' ),
+				'invert'         => ET_Global_Settings::get_value( 'all_filter_invert' ),
+				'sepia'          => ET_Global_Settings::get_value( 'all_filter_sepia' ),
+				'opacity'        => ET_Global_Settings::get_value( 'all_filter_opacity' ),
+				'blur'           => ET_Global_Settings::get_value( 'all_filter_blur' ),
+				'mix_blend_mode' => ET_Global_Settings::get_value( 'all_mix_blend_mode' ),
 			),
 		),
 		'saveModuleLibraryCategories'  => et_fb_prepare_library_cats(),
@@ -395,6 +411,7 @@ function et_fb_backend_helpers() {
 						'background_color_gradient_start_position_%s',
 						'background_color_gradient_end_position_%s',
 						'background_color_gradient_type_%s',
+						'background_color_gradient_overlays_image_%s'
 					),
 					'description'     => '',
 					'tab_slug'        => 'general',
@@ -539,6 +556,25 @@ function et_fb_backend_helpers() {
 					'toggle_slug'     => 'background',
 					'sub_toggle'      => 'column_%s',
 				),
+				'background_color_gradient_overlays_image_%s' => array(
+					'label'           => esc_html__( 'Column %s Place Gradient Above Background Image', 'et_builder' ),
+					'type'            => 'yes_no_button',
+					'option_category' => 'configuration',
+					'options'         => array(
+						'off' => esc_html__( 'No', 'et_builder' ),
+						'on'  => esc_html__( 'Yes', 'et_builder' ),
+
+					'default'         => intval( ET_Global_Settings::get_value( 'all_background_gradient_overlays_image' ) ) ),
+					'description'     => '',
+					'depends_show_if' => 'on',
+					'depends_to'      => array(
+						'use_background_color_gradient_%s',
+					),
+					'tab_slug'        => 'general',
+					'toggle_slug'     => 'background',
+					'sub_toggle'      => 'column_%s',
+				),
+
 				'background_video_mp4_%s' => array(
 					'label'              => esc_html__( 'Column %s Background Video MP4', 'et_builder' ),
 					'type'               => 'upload',
@@ -894,6 +930,13 @@ function et_fb_backend_helpers() {
 			),
 			'searchOptions' => esc_html__( 'Search Options', 'et_builder' ),
 		),
+		'selectControl' => array(
+			'typeToSearch' => esc_html__( 'Start Typing', 'et_builder' ),
+			'subgroups'    => array(
+				'recent'   => esc_html__( 'Recent', 'et_builder' ),
+				'uploaded' => esc_html__( 'Custom Fonts', 'et_builder' ),
+			),
+		),
 		'history' => array(
 			'modal' => array(
 				'title' => esc_html__( 'Editing History', 'et_builder' ),
@@ -911,6 +954,33 @@ function et_fb_backend_helpers() {
 				),
 			),
 			'shortcuts' => et_builder_get_shortcuts('fb'),
+		),
+		'fonts' => array(
+			'fontWeight'     => esc_html__( 'Font Weight', 'et_builder' ),
+			'fontStyle'      => esc_html__( 'Font Style', 'et_builder' ),
+			'delete'         => esc_html__( 'Delete', 'et_builder' ),
+			'deleteConfirm'  => esc_html__( 'Are You Sure Want to Delete', 'et_builder' ),
+			'confirmAction'  => esc_html__( 'Are You Sure?', 'et_builder' ),
+			'cancel'         => esc_html__( 'Cancel', 'et_builder' ),
+			'upload'         => esc_html__( 'Upload', 'et_builder' ),
+			'font'           => esc_html__( 'Font', 'et_builder' ),
+			'chooseFile'     => esc_html__( 'Choose Font Files', 'et_builder' ),
+			'supportedFiles' => esc_html__( 'Supported File Formats', 'et_builder' ),
+			'fileError'      => esc_html__( 'Unsupported File Format', 'et_builder' ),
+			'noFile'         => esc_html__( 'Drag Files Here', 'et_builder' ),
+			'fontName'       => esc_html__( 'Name Your Font', 'et_builder' ),
+			'fontNameLabel'  => esc_html__( 'Font Name', 'et_builder' ),
+			'selectedFiles'  => esc_html__( 'Selected Font Files', 'et_builder' ),
+			'weightsSupport' => esc_html__( 'Supported Font Weights', 'et_builder' ),
+			'weightsHelp'    => esc_html__( 'Choose the font weights supported by your font. Select "All" if you don\'t know this information or if your font includes all weights.', 'et_builder' ),
+			'noFilesError'   => esc_html__( 'Please Select At Least One File', 'et_builder' ),
+			'searchFonts'    => esc_html__( 'Search Fonts', 'et_builder' ),
+			'underline'      => esc_html__( 'Underline', 'et_builder' ),
+			'strikethrough'  => esc_html__( 'Strikethrough', 'et_builder' ),
+			'color'          => esc_html__( 'Color', 'et_builder' ),
+			'style'          => esc_html__( 'Style', 'et_builder' ),
+			'all'            => esc_html__( 'All', 'et_builder' ),
+
 		),
 		'app' => array(
 			'modal' => array(
@@ -1043,6 +1113,7 @@ function et_fb_backend_helpers() {
 					'duplicate'    => esc_html__( 'Duplicate Section', 'et_builder' ),
 					'addToLibrary' => esc_html__( 'Save Section To Library', 'et_builder' ),
 					'delete'       => esc_html__( 'Delete Section', 'et_builder' ),
+					'exit'         => esc_html__( 'Exit Section', 'et_builder' ),
 				),
 				'addButton' => esc_html__( 'Add New Section', 'et_builder' ),
 			),
@@ -1053,6 +1124,7 @@ function et_fb_backend_helpers() {
 					'duplicate'    => esc_html__( 'Duplicate Row', 'et_builder' ),
 					'addToLibrary' => esc_html__( 'Save Row To Library', 'et_builder' ),
 					'delete'       => esc_html__( 'Delete Row', 'et_builder' ),
+					'exit'         => esc_html__( 'Exit Row', 'et_builder' ),
 					'update'       => esc_html__( 'Change Column Structure', 'et_builder' ),
 				),
 				'addButton' => esc_html__( 'Add New Row', 'et_builder' ),
@@ -1065,6 +1137,7 @@ function et_fb_backend_helpers() {
 					'duplicate'    => esc_html__( 'Duplicate Module', 'et_builder' ),
 					'addToLibrary' => esc_html__( 'Save Module To Library', 'et_builder' ),
 					'delete'       => esc_html__( 'Delete Module', 'et_builder' ),
+					'exit'         => esc_html__( 'Exit Module', 'et_builder' ),
 				),
 				'addButton' => esc_html__( 'Add New Module', 'et_builder' ),
 			),

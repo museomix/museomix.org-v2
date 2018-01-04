@@ -3,6 +3,12 @@ class ET_Builder_Module_Settings_Migration_OptionsHarmony extends ET_Builder_Mod
 
 	public $version = '3.0.74';
 
+	public function __construct() {
+		parent::__construct();
+
+		self::$_bb_excluded_name_changes[] = 'text_orientation';
+	}
+
 	public function get_fields() {
 		return array(
 			'parallax' => array(

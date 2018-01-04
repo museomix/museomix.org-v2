@@ -60,8 +60,11 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} h3",
+						'main'      => "{$this->main_css_element} h3, {$this->main_css_element} h1.title, {$this->main_css_element} h2.title, {$this->main_css_element} h4.title, {$this->main_css_element} h5.title, {$this->main_css_element} h6.title",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h3',
 					),
 				),
 				'number'   => array(
@@ -87,7 +90,6 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 					'color' => 'alpha',
 				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => array( 'custom_margin' ),
@@ -99,6 +101,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 				),
 			),
 			'text'      => array(),
+			'filters' => array(),
 		);
 
 		if ( et_is_builder_plugin_active() ) {
@@ -200,6 +203,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 		$module_class      = $this->shortcode_atts['module_class'];
 		$counter_color     = $this->shortcode_atts['counter_color'];
 		$background_layout = $this->shortcode_atts['background_layout'];
+		$header_level      = $this->shortcode_atts['title_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -216,7 +220,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 		$class = " et_pb_module et_pb_bg_layout_{$background_layout}";
 
 		$output = sprintf(
-			'<div%1$s class="et_pb_number_counter%2$s%3$s%9$s%11$s%13$s" data-number-value="%4$s" data-number-separator="%8$s">
+			'<div%1$s class="et_pb_number_counter%2$s%3$s%9$s%11$s%13$s%14$s" data-number-value="%4$s" data-number-separator="%8$s">
 				%12$s
 				%10$s
 				<div class="percent" %5$s><p><span class="percent-value"></span>%6$s</p></div>
@@ -228,13 +232,14 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			esc_attr( $number ),
 			( '' !== $counter_color ? sprintf( ' style="color:%s"', esc_attr( $counter_color ) ) : '' ),
 			( 'on' == $percent_sign ? '%' : ''),
-			( '' !== $title ? '<h3 class="title">' . esc_html( $title ) . '</h3>' : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h3' ), esc_html( $title ) ) : '' ),
 			esc_attr( $separator ),
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
 			$parallax_image_background,
-			$this->get_text_orientation_classname()
+			$this->get_text_orientation_classname(),
+			'' !== $title ? ' et_pb_with_title' : ''
 		 );
 
 		return $output;

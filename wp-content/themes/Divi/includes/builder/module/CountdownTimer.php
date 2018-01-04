@@ -42,17 +42,21 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} h4",
+						'main'      => "{$this->main_css_element} h4, {$this->main_css_element} h1.title, {$this->main_css_element} h2.title, {$this->main_css_element} h3.title, {$this->main_css_element} h5.title, {$this->main_css_element} h6.title",
 						'important' => array( 'size', 'plugin_all' ),
+					),
+					'header_level' => array(
+						'default' => 'h4',
 					),
 				),
 				'numbers' => array(
 					'label'    => esc_html__( 'Numbers', 'et_builder' ),
 					'css'      => array(
-						'main' => ".et_pb_column {$this->main_css_element} .section p.value",
-						'important' => 'all',
+						'main'        => ".et_pb_column {$this->main_css_element} .section p.value",
+						'text_shadow' => ".et_pb_column {$this->main_css_element} .section p.value, .et_pb_column {$this->main_css_element} .section.sep p",
+						'important'   => 'all',
 					),
 					'line_height' => array(
 						'range_settings' => array(
@@ -94,6 +98,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 					'text_orientation' => '%%order_class%% .et_pb_countdown_timer_container, %%order_class%% .title',
 				),
 			),
+			'filters'               => array(),
 		);
 		$this->custom_css_options = array(
 			'container' => array(
@@ -209,6 +214,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		$background_layout    = $this->shortcode_atts['background_layout'];
 		$background_color     = $this->shortcode_atts['background_color'];
 		$use_background_color = $this->shortcode_atts['use_background_color'];
+		$header_level         = $this->shortcode_atts['header_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -225,7 +231,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		$gmt               = "GMT{$gmt_divider}{$gmt_offset_hour}{$gmt_offset_minute}";
 
 		if ( '' !== $title ) {
-			$title = sprintf( '<h4 class="title">%s</h4>', esc_html( $title ) );
+			$title = sprintf( '<%2$s class="title">%s</%2$s>', esc_html( $title ), et_pb_process_header_level( $header_level, 'h4' ) );
 		}
 
 		$video_background = $this->video_background();

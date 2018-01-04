@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.82' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.92' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -37,6 +37,18 @@ function et_remove_predefined_layouts_from_import( $posts ) {
 	return $processed_posts;
 }
 add_filter( 'wp_import_posts', 'et_remove_predefined_layouts_from_import', 5 );
+
+
+/**
+ * Output all module fields JSON dump.
+ * For dev use only.
+ *
+ * @return void
+ */
+// function et_dev_output_all_fields() {
+// 	die( json_encode( ET_Builder_Element::get_all_fields('page') ) );
+// }
+// add_action('wp', 'et_dev_output_all_fields', 100);
 
 // set the layout_type taxonomy to "layout" for layouts imported from old version of Divi.
 function et_update_old_layouts_taxonomy( $posts ) {
@@ -325,6 +337,124 @@ function et_pb_get_font_icon_list() {
 }
 endif;
 
+if ( ! function_exists( 'et_pb_get_svg_icons_list' ) ) :
+function et_pb_get_svg_icons_list() {
+	$all_icons = array(
+		'add' =>
+			'<g>
+				<path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" />
+			</g>',
+		'delete' =>
+			'<g>
+				<path d="M19 9h-3V8a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v1H9a1 1 0 1 0 0 2h10a1 1 0 0 0 .004-2H19zM9 20c.021.543.457.979 1 1h8c.55-.004.996-.45 1-1v-7H9v7zm2.02-4.985h2v4h-2v-4zm4 0h2v4h-2v-4z" fillRule="evenodd" />
+			</g>',
+		'setting' =>
+			'<g>
+				<path d="M20.426 13.088l-1.383-.362a.874.874 0 0 1-.589-.514l-.043-.107a.871.871 0 0 1 .053-.779l.721-1.234a.766.766 0 0 0-.116-.917 6.682 6.682 0 0 0-.252-.253.768.768 0 0 0-.917-.116l-1.234.722a.877.877 0 0 1-.779.053l-.107-.044a.87.87 0 0 1-.513-.587l-.362-1.383a.767.767 0 0 0-.73-.567h-.358a.768.768 0 0 0-.73.567l-.362 1.383a.878.878 0 0 1-.513.589l-.107.044a.875.875 0 0 1-.778-.054l-1.234-.722a.769.769 0 0 0-.918.117c-.086.082-.17.166-.253.253a.766.766 0 0 0-.115.916l.721 1.234a.87.87 0 0 1 .053.779l-.043.106a.874.874 0 0 1-.589.514l-1.382.362a.766.766 0 0 0-.567.731v.357a.766.766 0 0 0 .567.731l1.383.362c.266.07.483.26.588.513l.043.107a.87.87 0 0 1-.053.779l-.721 1.233a.767.767 0 0 0 .115.917c.083.087.167.171.253.253a.77.77 0 0 0 .918.116l1.234-.721a.87.87 0 0 1 .779-.054l.107.044a.878.878 0 0 1 .513.589l.362 1.383a.77.77 0 0 0 .731.567h.356a.766.766 0 0 0 .73-.567l.362-1.383a.878.878 0 0 1 .515-.589l.107-.044a.875.875 0 0 1 .778.054l1.234.721c.297.17.672.123.917-.117.087-.082.171-.166.253-.253a.766.766 0 0 0 .116-.917l-.721-1.234a.874.874 0 0 1-.054-.779l.044-.107a.88.88 0 0 1 .589-.513l1.383-.362a.77.77 0 0 0 .567-.731v-.357a.772.772 0 0 0-.569-.724v-.005zm-6.43 3.9a2.986 2.986 0 1 1 2.985-2.986 3 3 0 0 1-2.985 2.987v-.001z" fillRule="evenodd" />
+			</g>',
+		'background-color' =>
+			'<g>
+				<path d="M19.4 14.6c0 0-1.5 3.1-1.5 4.4 0 0.9 0.7 1.6 1.5 1.6 0.8 0 1.5-0.7 1.5-1.6C20.9 17.6 19.4 14.6 19.4 14.6zM19.3 12.8l-4.8-4.8c-0.2-0.2-0.4-0.3-0.6-0.3 -0.3 0-0.5 0.1-0.7 0.3l-1.6 1.6L9.8 7.8c-0.4-0.4-1-0.4-1.4 0C8 8.1 8 8.8 8.4 9.1l1.8 1.8 -2.8 2.8c-0.4 0.4-0.4 1-0.1 1.4l4.6 4.6c0.2 0.2 0.4 0.3 0.6 0.3 0.3 0 0.5-0.1 0.7-0.3l6.1-6.1C19.5 13.4 19.5 13.1 19.3 12.8zM15.6 14.6c-1.7 1.7-4.5 1.7-6.2 0l2.1-2.1 1 1c0.4 0.4 1 0.4 1.4 0 0.4-0.4 0.4-1 0-1.4l-1-1 0.9-0.9 3.1 3.1L15.6 14.6z" fillRule="evenodd"/>
+			</g>',
+		'background-image' =>
+			'<g>
+				<path d="M22.9 7.5c-0.1-0.3-0.5-0.6-0.8-0.6H5.9c-0.4 0-0.7 0.2-0.8 0.6C5.1 7.6 5 7.7 5 7.9v12.2c0 0.1 0 0.2 0.1 0.4 0.1 0.3 0.5 0.5 0.8 0.6h16.2c0.4 0 0.7-0.2 0.8-0.6 0-0.1 0.1-0.2 0.1-0.4V7.9C23 7.7 23 7.6 22.9 7.5zM21 18.9H7v-10h14V18.9z" fillRule="evenodd"/>
+				<circle cx="10.5" cy="12.4" r="1.5"/>
+				<polygon points="15 16.9 13 13.9 11 16.9 "/>
+				<polygon points="17 10.9 15 16.9 19 16.9 "/>
+			</g>',
+		'background-gradient' =>
+			'<g>
+				<path d="M22.9 7.5c-0.1-0.3-0.5-0.6-0.8-0.6H5.9c-0.4 0-0.7 0.2-0.8 0.6C5.1 7.6 5 7.7 5 7.9v12.2c0 0.1 0 0.2 0.1 0.4 0.1 0.3 0.5 0.5 0.8 0.6h16.2c0.4 0 0.7-0.2 0.8-0.6 0-0.1 0.1-0.2 0.1-0.4V7.9C23 7.7 23 7.6 22.9 7.5zM21 18.9L7 8.9h14V18.9z" fillRule="evenodd"/>
+			</g>',
+		'background-video' =>
+			'<g>
+				<path d="M22.9 7.5c-0.1-0.3-0.5-0.6-0.8-0.6H5.9c-0.4 0-0.7 0.2-0.8 0.6C5.1 7.6 5 7.7 5 7.9v12.2c0 0.1 0 0.2 0.1 0.4 0.1 0.3 0.5 0.5 0.8 0.6h16.2c0.4 0 0.7-0.2 0.8-0.6 0-0.1 0.1-0.2 0.1-0.4V7.9C23 7.7 23 7.6 22.9 7.5zM21 18.9H7v-10h14V18.9z" fillRule="evenodd"/>
+				<polygon points="13 10.9 13 16.9 17 13.9 "/>
+			</g>',
+		'swap' =>
+			'<g>
+				<path d="M19 12h-3V9c0-0.5-0.5-1-1-1H8C7.5 8 7 8.5 7 9v7c0 0.5 0.5 1 1 1h3v3c0 0.5 0.5 1 1 1h7c0.5 0 1-0.5 1-1v-7C20 12.5 19.5 12 19 12zM18 19h-5v-2h2c0.5 0 1-0.5 1-1v-2h2V19z" fillRule="evenodd"/>
+			</g>',
+		'none' =>
+			'<g>
+				<path d="M14 24c5.5 0 10-4.5 10-10S19.5 4 14 4 4 8.5 4 14s4.5 10 10 10zm0-17.5c4.1 0 7.5 3.4 7.5 7.5 0 1.5-.5 2.9-1.2 4.1L9.9 7.7c1.2-.7 2.6-1.2 4.1-1.2zM7.7 9.9l10.4 10.4c-1.2.8-2.6 1.2-4.1 1.2-4.1 0-7.5-3.4-7.5-7.5 0-1.5.5-2.9 1.2-4.1z"/>
+			</g>',
+		'animation-none' =>
+			'<g>
+				<path d="M14 24c5.5 0 10-4.5 10-10S19.5 4 14 4 4 8.5 4 14s4.5 10 10 10zm0-17.5c4.1 0 7.5 3.4 7.5 7.5 0 1.5-.5 2.9-1.2 4.1L9.9 7.7c1.2-.7 2.6-1.2 4.1-1.2zM7.7 9.9l10.4 10.4c-1.2.8-2.6 1.2-4.1 1.2-4.1 0-7.5-3.4-7.5-7.5 0-1.5.5-2.9 1.2-4.1z"/>
+			</g>',
+		'animation-fade' =>
+			'<g>
+				<circle cx="8.5" cy="19.5" r="1.5"/>
+				<circle cx="8.5" cy="14.5" r="1.5"/>
+				<circle cx="5" cy="12" r="1"/>
+				<circle cx="5" cy="17" r="1"/>
+				<circle cx="8.5" cy="9.5" r="1.5"/>
+				<path d="M15.7 4c-.4 0-.8.1-1.2.3-.6.3-.5.7-1.5.7-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c1 0 .9.4 1.4.7.4.2.8.3 1.2.3 4.3-.4 8.3-5.3 8.3-10.5s-4-10-8.2-10.5z"/>
+			</g>',
+		'animation-slide' =>
+			'<g>
+				<path d="M22 4h-5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h5c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM10 14c0 .6.4 1 1 1h.6L10 16.6c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.3-3.3c.2-.2.3-.5.3-.7s-.1-.5-.3-.7L11.4 10c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l1.6 1.6H11c-.6 0-1 .4-1 1z"/>
+				<circle cx="7" cy="14" r="1.5"/>
+				<circle cx="3" cy="14" r="1"/>
+			</g>',
+		'animation-bounce' =>
+			'<g>
+				<circle cx="21.5" cy="8.5" r="3.5"/>
+				<circle cx="16" cy="12" r="1.7"/>
+				<circle cx="13" cy="15" r="1.2"/>
+				<circle cx="11" cy="18" r="1"/>
+				<circle cx="9" cy="22" r="1"/>
+				<circle cx="7" cy="19" r="1"/>
+				<circle cx="4" cy="17" r="1"/>
+			</g>',
+		'animation-zoom' =>
+			'<g>
+				<path d="M23.7 4.3c-.1-.1-.2-.2-.3-.2-.1-.1-.3-.1-.4-.1h-5c-.6 0-1 .4-1 1s.4 1 1 1h2.6l-3.1 3.1c-.2-.1-.3-.1-.5-.1h-6c-.2 0-.3 0-.5.1L7.4 6H10c.6 0 1-.4 1-1s-.4-1-1-1H5c-.1 0-.3 0-.4.1-.2.1-.4.3-.5.5-.1.1-.1.3-.1.4v5c0 .6.4 1 1 1s1-.4 1-1V7.4l3.1 3.1c-.1.2-.1.3-.1.5v6c0 .2 0 .3.1.5L6 20.6V18c0-.6-.4-1-1-1s-1 .4-1 1v5c0 .1 0 .3.1.4.1.2.3.4.5.5.1.1.3.1.4.1h5c.6 0 1-.4 1-1s-.4-1-1-1H7.4l3.1-3.1c.2 0 .3.1.5.1h6c.2 0 .3 0 .5-.1l3.1 3.1H18c-.6 0-1 .4-1 1s.4 1 1 1h5c.1 0 .3 0 .4-.1.2-.1.4-.3.5-.5.1-.1.1-.3.1-.4v-5c0-.6-.4-1-1-1s-1 .4-1 1v2.6l-3.1-3.1c0-.2.1-.3.1-.5v-6c0-.2 0-.3-.1-.5L22 7.4V10c0 .6.4 1 1 1s1-.4 1-1V5c0-.1 0-.3-.1-.4 0-.1-.1-.2-.2-.3z"/>
+			</g>',
+		'animation-flip' =>
+			'<g>
+				<path d="M22 2.4l-7 2.9V7h-2v-.8L7.6 8.7c-.4.2-.6.5-.6.9v8.7c0 .4.2.7.6.9l5.4 2.5V21h2v1.7l7 2.9c.5.2 1-.2 1-.7V3.1c0-.5-.5-.9-1-.7zM15 19h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zM13 2h2v2.5h-2zM13 23.5h2V26h-2z"/>
+			</g>',
+		'animation-fold' =>
+			'<g>
+				<path d="M24 7h-4V3.4c0-.8-.6-1.4-1.3-1.4-.2 0-.5.1-.7.2l-6.5 3.9c-.9.6-1.5 1.6-1.5 2.6V23c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-6 10.5c0 .2-.1.4-.3.5L12 21.5V8.7c0-.4.2-.7.5-.9L18 4.5v13zM6 7h2v2H6zM6 23h2v2H6zM2.6 7.1c-.1 0-.1.1-.2.1v.1l-.1.1-.1.1c-.1.1-.2.3-.2.5v1h2V7H3c-.1 0-.2 0-.4.1zM2 23v1c0 .4.3.8.7.9.1.1.2.1.3.1h1v-2H2zM2 11h2v2H2zM2 19h2v2H2zM2 15h2v2H2z"/>
+			</g>',
+		'animation-roll' =>
+			'<g>
+				<path d="M18.8 5c-5.3-2.7-11.8.2-14 5.6-1.1 2.8-1 6 .2 8.8.4 1 3.9 6.5 5 3.6.5-1.2-1.3-2.2-1.9-3-.8-1.2-1.4-2.5-1.6-3.9-.4-2.7.5-5.5 2.4-7.4 4-4 11.6-2.5 12.6 3.4.4 2.7-.9 5.5-3.4 6.6-2.6 1.1-6 0-6.8-2.8-.7-2.4 1.2-5.7 4-4.8 1.1.3 2 1.5 1.5 2.7-.3.7-1.7 1.2-1.6.1 0-.3.2-.4.2-.8-.1-.4-.5-.6-.9-.6-1.1.1-1.6 1.6-1.3 2.5.3 1.2 1.5 1.9 2.7 1.9 2.9 0 4.2-3.4 3.1-5.7-1.2-2.6-4.6-3.4-7-2.2-2.6 1.3-3.8 4.4-3.1 7.2 1.6 5.9 9.3 6.8 13.1 2.5 3.8-4.2 1.9-11.1-3.2-13.7z"/>
+			</g>',
+		'border-link'    =>
+			'<g>
+ 				<path d="M14.71 17.71a3 3 0 0 1-2.12-.88l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 0 1.41 0l5-4.95a1 1 0 0 0 0-1.41l-1.46-1.42a1 1 0 0 0-1.41 0L16.1 9.07a1 1 0 0 1-1.41-1.41l1.43-1.43a3.07 3.07 0 0 1 4.24 0l1.41 1.41a3 3 0 0 1 0 4.24l-5 4.95a3 3 0 0 1-2.06.88z"/>
+ 				<path d="M9.76 22.66a3 3 0 0 1-2.12-.88l-1.42-1.42a3 3 0 0 1 0-4.24l5-4.95a3.07 3.07 0 0 1 4.24 0l.71.71a1 1 0 0 1-1.41 1.41l-.76-.7a1 1 0 0 0-1.41 0l-5 4.95a1 1 0 0 0 0 1.41L9 20.36a1 1 0 0 0 1.41 0L11.82 19a1 1 0 0 1 1.41 1.41l-1.36 1.36a3 3 0 0 1-2.11.89z"/>
+ 			</g>',
+		'border-all'     =>
+			'<g>
+ 				<path d="M22 5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zm-2 15H8V8h12z"/>
+ 			</g>',
+		'border-top'    =>
+			'<g>
+ 				<path d="M17 21h2v2h-2zM5 9h2v2H5zM21 17h2v2h-2zM21 9h2v2h-2zM21 13h2v2h-2zM21 23h1a1 1 0 0 0 1-1v-1h-2zM5 17h2v2H5zM5 13h2v2H5zM13 21h2v2h-2zM9 21h2v2H9zM5 21v1a1 1 0 0 0 1 1h1v-2zM22 5H6a1 1 0 0 0-1 1v2h18V6a1 1 0 0 0-1-1z"/>
+ 			</g>',
+		'border-right'  =>
+			'<g>
+ 				<path d="M13 5h2v2h-2zM5 9h2v2H5zM9 5h2v2H9zM7 5H6a1 1 0 0 0-1 1v1h2zM5 13h2v2H5zM13 21h2v2h-2zM5 17h2v2H5zM9 21h2v2H9zM17 5h2v2h-2zM5 21v1a1 1 0 0 0 1 1h1v-2zM22 5h-2v18h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zM17 21h2v2h-2z"/>
+ 			</g>',
+		'border-bottom' =>
+			'<g>
+ 				<path d="M9 5h2v2H9zM7 20H5v2a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-2H7zM17 5h2v2h-2zM5 13h2v2H5zM5 9h2v2H5zM13 5h2v2h-2zM5 17h2v2H5zM21 9h2v2h-2zM21 17h2v2h-2zM22 5h-1v2h2V6a1 1 0 0 0-1-1zM21 13h2v2h-2zM7 5H6a1 1 0 0 0-1 1v1h2z"/>
+ 			</g>',
+		'border-left'   =>
+			'<g>
+ 				<path d="M22 5h-1v2h2V6a1 1 0 0 0-1-1zM9 21h2v2H9zM21 17h2v2h-2zM13 21h2v2h-2zM21 13h2v2h-2zM9 5h2v2H9zM17 21h2v2h-2zM17 5h2v2h-2zM21 9h2v2h-2zM8 7V5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h2V7zM21 23h1a1 1 0 0 0 1-1v-1h-2zM13 5h2v2h-2z"/>
+ 			</g>',
+	);
+	return $all_icons;
+}
+endif;
+
 if ( ! function_exists( 'et_pb_get_font_icon_list_items' ) ) :
 function et_pb_get_font_icon_list_items() {
 	$output = '';
@@ -412,6 +542,20 @@ function et_builder_accent_color( $default_color = '#7EBEC5' ) {
 	$accent_color = ! et_is_builder_plugin_active() ? et_get_option( 'accent_color', $default_color ) : $default_color;
 
 	return apply_filters( 'et_builder_accent_color', $accent_color );
+}
+endif;
+
+if ( ! function_exists( 'et_pb_process_header_level' ) ) :
+function et_pb_process_header_level( $new_level, $default ) {
+	$valid_header_levels = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' );
+
+	// return the new header level if exists in the list of valid header levels
+	if ( in_array( $new_level, $valid_header_levels ) ) {
+		return $new_level;
+	}
+
+	// return default if defined. Fallback to h2 otherwise
+	return isset( $default ) ? $default : 'h2';
 }
 endif;
 
@@ -1179,6 +1323,11 @@ function et_fb_disable_product_tour() {
 }
 endif;
 
+/**
+ * Generate output string for `include_categories` option used in backbone template.
+ * @param array
+ * @return string
+ */
 if ( ! function_exists( 'et_builder_include_categories_option' ) ) :
 function et_builder_include_categories_option( $args = array() ) {
 	$defaults = apply_filters( 'et_builder_include_categories_defaults', array (
@@ -1190,7 +1339,7 @@ function et_builder_include_categories_option( $args = array() ) {
 
 	$term_args = apply_filters( 'et_builder_include_categories_option_args', array( 'hide_empty' => false, ) );
 
-	$output = "\t" . "<% var et_pb_include_categories_temp = typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : []; %>" . "\n";
+	$output = "\t" . "<% var et_pb_include_categories_temp = typeof data !== 'undefined' && typeof data.et_pb_include_categories !== 'undefined' ? data.et_pb_include_categories.split( ',' ) : []; et_pb_include_categories_temp = typeof data === 'undefined' && typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : et_pb_include_categories_temp; %>" . "\n";
 
 	if ( $args['use_terms'] ) {
 		$cats_array = get_terms( $args['term_name'], $term_args );
@@ -1223,40 +1372,40 @@ function et_builder_include_categories_option( $args = array() ) {
 }
 endif;
 
+/**
+ * Generate output string for `include_shop_categories` option used in backbone template.
+ * @param array
+ * @return string
+ */
 if ( ! function_exists( 'et_builder_include_categories_shop_option' ) ) :
 function et_builder_include_categories_shop_option( $args = array() ) {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		return '';
 	}
 
-	$defaults = apply_filters( 'et_builder_include_categories_shop_defaults', array (
-		'use_terms' => true,
-		'term_name' => 'product_category',
-	) );
+	$output = "\t" . "<% var et_pb_include_categories_shop_temp = typeof data !== 'undefined' && typeof data.et_pb_include_categories !== 'undefined' ? data.et_pb_include_categories.split( ',' ) : []; et_pb_include_categories_shop_temp = typeof data === 'undefined' && typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : et_pb_include_categories_shop_temp; %>" . "\n";
 
-	$term_args = apply_filters( 'et_builder_include_categories_shop_args', array( 'hide_empty' => false, ) );
-
-	$args = wp_parse_args( $args, $defaults );
-
-	$output = "\t" . "<% var et_pb_include_categories_shop_temp = typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : []; %>" . "\n";
-
-	$cats_array = $args['use_terms'] ? get_terms( $args['term_name'], $term_args ) : get_categories( apply_filters( 'et_builder_get_categories_shop_args', 'hide_empty=0' ) );
+	$product_categories = et_builder_get_shop_categories( $args );
 
 	$output .= '<div id="et_pb_include_categories">';
 
-	foreach ( $cats_array as $category ) {
-		$contains = sprintf(
-			'<%%= _.contains( et_pb_include_categories_shop_temp, "%1$s" ) ? checked="checked" : "" %%>',
-			esc_html( $category->slug )
-		);
+	if ( is_array( $product_categories ) && ! empty( $product_categories ) ) {
+		foreach ( $product_categories as $category ) {
+			if ( is_object( $category ) && is_a($category, 'WP_Term') ) {
+				$contains = sprintf(
+					'<%%= _.contains( et_pb_include_categories_shop_temp, "%1$s" ) ? checked="checked" : "" %%>',
+					esc_html( $category->term_id )
+				);
 
-		$output .= sprintf(
-			'%4$s<label><input type="checkbox" name="et_pb_include_categories" value="%1$s"%3$s> %2$s</label><br/>',
-			esc_attr( $category->slug ),
-			esc_html( $category->name ),
-			$contains,
-			"\n\t\t\t\t\t"
-		);
+				$output .= sprintf(
+					'%4$s<label><input type="checkbox" name="et_pb_include_categories" value="%1$s"%3$s> %2$s</label><br/>',
+					esc_attr( $category->term_id ),
+					esc_html( $category->name ),
+					$contains,
+					"\n\t\t\t\t\t"
+				);
+			}
+		}
 	}
 
 	$output .= '</div>';
@@ -1351,13 +1500,14 @@ if ( ! function_exists( 'et_builder_get_border_styles' ) ) :
 function et_builder_get_border_styles() {
 	$styles = array(
 		'solid'  => esc_html__( 'Solid', 'et_builder' ),
-		'dotted' => esc_html__( 'Dotted', 'et_builder' ),
 		'dashed' => esc_html__( 'Dashed', 'et_builder' ),
+		'dotted' => esc_html__( 'Dotted', 'et_builder' ),
 		'double' => esc_html__( 'Double', 'et_builder' ),
 		'groove' => esc_html__( 'Groove', 'et_builder' ),
 		'ridge'  => esc_html__( 'Ridge', 'et_builder' ),
 		'inset'  => esc_html__( 'Inset', 'et_builder' ),
 		'outset' => esc_html__( 'Outset', 'et_builder' ),
+		'none'   => esc_html__( 'None', 'et_builder' ),
 	);
 
 	return apply_filters( 'et_builder_border_styles', $styles );
@@ -1371,7 +1521,7 @@ function et_builder_font_options() {
 	$default_options = array( 'default' => array(
 		'name' => esc_html__( 'Default', 'et_builder' ),
 	) );
-	$fonts           = array_merge( $default_options, et_builder_get_fonts() );
+	$fonts = array_merge( $default_options, et_builder_get_fonts() );
 
 	foreach ( $fonts as $font_name => $font_settings ) {
 		$options[ $font_name ] = 'default' !== $font_name ? $font_name : $font_settings['name'];
@@ -1381,16 +1531,17 @@ function et_builder_font_options() {
 }
 endif;
 
-if ( ! function_exists( 'et_builder_get_font_options_items' ) ) :
-function et_builder_get_font_options_items() {
+if ( ! function_exists( 'et_builder_get_google_font_items' ) ) :
+function et_builder_get_google_font_items() {
 	$output = '';
 	$font_options = et_builder_font_options();
 
 	foreach ( $font_options as $key => $value ) {
 		$output .= sprintf(
-			'<option value="%1$s">%2$s</option>',
+			'<li class="select-option-item select-option-item-%3$s" data-value="%1$s">%2$s</li>',
 			esc_attr( $key ),
-			esc_html( $value )
+			esc_html( $value ),
+			str_replace( ' ', '_', $key )
 		);
 	}
 
@@ -1407,22 +1558,35 @@ function et_builder_set_element_font( $font, $use_important = false, $default = 
 	}
 
 	$font_values = explode( '|', $font );
-	$default = ! $default ? "||||" : $default;
+	$default = ! $default ? "||||||||" : $default;
 	$font_values_default = explode( '|', $default );
 
 	if ( ! empty( $font_values ) ) {
-		$font_values       = array_map( 'trim', $font_values );
-		$font_name         = $font_values[0];
-		$is_font_bold      = 'on' === $font_values[1] ? true : false;
-		$is_font_italic    = 'on' === $font_values[2] ? true : false;
-		$is_font_uppercase = 'on' === $font_values[3] ? true : false;
-		$is_font_underline = 'on' === $font_values[4] ? true : false;
+		// backward compatibility with old version of theme
+		if ( isset( $font_values[1] ) ) {
+			$font_values[1] = 'on' === $font_values[1] ? '700' : $font_values[1];
+		}
 
-		$font_name_default         = $font_values_default[0];
-		$is_font_bold_default      = 'on' === $font_values_default[1] ? true : false;
-		$is_font_italic_default    = 'on' === $font_values_default[2] ? true : false;
-		$is_font_uppercase_default = 'on' === $font_values_default[3] ? true : false;
-		$is_font_underline_default = 'on' === $font_values_default[4] ? true : false;
+		$font_values          = array_map( 'trim', $font_values );
+		$font_name            = $font_values[0];
+		$font_weight          = isset( $font_values[1] ) && '' !== $font_values[1] ? $font_values[1] : '';
+		$is_font_italic       = isset( $font_values[2] ) && 'on' === $font_values[2] ? true : false;
+		$is_font_uppercase    = isset( $font_values[3] ) && 'on' === $font_values[3] ? true : false;
+		$is_font_underline    = isset( $font_values[4] ) && 'on' === $font_values[4] ? true : false;
+		$is_font_small_caps   = isset( $font_values[5] ) && 'on' === $font_values[5] ? true : false;
+		$is_font_line_through = isset( $font_values[6] ) && 'on' === $font_values[6] ? true : false;
+		$font_line_color      = isset( $font_values[7] ) ? $font_values[7] : '';
+		$font_line_style      = isset( $font_values[8] ) ? $font_values[8] : '';
+
+		$font_name_default            = $font_values_default[0];
+		$font_weight_default          = isset( $font_values_default[1] ) && '' !== $font_values_default[1] ? $font_values_default[1] : '';
+		$is_font_italic_default       = isset( $font_values_default[2] ) && 'on' === $font_values_default[2] ? true : false;
+		$is_font_uppercase_default    = isset( $font_values_default[3] ) && 'on' === $font_values_default[3] ? true : false;
+		$is_font_underline_default    = isset( $font_values_default[4] ) && 'on' === $font_values_default[4] ? true : false;
+		$is_font_small_caps_default   = isset( $font_values_default[5] ) && 'on' === $font_values_default[5] ? true : false;
+		$is_font_line_through_default = isset( $font_values_default[6] ) && 'on' === $font_values_default[6] ? true : false;
+		$font_line_color_default      = isset( $font_values_default[7] ) ? $font_values_default[7] : '';
+		$font_line_style_default      = isset( $font_values_default[8] ) ? $font_values_default[8] : '';
 
 		if ( '' !== $font_name && $font_name_default !== $font_name ) {
 			et_builder_enqueue_font( $font_name );
@@ -1430,13 +1594,22 @@ function et_builder_set_element_font( $font, $use_important = false, $default = 
 			$style .= et_builder_get_font_family( $font_name, $use_important ) . ' ';
 		}
 
-		$style .= et_builder_set_element_font_style( 'font-weight', $is_font_bold_default, $is_font_bold, 'normal', 'bold', $use_important );
+		$style .= et_builder_set_element_font_style( 'font-weight', ( '' !== $font_weight_default ), ( '' !== $font_weight ), 'normal', $font_weight, $use_important );
 
 		$style .= et_builder_set_element_font_style( 'font-style', $is_font_italic_default, $is_font_italic, 'none', 'italic', $use_important );
 
 		$style .= et_builder_set_element_font_style( 'text-transform', $is_font_uppercase_default, $is_font_uppercase, 'none', 'uppercase', $use_important );
 
 		$style .= et_builder_set_element_font_style( 'text-decoration', $is_font_underline_default, $is_font_underline, 'none', 'underline', $use_important );
+
+		$style .= et_builder_set_element_font_style( 'font-variant', $is_font_small_caps_default, $is_font_small_caps, 'none', 'small-caps', $use_important );
+
+		$style .= et_builder_set_element_font_style( 'text-decoration', $is_font_line_through_default, $is_font_line_through, 'none', 'line-through', $use_important );
+
+		$style .= et_builder_set_element_font_style( 'text-decoration-style', ( '' !== $font_line_style_default ), ( '' !== $font_line_style ), 'solid', $font_line_style, $use_important );
+
+		$style .= et_builder_set_element_font_style( '-webkit-text-decoration-color', ( '' !== $font_line_color_default ), ( '' !== $font_line_color ), '', $font_line_color, $use_important );
+		$style .= et_builder_set_element_font_style( 'text-decoration-color', ( '' !== $font_line_color_default ), ( '' !== $font_line_color ), '', $font_line_color, $use_important );
 
 		$style = rtrim( $style );
 	}
@@ -1509,13 +1682,20 @@ endif;
 
 if ( ! function_exists( 'et_builder_enqueue_font' ) ) :
 function et_builder_enqueue_font( $font_name ) {
-	global $et_fonts_queue;
+	global $et_fonts_queue, $et_user_fonts_queue;
 
 	$fonts = et_builder_get_fonts();
 	$websafe_fonts = et_builder_get_websafe_fonts();
+	$user_fonts = et_builder_get_custom_fonts();
+	$removed_fonts_mapping = et_builder_old_fonts_mapping();
+
+	if ( array_key_exists( $font_name, $user_fonts ) ) {
+		$et_user_fonts_queue[ $font_name ] = $user_fonts[$font_name];
+		return;
+	}
 
 	// Skip enqueueing if font name is not found. Possibly happen if support for particular font need to be dropped
-	if ( ! array_key_exists( $font_name, $fonts ) ) {
+	if ( ! array_key_exists( $font_name, $fonts ) && ! isset( $removed_fonts_mapping[ $font_name ] ) ) {
 		return;
 	}
 
@@ -1524,8 +1704,8 @@ function et_builder_enqueue_font( $font_name ) {
 		return;
 	}
 
-	if ( isset( $fonts[ $font_name ]['parent_font'] ) ){
-		$font_name = $fonts[ $font_name ]['parent_font'];
+	if ( isset( $removed_fonts_mapping[ $font_name ] ) ){
+		$font_name = $removed_fonts_mapping[ $font_name ]['parent_font'];
 	}
 	$font_character_set = $fonts[ $font_name ]['character_set'];
 
@@ -1566,6 +1746,70 @@ function et_builder_enqueue_font( $font_name ) {
 }
 endif;
 
+if ( ! function_exists( 'et_builder_enqueue_user_fonts' ) ) :
+function et_builder_enqueue_user_fonts( $et_user_fonts ) {
+	$output = '';
+	// load user fonts
+	if ( ! empty( $et_user_fonts ) ) {
+		foreach ($et_user_fonts as $font_name => $font_data ) {
+			if ( is_array($font_data['font_url']) && ! empty($font_data['font_url']) ) {
+				// generate the @font-face src from the uploaded font files
+				// all the font formats have to be added in certain order to provide the best browser support
+				$uploaded_files = array(
+					'eot' => array(
+						'url'    => isset( $font_data['font_url']['eot'] ) ? $font_data['font_url']['eot'] : false,
+						'format' => 'embedded-opentype',
+					),
+					'woff2' => array(
+						'url'    => isset( $font_data['font_url']['woff2'] ) ? $font_data['font_url']['woff2'] : false,
+						'format' => 'woff2',
+					),
+					'woff' => array(
+						'url'    => isset( $font_data['font_url']['woff'] ) ? $font_data['font_url']['woff'] : false,
+						'format' => 'woff',
+					),
+					'ttf' => array(
+						'url'    => isset( $font_data['font_url']['ttf'] ) ? $font_data['font_url']['ttf'] : false,
+						'format' => 'truetype',
+					),
+					'otf' => array(
+						'url'    => isset( $font_data['font_url']['otf'] ) ? $font_data['font_url']['otf'] : false,
+						'format' => 'opentype',
+					),
+				);
+
+				$font_src = '';
+
+				foreach ( $uploaded_files as $ext => $file_data ) {
+					if ( ! $file_data['url'] ) {
+						continue;
+					}
+
+					$font_src .= '' === $font_src ? 'src: ' : ', ';
+
+					$font_src .= sprintf( 'url("%1$s%2$s") format("%3$s")',
+						esc_url( $file_data['url'] ),
+						'eot' === $ext ? '?#iefix' : '',
+						esc_attr( $file_data['format'] )
+					);
+				}
+
+				$output .= sprintf( '@font-face { font-family: "%1$s";%2$s %3$s; }',
+					esc_attr( $font_name ),
+					isset( $font_data['font_url']['eot'] ) ? sprintf( 'src: url(%1$s);', esc_url( $font_data['font_url']['eot'] ) ) : '',
+					// Make sure to properly escape each individual piece of $font_src above.
+					et_esc_previously( $font_src )
+			  	);
+			} else {
+				$output .= sprintf( '@font-face { font-family: "%1$s"; src: url(%2$s);}', esc_attr( $font_name ), esc_url( $font_data['font_url'] ) );
+			}
+		}
+	}
+
+	return $output;
+}
+endif;
+
 if ( ! function_exists( 'et_font_subset_force_check' ) ) :
 function et_font_subset_force_check() {
 	global $shortname;
@@ -1598,13 +1842,106 @@ function et_builder_print_font() {
 	$subsets        = wp_list_pluck( $et_fonts_queue, 'subset' );
 	$unique_subsets = array_unique( explode(',', implode(',', $subsets ) ) );
 
+	// Get the google fonts for the current page that are stored as an option
+	$post_fonts_data = array();
+
+	$post_id = is_singular() ? get_the_ID() : false;
+
+	if ( false !== $post_id ) {
+		$post_fonts_data = get_post_meta( $post_id, 'et_enqueued_post_fonts', true );
+	}
+
+	if ( ! is_array( $post_fonts_data ) ) {
+		$post_fonts_data = array();
+	}
+
+	if ( empty( $post_fonts_data ) ) {
+		$post_fonts_data = array(
+			'family' => array(),
+			'subset' => array(),
+		);
+	}
+
+	// We only need the difference in the fonts since the subsets might be needed
+	// in cases where a new font is added to the page and it is not yet present
+	// in the option cache
+	$cached_fonts = $post_fonts_data[ 'family'];
+
+	$fonts = array_diff( $fonts, $cached_fonts );
+
+	if ( ! $fonts ) {
+		// The `$fonts` variable stores all the fonts used on the page (cache does not matter)
+		// while the `$cached_fonts` one only stores the fonts that were lastly saved into
+		// the post meta. When we run `array_diff` we would only get a result if there
+		// are new fonts present on the page that are not yet cached. However if some
+		// of the cached fonts are no longer in use this will not be caught by the
+		// `array_diff`. To fix this if the item count in `$fonts` is different
+		// than the one in `$cached_fonts` we update the post meta with the
+		// data from the `$fonts` variable to force unused fonts removal
+		if ( count( $fonts ) !== count( $cached_fonts ) ) {
+			update_post_meta( $post_id, 'et_enqueued_post_fonts', array(
+				'family' => et_sanitized_previously( $fonts ),
+				'subset' => et_sanitized_previously( $unique_subsets ),
+			) );
+		}
+
+		return;
+	}
+
 	// Append combined subset at the end of the URL as different query string
 	wp_enqueue_style( 'et-builder-googlefonts', esc_url( add_query_arg( array(
 		'family' => implode( '|', $fonts ) ,
 		'subset' => implode( ',', $unique_subsets ),
 	), "$protocol://fonts.googleapis.com/css" ) ), array(), null );
+
+	// Create a merge of the existing fonts and subsets in the option and the newly added ones
+	$updated_fonts   = array_merge( $fonts, $post_fonts_data[ 'family'] );
+	$updated_subsets = array_merge( $unique_subsets, $post_fonts_data[ 'subset'] );
+
+	// Update the option for the current page with the new data
+	$post_fonts_data = array(
+		'family' => array_unique( $updated_fonts ),
+		'subset' => array_unique( $updated_subsets ),
+	);
+
+	update_post_meta( $post_id, 'et_enqueued_post_fonts', et_sanitized_previously( $post_fonts_data ) );
 }
 add_action( 'wp_footer', 'et_builder_print_font' );
+
+/**
+ * Enqueue queued Google Fonts into WordPress' wp_enqueue_style as one request (cached version)
+ * @return void
+ */
+function et_builder_preprint_font() {
+	// Return if this is not a post or a page
+	if ( ! is_singular() ) {
+		return;
+	}
+
+	$post_id = get_the_ID();
+
+	$post_fonts_data = get_post_meta( $post_id, 'et_enqueued_post_fonts', true );
+
+	// No need to proceed if the proper data is missing from the cache
+	if ( ! is_array( $post_fonts_data ) || ! isset( $post_fonts_data['family'], $post_fonts_data['subset'] ) ) {
+		return;
+	}
+
+	$fonts = $post_fonts_data[ 'family'];
+
+	if ( ! $fonts ) {
+		return;
+	}
+
+	$unique_subsets = $post_fonts_data[ 'subset'];
+	$protocol       = is_ssl() ? 'https' : 'http';
+
+	wp_enqueue_style( 'et-builder-googlefonts-cached', esc_url( add_query_arg( array(
+		'family' => implode( '|', $fonts ) ,
+		'subset' => implode( ',', $unique_subsets ),
+	), "$protocol://fonts.googleapis.com/css" ) ) );
+}
+add_action( 'wp_enqueue_scripts', 'et_builder_preprint_font' );
 
 if ( ! function_exists( 'et_pb_get_page_custom_css' ) ) :
 function et_pb_get_page_custom_css() {
@@ -2379,7 +2716,10 @@ endif;
 
 if ( ! function_exists( 'et_pb_add_builder_page_js_css' ) ) :
 function et_pb_add_builder_page_js_css(){
-	global $typenow, $post;
+	global $typenow, $post, $wp_version;
+
+	// Get WP major version
+	$wp_major_version = substr( $wp_version, 0, 3 );
 
 	// Avoid serving any data from object cache
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
@@ -2461,7 +2801,7 @@ function et_pb_add_builder_page_js_css(){
 	}
 
 	// force update cache if et_pb_clear_templates_cache option is set to on
-	$force_cache_value  = et_get_option( 'et_pb_clear_templates_cache', '' );
+	$force_cache_value  = et_get_option( 'et_pb_clear_templates_cache', '', '', true );
 	$force_cache_update = '' !== $force_cache_value ? $force_cache_value : ET_BUILDER_FORCE_CACHE_PURGE;
 
 	/**
@@ -2484,7 +2824,17 @@ function et_pb_add_builder_page_js_css(){
 
 	wp_enqueue_script( 'wp-color-picker' );
 	wp_enqueue_style( 'wp-color-picker' );
-	wp_enqueue_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+
+	if ( version_compare( $wp_major_version, '4.9', '>=' ) ) {
+		wp_enqueue_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+		wp_localize_script( 'wp-color-picker-alpha', 'et_pb_color_picker_strings', apply_filters( 'et_pb_color_picker_strings_builder', array(
+			'legacy_pick'    => esc_html__( 'Select', 'et_builder' ),
+			'legacy_current' => esc_html__( 'Current Color', 'et_builder' ),
+		) ) );
+	} else {
+		wp_enqueue_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha-48.min.js', array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+	}
+
 	wp_register_script( 'chart', ET_BUILDER_URI . '/scripts/ext/chart.min.js', array(), ET_BUILDER_VERSION, true );
 	wp_register_script( 'jquery-tablesorter', ET_BUILDER_URI . '/scripts/ext/jquery.tablesorter.min.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
 
@@ -2546,6 +2896,9 @@ function et_pb_add_builder_page_js_css(){
 		'global_row_alert'                         => esc_html__( 'You cannot add global rows into global sections', 'et_builder' ),
 		'global_module_alert'                      => esc_html__( 'You cannot add global modules into global sections or rows', 'et_builder' ),
 		'all_cat_text'                             => esc_html__( 'All Categories', 'et_builder' ),
+		'font_name_error'                          => esc_html__( 'Name Cannot be Empty', 'et_builder' ),
+		'font_file_error'                          => esc_html__( 'Please Select Font File', 'et_builder' ),
+		'font_weight_error'                        => esc_html__( 'Please Select Font Weight', 'et_builder' ),
 		'is_global_template'                       => $is_global_template,
 		'selective_sync_status'                    => $selective_sync_status,
 		'global_module_type'                       => $global_module_type,
@@ -2586,6 +2939,12 @@ function et_pb_add_builder_page_js_css(){
 		'et_builder_email_remove_account_nonce'    => wp_create_nonce( 'et_builder_email_remove_account_nonce' ),
 		'et_pb_module_settings_migrations'         => ET_Builder_Module_Settings_Migration::$migrated,
 		'acceptable_css_string_values'             => et_builder_get_acceptable_css_string_values( 'all' ),
+		'upload_font_nonce'                        => wp_create_nonce( 'et_fb_upload_font_nonce' ),
+		'user_fonts'                               => et_builder_get_custom_fonts(),
+		'google_fonts'                             => et_builder_get_google_fonts(),
+		'supported_font_weights'                   => et_builder_get_font_weight_list(),
+		'supported_font_formats'                   => et_pb_get_supported_font_formats(),
+		'all_svg_icons'                            => et_pb_get_svg_icons_list(),
 	), et_pb_history_localization() ) ) );
 
 	wp_localize_script( 'et_pb_admin_js', 'et_pb_ab_js_options', apply_filters( 'et_pb_ab_js_options', array(
@@ -2829,6 +3188,8 @@ function et_pb_history_localization() {
 			'loaded'    => esc_html__( 'Loaded', 'et_builder' ),
 			'turnon'    => esc_html__( 'Turned On', 'et_builder' ),
 			'turnoff'   => esc_html__( 'Turned Off', 'et_builder' ),
+			'globalon'  => esc_html__( 'Made Global', 'et_builder' ),
+			'globaloff' => esc_html__( 'Disabled Global', 'et_builder' ),
 		),
 		'noun' => array(
 			'section'           => esc_html__( 'Section', 'et_builder' ),
@@ -2944,14 +3305,28 @@ if ( ! function_exists( 'et_pb_fix_shortcodes' ) ){
 			$content = html_entity_decode( $content, ENT_QUOTES );
 		}
 
-		$replace_tags_from_to = array (
-			'<p>[' => '[',
-			']</p>' => ']',
-			']<br />' => ']',
-			"<br />\n[" => '[',
-		);
+		$slugs = ET_Builder_Element::get_module_slugs_by_post_type();
 
-		return strtr( $content, $replace_tags_from_to );
+		// The current patterns take care to replace only the shortcodes that extends `ET_Builder_Element` class
+		// In order to avoid cases like this: `[3:45]<br>`
+		// The pattern looks like this `(\[\/?(et_pb_section|et_pb_column|et_pb_row)[^\]]*\])`
+		$shortcode_pattern = sprintf( '(\[\/?(%s)[^\]]*\])', implode( '|', $slugs ) );
+		$opening_pattern   = '(<br\s*\/?>|<p>|\n)+';
+		$closing_pattern   = '(<br\s*\/?>|<\/p>|\n)+';
+		$space_pattern     = '[\s*|\n]*';
+
+		// Replace `]</p>`, `]<br>` `]\n` with `]`
+		// Make sure to remove any closing `</p>` tags or line breaks or new lines after shortcode tag
+		$pattern_1 = sprintf( '/%1$s%2$s%3$s/', $shortcode_pattern, $space_pattern, $closing_pattern );
+
+		// Replace `<p>[`, `<br>[` `\n[` with `[`
+		// Make sure to remove any opening `<p>` tags or line breaks or new lines before shortcode tag
+		$pattern_2 = sprintf( '/%1$s%2$s%3$s/', $opening_pattern, $space_pattern, $shortcode_pattern );
+
+		$content = preg_replace( $pattern_1, '$1', $content );
+		$content = preg_replace( $pattern_2, '$2', $content );
+
+		return $content;
 	}
 }
 
@@ -3014,6 +3389,21 @@ if ( ! function_exists( 'et_pb_get_global_module_content' ) ) {
 
 		return $global_shortcode_content;
 	}
+}
+
+function et_generate_font_weight_select_output() {
+	$all_weights = et_builder_get_font_weight_list();
+	$output = '';
+
+	foreach ( $all_weights as $number => $name ) {
+		$output .= sprintf( '<label><input type="checkbox" name="et_font_weight[]" value="%1$s" />%2$s %3$s</label>',
+			esc_attr( $number ),
+			esc_html( $name ),
+			esc_html( $number )
+		);
+	}
+
+	return $output;
 }
 
 function et_builder_get_columns() {
@@ -4191,7 +4581,6 @@ function et_pb_pagebuilder_meta_box() {
 		esc_html__( 'Save', 'et_builder' )
 	);
 
-
 	// "Save Layout" Modal Content Template
 	printf(
 		'<script type="text/template" id="et-builder-prompt-modal-save_layout-text">
@@ -4204,6 +4593,71 @@ function et_pb_pagebuilder_meta_box() {
 		esc_html__( 'Save To Library', 'et_builder' ),
 		esc_html__( 'Save your current page to the Divi Library for later use.', 'et_builder' ),
 		esc_html__( 'Layout Name:', 'et_builder' )
+	);
+
+	// "Delete Font" Modal Text
+	printf(
+		'<script type="text/template" id="et-builder-prompt-modal-delete_font-text">
+			<h3>%1$s</h3>
+			<p>%2$s</p>
+		</script>',
+		esc_html__( 'Delete Font', 'et_builder' ),
+		sprintf( '%1$s %2$s?', esc_html__( 'Are you sure want to delete', 'et_builder' ), '<%= font_name %>' )
+	);
+
+	// "Upload Font" Modal Template
+	printf(
+		'<script type="text/template" id="et-builder-prompt-modal-upload_font">
+			<div class="et_pb_prompt_modal et-pb-font-uploader">
+				<a href="#" class="et_pb_prompt_dont_proceed et-pb-modal-close">
+					<span>%1$s</span>
+				</a>
+				<div class="et_pb_prompt_buttons">
+					<br/>
+					<input type="submit" class="et_pb_prompt_proceed" value="%2$s" />
+				</div>
+			</div>
+		</script>',
+		esc_html__( 'Cancel', 'et_builder' ),
+		esc_html__( 'Upload', 'et_builder' )
+	);
+
+	// "Upload Font" Modal Text
+	printf(
+		'<script type="text/template" id="et-builder-prompt-modal-upload_font-text">
+			<h3>%1$s</h3>
+			<div class="et-font-uploader-content">
+				<div class="et-font-uploader-error"></div>
+
+				<h4>%2$s</h4>
+				<input type="text" value="" id="et-font-uploader-name" class="regular-text" />
+
+				<form class="et-core-portability-import-form">
+					<span class="et-core-portability-import-placeholder">%3$s</span>
+					<button class="et-core-button">%4$s</button>
+					<input type="file" accept=".ttf, .otf, .eot, .woff2, .woff" multiple>
+					<div class="et-core-clearfix"></div>
+					<p class="et-font-uploader-hint">%7$s: eot, woff, woff2, ttf, otf</p>
+					<div class="et-font-uploader-selected-fonts et-font-uploader-hidden-field"><h4>%8$s</h4></div>
+					<h4>%5$s</h4>
+					<p class="et-font-uploader-hint">%9$s</p>
+					<label><input type="checkbox" name="et-font-uploader-all-weight" class="et-font-uploader-all-weights" checked>%6$s</label>
+					<div class="et-font-uploader-weight-values et-font-uploader-hidden-section">
+						%10$s
+					</div>
+				</form>
+			</div>
+		</script>',
+		esc_html__( 'Upload Font', 'et_builder' ),
+		esc_html__( 'Font Name', 'et_builder' ),
+		esc_html__( 'Drag Files Here', 'et_builder' ),
+		esc_html__( 'Choose Font Files', 'et_builder' ),
+		esc_html__( 'Supported Font Weights', 'et_builder' ),
+		esc_html__( 'All', 'et_builder' ),
+		esc_html__( 'Supported File Formats', 'et_builder' ),
+		esc_html__( 'Selected Font Files', 'et_builder' ),
+		esc_html__( 'Choose the font weights supported by your font. Select "All" if you don\'t know this information or if your font includes all weights.', 'et_builder' ),
+		et_generate_font_weight_select_output()
 	);
 
 
@@ -4616,12 +5070,24 @@ function et_pb_pagebuilder_meta_box() {
 		</script>';
 
 
-	// Font Icons Template
+	// Font Family Select Template
 	printf(
 		'<script type="text/template" id="et-builder-google-fonts-options-items">
-			%1$s
+			<li class="et-pb-option-subgroup et-pb-option-subgroup-uploaded">
+				<p class="et-pb-subgroup-title">%1$s</p>
+				<ul class="et-pb-option-subgroup-container">
+					<%% _.each(this.et_builder_template_options.user_fonts, function(font_data, font_name) { %%>
+						<li class="select-option-item select-option-item-custom-font select-option-item-<%%= font_name.replace( / /g, "_" ) %%>" data-value="<%%= font_name %%>"><%%= font_name %%>%2$s</li>
+					<%% }); %%>
+				</ul>
+				%3$s
+			</li>
+			%4$s
 		</script>',
-		et_builder_get_font_options_items()
+		esc_html__( 'Uploaded', 'et_builder' ),
+		et_pb_is_allowed( 'custom_fonts_management' ) ? '<span class="et-pb-user-font-marker"></span>' : '',
+		et_pb_is_allowed( 'custom_fonts_management' ) ? sprintf( '<input type="button" class="button button-upload et-pb-font-upload-button" value="%1$s">', esc_html__( 'Upload', 'et_builder' ) ) : '',
+		et_builder_get_google_font_items()
 	);
 
 
@@ -4722,16 +5188,155 @@ function et_pb_pagebuilder_meta_box() {
 		</script>'
 	);
 
+	print(
+		'<script type="text/template" id="et-builder-animation_buttons-option-template">
+			<div class="et_pb_animation_buttons">
+				<% _.each(this.et_builder_template_options.animation_buttons.options, function(option_title, option_name) { %>
+					<div class="et_animation_button">
+						<a href="#">
+							<span class="et_animation_button_title" data-value="<%= option_name %>"><%= option_title %></span>
+							<span class="et_animation_button_icon">
+								<div class="et-pb-icon">
+									<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "animation-" + option_name ] %></svg>
+								</div>
+							</span>
+						</a>
+					</div>
+				<% }); %>
+			</div>
+		</script>'
+	);
+
+	print(
+		'<script type="text/template" id="et-builder-background_tabs_nav-option-template">
+			<ul class="et_pb_background-tab-navs">
+				<% _.each(this.et_builder_template_options.background_tabs_nav.options, function(tab_nav_name, index) { %>
+					<li><a href="#" class="et_pb_background-tab-nav et_pb_background-tab-nav--<%= tab_nav_name %>" data-tab="<%= tab_nav_name %>" title="<%= tab_nav_name %>"><div class="et-pb-icon"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "background-" + tab_nav_name ] %></svg></div></a></li>
+				<% }); %>
+			</ul>
+		</script>'
+	);
+
+	print(
+		'<script type="text/template" id="et-builder-background_gradient_buttons-option-template">
+			<div class="et-pb-option-preview et-pb-option-preview--empty">
+				<button class="et-pb-option-preview-button et-pb-option-preview-button--add">
+					<div class="et-pb-icon">
+						<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "add" ] %></svg>
+					</div>
+				</button>
+				<button class="et-pb-option-preview-button et-pb-option-preview-button--swap">
+					<div class="et-pb-icon">
+						<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "swap" ] %></svg>
+					</div>
+				</button>
+				<button class="et-pb-option-preview-button et-pb-option-preview-button--delete">
+					<div class="et-pb-icon">
+						<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "delete" ] %></svg>
+					</div>
+				</button>
+			</div>
+		</script>'
+	);
+
+	print(
+		'<script type="text/template" id="et-builder-option_preview_buttons-option-template">
+			<div class="et-pb-option-preview et-pb-option-preview--empty">
+				<button class="et-pb-option-preview-button et-pb-option-preview-button--add">
+					<div class="et-pb-icon">
+						<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "add" ] %></svg>
+					</div>
+				</button>
+				<button class="et-pb-option-preview-button et-pb-option-preview-button--edit">
+					<div class="et-pb-icon">
+						<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "setting" ] %></svg>
+					</div>
+				</button>
+				<button class="et-pb-option-preview-button et-pb-option-preview-button--delete">
+					<div class="et-pb-icon">
+						<svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><%= this.et_builder_template_options.options_icons[ "delete" ] %></svg>
+					</div>
+				</button>
+			</div>
+		</script>'
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-multiple_buttons-option-template">
+			<div class="et_pb_multiple_buttons">
+				<%% _.each(this.et_builder_template_options.multiple_buttons.options, function(button_options, button_id) { %%>
+					<div class="et_builder_<%%= button_id %%>_button et_builder_multiple_buttons_button mce-widget mce-btn" data-value="<%%= button_id %%>">
+						<button type="button">
+							<%%= button_options.title %%>
+						</button>
+					</div>
+				<%% }); %%>
+			</div>
+		</script>'
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-font-weight-items">
+			<div class="et_pb_font_weight_container">
+				<label for="et_builder_font_weight">%1$s:</label>
+				<select class="et_builder_font_weight">
+					<%% _.each(this.et_builder_template_options.font_weights, function(font_weight_name, font_weight) { %%>
+						<option value="<%%= font_weight %%>"><%%= font_weight_name %%></option>
+					<%% }); %%>
+				<select>
+			</div>
+		</script>',
+		esc_html__( 'Font Weight', 'et_builder' )
+	);
+
 	printf(
 		'<script type="text/template" id="et-builder-font_buttons-option-template">
-			<%% _.each(this.et_builder_template_options.font_buttons.options, function(font_button) { %%>
-				<div class="et_builder_<%%= font_button %%>_font et_builder_font_style mce-widget mce-btn">
-					<button type="button">
-						<i class="mce-ico mce-i-<%%= font_button %%>"></i>
-					</button>
+			<div class="et_pb_font_style_container">
+				<label for="et_builder_font_style">%1$s:</label>
+				<%% _.each(this.et_builder_template_options.font_buttons.options, function(font_button) { %%>
+					<div class="et_builder_<%%= font_button %%>_font et_builder_font_style mce-widget mce-btn" data-button_name="<%%= font_button %%>">
+						<button type="button">
+							<i class="mce-ico mce-i-<%%= font_button %%>"></i>
+						</button>
+					</div>
+				<%% }); %%>
+			</div>
+		</script>',
+		esc_html__( 'Font Style', 'et_builder' )
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-font_line_styles-option-template">
+			<div class="et_pb_font_line_settings">
+				<div class="et_pb_font_line_color">
+					<label for="et_builder_font_style" data-underline_label="%5$s %7$s" data-strikethrough_label="%6$s %7$s">%1$s:</label>
+
+					<span class="et-pb-custom-color-button et-pb-choose-custom-color-button"><span>%4$s</span></span>
+					<div class="et-pb-custom-color-container et_pb_hidden">
+						<input class="et-pb-color-picker-hex et-pb-color-picker-hex-alpha" type="text" data-alpha="true" placeholder="%2$s" data-selected-value="" value="" />
+						<input class="et-pb-custom-color-picker et-pb-font-line-color-value" type="hidden" value="" />
+					</div>
 				</div>
-			<%% }); %%>
-		</script>'
+				<div class="et_pb_font_line_style">
+					<label for="et_builder_font_style" data-underline_label="%5$s %8$s" data-strikethrough_label="%6$s %8$s">%3$s:</label>
+					<select class="et_pb_font_line_style_select">
+						<option value="solid">solid</option>
+						<option value="double">double</option>
+						<option value="dotted">dotted</option>
+						<option value="dashed">dashed</option>
+						<option value="wavy">wavy</option>
+					</select>
+				</div>
+			</div>
+		</script>',
+		esc_html__( 'Line Color', 'et_builder' ),
+		esc_attr__( 'Hex Value', 'et_builder' ),
+		esc_attr__( 'Line Style', 'et_builder' ),
+		esc_attr__( 'Choose Custom Color', 'et_builder' ),
+		esc_attr__( 'Underline', 'et_builder' ),
+		esc_attr__( 'Strikethrough', 'et_builder' ),
+		esc_attr__( 'Color', 'et_builder' ),
+		esc_attr__( 'Style', 'et_builder' )
 	);
 
 	printf(
@@ -4770,7 +5375,7 @@ function et_pb_pagebuilder_meta_box() {
 				var select_value_escaped = _.escape( select_value );
 				var option_value_escaped = _.escape( option_value );
 				var default_value = this.et_builder_template_options.select.options.default;
-				var selected_attr = ! _.isUndefined( select_value ) && option_value_escaped === select_value_escaped || ( _.isUndefined( select_value ) && default_value !== "" && option_value_escaped === default_value ) ? \' selected="selected"\' : "";
+				var selected_attr = ! _.isUndefined( select_value ) && "" !== select_value && option_value_escaped === select_value_escaped || ( _.isUndefined( select_value ) && default_value !== "" && option_value_escaped === default_value ) ? \' selected="selected"\' : "";
 				%%>
 				<option <%%= data %%> value="<%%= option_value_escaped %%>" <%%= selected_attr %%>><%%= _.escape( option_label_updated ) %%></option>
 			<%% }); %%>
@@ -5775,6 +6380,10 @@ function et_pb_all_role_options() {
 					'name'    => esc_html__( 'Use Visual Builder', 'et_builder' ),
 					'default' => 'on',
 				),
+				'custom_fonts_management' => array(
+					'name'    => esc_html__( 'Upload/Remove Fonts', 'et_builder' ),
+					'default' => 'on',
+				),
 			),
 		),
 		'library_capabilities' => array(
@@ -6361,6 +6970,17 @@ function et_is_yoast_seo_plugin_active() {
 endif;
 
 /**
+ * Is WP Job Manager plugin active?
+ *
+ * @return bool  True - if the plugin is active
+ */
+if ( ! function_exists( 'et_is_wp_job_manager_plugin_active' ) ) :
+	function et_is_wp_job_manager_plugin_active() {
+		return class_exists( 'WP_Job_Manager' );
+	}
+endif;
+
+/**
  * Modify comment count for preview screen. Somehow WordPress' get_comments_number() doesn't get correct $post_id
  * param and doesn't have proper fallback to global $post if $post_id variable isn't found. This causes incorrect
  * comment count in preview screen
@@ -6395,6 +7015,11 @@ function et_pb_admin_excluded_shortcodes() {
 	// WPL real estate prints unwanted on-page JS that caused an issue on BB
 	if ( class_exists( 'wpl_extensions' ) ) {
 		$shortcodes[] = 'WPL';
+	}
+
+	// [submit_job_form] shortcode prints wp_editor this creating problems post edit page render
+	if ( et_is_wp_job_manager_plugin_active() ) {
+		$shortcodes[] = 'submit_job_form';
 	}
 
 	return apply_filters( 'et_pb_admin_excluded_shortcodes', $shortcodes );
@@ -6631,6 +7256,50 @@ function et_fb_retrieve_builder_data() {
 	$post_content = apply_filters( 'et_fb_load_raw_post_content', $post_content );
 
 	$fields_data['shortcode_object'] = et_fb_process_shortcode( $post_content );
+
+	// Remove duplicates from field definitions
+	$map           = array();
+	$unique_fields = array();
+	$unique_count  = 0;
+
+	foreach ( array( 'general_fields', 'advanced_fields' ) as $source ) {
+		$definitions  = &$fields_data[ $source ];
+		$module_names = array_keys( $definitions );
+
+		foreach ( $module_names as $module_name ) {
+			$module        = &$definitions[ $module_name ];
+			$setting_names = array_keys( $module );
+
+			foreach ( $setting_names as $setting_name ) {
+				$setting = &$module[ $setting_name ];
+
+				if ( 'advanced_defaults' === $setting_name ) {
+					// advanced_defaults are just duplicated data, we can rebuilt them later.
+					$setting = false;
+					continue;
+				}
+
+				$key = json_encode( $setting );
+
+				if ( ! isset( $map[ $key ] ) ) {
+					// Found a duplicate here
+					$unique_fields[] = $setting;
+					$map[ $key ]     = $unique_count++;
+				}
+
+				$setting = $map[ $key ];
+			}
+		}
+	}
+
+	// No longer needed
+	unset( $map );
+
+	// Include the unique fields in the AJAX payload
+	$fields_data['unique_fields'] = $unique_fields;
+
+	// Enable zlib compression
+	et_builder_enable_zlib_compression();
 
 	die( json_encode( $fields_data ) );
 }
@@ -7469,7 +8138,7 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 	}
 
 	if ( in_array( substr( $value, -1, 1 ), $valid_one_char_units ) ) {
-		$unit_value = floatval( $value ) . '%';
+		$unit_value = floatval( $value ) . substr( $value, -1, 1 );
 
 		// Re-add !important tag
 		if ( $has_important && ! $auto_important ) {
@@ -7517,6 +8186,26 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 
 	// Return and automatically append px (default value)
 	return $result;
+}
+endif;
+
+/**
+ * Get taxonomies for modules
+ *
+ * @return array Array of WP taxonomies splitted into the taxonomy types
+ */
+if ( ! function_exists( 'et_builder_get_taxonomies' ) ) :
+function et_builder_get_shop_categories( $args = array() ) {
+	$defaults = apply_filters( 'et_builder_include_categories_shop_defaults', array (
+		'use_terms' => true,
+		'term_name' => 'product_cat',
+	) );
+
+	$term_args = apply_filters( 'et_builder_include_categories_shop_args', array( 'hide_empty' => false, ) );
+	$args = wp_parse_args( $args, $defaults );
+	$product_categories = $args['use_terms'] ? get_terms( $args['term_name'], $term_args ) : get_categories( apply_filters( 'et_builder_get_categories_shop_args', 'hide_empty=0' ) );
+
+	return $product_categories;
 }
 endif;
 

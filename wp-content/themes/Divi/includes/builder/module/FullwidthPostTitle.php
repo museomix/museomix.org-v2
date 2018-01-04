@@ -65,9 +65,12 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
-			'border'                => array(
+			'border' => array(
 				'css' => array(
-					'main' => "{$this->main_css_element}.et_pb_featured_bg, {$this->main_css_element}",
+					'main' => array(
+						'border_radii'  => "{$this->main_css_element}.et_pb_featured_bg, {$this->main_css_element}",
+						'border_styles' => "{$this->main_css_element}.et_pb_featured_bg, {$this->main_css_element}",
+					),
 				),
 			),
 			'custom_margin_padding' => array(
@@ -81,7 +84,10 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'use_all_caps' => true,
 					'css'      => array(
-						'main' => "{$this->main_css_element} .et_pb_title_container h1.entry-title",
+						'main' => "{$this->main_css_element} .et_pb_title_container h1.entry-title, {$this->main_css_element} .et_pb_title_container h2.entry-title, {$this->main_css_element} .et_pb_title_container h3.entry-title, {$this->main_css_element} .et_pb_title_container h4.entry-title, {$this->main_css_element} .et_pb_title_container h5.entry-title, {$this->main_css_element} .et_pb_title_container h6.entry-title",
+					),
+					'header_level' => array(
+						'default' => 'h1',
 					),
 				),
 				'meta'   => array(
@@ -103,6 +109,7 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 				),
 			),
 			'text'      => array(),
+			'filters'   => array(),
 		);
 	}
 
@@ -158,7 +165,7 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 				),
 				'depends_show_if'   => 'on',
 				'affects'           => array(
-					'date_format'
+					'date_format',
 				),
 				'toggle_slug'       => 'elements',
 				'description'       => esc_html__( 'Here you can choose whether or not display the Date in Post Meta', 'et_builder' ),
@@ -312,6 +319,7 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 		$text_color         = $this->shortcode_atts['text_color'];
 		$text_background    = $this->shortcode_atts['text_background'];
 		$text_bg_color      = $this->shortcode_atts['text_bg_color'];
+		$header_level       = $this->shortcode_atts['title_level'];
 
 		// display the shortcode only on singlular pages
 		if ( ! is_singular() ) {
@@ -339,8 +347,9 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 				$post_title = get_the_title();
 			}
 
-			$output .= sprintf( '<h1 class="entry-title">%s</h1>',
-				$post_title
+			$output .= sprintf( '<%2$s class="entry-title">%s</%2$s>',
+				$post_title,
+				et_pb_process_header_level( $header_level, 'h1' )
 			);
 		}
 
@@ -399,6 +408,17 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 		);
 
 		return $output;
+	}
+
+	protected function _add_additional_border_fields() {
+		parent::_add_additional_border_fields();
+
+		$this->advanced_options["border"]['css'] = array(
+			'main' => array(
+				'border_radii'  => "{$this->main_css_element}.et_pb_featured_bg, {$this->main_css_element}",
+				'border_styles' => "{$this->main_css_element}.et_pb_featured_bg, {$this->main_css_element}",
+			)
+		);
 	}
 }
 

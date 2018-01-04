@@ -785,7 +785,7 @@ add_action( 'wp_ajax_et_pb_create_ab_tables', 'et_pb_create_ab_tables' );
  * @return void
  */
 function et_pb_update_stats_table() {
-	if ( isset( $_POST['et_ab_log_nonce'] ) && ! wp_verify_nonce( $_POST['et_ab_log_nonce'], 'et_ab_testing_log_nonce' ) ) {
+	if ( ! isset( $_POST['et_ab_log_nonce'] ) || ! wp_verify_nonce( $_POST['et_ab_log_nonce'], 'et_ab_testing_log_nonce' ) ) {
 		die( -1 );
 	}
 
@@ -913,7 +913,7 @@ function et_pb_ab_clear_cache_handler( $test_id ) {
 
 function et_pb_ab_clear_cache() {
 	// Verify nonce
-	if ( isset( $_POST['et_pb_ab_nonce'] ) && ! wp_verify_nonce( $_POST['et_pb_ab_nonce'], 'ab_testing_builder_nonce' ) ) {
+	if ( ! isset( $_POST['et_pb_ab_nonce'] ) || ! wp_verify_nonce( $_POST['et_pb_ab_nonce'], 'ab_testing_builder_nonce' ) ) {
 		die( -1 );
 	}
 
@@ -951,7 +951,7 @@ function et_pb_ab_get_all_tests() {
 
 function et_pb_ab_clear_stats() {
 	// Verify nonce
-	if ( isset( $_POST['et_pb_ab_nonce'] ) && ! wp_verify_nonce( $_POST['et_pb_ab_nonce'], 'ab_testing_builder_nonce' ) ) {
+	if ( ! isset( $_POST['et_pb_ab_nonce'] ) || ! wp_verify_nonce( $_POST['et_pb_ab_nonce'], 'ab_testing_builder_nonce' ) ) {
 		die( -1 );
 	}
 

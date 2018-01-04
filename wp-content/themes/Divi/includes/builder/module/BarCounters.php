@@ -16,7 +16,6 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 			'admin_label',
 			'module_id',
 			'module_class',
-			'border_radius',
 		);
 
 		$this->fields_defaults = array(
@@ -27,9 +26,6 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 		);
 
 		$this->main_css_element = '%%order_class%%.et_pb_counters';
-		$this->defaults         = array(
-			'border_radius' => '0',
-		);
 
 		$this->options_toggles = array(
 			'general'  => array(
@@ -51,6 +47,14 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css' => array(
+					'main' => array(
+						'border_radii'  => "%%order_class%% .et_pb_counter_container, %%order_class%% .et_pb_counter_amount",
+						'border_styles' => "%%order_class%% .et_pb_counter_container",
+					),
+				),
+			),
 			'fonts' => array(
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
@@ -63,14 +67,6 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_counter_amount",
 					),
-				),
-			),
-			'border' => array(
-				'css' => array(
-					'main' => "{$this->main_css_element} .et_pb_counter_container",
-				),
-				'settings' => array(
-					'color' => 'alpha',
 				),
 			),
 			'background' => array(
@@ -88,6 +84,11 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 			),
 			'max_width' => array(),
 			'text'      => array(),
+			'filters'   => array(
+				'css' => array(
+					'main' => '%%order_class%%',
+				),
+			),
 		);
 		$this->custom_css_options = array(
 			'counter_title' => array(
@@ -142,13 +143,7 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 				),
 				'toggle_slug'       => 'elements',
 			),
-			'border_radius' => array(
-				'label'             => esc_html__( 'Border Radius', 'et_builder' ),
-				'type'              => 'range',
-				'option_category'   => 'layout',
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'border',
-			),
+			'border_radius' => array(),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
 				'type'            => 'multiple_checkboxes',
@@ -204,7 +199,6 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 		$allow_player_pause        = $this->shortcode_atts['allow_player_pause'];
 		$bar_bg_color              = $this->shortcode_atts['bar_bg_color'];
 		$use_percentages           = $this->shortcode_atts['use_percentages'];
-		$border_radius             = $this->shortcode_atts['border_radius'];
 
 		$et_pb_counters_settings = array(
 			'background_color'          => $background_color,
@@ -218,7 +212,6 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 			'allow_player_pause'        => $allow_player_pause,
 			'bar_bg_color'              => $bar_bg_color,
 			'use_percentages'           => $use_percentages,
-			'border_radius'             => $border_radius,
 		);
 	}
 

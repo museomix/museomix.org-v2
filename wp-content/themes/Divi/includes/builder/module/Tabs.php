@@ -19,6 +19,22 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 		$this->main_css_element = '%%order_class%%.et_pb_tabs';
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css'      => array(
+					'main' => array(
+						'border_radii'  => $this->main_css_element,
+						'border_styles' => $this->main_css_element,
+					),
+				),
+				'defaults' => array(
+					'border_radii'  => 'on|0px|0px|0px|0px',
+					'border_styles' => array(
+						'width' => '1px',
+						'color' => '#d9d9d9',
+						'style' => 'solid',
+					),
+				),
+			),
 			'fonts' => array(
 				'tab' => array(
 					'label'    => esc_html__( 'Tab', 'et_builder' ),
@@ -45,7 +61,6 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 					'color' => 'alpha',
 				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'padding' => '%%order_class%% .et_pb_tab',
@@ -53,6 +68,7 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'tabs_controls' => array(

@@ -5,7 +5,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 		$this->name             = esc_html__( 'Post Navigation', 'et_builder' );
 		$this->slug             = 'et_pb_post_nav';
 		$this->fb_support       = true;
-		$this->main_css_element = '%%order_class%%';
+		$this->main_css_element = '.et_pb_posts_nav%%order_class%%';
 
 		$this->defaults = array();
 
@@ -54,11 +54,6 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 					'hide_text_align' => true,
 				),
 			),
-			'border'                => array(
-				'css' => array(
-					'main' => "{$this->main_css_element} span.nav-previous a, {$this->main_css_element} span.nav-next a",
-				),
-			),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'main' => "{$this->main_css_element} span.nav-previous a, {$this->main_css_element} span.nav-next a",
@@ -70,6 +65,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(
@@ -221,6 +217,18 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 					'prev_text',
 					'next_text'
 				),
+			),
+			'use_border_color' => array(
+				'type' => 'skip',
+			),
+			'border_color'     => array(
+				'type' => 'skip',
+			),
+			'border_width'     => array(
+				'type' => 'skip',
+			),
+			'border_style'     => array(
+				'type' => 'skip',
 			),
 		);
 		return $fields;
@@ -431,6 +439,19 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 			array( 'important' => true )
 		) );
 	}
+
+	protected function _add_additional_border_fields() {
+		parent::_add_additional_border_fields();
+
+		$this->advanced_options['border']['css'] = array(
+			'main' => array(
+				'border_radii'  => "{$this->main_css_element} span.nav-previous a, {$this->main_css_element} span.nav-next a",
+				'border_styles' => "{$this->main_css_element} span.nav-previous a, {$this->main_css_element} span.nav-next a",
+			)
+		);
+	}
+
+
 }
 
 new ET_Builder_Module_Posts_Navigation;

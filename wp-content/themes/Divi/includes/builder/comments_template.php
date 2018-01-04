@@ -5,11 +5,15 @@
 <?php
 		return;
 	endif;
+
+	global $et_comments_header_level;
+
+	$et_comments_header_level_processed = isset( $et_comments_header_level ) && '' !== $et_comments_header_level ? et_pb_process_header_level( $et_comments_header_level, 'h1' ) : 'h1';
 ?>
 <!-- You can start editing here. -->
 
 <section id="comment-wrap">
-	<h1 id="comments" class="page_title"><?php comments_number( esc_html__( '0 Comments', 'et_builder' ), esc_html__( '1 Comment', 'et_builder' ), '% ' . esc_html__( 'Comments', 'et_builder' ) ); ?></h1>
+	<<?php echo $et_comments_header_level_processed ?> id="comments" class="page_title"><?php comments_number( esc_html__( '0 Comments', 'et_builder' ), esc_html__( '1 Comment', 'et_builder' ), '% ' . esc_html__( 'Comments', 'et_builder' ) ); ?></<?php echo $et_comments_header_level_processed ?>>
 	<?php if ( have_comments() ) : ?>
 		<?php if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) : // Are there comments to navigate through? ?>
 			<div class="comment_navigation_top clearfix">

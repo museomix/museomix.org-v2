@@ -72,6 +72,7 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
+			'filters' => array(),
 		);
 	}
 
@@ -292,6 +293,16 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 
 		return $output;
 	}
+
+	protected function _add_additional_border_fields() {
+		return false;
+	}
+
+	function process_advanced_border_options( $function_name ) {
+		return false;
+	}
+
+
 }
 
 new ET_Builder_Module_Divider;

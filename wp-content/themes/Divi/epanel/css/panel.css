@@ -1382,6 +1382,20 @@ left: 0px;
 	background-position: bottom;
 }
 
+.colorpalette-colorpicker span.wp-picker-input-wrap {
+    display: block !important;
+    position: absolute;
+    top: 40px;
+}
+
+.colorpalette-colorpicker button.button.button-confirm {
+    display: none;
+}
+
+.colorpalette-colorpicker .wp-picker-holder { 
+	margin-top: 50px; 
+}
+
 .navigationTabs { height: 23px; line-height: 23px; border-bottom: 1px solid #ccc; }
 .navigationTabs li { float: left; height: 23px; line-height: 23px; padding-right: 3px; }
 .navigationTabs li a{ float: left; display: block; height: 23px; line-height: 23px; padding: 0 10px; overflow: hidden;	color: #52697E;	background-color: #eee;	position: relative;	text-decoration: none; }

@@ -53,8 +53,11 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} h3",
+						'main'      => "{$this->main_css_element} h3, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h2.et_pb_module_header, {$this->main_css_element} h4.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h3',
 					),
 				),
 				'number'   => array(
@@ -90,6 +93,11 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 				),
 			),
 			'text' => array(),
+			'filters'               => array(
+				'css' => array(
+					'main' => '%%order_class%%',
+				),
+			),
 		);
 		$this->custom_css_options = array(
 			'percent' => array(
@@ -231,6 +239,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 		$custom_padding              = $this->shortcode_atts['custom_padding'];
 		$custom_padding_tablet       = $this->shortcode_atts['custom_padding_tablet'];
 		$custom_padding_phone        = $this->shortcode_atts['custom_padding_phone'];
+		$header_level                = $this->shortcode_atts['title_level'];
 
 		if ( '' !== $custom_padding ) {
 			ET_Builder_Element::set_style( $function_name, array(
@@ -284,7 +293,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 			: '';
 
 		$output = sprintf(
-			'<div%1$s class="et_pb_circle_counter container-width-change-notify%2$s%3$s%10$s%12$s%14$s" data-number-value="%4$s" data-bar-bg-color="%5$s"%8$s%9$s>
+			'<div%1$s class="et_pb_circle_counter container-width-change-notify%2$s%3$s%10$s%12$s%14$s%15$s" data-number-value="%4$s" data-bar-bg-color="%5$s"%8$s%9$s>
 				%13$s
 				%11$s
 					<div class="percent"><p><span class="percent-value"></span>%6$s</p></div>
@@ -296,14 +305,15 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 			esc_attr( $number ),
 			esc_attr( $bar_bg_color ),
 			( 'on' == $percent_sign ? '%' : ''),
-			( '' !== $title ? '<h3>' . esc_html( $title ) . '</h3>' : '' ),
+			( '' !== $title ?  sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h3' ), esc_html( $title ) ) : '' ),
 			$circle_color_data,
 			$circle_color_alpha_data,
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
 			$parallax_image_background,
-			$this->get_text_orientation_classname()
+			$this->get_text_orientation_classname(),
+			'' !== $title ? ' et_pb_with_title' : ''
 		);
 
 		return $output;

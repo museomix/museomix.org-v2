@@ -41,7 +41,10 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 			'advanced' => array(
 				'toggles' => array(
 					'controls' => esc_html__( 'Controls', 'et_builder' ),
-					'filter'   => esc_html__( 'Filter', 'et_builder' ),
+					'child_filters' => array(
+						'title' => esc_html__( 'Map', 'et_builder' ),
+						'priority' => 51,
+					),
 				),
 			),
 		);
@@ -54,6 +57,20 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
+			'filters' => array(
+				'css' => array(
+					'main' => '%%order_class%%',
+				),
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'child_filters',
+				),
+			),
+			'child_filters'   => array(
+				'css' => array(
+					'main' => '%%order_class%% .gm-style>div>div>div>div>div>img',
+				),
+			),
 		);
 	}
 
@@ -144,7 +161,7 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 			),
 			'use_grayscale_filter' => array(
 				'label'           => esc_html__( 'Use Grayscale Filter', 'et_builder' ),
-				'type'            => 'yes_no_button',
+				'type'            => 'hidden',
 				'option_category' => 'configuration',
 				'options'         => array(
 					'off' => esc_html__( 'No', 'et_builder' ),
@@ -154,15 +171,15 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 					'grayscale_filter_amount',
 				),
 				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'filter',
+				'toggle_slug'     => 'child_filters',
 			),
 			'grayscale_filter_amount' => array(
 				'label'           => esc_html__( 'Grayscale Filter Amount (%)', 'et_builder' ),
-				'type'            => 'range',
+				'type'            => 'hidden',
 				'default'         => '0',
 				'option_category' => 'configuration',
 				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'filter',
+				'toggle_slug'     => 'child_filters',
 				'depends_show_if' => 'on',
 				'validate_unit'   => false,
 			),
@@ -230,6 +247,15 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 		$grayscale_filter_data = '';
 		if ( 'on' === $use_grayscale_filter && '' !== $grayscale_filter_amount ) {
 			$grayscale_filter_data = sprintf( ' data-grayscale="%1$s"', esc_attr( $grayscale_filter_amount ) );
+		}
+
+		// Map Tiles: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'child_filters', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['child_filters'] ) ) {
+			$module_class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['child_filters']['css'], 'main', '%%order_class%%' )
+			);
 		}
 
 		$output = sprintf(

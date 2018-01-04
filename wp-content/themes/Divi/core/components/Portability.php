@@ -19,27 +19,20 @@ final class ET_Core_Portability {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @type array
+	 * @type object
 	 */
-	private $instance = array();
+	public $instance;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string $context Protability context previously registered.
+	 * @param string $context Portability context previously registered.
 	 */
 	public function __construct( $context ) {
-		// perform this check only in admin area to make sure class loaded properly in Frontend Builder
-		if ( ! current_user_can( 'switch_themes' ) && is_admin() ) {
-			return false;
-		}
+		$this->instance = et_core_cache_get( $context, 'et_core_portability' );
 
-		if ( ! $this->instance = et_core_cache_get( $context, 'et_core_portability' ) ) {
-			return false;
-		}
-
-		if ( $this->instance->view ) {
-			if ( ! empty( $_GET['et_fb'] ) ) {
+		if ( $this->instance && $this->instance->view ) {
+			if ( et_core_is_fb_enabled() ) {
 				$this->assets();
 			} else {
 				add_action( 'admin_footer', array( $this, 'modal' ) );
@@ -55,11 +48,6 @@ final class ET_Core_Portability {
 	 * @since 1.0.0
 	 */
 	public function import() {
-		// Verify nonce.
-		if ( ! ( isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'et_core_portability_nonce' ) ) ) {
-			wp_send_json_error();
-		}
-
 		$this->prevent_failure();
 
 		$timestamp = $this->get_timestamp();
@@ -134,10 +122,6 @@ final class ET_Core_Portability {
 	 * @since 1.0.0
 	 */
 	public function export() {
-		if ( ! ( isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'et_core_portability_nonce' ) ) ) {
-			wp_send_json_error();
-		}
-
 		$this->prevent_failure();
 
 		$timestamp = $this->get_timestamp();
@@ -193,10 +177,6 @@ final class ET_Core_Portability {
 	 * @since 1.0.0
 	 */
 	public function download_export() {
-		if ( ! isset( $_GET['nonce'] ) && wp_verify_nonce( $_GET['nonce'], 'et_core_portability_nonce' ) ) {
-			wp_die( esc_html__( 'The export process failed. Please refresh the page and try again.', ET_CORE_TEXTDOMAIN ) );
-		}
-
 		$this->prevent_failure();
 
 		// Retrieve data.
@@ -873,7 +853,7 @@ final class ET_Core_Portability {
 		@set_time_limit( 0 );
 
 		// Increase memory which is safe at this stage of the request.
-		if ( (int) @ini_get( 'memory_limit' ) < 256 ) {
+		if ( et_core_get_memory_limit() < 256 ) {
 			@ini_set( 'memory_limit', '256M' );
 		}
 	}
@@ -1021,7 +1001,11 @@ final class ET_Core_Portability {
 			'et-core-admin',
 		), ET_CORE_VERSION );
 		wp_localize_script( 'et-core-portability', 'etCorePortability', array(
-			'nonce'         => wp_create_nonce( 'et_core_portability_nonce' ),
+			'nonces'        => array(
+				'import' => wp_create_nonce( 'et_core_portability_import' ),
+				'export' => wp_create_nonce( 'et_core_portability_export' ),
+				'cancel' => wp_create_nonce( 'et_core_portability_cancel' ),
+			),
 			'postMaxSize'   => (int) @ini_get( 'post_max_size' ),
 			'uploadMaxSize' => $this->to_megabytes( @ini_get( 'upload_max_filesize' ) ),
 			'text'          => array(
@@ -1048,7 +1032,8 @@ final class ET_Core_Portability {
 			'et_core_portability' => true,
 			'context'             => $this->instance->context,
 			'name'                => $this->instance->name,
-			'nonce'               => wp_create_nonce( 'et_core_portability_nonce' ),
+			'nonce'               => wp_create_nonce( 'et_core_portability_export' ),
+
 		), admin_url() );
 
 		?>
@@ -1161,11 +1146,12 @@ function et_core_portability_register( $context, $args ) {
 }
 endif;
 
+
 if ( ! function_exists( 'et_core_portability_load' ) ) :
 /**
  * Load Portability class.
  *
- * @since 1.0.0
+ * @since 2.7.0
  *
  * @param string $context A unique ID used to register the portability arguments.
  * @return ET_Core_Portability
@@ -1175,11 +1161,12 @@ function et_core_portability_load( $context ) {
 }
 endif;
 
+
 if ( ! function_exists( 'et_core_portability_link' ) ) :
 /**
  * HTML link to trigger the portability modal.
  *
- * @since 1.0.0
+ * @since 2.7.0
  *
  * @param string       $context    The context used to register the portability.
  * @param string|array $attributes Optional. Query string or array of attributes. Default empty.
@@ -1189,8 +1176,12 @@ if ( ! function_exists( 'et_core_portability_link' ) ) :
 function et_core_portability_link( $context, $attributes = array() ) {
 	$instance = et_core_cache_get( $context, 'et_core_portability' );
 
-	if ( ! current_user_can( 'switch_themes' ) || ! ( isset( $instance->view ) && $instance->view ) ) {
-		return;
+	if ( ! $capability = et_core_portability_cap( $context ) ) {
+		return '';
+	}
+
+	if ( ! current_user_can( $capability ) || ! ( isset( $instance->view ) && $instance->view ) ) {
+		return '';
 	}
 
 	$defaults = array(
@@ -1218,82 +1209,141 @@ function et_core_portability_link( $context, $attributes = array() ) {
 }
 endif;
 
+
 if ( ! function_exists( 'et_core_portability_ajax_import' ) ) :
 /**
  * Ajax portability Import.
  *
- * @since 1.0.0
- *
- * @private
+ * @since 2.7.0
  */
 function et_core_portability_ajax_import() {
 	if ( ! isset( $_POST['context'] ) ) {
-		wp_send_json_error();
+		et_core_die();
 	}
 
-	if ( $portability = et_core_portability_load( sanitize_text_field( $_POST['context'] ) ) ) {
-		$portability->import();
+	$context = sanitize_text_field( $_POST['context'] );
+
+	if ( ! $capability = et_core_portability_cap( $context ) ) {
+		et_core_die();
 	}
+
+	if ( ! et_core_security_check_passed( $capability, 'et_core_portability_import', 'nonce' ) ) {
+		et_core_die();
+	}
+
+	et_core_portability_load( $context )->import();
+
+	wp_send_json_error();
 }
-endif;
 add_action( 'wp_ajax_et_core_portability_import', 'et_core_portability_ajax_import' );
+endif;
+
 
 if ( ! function_exists( 'et_core_portability_ajax_export' ) ) :
 /**
  * Ajax portability Export.
  *
- * @since 1.0.0
- *
- * @private
+ * @since 2.7.0
  */
 function et_core_portability_ajax_export() {
 	if ( ! isset( $_POST['context'] ) ) {
-		wp_send_json_error();
+		et_core_die();
 	}
 
-	if ( $portability = et_core_portability_load( sanitize_text_field( $_POST['context'] ) ) ) {
-		$portability->export();
+	$context = sanitize_text_field( $_POST['context'] );
+
+	if ( ! $capability = et_core_portability_cap( $context ) ) {
+		et_core_die();
 	}
+
+	if ( ! et_core_security_check_passed( $capability, 'et_core_portability_export', 'nonce' ) ) {
+		et_core_die();
+	}
+
+	et_core_portability_load( $context )->export();
+
+	wp_send_json_error();
 }
-endif;
 add_action( 'wp_ajax_et_core_portability_export', 'et_core_portability_ajax_export' );
+endif;
+
 
 if ( ! function_exists( 'et_core_portability_ajax_cancel' ) ) :
 /**
  * Cancel portability action.
  *
- * @since 1.0.0
- *
- * @private
+ * @since 2.7.0
  */
 function et_core_portability_ajax_cancel() {
-	if ( ! isset( $_POST['context'] ) || ( ! isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], 'et_core_portability_nonce' ) ) ) {
-		wp_send_json_error();
+	if ( ! isset( $_POST['context'] ) ) {
+		et_core_die();
 	}
 
-	if ( $portability = et_core_portability_load( sanitize_text_field( $_POST['context'] ) ) ) {
-		$portability->delete_temp_files( true );
+	$context = sanitize_text_field( $_POST['context'] );
+
+	if ( ! $capability = et_core_portability_cap( $context ) ) {
+		et_core_die();
 	}
+
+	if ( ! et_core_security_check_passed( $capability, 'et_core_portability_cancel' ) ) {
+		et_core_die();
+	}
+
+	et_core_portability_load( $context )->delete_temp_files( true );
+
+	wp_send_json_error();
 }
-endif;
 add_action( 'wp_ajax_et_core_portability_cancel', 'et_core_portability_ajax_cancel' );
+endif;
+
 
 if ( ! function_exists( 'et_core_portability_export' ) ) :
 /**
  * Portability export.
  *
- * @since 1.0.0
- *
- * @private
+ * @since 2.7.0
  */
 function et_core_portability_export() {
-	if ( ! ( isset( $_GET['et_core_portability'] ) && isset( $_GET['timestamp'] ) ) ) {
+	if ( ! isset( $_GET['et_core_portability'], $_GET['timestamp'] ) ) {
 		return;
 	}
 
-	if ( $portability = et_core_portability_load( sanitize_text_field( $_GET['timestamp'] ) ) ) {
-		$portability->download_export();
+	if ( ! et_core_security_check_passed( 'edit_posts' ) ) {
+		wp_die( esc_html__( 'The export process failed. Please refresh the page and try again.', ET_CORE_TEXTDOMAIN ) );
 	}
+
+	et_core_portability_load( sanitize_text_field( $_GET['timestamp'] ) )->download_export();
+}
+add_action( 'admin_init', 'et_core_portability_export', 20 );
+endif;
+
+
+if ( ! function_exists( 'et_core_portability_cap' ) ):
+/**
+ * Returns the required WordPress Capability for a Portability context.
+ *
+ * @since 3.0.91
+ *
+ * @param string $context The Portability context
+ *
+ * @return string
+ */
+function et_core_portability_cap( $context ) {
+	$capability       = '';
+	$options_contexts = array(
+		'et_pb_roles',
+		'et_builder_layouts',
+		'epanel',
+		'et_divi_mods',
+		'et_extra_mods',
+	);
+
+	if ( in_array( $context, $options_contexts ) ) {
+		$capability = 'edit_theme_options';
+	} else if ( 'et_builder' === $context ) {
+		$capability = 'edit_posts';
+	}
+
+	return $capability;
 }
 endif;
-add_action( 'admin_init', 'et_core_portability_export', 20 );

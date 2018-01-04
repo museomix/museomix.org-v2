@@ -184,15 +184,14 @@ class ET_Core_Data_Utils {
 				$key = (int) $key;
 			}
 
-			if ( isset( $value[ $key ] ) ) {
-				$value = $value[ $key ];
-				continue;
+			if ( ! isset( $value[ $key ] ) ) {
+				return $default;
 			}
 
-			$array = $value;
+			$value = $value[ $key ];
 		}
 
-		return $value !== $array ? $value : $default;
+		return $value;
 	}
 
 	/**

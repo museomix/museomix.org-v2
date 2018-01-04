@@ -92,6 +92,9 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 					'layout'     => esc_html__( 'Layout', 'et_builder' ),
 					'overlay'    => esc_html__( 'Overlay', 'et_builder' ),
 					'navigation' => esc_html__( 'Navigation', 'et_builder' ),
+					'image' => array(
+						'title' => esc_html__( 'Image', 'et_builder' ),
+					),
 					'text'       => array(
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
@@ -111,10 +114,13 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title",
+						'main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title, {$this->main_css_element} .et_pb_slide_description .et_pb_slide_title a",
 						'important' => array( 'size', 'font-size', 'plugin_all' ),
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
@@ -155,7 +161,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			),
 			'background' => array(
 				'css' => array(
-					'main' => "{$this->main_css_element}, {$this->main_css_element}.et_pb_bg_layout_dark"
+					'main' => "{$this->main_css_element}, {$this->main_css_element}.et_pb_bg_layout_dark",
 				),
 			),
 			'custom_margin_padding' => array(
@@ -169,6 +175,25 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			'text'      => array(
 				'css'   => array(
 					'text_orientation' => '%%order_class%% .et_pb_slide .et_pb_slide_description',
+					'text_shadow'      => '%%order_class%% .et_pb_slide .et_pb_slide_description',
+				),
+			),
+			'border' => array(
+				'css' => array(
+					'main' => array(
+						'border_radii'  => '%%order_class%%, %%order_class%% .et_pb_slide, %%order_class%% .et_pb_slide_overlay_container',
+					),
+				),
+			),
+			'filters' => array(
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+            ),
+			'image' => array(
+				'css' => array(
+					'main' => '%%order_class%% .et_pb_slide_image',
 				),
 			),
 		);
@@ -584,20 +609,20 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		}
 
 		if ( 'date_desc' !== $args['orderby'] ) {
-			switch( $args['orderby'] ) {
-				case 'date_asc' :
+			switch ( $args['orderby'] ) {
+				case 'date_asc':
 					$query_args['orderby'] = 'date';
 					$query_args['order'] = 'ASC';
 					break;
-				case 'title_asc' :
+				case 'title_asc':
 					$query_args['orderby'] = 'title';
 					$query_args['order'] = 'ASC';
 					break;
-				case 'title_desc' :
+				case 'title_desc':
 					$query_args['orderby'] = 'title';
 					$query_args['order'] = 'DESC';
 					break;
-				case 'rand' :
+				case 'rand':
 					$query_args['orderby'] = 'rand';
 					break;
 			}
@@ -748,6 +773,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		$dot_nav_custom_color    = $this->shortcode_atts['dot_nav_custom_color'];
 		$arrows_custom_color     = $this->shortcode_atts['arrows_custom_color'];
 		$button_rel              = $this->shortcode_atts['button_rel'];
+		$header_level            = $this->shortcode_atts['header_level'];
 
 		$post_index = 0;
 
@@ -928,7 +954,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 							</div>
 						<?php } ?>
 						<div class="et_pb_slide_description">
-							<h2 class="et_pb_slide_title"><?php the_title(); ?></h2>
+							<<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?> class="et_pb_slide_title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?>>
 							<div class="et_pb_slide_content <?php if ( 'on' !== $show_content_on_mobile ) { echo esc_attr( $hide_on_mobile_class ); } ?>">
 								<?php
 								if ( 'off' !== $show_meta ) {
@@ -981,6 +1007,15 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			$content  = '<div class="et_pb_no_results">';
 			$content .= self::get_no_results_template();
 			$content .= '</div>';
+		}
+
+		// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+			$module_class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+			);
 		}
 
 		$output = sprintf(

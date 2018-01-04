@@ -875,7 +875,7 @@ $options = array (
 				   "id" => $shortname . "_integration_single_bottom",
 				   "type" => "textarea",
 				   "std" => "",
-				   "desc" => esc_html__( "Any code you place here will be placed at the top of all single posts. This is useful if you are looking to integrating things such as social bookmarking links.", $themename )
+				   "desc" => esc_html__( "Any code you place here will be placed at the bottom of all single posts. This is useful if you are looking to integrating things such as social bookmarking links.", $themename )
 			),
 
 		array( "name" => "integration-1",

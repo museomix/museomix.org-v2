@@ -86,6 +86,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 			'text'      => array(
 				'toggle_slug' => 'links',
 			),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(
@@ -477,7 +478,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 				<div class="et_pb_row clearfix">
 					%1$s
 					<div class="et_mobile_nav_menu">
-						<a href="#" class="mobile_nav closed">
+						<a href="#" class="mobile_nav closed%10$s">
 							<span class="mobile_menu_bar"></span>
 						</a>
 					</div>
@@ -491,7 +492,8 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
-			$parallax_image_background
+			$parallax_image_background,
+			'upwards' === $submenu_direction ? ' et_pb_mobile_menu_upwards' : ''
 		);
 
 		return $output;

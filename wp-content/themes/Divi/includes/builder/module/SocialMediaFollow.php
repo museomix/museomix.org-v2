@@ -35,7 +35,6 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 		);
 
 		$this->fields_defaults = array(
-			'link_shape'        => array( 'rounded_rectangle' ),
 			'background_layout' => array( 'light' ),
 			'url_new_window'    => array( 'on' ),
 			'follow_button'     => array( 'off' ),
@@ -70,6 +69,22 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 
 		$this->advanced_options = array(
 			'background' => array(),
+			'border' => array(
+				'css'      => array(
+					'main' => array(
+						'border_radii'  => "{$this->main_css_element} a.icon",
+						'border_styles' => "{$this->main_css_element} a",
+					),
+				),
+				'defaults' => array(
+					'border_radii' => 'on|3px|3px|3px|3px',
+					'border_styles' => array(
+						'width' => '0px',
+						'color' => '#333333',
+						'style' => 'solid',
+					),
+				),
+			),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'main' => 'ul%%order_class%%',
@@ -89,22 +104,12 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 					),
 				),
 			),
+			'filters' => array(),
 		);
 	}
 
 	function get_fields() {
 		$fields = array(
-			'link_shape' => array(
-				'label'           => esc_html__( 'Link Shape', 'et_builder' ),
-				'type'            => 'select',
-				'option_category' => 'layout',
-				'options'         => array(
-					'rounded_rectangle' => esc_html__( 'Rounded Rectangle', 'et_builder' ),
-					'circle'            => esc_html__( 'Circle', 'et_builder' ),
-				),
-				'toggle_slug'     => 'icon',
-				'description'     => esc_html__( 'Here you can choose the shape of your social network icons.', 'et_builder' ),
-			),
 			'background_layout' => array(
 				'label'           => esc_html__( 'Text Color', 'et_builder' ),
 				'type'            => 'select',
@@ -182,13 +187,11 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 	function pre_shortcode_content() {
 		global $et_pb_social_media_follow_link;
 
-		$link_shape        = $this->shortcode_atts['link_shape'];
 		$url_new_window    = $this->shortcode_atts['url_new_window'];
 		$follow_button     = $this->shortcode_atts['follow_button'];
 
 		$et_pb_social_media_follow_link = array(
 			'url_new_window' => $url_new_window,
-			'shape'          => $link_shape,
 			'follow_button'  => $follow_button,
 		);
 	}
@@ -205,6 +208,9 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 		$module_class              = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
+
+		// Get custom borders, if any
+		$atts                      = $this->shortcode_atts;
 
 		$output = sprintf(
 			'<ul%3$s class="et_pb_social_media_follow%2$s%4$s%5$s%6$s%8$s clearfix%10$s">

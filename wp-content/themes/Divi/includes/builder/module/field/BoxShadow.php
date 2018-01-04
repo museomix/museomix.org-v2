@@ -55,13 +55,22 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 			$option['sub_toggle'] = $arguments['sub_toggle_slug'];
 		}
 
-		$presets = array( array( 'icon' => 'none', 'value' => 'none', ) );
+		$presets = array();
+
 		foreach ( $this->get_presets() as $id => $preset ) {
-			$presets[] = array(
-				'value'   => $id,
-				'content' => sprintf( '<span class="preset %1$s"></span>', esc_attr( $id ) ),
-				'fields'  => $this->fetch_preset( $preset, $arguments['suffix'] ),
-			);
+			if ( 'none' === $id ) {
+				$presets[] = array(
+					'value'   => $id,
+					'icon'    => $id,
+					'fields'  => $this->fetch_preset( $preset, $arguments['suffix'] ),
+				);
+			} else {
+				$presets[] = array(
+					'value'   => $id,
+					'content' => sprintf( '<span class="preset %1$s"></span>', esc_attr( $id ) ),
+					'fields'  => $this->fetch_preset( $preset, $arguments['suffix'] ),
+				);
+			}
 		}
 
 		$options[ $style ] = array_merge(
@@ -201,6 +210,13 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 
 	public function get_presets() {
 		return array(
+			'none' => array(
+				"horizontal" => '',
+				"vertical"   => '',
+				"blur"       => '',
+				"spread"     => '',
+				"position"   => 'outer',
+			),
 			'preset1' => array(
 				"horizontal" => '0px',
 				"vertical"   => '2px',

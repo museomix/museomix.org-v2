@@ -41,6 +41,10 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
 					),
+					'image' => array(
+						'title' => esc_html__( 'Image', 'et_builder' ),
+						'priority' => 51,
+					),
 				),
 			),
 		);
@@ -50,8 +54,11 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h2",
+						'main' => "{$this->main_css_element} h2, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h4.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'caption'   => array(
@@ -67,8 +74,10 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'settings' => array(
 					'color' => 'alpha',
 				),
+				'css' => array(
+					'important' => true,
+				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',
@@ -83,6 +92,21 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 			'text'      => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%% .et_pb_audio_module_content',
+					'text_shadow'      => '%%order_class%% .et_pb_audio_module_content',
+				),
+			),
+			'filters' => array(
+				'css' => array(
+					'main' => '%%order_class%%',
+				),
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+			),
+			'image' => array(
+				'css' => array(
+					'main' => '%%order_class%% .et_pb_audio_cover_art',
 				),
 			),
 		);
@@ -237,6 +261,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				),
 			),
 		);
+
 		return $fields;
 	}
 
@@ -250,12 +275,13 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		// remove all filters from WP audio shortcode to make sure current theme doesn't add any elements into audio module
 		remove_all_filters( 'wp_audio_shortcode_library' );
 		remove_all_filters( 'wp_audio_shortcode' );
-		remove_all_filters( 'wp_audio_shortcode_class');
+		remove_all_filters( 'wp_audio_shortcode_class' );
 
 		return do_shortcode( sprintf( '[audio src="%s" /]', $args['audio'] ) );
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
+		global $wp_version;
 		$module_id         = $this->shortcode_atts['module_id'];
 		$module_class      = $this->shortcode_atts['module_class'];
 		$audio             = $this->shortcode_atts['audio'];
@@ -263,8 +289,10 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		$artist_name       = $this->shortcode_atts['artist_name'];
 		$album_name        = $this->shortcode_atts['album_name'];
 		$image_url         = $this->shortcode_atts['image_url'];
-		$background_color  = "" !== $this->shortcode_atts['background_color'] ? $this->shortcode_atts['background_color'] : $this->fields_defaults['background_color'][0];
+		$background_color  = '' !== $this->shortcode_atts['background_color'] ? $this->shortcode_atts['background_color'] : $this->fields_defaults['background_color'][0];
 		$background_layout = $this->shortcode_atts['background_layout'];
+		$header_level      = $this->shortcode_atts['title_level'];
+		$wp_48_or_lower    = version_compare( $wp_version, '4.9' ) === -1 ? 'et_pb_audio_legacy' : '';
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -272,7 +300,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		$class = " et_pb_module et_pb_bg_layout_{$background_layout}";
 
 		if ( 'light' === $background_layout ) {
-			$class .= " et_pb_text_color_dark";
+			$class .= ' et_pb_text_color_dark';
 		}
 
 		if ( '' !== $artist_name || '' !== $album_name ) {
@@ -312,12 +340,21 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		// remove all filters from WP audio shortcode to make sure current theme doesn't add any elements into audio module
 		remove_all_filters( 'wp_audio_shortcode_library' );
 		remove_all_filters( 'wp_audio_shortcode' );
-		remove_all_filters( 'wp_audio_shortcode_class');
+		remove_all_filters( 'wp_audio_shortcode_class' );
 
 		$video_background = $this->video_background();
 
+		// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+			$module_class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+			);
+		}
+
 		$output = sprintf(
-			'<div%8$s class="et_pb_audio_module clearfix%4$s%7$s%9$s%10$s%12$s"%5$s>
+			'<div%8$s class="et_pb_audio_module clearfix%4$s%7$s%9$s%10$s%12$s %14$s"%5$s>
 				%13$s
 				%11$s
 				%6$s
@@ -328,7 +365,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 					%3$s
 				</div>
 			</div>',
-			( '' !== $title ? '<h2>' . esc_html( $title ) . '</h2>' : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), esc_html( $title ) ) : '' ),
 			$meta,
 			self::get_audio( array(
 				'audio' => $audio,
@@ -342,7 +379,8 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
-			$parallax_image_background
+			$parallax_image_background,
+			$wp_48_or_lower
 		);
 
 		return $output;

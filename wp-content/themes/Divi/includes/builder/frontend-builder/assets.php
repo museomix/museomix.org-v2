@@ -91,7 +91,12 @@ function et_fb_enqueue_assets() {
 
 	wp_register_script( 'iris', admin_url( 'js/iris.min.js' ), array( 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ), false, 1 );
 	wp_register_script( 'wp-color-picker', admin_url( 'js/color-picker.min.js' ), array( 'iris' ), false, 1 );
-	wp_register_script( 'wp-color-picker-alpha', "{$root}/scripts/ext/wp-color-picker-alpha.min.js", array( 'wp-color-picker' ) );
+
+	if ( version_compare( $wp_major_version, '4.9', '>=' ) ) {
+		wp_register_script( 'wp-color-picker-alpha', "{$root}/scripts/ext/wp-color-picker-alpha.min.js", array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+	} else {
+		wp_register_script( 'wp-color-picker-alpha', "{$root}/scripts/ext/wp-color-picker-alpha-48.min.js", array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+	}
 
 	$colorpicker_l10n = array(
 		'clear'         => esc_html__( 'Clear', 'et_builder' ),
@@ -132,6 +137,7 @@ function et_fb_enqueue_assets() {
 		'wp-shortcode',
 		'heartbeat',
 		'wp-mediaelement',
+		'et-shortcodes-js',
 	) );
 
 	// Adding concatenated script as dependencies for script debugging
@@ -148,7 +154,21 @@ function et_fb_enqueue_assets() {
 	}
 
 	// Enqueue scripts.
-	wp_enqueue_script( 'et-frontend-builder', "{$app}/bundle.js", $fb_bundle_dependencies, $ver, true );
+	$bundle = "{$app}/bundle.js";
+	if ( defined( 'ET_DEBUG' ) && ET_DEBUG ) {
+		$site_url       = wp_parse_url( get_site_url() );
+		$hot_bundle_url = "{$site_url['scheme']}://{$site_url['host']}:31495/bundle.js";
+		wp_enqueue_script( 'et-frontend-builder', $hot_bundle_url, $fb_bundle_dependencies, $ver, true );
+
+		// Add the bundle as fallback in case webpack-dev-server is not running
+		wp_add_inline_script(
+			'et-frontend-builder',
+			sprintf( 'window.ET_FB || document.write(\'<script src="%s">\x3C/script>\')', $bundle ),
+			'after'
+		);
+	} else {
+		wp_enqueue_script( 'et-frontend-builder', $bundle, $fb_bundle_dependencies, $ver, true );
+	}
 
 	// Enqueue failure notice script.
 	wp_enqueue_script( 'et-frontend-builder-failure', "{$assets}/scripts/failure_notice.js", array(), $ver, true );
