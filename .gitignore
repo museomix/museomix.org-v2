@@ -21,3 +21,5 @@ dev.sql
 .revision
 wp-snapshots
 wp-content/updraft
+analytics.txt
+error_log
