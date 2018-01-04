@@ -64,7 +64,7 @@ class WPML_Post_Language_Filter extends WPML_Language_Filter_Bar {
 					ON t.element_id=p.ID
 						AND t.element_type = CONCAT('post_', p.post_type)
 				WHERE p.post_type=%s {$extra_conditions}
-				", $type, 'post_' . $type ) );
+				", $type ) );
 	}
 
 	private function language_links( $type ) {

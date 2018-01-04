@@ -16,7 +16,7 @@ $options = $context['options'];
 		<p class="desc">Adjust plugin's global settings here.</p>
 		<dl class="section-settings">
 			<dt class="ff_mod_roles ff_hide4site">Who can moderate
-			<p class="desc">Roles that are allowed to pre-moderate.</p>
+			<p class="desc">User roles that are allowed to moderate feeds.</p>
 			</dt>
 			<dd class="ff_mod_roles ff_hide4site">
 				<?php
@@ -32,7 +32,7 @@ $options = $context['options'];
 				}
 				?>
 			</dd>
-			<dt class="multiline">Date format<p class="desc">That will be used in posts timestamps.</p></dt>
+			<dt class="multiline">Date format<p class="desc">Used in post timestamps.</p></dt>
 			<dd>
 				<input id="general-settings-ago-format" class="clearcache" type="radio" name="flow_flow_options[general-settings-date-format]" <?php if (isset($options['general-settings-date-format']) && $options['general-settings-date-format'] == 'agoStyleDate') echo "checked"; ?> value="agoStyleDate"/>
 				<label for="general-settings-ago-format">Short</label>
@@ -80,7 +80,7 @@ $options = $context['options'];
 			</dd>
 
 			<dt class="multiline">Force HTTPS for all resources
-			<p class="desc">For images and videos to load via HTTPS. Use this setting if you have HTTPS site and see browser security warnings. Keep in mind that this is forcing and not all API provide resources via HTTPS.</p></dt>
+			<p class="desc">Load images and videos via HTTPS. Use this setting if you notice browser security warnings. Be advised, not every API provides resources via HTTPS.</p></dt>
 			<dd>
 				<label for="general-settings-https">
 					<input id="general-settings-https" class="clearcache switcher" type="checkbox"
@@ -90,7 +90,7 @@ $options = $context['options'];
 			</dd>
 
 			<dt class="multiline">Аmount of stored posts for each feed
-			<p class="desc">Maximum amount of posts that can be stored for one feed.</p></dt>
+			<p class="desc"></p></dt>
 			<dd>
 				<label for="general-settings-feed-post-count">
 					<input id="general-settings-feed-post-count" class="clearcache short" type="text"
@@ -108,7 +108,7 @@ $options = $context['options'];
 			</dd>
 
 			<dt class="multiline">Remove all data when uninstall plugin
-			<p class="desc">Check this if you want to delete all database data that plugin created.</p>
+			<p class="desc">Check this if you want to erase all database records that plugin created.</p>
 			</dt>
 			<dd>
 				<label for="general-uninstall">

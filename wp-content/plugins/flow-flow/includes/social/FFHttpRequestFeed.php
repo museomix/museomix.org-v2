@@ -50,8 +50,11 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 				if ( $this->showImage( $item ) ) {
 					$post->img   = $this->getImage( $item );
 					$post->media = $this->getMedia( $item );
+					$post->carousel = $this->getCarousel( $item );
 				}
 				$post->additional       = $this->getAdditionalInfo( $item );
+				$post->comments 		= $this->getComments( $item );
+				
 				$post = $this->customize( $post, $item );
 				if ( $this->isSuitablePost( $post ) ) {
 					$result[$post->id] = $post;
@@ -128,5 +131,13 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 	 */
 	protected function isSuitableOriginalPost( $post ) {
 		return true;
+	}
+	
+	protected function getCarousel( $item ){
+		return array();
+	}
+	
+	protected function getComments( $item ){
+		return array();
 	}
 }

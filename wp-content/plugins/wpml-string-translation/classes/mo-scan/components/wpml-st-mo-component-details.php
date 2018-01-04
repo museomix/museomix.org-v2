@@ -85,7 +85,7 @@ class WPML_ST_MO_Component_Details {
 	 * @return string
 	 */
 	public function find_type( $mo_file_full_path ) {
-		if ( $this->string_contains( $mo_file_full_path, $this->theme_dir ) || $this->string_contains( $mo_file_full_path, $this->languages_theme_dir ) ) {
+		if ( $this->theme_dir && ( $this->string_contains( $mo_file_full_path, $this->theme_dir ) || $this->string_contains( $mo_file_full_path, $this->languages_theme_dir ) ) ) {
 			return 'theme';
 		}
 

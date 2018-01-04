@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit040b26c580e8bc55d1e732b58596cd53
+class ComposerStaticInit89efeb5bb4f29f4f883c00b9f1df68d3
 {
     public static $files = array (
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
@@ -375,6 +375,8 @@ class ComposerStaticInit040b26c580e8bc55d1e732b58596cd53
         'WPML_Compatibility_2017' => __DIR__ . '/../..' . '/compatibility/twentyseventeen/class-wpml-compatibility-2017.php',
         'WPML_Compatibility_Divi' => __DIR__ . '/../..' . '/compatibility/divi/class-wpml-compatibility-divi.php',
         'WPML_Compatibility_Divi_Notice' => __DIR__ . '/../..' . '/compatibility/divi/class-wpml-compatiblity-divi-notice.php',
+        'WPML_Compatibility_ElasticPress' => __DIR__ . '/../..' . '/compatibility/elastic-press/class-wpml-compatibility-elastic-press.php',
+        'WPML_Compatibility_ElasticPress_Lang' => __DIR__ . '/../..' . '/compatibility/elastic-press/class-wpml-compatibility-elastic-press-lang.php',
         'WPML_Compatibility_Plugin_Visual_Composer' => __DIR__ . '/../..' . '/compatibility/visual_composer/class-wpml-compatibility-plugin-visual-composer.php',
         'WPML_Compatibility_Theme_Enfold' => __DIR__ . '/../..' . '/compatibility/enfold/class-wpml-compatibility-theme-enfold.php',
         'WPML_Config' => __DIR__ . '/../..' . '/classes/class-wpml-config.php',
@@ -664,6 +666,7 @@ class ComposerStaticInit040b26c580e8bc55d1e732b58596cd53
         'WPML_Translate_Link_Targets_In_Custom_Fields' => __DIR__ . '/../..' . '/classes/custom-field-translation/class-wpml-translate-link-targets-in-custom-fields.php',
         'WPML_Translate_Link_Targets_In_Custom_Fields_Hooks' => __DIR__ . '/../..' . '/classes/custom-field-translation/class-wpml-translate-link-targets-in-custom-fields-hooks.php',
         'WPML_Translation_Element' => __DIR__ . '/../..' . '/classes/translations/class-wpml-translation-element.php',
+        'WPML_Translation_Element_Factory' => __DIR__ . '/../..' . '/classes/translations/class-wpml-translation-element-factory.php',
         'WPML_Translation_Management_Filters_And_Actions' => __DIR__ . '/../..' . '/classes/translation-management/class-wpml-translation-management-filters-and-actions.php',
         'WPML_Translation_Tree' => __DIR__ . '/../..' . '/classes/menu-elements/class-wpml-translation-tree.php',
         'WPML_Translations' => __DIR__ . '/../..' . '/classes/translations/class-wpml-translations.php',
@@ -762,10 +765,10 @@ class ComposerStaticInit040b26c580e8bc55d1e732b58596cd53
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit040b26c580e8bc55d1e732b58596cd53::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit040b26c580e8bc55d1e732b58596cd53::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit040b26c580e8bc55d1e732b58596cd53::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit040b26c580e8bc55d1e732b58596cd53::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit89efeb5bb4f29f4f883c00b9f1df68d3::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit89efeb5bb4f29f4f883c00b9f1df68d3::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit89efeb5bb4f29f4f883c00b9f1df68d3::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit89efeb5bb4f29f4f883c00b9f1df68d3::$classMap;
 
         }, null, ClassLoader::class);
     }

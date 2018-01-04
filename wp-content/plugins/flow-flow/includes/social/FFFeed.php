@@ -12,7 +12,7 @@ if ( ! defined( 'WPINC' ) ) die;
 interface FFFeed {
     public function id();
     public function init($context, $options, $feed);
-    public function posts();
+    public function posts($is_empty_feed);
     public function errors();
     public function useCache();
 	public function hasCriticalError();

@@ -2,6 +2,8 @@
 use flow\cache\LAFacebookCacheManager;
 use flow\db\FFDB;
 use flow\db\LADBManager;
+use la\core\social\LAFeedWithComments;
+use Stripe\Object;
 
 if ( ! defined( 'WPINC' ) ) die;
 if ( ! defined('FF_FACEBOOK_RATE_LIMIT')) define('FF_FACEBOOK_RATE_LIMIT', 200);
@@ -14,9 +16,10 @@ if ( ! defined('FF_FACEBOOK_RATE_LIMIT')) define('FF_FACEBOOK_RATE_LIMIT', 200);
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFFacebook extends FFHttpRequestFeed{
+class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 	const API_VERSION = 'v2.8';
 
+    private $header = false;
     /** @var  string | bool */
     private $accessToken;
     /** @var bool */
@@ -25,6 +28,7 @@ class FFFacebook extends FFHttpRequestFeed{
 	private $saveImages = false;
 	private $image;
 	private $media;
+	private $carousel = array();
 	private $images;
 	private $youtube_api_key;
 
@@ -39,15 +43,81 @@ class FFFacebook extends FFHttpRequestFeed{
 	public function __construct() {
 		parent::__construct( 'facebook' );
 	}
+	
+	public function getComments($item) {
+		if (is_object($item)){
+			$result = array();
+			if (isset($item->comments->data)){
+				foreach ($item->comments->data as $comment){
+					$obj = new \stdClass();
+					$obj->id = $comment->id;
+					$obj->from = $comment->from;
+					$obj->text = $comment->message;
+					$obj->created_time = $this->getSystemDate($comment);
+					$result[] = $obj;
+				}
+			}
+			return $result;
+		}
+		
+		$objectId = $item;
+		$facebookCache = $this->context['facebook_cache'];
+		$accessToken = $facebookCache->getAccessToken();
+		$api = FFFacebook::API_VERSION;
+		$url = "https://graph.facebook.com/{$api}/{$objectId}/comments?total_count={$this->getCount()}&access_token={$accessToken}";
+		$request = $this->getFeedData($url);
+		$json = json_decode($request['response']);
+		
+		if (!is_object($json) || (is_object($json) && sizeof($json->data) == 0)) {
+			if (isset($request['errors']) && is_array($request['errors'])){
+				if (!empty($request['errors'])){
+					foreach ( $request['errors'] as $error ) {
+						$error['type'] = 'facebook';
+						//TODO $this->filterErrorMessage
+						$this->errors[] = $error;
+						throw new \Exception();
+					}
+				}
+			}
+			else {
+				$this->errors[] = array('type'=>'facebook', 'message' => 'Bad request, access token issue. <a href="http://docs.social-streams.com/article/55-400-bad-request" target="_blank">Troubleshooting</a>.', 'url' => $url);
+				throw new \Exception();
+			}
+			return array();
+		}
+		else {
+			if($json->data){
+				// return first 5 comments
+				$data = array_slice($json->data, 0, 5);
+				$result = array();
+				foreach ($data as $item){
+					$obj = new \stdClass();
+					$obj->id = $item->id;
+					$obj->from = $item->from;
+					$obj->text = $item->message;
+					$obj->created_time = $this->getSystemDate($item);
+					$result[] = $obj;
+				}
+				return $result;
+			}else{
+				$this->errors[] = array(
+						'type' => 'instagram',
+						'message' => 'User not found',
+						'url' => $url
+				);
+				throw new \Exception();
+			}
+		}
+	}
 
-    public function deferredInit($options, $feed) {
+    protected function deferredInit($options, $feed) {
 	    $this->images = array();
         if (isset($feed->{'timeline-type'})) {
         	$timeline = $feed->{'timeline-type'} == 'user_timeline' ? 'page_timeline' : $feed->{'timeline-type'};
 	        $locale = defined('FF_LOCALE') ? 'locale=' . FF_LOCALE : 'locale=en_US';
 	        $fields    = 'fields=';
 	        $fields    = $fields . 'likes.summary(true),comments.summary(true),shares,';
-	        $fields    = $fields . 'id,created_time,from,link,message,name,object_id,picture,full_picture,attachments{media{image}},source,status_type,story,type';
+	        $fields    = $fields . 'id,created_time,from,link,message,name,object_id,picture,full_picture,attachments{media,subattachments},source,status_type,story,type';
 	        $api = FFFacebook::API_VERSION;
             switch ($timeline) {
 	            case 'group':
@@ -75,11 +145,10 @@ class FFFacebook extends FFHttpRequestFeed{
     }
 
 	protected function beforeProcess() {
-		global $flow_flow_context;
 		/** @var LAFacebookCacheManager $facebookCache */
-		$facebookCache = $flow_flow_context['facebook_cache'];
+		$facebookCache = $this->context['facebook_cache'];
 		/** @var LADBManager $db */
-		$db = $flow_flow_context['db_manager'];
+		$db = $this->context['db_manager'];
 
 		$this->accessToken = $facebookCache->getAccessToken();
 		if ($this->accessToken === false){
@@ -113,7 +182,7 @@ class FFFacebook extends FFHttpRequestFeed{
 			$this->global_request_array = $result;
 
 			if ($this->global_request_count + 4 > FF_FACEBOOK_RATE_LIMIT) {
-				$this->errors[] = array( 'type' => 'facebook', 'message' => 'Your site has hit the facebook api rate limit.' );
+				$this->errors[] = array( 'type' => 'facebook', 'message' => 'Your site has hit the Facebook API rate limit. <a href="http://docs.social-streams.com/article/133-facebook-app-request-limit-reached" target="_blank">Troubleshooting</a>.' );
 				FFDB::rollback();
 				return false;
 			}
@@ -127,9 +196,8 @@ class FFFacebook extends FFHttpRequestFeed{
 	}
 
 	protected function afterProcess( $result ) {
-		global $flow_flow_context;
 		/** @var LADBManager $db */
-		$db = $flow_flow_context['db_manager'];
+		$db = $this->context['db_manager'];
 
 		if ($this->request_count > 0) {
 			$this->global_request_array[$this->creationTime] = $this->request_count;
@@ -146,9 +214,8 @@ class FFFacebook extends FFHttpRequestFeed{
     protected function items( $request ) {
         $pxml = json_decode($request);
         if (isset($pxml->data)) {
-	        global $flow_flow_context;
 	        /** @var LADBManager $db */
-	        $db = $flow_flow_context['db_manager'];
+	        $db = $this->context['db_manager'];
 	        $ids = $db->getIdPosts($this->id());
 	        $new_ids = array();
 	        foreach ( $pxml->data as $item ) {
@@ -178,7 +245,7 @@ class FFFacebook extends FFHttpRequestFeed{
 
 		if ($this->hasHitLimit) return false;
 		if ($this->global_request_count + $this->request_count + 3 > FF_FACEBOOK_RATE_LIMIT) {
-			$this->errors[] = array( 'type' => 'facebook', 'message' => 'Your site has hit the facebook api rate limit.' );
+			$this->errors[] = array( 'type' => 'facebook', 'message' => 'Your site has hit the Facebook API rate limit. <a href="http://docs.social-streams.com/article/133-facebook-app-request-limit-reached" target="_blank">Troubleshooting</a>.' );
 			$this->hasHitLimit = true;
 			return false;
 		}
@@ -213,6 +280,17 @@ class FFFacebook extends FFHttpRequestFeed{
 		}
 
 		if ((isset($item->object_id) && (($item->type == 'photo')))){
+			if (isset($item->attachments) && isset($item->attachments->data) && sizeof($item->attachments->data) > 0){
+				$subattachments = $this->getSubattachments($item);
+				if (sizeof($subattachments) > 0){
+					$image = $subattachments[0];
+					$this->image = $this->createImage($image->src, $image->width, $image->height);
+					$this->media = $this->createMedia($image->src, $image->width, $image->height);
+					$this->carousel = $subattachments;
+					return true;
+				}
+			}
+			//depricated
 			$url = "https://graph.facebook.com/{$api}/{$item->object_id}?fields=images";
 			$original_url = $this->cache->getOriginalUrl($url);
 			if ($original_url == ''){
@@ -250,17 +328,33 @@ class FFFacebook extends FFHttpRequestFeed{
 			return true;
 		}
 
-
-	    if (($item->type == 'video')
-	        && (!isset($item->status_type) || $item->status_type == 'added_video' ||
-	        	$item->status_type == 'shared_story' || $item->status_type == 'mobile_status_update')){
-		    if (!isset($item->object_id) && isset($item->link) && strpos($item->link, 'facebook.com') > 0 && strpos($item->link, '/videos/') > 0){
-			    $path = parse_url($item->link, PHP_URL_PATH);
-			    $tokens = explode('/', $path);
-			    if (empty($tokens[sizeof($tokens)-1])) unset($tokens[sizeof($tokens)-1]);
-			    $item->object_id = $tokens[sizeof($tokens)-1];
-		    }
-		    if (isset($item->object_id) && trim($item->object_id) != ''){
+		if (($item->type == 'video')
+			&& (!isset($item->status_type) || $item->status_type == 'added_video' ||
+				$item->status_type == 'shared_story' || $item->status_type == 'mobile_status_update')){
+			if (!isset($item->object_id) && isset($item->link) && strpos($item->link, 'facebook.com') > 0 && strpos($item->link, '/videos/') > 0){
+			 	$path = parse_url($item->link, PHP_URL_PATH);
+				$tokens = explode('/', $path);
+				if (empty($tokens[sizeof($tokens)-1])) unset($tokens[sizeof($tokens)-1]);
+				$item->object_id = $tokens[sizeof($tokens)-1];
+			}
+			if (isset($item->object_id) && trim($item->object_id) != ''){
+				if (isset($item->attachments) && isset($item->attachments->data) && sizeof($item->attachments->data) > 0){
+					$subattachments = $this->getSubattachments($item);
+					if (sizeof($subattachments) > 0){
+						$image= $subattachments[0];
+						$width = $image->width;
+						$height = $image->height;
+						if ($width > 600) {
+							$height = FFFeedUtils::getScaleHeight(600, $width, $height);
+							$width = 600;
+						}
+						$this->image = $this->createImage($image->src, $width, $height);
+						$this->media = $this->createMedia('http://www.facebook.com/video/embed?video_id=' . $item->object_id, $width, $height, 'video');
+						$this->carousel = $subattachments;
+						return true;
+					}
+				}
+				//depricated
 			    $data = $this->getFeedData($this->getUrlWithToken( "https://graph.facebook.com/{$api}/{$item->object_id}?fields=embed_html,source" ));
 			    $data = json_decode($data['response']);
 			    preg_match("/\<iframe.+width\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\>/", $data->embed_html, $matches);
@@ -344,19 +438,23 @@ class FFFacebook extends FFHttpRequestFeed{
 
 
 		if ((($item->type == 'link') || ($item->type == 'event')) && isset($item->picture)){
+			if (isset($item->attachments->data) && sizeof($item->attachments->data) > 0){
+				$subattachments = $this->getSubattachments($item);
+				if (sizeof($subattachments) > 0){
+					$image = $subattachments[0];
+					if ($image->width > 35 || $image->height > 35){
+						$this->image = $this->createImage($image->src, $image->width, $image->height);
+						$this->media = $this->createMedia($image->src, $image->width, $image->height, 'image', true);
+						$this->carousel = $subattachments;
+					}
+					return true;
+				}
+			}
+			
 			if (isset($item->full_picture)){
 				$this->image = $this->createImage($item->full_picture);
 				$this->media = $this->createMedia((pathinfo($item->link, PATHINFO_EXTENSION) === 'gif') ? $item->link : $item->full_picture, null, null, 'image', true);
 				return true;
-			}
-			else if (isset($item->attachments->data) && sizeof($item->attachments->data) > 0){
-				$media = $item->attachments->data[0];
-				if (isset($media->media) && isset($media->media->image)){
-					$media = $media->media->image;
-					$this->image = $this->createImage($media->src, $media->width, $media->height);
-					$this->media = $this->createMedia($media->src, $media->width, $media->height, 'image', true);
-					return true;
-				}
 			}
 
 			$image = $item->picture;
@@ -380,18 +478,30 @@ class FFFacebook extends FFHttpRequestFeed{
 		}
 		
 		if ($item->type == 'status' && isset($item->attachments->data) && sizeof($item->attachments->data) > 0){
-			$media = $item->attachments->data[0];
-			if (isset($media->media) && isset($media->media->image)){
-				$media = $media->media->image;
-				$this->image = $this->createImage($media->src, $media->width, $media->height);
-				$this->media = $this->createMedia($media->src, $media->width, $media->height, 'image', true);
+			$subattachments = $this->getSubattachments($item);
+			if (sizeof($subattachments) > 0){
+				$image = $subattachments[0];
+				$this->image = $this->createImage($image->src, $image->width, $image->height);
+				$this->media = $this->createMedia($image->src, $image->width, $image->height, 'image', true);
+				$this->carousel = $subattachments;
 				return true;
 			}
 		}
 			
 		return false;
 	}
-
+	
+	protected function getCarousel( $item ) {
+		$carousel = parent::getCarousel($item);
+		$subattachments = $this->carousel;
+		if (sizeof($subattachments) > 1){
+			foreach ($subattachments as $image){
+				$carousel[] = $this->createMedia($image->src, $image->width, $image->height);
+			}
+		}
+		return $carousel;
+	}
+	
     protected function getImage( $item ) {
         return $this->image;
     }
@@ -601,5 +711,25 @@ class FFFacebook extends FFHttpRequestFeed{
 			}
 		}
 		return $result;
+	}
+	
+	private function getSubattachments($item){
+		$attachments = array();
+		if (isset($item->attachments) && isset($item->attachments->data) && sizeof($item->attachments->data) > 0){
+			$data = $item->attachments->data[0];
+			if (isset($data->media->image)){
+				if ($item->type == 'link' && isset($item->status_type) && $item->status_type == 'shared_story'){
+					$attachments[] = $data->media->image;
+					return $attachments;
+				}
+				else $attachments[] = $data->media->image;
+			}
+			if (isset($data->subattachments) && isset($data->subattachments->data)){
+				foreach ($data->subattachments->data as $el){
+					$attachments[] = $el->media->image;
+				}
+			}
+		}
+		return $attachments;
 	}
 }

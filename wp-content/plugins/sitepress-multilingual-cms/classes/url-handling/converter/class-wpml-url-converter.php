@@ -164,6 +164,16 @@ class WPML_URL_Converter {
 
 	/**
 	 * @param string $url
+	 * @param string $langauge
+	 *
+	 * @return string
+	 */
+	public function get_home_url_relative( $url, $language ) {
+		return $this->get_strategy()->get_home_url_relative( $url, $language );
+	}
+
+	/**
+	 * @param string $url
 	 *
 	 * @return bool
 	 */

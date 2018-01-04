@@ -396,18 +396,53 @@ class Meow_MFRH_Core {
 		return get_post( $postid, OBJECT );
 	}
 
+	/*****************************************************************************
+		RENAME ON UPLOAD
+	*****************************************************************************/
+
 	function wp_handle_upload_prefilter( $file ) {
+
+		$pp = pathinfo( $file['name'] );
+
+		// If everything's fine, renames in based on the Title in the EXIF
 		$method = apply_filters( 'mfrh_method', 'media_title' );
 		if ( $method == 'media_title' ) {
 			$exif = wp_read_image_metadata( $file['tmp_name'] );
 			if ( !empty( $exif ) && isset( $exif[ 'title' ] ) && !empty( $exif[ 'title' ] ) ) {
-				$parts = pathinfo( $file['name'] );
-				$file['name'] = $this->new_filename( null, $exif[ 'title' ] ) . '.' . $parts['extension'];
+				$file['name'] = $this->new_filename( null, $exif[ 'title' ] ) . '.' . $pp['extension'];
 				return $file;
 			}
 		}
+		else if ( $method == 'post_title' && isset( $_POST['post_id'] ) && $_POST['post_id'] > 0 ) {
+			$post = get_post( $_POST['post_id'] );
+			if ( !empty( $post ) && !empty( $post->post_title ) ) {
+				$file['name'] = $this->new_filename( null, $post->post_title ) . '.' . $pp['extension'];
+				return $file;
+			}
+		}
+
+		// Otherwise, let's do the basics based on the filename
+
+		// The name will be modified at this point so let's keep it in a global
+		// and re-inject it later
+		global $mfrh_title_override;
+		$mfrh_title_override = $pp['filename'];
+		add_filter( 'wp_read_image_metadata', array( $this, 'wp_read_image_metadata' ), 10, 2 );
+
+		// Modify the filename
+		$pp = pathinfo( $file['name'] );
+		$file['name'] = $this->new_filename( null, $pp['basename'] );
 		return $file;
 	}
+
+	function wp_read_image_metadata( $meta, $file ) {
+		// Override the title, without this it is using the new filename
+		global $mfrh_title_override;
+    $meta['title'] = $mfrh_title_override;
+    return $meta;
+	}
+
+	/****************************************************************************/
 
 	// Return false if everything is fine, otherwise return true with an output.
 	function check_attachment( $id, &$output = array() ) {
@@ -808,8 +843,8 @@ class Meow_MFRH_Core {
 	function log_sql( $data, $antidata ) {
 		if ( !get_option( 'mfrh_logsql' ) || !$this->mfrh_admin->is_registered() )
 			return;
-		$fh = fopen( trailingslashit( dirname(__FILE__) ) . 'media-file-renamer/mfrh_sql.log', 'a' );
-		$fh_anti = fopen( trailingslashit( dirname(__FILE__) ) . 'media-file-renamer/mfrh_sql_revert.log', 'a' );
+		$fh = fopen( trailingslashit( dirname(__FILE__) ) . 'mfrh_sql.log', 'a' );
+		$fh_anti = fopen( trailingslashit( dirname(__FILE__) ) . 'mfrh_sql_revert.log', 'a' );
 		$date = date( "Y-m-d H:i:s" );
 		fwrite( $fh, "{$data}\n" );
 		fwrite( $fh_anti, "{$antidata}\n" );
@@ -820,8 +855,9 @@ class Meow_MFRH_Core {
 	function log( $data, $inErrorLog = false ) {
 		if ( $inErrorLog )
 			error_log( $data );
-		if ( !get_option( 'mfrh_log' ) )
+		if ( !get_option( 'mfrh_log' ) ) {
 			return;
+		}
 		$fh = fopen( trailingslashit( dirname(__FILE__) ) . 'media-file-renamer.log', 'a' );
 		$date = date( "Y-m-d H:i:s" );
 		fwrite( $fh, "$date: {$data}\n" );
@@ -856,46 +892,52 @@ class Meow_MFRH_Core {
       return $str;
   }
 
-	// NEW MEDIA FILE INFO (depending on the title of the media)
-	function new_filename( $media, $title, $forceFilename = null ) {
+	// NEW MEDIA FILE INFO (depending on the text/filename of the media)
+	function new_filename( $media, $text, $forceFilename = null ) {
 
-		// Clean the title
-		$title = str_replace( ".jpg", "", $title );
-		$title = str_replace( ".png", "", $title );
-		$title = str_replace( "'", "-", $title );
-
-		// Filename is forced (in case of manual, for example)
-		if ( $forceFilename )
-			$forceFilename = preg_replace( '/\\.[^.\\s]{3,4}$/', '', trim( $forceFilename ) );
-		if ( !empty( $forceFilename ) )
-			$new_filename = $forceFilename;
-		else {
-			$title = strtolower( $this->replace_chars( $title ) );
-			$utf8_filename = apply_filters( 'mfrh_utf8', false );
-			if ( $utf8_filename )
-				$new_filename = sanitize_file_name( $title );
-			else
-				$new_filename = str_replace( "%", "-", sanitize_title( $this->replace_special_chars( $title ) ) );
-		}
+		$old_filename = null;
+		$new_ext = null;
 
 		if ( !empty( $media ) ) {
+			// Media already exists (not a fresh upload). Gets filename and ext.
 			$old_filepath = get_attached_file( $media['ID'] );
-			$path_parts = pathinfo( $old_filepath );
-			$old_filename = $path_parts['basename'];
-			// This line is problematic during the further rename that exclude the extensions. Better to implement
-			// this properly with thorough testing later.
-			//$ext = str_replace( 'jpeg', 'jpg', $path_parts['extension'] ); // In case of a jpeg extension, rename it to jpg
-			$ext = $path_parts['extension'];
+			$pp = pathinfo( $old_filepath );
+			$new_ext = empty( $pp['extension'] ) ? "" : $pp['extension'];
+			$old_filename = $pp['basename'];
 		}
 		else {
-			// New upload, a filename without extension will be returned
-			$old_filename = null;
-			$ext = null;
+			// It's an upload, let's check if the extension is provided in the text
+			$pp = pathinfo( $text );
+			$new_ext = empty( $pp['extension'] ) ? "" : $pp['extension'];
+			$text = $pp['filename'];
 		}
 
+		// Generate the new filename.
+		if ( !empty( $forceFilename ) ) {
+			// Filename is forced. Strip the extension. Keeps this extension in $new_ext.
+			$pp = pathinfo( $forceFilename );
+			$forceFilename = $pp['filename'];
+			$new_ext = empty( $pp['extension'] ) ? $new_ext : $pp['extension'];
+			$new_filename = $forceFilename;
+		}
+		else {
+			// Filename is generated from $text, without an extension.
+			$text = str_replace( ".jpg", "", $text );
+			$text = str_replace( ".png", "", $text );
+			$text = str_replace( "'", "-", $text );
+			$text = strtolower( $this->replace_chars( $text ) );
+			$utf8_filename = apply_filters( 'mfrh_utf8', false );
+			if ( $utf8_filename )
+				$new_filename = sanitize_file_name( $text );
+			else
+				$new_filename = str_replace( "%", "-", sanitize_title( $this->replace_special_chars( $text ) ) );
+		}
 		if ( empty( $new_filename ) )
 			$new_filename = "empty";
-		$new_filename = !empty( $ext ) ? ( $new_filename . '.' . $ext ) : $new_filename;
+
+		// We know have a new filename, let's add an extension.
+		$new_filename = !empty( $new_ext ) ? ( $new_filename . '.' . $new_ext ) : $new_filename;
+
 		if ( !$forceFilename )
 			$new_filename = apply_filters( 'mfrh_new_filename', $new_filename, $old_filename, $media );
 		return $new_filename;
@@ -941,9 +983,7 @@ class Meow_MFRH_Core {
 
 		$numbered_filename = get_post_meta( $post['ID'], '_numbered_filename', true );
 		if ( !empty( $numbered_filename ) ) {
-			// TODO: Why was this done...
-			// $this->log( "Numbered filename ($numbered_filename) is being injected." );
-			// $forceFilename = $numbered_filename;
+			// Not clear anymore why this is here, but it wouldn't cause any issue anyway.
 			delete_post_meta( $post['ID'], '_numbered_filename' );
 		}
 
@@ -954,11 +994,6 @@ class Meow_MFRH_Core {
 		$directory = $path_parts['dirname']; // '2011/01'
 		$old_filename = $path_parts['basename']; // 'whatever.jpeg'
 		$old_ext = $path_parts['extension'];
-
-		// This line is problematic during the further rename that exclude the extensions. Better to implement
-		// this properly with thorough testing later.
-		//$ext = str_replace( 'jpeg', 'jpg', $path_parts['extension'] ); // In case of a jpeg extension, rename it to jpg
-		$ext = $path_parts['extension'];
 
 		$this->log( "** Rename Media: " . $old_filename );
 
@@ -1046,8 +1081,6 @@ class Meow_MFRH_Core {
 			}
 		}
 
-		//return;
-
 		// Exact same code as rename-media, it's a good idea to keep track of the original filename.
 		$original_filename = get_post_meta( $post['ID'], '_original_filename', true );
 		if ( empty( $original_filename ) )
@@ -1066,18 +1099,26 @@ class Meow_MFRH_Core {
 			return $post;
 		}
 
+		// The new extension (or maybe it's just the old one)
+		$new_ext = $old_ext;
+		if ( $forceFilename ) {
+			$pp = pathinfo( $forceFilename );
+			$new_ext = $pp['extension'];
+		}
+
 		// Filenames without extensions
 		$noext_old_filename = $this->str_replace( '.' . $old_ext, '', $old_filename );
-		$noext_new_filename = $this->str_replace( '.' . $ext, '', $sanitized_media_title );
+		$noext_new_filename = $this->str_replace( '.' . $old_ext, '', $sanitized_media_title );
 		$this->log( "Files with no extensions: $noext_old_filename and $noext_new_filename." );
 
 		// Update the attachment meta
 		if ( $meta ) {
-			$meta['file'] = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta['file'] );
-			if ( isset( $meta["url"] ) && $meta["url"] != "" && count( $meta["url"] ) > 4 )
-				$meta["url"] = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta["url"] );
+			if ( isset( $meta['file'] ) && !empty( $meta['file'] ) )
+				$meta['file'] = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta['file'] );
+			if ( isset( $meta['url'] ) && !empty( $meta['url'] ) && count( $meta['url'] ) > 4 )
+				$meta['url'] = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta['url'] );
 			else
-				$meta["url"] = $noext_new_filename . "." . $ext;
+				$meta['url'] = $noext_new_filename . '.' . $old_ext;
 		}
 
 		// Images
@@ -1096,6 +1137,12 @@ class Meow_MFRH_Core {
 					$meta_old_filename = $meta['sizes'][$size]['file'];
 					$meta_old_filepath = trailingslashit( $directory ) . $meta_old_filename;
 					$meta_new_filename = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta_old_filename );
+
+					// Manual Rename also uses the new extension (if it was not stripped to avoid user mistake)
+					if ( $force_rename && !empty( $new_ext ) ) {
+						$meta_new_filename = $this->str_replace( $old_ext, $new_ext, $meta_new_filename );
+					}
+
 					$meta_new_filepath = trailingslashit( $directory ) . $meta_new_filename;
 					$orig_image_data = wp_get_attachment_image_src( $post['ID'], $size );
 					$orig_image_urls[$size] = $orig_image_data[0];
@@ -1104,8 +1151,8 @@ class Meow_MFRH_Core {
 						|| is_writable( $meta_new_filepath ) ) ) ) {
 						// WP Retina 2x is detected, let's rename those files as well
 						if ( function_exists( 'wr2x_get_retina' ) ) {
-							$wr2x_old_filepath = $this->str_replace( '.' . $ext, '@2x.' . $ext, $meta_old_filepath );
-							$wr2x_new_filepath = $this->str_replace( '.' . $ext, '@2x.' . $ext, $meta_new_filepath );
+							$wr2x_old_filepath = $this->str_replace( '.' . $old_ext, '@2x.' . $old_ext, $meta_old_filepath );
+							$wr2x_new_filepath = $this->str_replace( '.' . $new_ext, '@2x.' . $new_ext, $meta_new_filepath );
 							if ( file_exists( $wr2x_old_filepath ) && ( (!file_exists( $wr2x_new_filepath ) ) || is_writable( $wr2x_new_filepath ) ) ) {
 								@rename( $wr2x_old_filepath, $wr2x_new_filepath );
 								$this->log( "Retina file $wr2x_old_filepath renamed to $wr2x_new_filepath." );

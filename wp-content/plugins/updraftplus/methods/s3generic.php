@@ -31,7 +31,7 @@ class UpdraftPlus_BackupModule_s3generic extends UpdraftPlus_BackupModule_s3 {
 	 */
 	public function get_supported_features() {
 		// This options format is handled via only accessing options via $this->get_options()
-		return array('multi_options');
+		return array('multi_options', 'config_templates');
 	}
 
 	/**
@@ -61,11 +61,39 @@ class UpdraftPlus_BackupModule_s3generic extends UpdraftPlus_BackupModule_s3 {
 		return $opts;
 	}
 
-	public function config_print() {
+	/**
+	 * Get the configuration template
+	 *
+	 * @return String - the template, ready for substitutions to be carried out
+	 */
+	public function get_configuration_template() {
 		// 5th parameter = control panel URL
 		// 6th = image HTML
-		// 7th = include endpoint chooser
-		$this->config_print_engine('s3generic', 'S3', __('S3 (Compatible)', 'updraftplus'), 'S3', '', '', true);
+		return $this->get_configuration_template_engine('s3generic', 'S3', __('S3 (Compatible)', 'updraftplus'), 'S3', '', '');
+	}
+	
+	/**
+	 * Modifies handerbar template options
+	 * The function require because It should override parent class's UpdraftPlus_BackupModule_s3::transform_options_for_template() functionality with no operation.
+	 *
+	 * @param array $opts
+	 * @return array - Modified handerbar template options
+	 */
+	public function transform_options_for_template($opts) {
+		return $opts;
+	}
+	
+	/**
+	 * Get handlebar partial template string for endpoint of s3 compatible remote storage method. Other child class can extend it.
+	 *
+	 * @return string the partial template string
+	 */
+	protected function get_partial_configuration_template_for_endpoint() {
+		return '<tr class="'.$this->get_css_classes().'">
+					<th>'.sprintf(__('%s end-point', 'updraftplus'), 'S3').'</th>
+					<td>
+						<input data-updraft_settings_test="endpoint" type="text" style="width: 360px" '.$this->output_settings_field_name_and_id('endpoint', true).' value="{{endpoint}}" />
+				</tr>';
 	}
 
 	public function credentials_test($posted_settings) {

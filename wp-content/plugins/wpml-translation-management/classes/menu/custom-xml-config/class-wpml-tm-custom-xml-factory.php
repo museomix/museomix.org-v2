@@ -26,6 +26,10 @@ class WPML_TM_Custom_XML_Factory {
 	}
 
 	public function create_ajax() {
-		return new WPML_TM_Custom_XML_AJAX( $this->custom_xml, new WPML_XML_Config_Validate( WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd' ) );
+		return new WPML_TM_Custom_XML_AJAX(
+			$this->custom_xml,
+			new WPML_XML_Config_Validate( WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd' ),
+			array( 'WPML_Config', 'load_config_run' )
+		);
 	}
 }

@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Flow-Flow package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Flow-Flow 3.0.13\n"
+"Project-Id-Version: Flow-Flow 3.1.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/flow-flow\n"
-"POT-Creation-Date: 2017-09-01 10:46:22+00:00\n"
+"POT-Creation-Date: 2017-10-28 11:49:17+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,127 +13,139 @@ msgstr ""
 "Language-Team: Team Name <team@example.com>\n"
 "X-Generator: grunt-wp-i18n 0.4.9\n"
 
-#: flow-flow.php:188
-msgid "Social Stream"
-msgstr ""
-
-#: flow-flow.php:192
-msgid "Flow-Flow plugin social stream"
-msgstr ""
-
-#: flow-flow.php:194
-msgid "Social"
-msgstr ""
-
-#: flow-flow.php:203
-msgid "Choose stream to place on page:"
-msgstr ""
-
-#: includes/FlowFlow.php:571
+#: includes/FlowFlow.php:76
 msgid "All"
 msgstr ""
 
-#: includes/FlowFlow.php:572
+#: includes/FlowFlow.php:77
 msgid "Search"
 msgstr ""
 
-#: includes/FlowFlow.php:573
+#: includes/FlowFlow.php:78
 msgid "Expand"
 msgstr ""
 
-#: includes/FlowFlow.php:574
+#: includes/FlowFlow.php:79
 msgid "Collapse"
 msgstr ""
 
-#: includes/FlowFlow.php:575
+#: includes/FlowFlow.php:80
 msgid "Posted on"
 msgstr ""
 
-#: includes/FlowFlow.php:576
+#: includes/FlowFlow.php:81
+msgid "Followers"
+msgstr ""
+
+#: includes/FlowFlow.php:82
+msgid "Following"
+msgstr ""
+
+#: includes/FlowFlow.php:83
+msgid "Posts"
+msgstr ""
+
+#: includes/FlowFlow.php:84
 msgid "Show more"
 msgstr ""
 
-#: includes/FlowFlow.php:579
+#: includes/FlowFlow.php:87
 msgid "Yesterday"
 msgstr ""
 
-#: includes/FlowFlow.php:580
+#: includes/FlowFlow.php:88
 msgid "s"
 msgstr ""
 
-#: includes/FlowFlow.php:581
+#: includes/FlowFlow.php:89
 msgid "m"
 msgstr ""
 
-#: includes/FlowFlow.php:582
+#: includes/FlowFlow.php:90
 msgid "h"
 msgstr ""
 
-#: includes/FlowFlow.php:583
+#: includes/FlowFlow.php:91
 msgid "ago"
 msgstr ""
 
-#: includes/FlowFlow.php:585
+#: includes/FlowFlow.php:93
 msgid "Jan"
 msgstr ""
 
-#: includes/FlowFlow.php:585
+#: includes/FlowFlow.php:93
 msgid "Feb"
 msgstr ""
 
-#: includes/FlowFlow.php:585
+#: includes/FlowFlow.php:93
 msgid "March"
 msgstr ""
 
-#: includes/FlowFlow.php:586
+#: includes/FlowFlow.php:94
 msgid "April"
 msgstr ""
 
-#: includes/FlowFlow.php:586
+#: includes/FlowFlow.php:94
 msgid "May"
 msgstr ""
 
-#: includes/FlowFlow.php:586
+#: includes/FlowFlow.php:94
 msgid "June"
 msgstr ""
 
-#: includes/FlowFlow.php:587
+#: includes/FlowFlow.php:95
 msgid "July"
 msgstr ""
 
-#: includes/FlowFlow.php:587
+#: includes/FlowFlow.php:95
 msgid "Aug"
 msgstr ""
 
-#: includes/FlowFlow.php:587
+#: includes/FlowFlow.php:95
 msgid "Sept"
 msgstr ""
 
-#: includes/FlowFlow.php:588
+#: includes/FlowFlow.php:96
 msgid "Oct"
 msgstr ""
 
-#: includes/FlowFlow.php:588
+#: includes/FlowFlow.php:96
 msgid "Nov"
 msgstr ""
 
-#: includes/FlowFlow.php:588
+#: includes/FlowFlow.php:96
 msgid "Dec"
 msgstr ""
 
-#: includes/FlowFlow.php:591
+#: includes/FlowFlow.php:99
 msgid "Navigate with arrow keys"
 msgstr ""
 
-#: includes/FlowFlowWPWidget.php:58
-msgid "Title:"
+#: includes/FlowFlowActivator.php:43
+msgid "Social Stream"
+msgstr ""
+
+#: includes/FlowFlowActivator.php:47
+msgid "Flow-Flow plugin social stream"
+msgstr ""
+
+#: includes/FlowFlowActivator.php:49
+msgid "Social"
+msgstr ""
+
+#: includes/FlowFlowActivator.php:58
+msgid "Choose stream to place on page:"
 msgstr ""
 
 #: includes/FlowFlowWPWidget.php:62
+msgid "Title:"
+msgstr ""
+
+#: includes/FlowFlowWPWidget.php:66
 msgid "Stream:"
 msgstr ""
 
-#: includes/LAAdminBase.php:84
+#: includes/LAAdminBase.php:94 includes/LAAdminBase.php:215
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 

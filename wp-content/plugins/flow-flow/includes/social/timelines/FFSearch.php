@@ -10,31 +10,31 @@ if ( ! defined( 'WPINC' ) ) die;
  * @copyright 2014-2016 Looks Awesome
  */
 class FFSearch implements FFTimeline{
-    const URL = 'https://api.twitter.com/1.1/search/tweets.json';
-
-    private $count;
-    private $searchQuery;
-    private $resultType;
+	const URL = 'https://api.twitter.com/1.1/search/tweets.json';
+	
+	private $count;
+	private $searchQuery;
+	private $resultType;
 	private $lang;
 	private $geo = '';
-
-    public function init($feed){
-	    $this->count = isset($feed->posts) ? $feed->posts : 10;
-        $this->searchQuery = $feed->content;
-        $this->resultType = 'mixed';
-	    if (isset($feed->lang)) $this->lang = $feed->lang;
-	    if (isset($feed->{'use-geo'}) && $feed->{'use-geo'} == 'yep')
-		    $this->geo = "&geocode={$feed->latitude},{$feed->longitude},{$feed->radius}km";
-//        $this->resultType = 'recent';
-    }
-
-    public function getUrl(){
-        return self::URL;
-    }
-
-    public function getField() {
-	    $lang = (empty($this->lang) || $this->lang == 'all') ? '' : '&lang=' . $this->lang;
-        $getfield = "?q={$this->searchQuery}&count={$this->count}&result_type={$this->resultType}&include_entities=true&tweet_mode=extended" . $lang . $this->geo;
-        return $getfield;
-    }
+	
+	public function init($twitter, $feed){
+		$this->count = $twitter->getCount();
+		$this->searchQuery = $feed->content;
+		$this->resultType = 'mixed';
+		if (isset($feed->lang)) $this->lang = $feed->lang;
+		if (isset($feed->{'use-geo'}) && $feed->{'use-geo'} == 'yep'){
+			$this->geo = "&geocode={$feed->latitude},{$feed->longitude},{$feed->radius}km";
+		}
+	}
+	
+	public function getUrl(){
+		return self::URL;
+	}
+	
+	public function getField() {
+		$lang = (empty($this->lang) || $this->lang == 'all') ? '' : '&lang=' . $this->lang;
+		$getfield = "?q={$this->searchQuery}&count={$this->count}&result_type={$this->resultType}&include_entities=true&tweet_mode=extended" . $lang . $this->geo;
+		return $getfield;
+	}
 }

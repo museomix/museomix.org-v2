@@ -4,7 +4,17 @@ require_once WPML_TM_PATH . '/inc/local-translation/wpml-tm-blog-translators.cla
 /**
  * Class WPML_TM_Mail_Notification
  */
-class WPML_TM_Mail_Notification extends WPML_WPDB_And_SP_User {
+class WPML_TM_Mail_Notification{
+
+	/**
+	 * @var SitePress
+	 */
+	private $sitepress;
+
+	/**
+	 * @var wpdb
+	 */
+	private $wpdb;
 
 	private $mail_cache = array();
 	private $process_mail_queue;
@@ -25,9 +35,10 @@ class WPML_TM_Mail_Notification extends WPML_WPDB_And_SP_User {
 	 * @param WPML_TM_Blog_Translators     $blog_translators
 	 * @param array                        $notification_settings
 	 */
-	public function __construct( &$sitepress, &$wpdb, &$job_factory, $blog_translators, array $notification_settings ) {
-		parent::__construct( $wpdb, $sitepress );
-		$this->job_factory           = &$job_factory;
+	public function __construct( $sitepress, $wpdb, $job_factory, $blog_translators, array $notification_settings ) {
+		$this->sitepress             = $sitepress;
+		$this->wpdb                  = $wpdb;
+		$this->job_factory           = $job_factory;
 		$this->blog_translators      = $blog_translators;
 		$this->notification_settings = array_merge( array( 'resigned' => 0, 'completed' => 0 ),
 		                                            $notification_settings );
@@ -146,6 +157,7 @@ class WPML_TM_Mail_Notification extends WPML_WPDB_And_SP_User {
 			                            $lang_to
 			);
 			$mail['type']    = 'admin';
+
 			$this->enqueue_mail( $mail );
 		}
 		$this->sitepress->switch_locale();

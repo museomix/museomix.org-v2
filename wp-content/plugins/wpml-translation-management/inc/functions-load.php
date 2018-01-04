@@ -140,7 +140,7 @@ function wpml_tm_load_tm_dashboard_ajax(){
 
 	if ( ! isset( $wpml_tm_dashboard_ajax ) ) {
 		require_once WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard-ajax.class.php';
-		$wpml_tm_dashboard_ajax = new WPML_Dashboard_Ajax();
+		$wpml_tm_dashboard_ajax = new WPML_Dashboard_Ajax( new WPML_Super_Globals_Validation() );
 
 		if ( defined( 'OTG_TRANSLATION_PROXY_URL' ) && defined( 'ICL_SITEPRESS_VERSION' ) ) {
 			$wpml_tp_communication = new WPML_TP_Communication( OTG_TRANSLATION_PROXY_URL, new WP_Http() );

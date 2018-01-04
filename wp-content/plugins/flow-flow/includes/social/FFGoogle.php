@@ -1,4 +1,6 @@
 <?php namespace flow\social;
+use la\core\social\LAFeedWithComments;
+
 if ( ! defined( 'WPINC' ) ) die;
 /**
  * Flow-Flow.
@@ -9,7 +11,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFGoogle extends FFHttpRequestFeed{
+class FFGoogle extends FFHttpRequestFeed implements LAFeedWithComments {
     private $apiKey;
     private $content;
 	private $media;
@@ -191,5 +193,62 @@ class FFGoogle extends FFHttpRequestFeed{
 		$post->nickname = substr($this->content, 0, 1) == '+' ? $this->content : '';
 		if (!empty($this->source)) $post->source = $this->source;
         return parent::customize( $post, $item );
+    }
+	
+	public function getComments($item) {
+		if (is_object($item)){
+			return array();
+		}
+		
+		$objectId = $item;
+        $original = $this->options->original();
+        $this->apiKey = $original['google_api_key'];
+        $url = "https://www.googleapis.com/plus/v1/activities/{$objectId}/comments?key={$this->apiKey}&maxResults={$this->getCount()}";
+        $request = $this->getFeedData($url);
+        $json = json_decode($request['response']);
+
+        if (!is_object($json) || (is_object($json) && sizeof($json->items) == 0)) {
+            if (isset($request['errors']) && is_array($request['errors'])){
+                if (!empty($request['errors'])){
+                    foreach ( $request['errors'] as $error ) {
+                        $error['type'] = 'google';
+                        //TODO $this->filterErrorMessage
+                        $this->errors[] = $error;
+                        throw new \Exception();
+                    }
+                }
+            }
+            else {
+                $this->errors[] = array('type'=>'google', 'message' => 'Bad request, access token issue. <a href="http://docs.social-streams.com/article/55-400-bad-request" target="_blank">Troubleshooting</a>.', 'url' => $url);
+                throw new \Exception();
+            }
+            return array();
+        }
+        else {
+            if($json->items){
+                // return first 5 comments
+                $data = array_slice($json->items, 0, 5);
+                $result = array();
+                foreach ($data as $item){
+                    $obj = new \stdClass();
+                    $obj->id = $item->id;
+                    $obj->from = array(
+                        'id' => $item->actor->id,
+                        'full_name' => $item->actor->displayName
+                    );
+                    $obj->text = $item->object->content;
+                    $obj->created_time = $item->published;
+                    $result[] = $obj;
+                }
+                return $result;
+            }else{
+                $this->errors[] = array(
+                    'type' => 'google',
+                    'message' => 'User not found',
+                    'url' => $url
+                );
+                throw new \Exception();
+            }
+        }
     }
 }

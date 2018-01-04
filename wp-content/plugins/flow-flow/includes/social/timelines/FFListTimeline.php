@@ -14,23 +14,23 @@ use flow\settings\FFSettingsUtils;
  */
 class FFListTimeline implements FFTimeline{
 	const URL = 'https://api.twitter.com/1.1/lists/statuses.json';
-
+	
 	private $count;
 	private $screenName;
 	private $include_rts;
 	private $listName;
-
-	public function init( $feed ) {
-		$this->count = isset($feed->posts) ? $feed->posts : 10;
+	
+	public function init($twitter, $feed) {
+		$this->count = $twitter->getCount();
 		$this->listName = $feed->{'list-name'};
 		$this->screenName = $feed->content;
 		$this->include_rts = (string)FFSettingsUtils::YepNope2ClassicStyle($feed->retweets);
 	}
-
+	
 	public function getUrl() {
 		return self::URL;
 	}
-
+	
 	public function getField() {
 		$getfield = "?slug={$this->listName}&owner_screen_name={$this->screenName}&count={$this->count}&include_rts={$this->include_rts}&include_entities=true&tweet_mode=extended";
 		return $getfield;

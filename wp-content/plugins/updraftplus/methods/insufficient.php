@@ -39,6 +39,34 @@ class UpdraftPlus_BackupModule_insufficientphp extends UpdraftPlus_BackupModule 
 	}
 
 	/**
+	 * Retrieve a list of supported features for this storage method
+	 *
+	 * Currently known features:
+	 *
+	 * - multi_options : indicates that the remote storage module
+	 * can handle its options being in the Feb-2017 multi-options
+	 * format. N.B. This only indicates options handling, not any
+	 * other multi-destination options.
+	 *
+	 * - multi_servers : not implemented yet: indicates that the
+	 * remote storage module can handle multiple servers at backup
+	 * time. This should not be specified without multi_options.
+	 * multi_options without multi_servers is fine - it will just
+	 * cause only the first entry in the options array to be used.
+	 *
+	 * - config_templates : not implemented yet: indicates that
+	 * the remote storage module can output its configuration in
+	 * Handlebars format via the get_configuration_template() method.
+	 *
+	 * @return Array - an array of supported features (any features not
+	 * mentioned are assumed to not be supported)
+	 */
+	public function get_supported_features() {
+		// The 'multi_options' options format is handled via only accessing options via $this->get_options()
+		return array('multi_options', 'config_templates');
+	}
+
+	/**
 	 * $match: a substring to require (tested via strpos() !== false)
 	 *
 	 * @param  string $match THis will specify which match is used for the SQL but by default it is set to 'backup_' unless specified
@@ -75,15 +103,15 @@ class UpdraftPlus_BackupModule_insufficientphp extends UpdraftPlus_BackupModule 
 	}
 
 	/**
-	 * config_print: prints out table rows for the configuration screen
-	 * Your rows need to have a class exactly matching your method (in this example, insufficientphp), and also a class of updraftplusmethod
-	 * Note that logging is not available from this context; it will do nothing.
+	 * Get the configuration template
+	 *
+	 * @return String - the template, ready for substitutions to be carried out
 	 */
-	public function config_print() {
-
+	public function get_configuration_template() {
+		ob_start();
 		$this->extra_config();
 		?>
-			<tr class="updraftplusmethod <?php echo $this->method;?>">
+		<tr class="updraftplusmethod <?php echo $this->method;?>">
 			<th><?php echo htmlspecialchars($this->desc);?>:</th>
 			<td>
 				<em>
@@ -93,8 +121,8 @@ class UpdraftPlus_BackupModule_insufficientphp extends UpdraftPlus_BackupModule 
 					<?php echo sprintf(__('Your %s version: %s.', 'updraftplus'), 'PHP', phpversion());?>
 				</em>
 			</td>
-			</tr>
+		</tr>
 		<?php
-
+		return ob_get_clean();
 	}
 }

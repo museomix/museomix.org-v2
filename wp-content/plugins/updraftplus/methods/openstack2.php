@@ -23,7 +23,7 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 	 * @param  string  $disablesslverify Check to disable SSL Verify
 	 * @return array
 	 */
-	public function get_service($opts, $useservercerts = false, $disablesslverify = null) {
+	public function get_openstack_service($opts, $useservercerts = false, $disablesslverify = null) {
 
 		// 'tenant', 'user', 'password', 'authurl', 'path', (optional) 'region'
 		extract($opts);
@@ -90,7 +90,7 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 	 */
 	public function get_supported_features() {
 		// This options format is handled via only accessing options via $this->get_options()
-		return array('multi_options');
+		return array('multi_options', 'config_templates');
 	}
 
 	/**
@@ -112,11 +112,10 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 	/**
 	 * This outputs the html to the settings page for the Openstack settings.
 	 *
-	 * @param  Array $opts - this is an array of Openstack settings
+	 * @return String - the partial template, ready for substitutions to be carried out
 	 */
-	public function config_print_middlesection() {
-		$opts = $this->get_options();
-
+	public function get_configuration_middlesection_template() {
+		ob_start();
 		$classes = $this->get_css_classes();
 		?>
 		<tr class="<?php echo $classes; ?>">
@@ -128,7 +127,7 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 
 		<tr class="<?php echo $classes; ?>">
 			<th><?php echo ucfirst(__('authentication URI', 'updraftplus'));?>:</th>
-			<td><input data-updraft_settings_test="authurl" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('authurl');?> value="<?php echo htmlspecialchars($opts['authurl']); ?>" />
+			<td><input data-updraft_settings_test="authurl" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('authurl');?> value="{{authurl}}" />
 			<br>
 			<em><?php echo _x('This needs to be a v2 (Keystone) authentication URI; v1 (Swauth) is not supported.', 'Keystone and swauth are technical terms which cannot be translated', 'updraftplus');?></em>
 			</td>
@@ -136,13 +135,13 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 
 		<tr class="<?php echo $classes; ?>">
 			<th><a href="http://docs.openstack.org/openstack-ops/content/projects_users.html" title="<?php _e('Follow this link for more information', 'updraftplus');?>"><?php _e('Tenant', 'updraftplus');?></a>:</th>
-			<td><input data-updraft_settings_test="tenant" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('tenant');?> value="<?php echo htmlspecialchars($opts['tenant']); ?>" />
+			<td><input data-updraft_settings_test="tenant" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('tenant');?> value="{{tenant}}" />
 			</td>
 		</tr>
 
 		<tr class="<?php echo $classes; ?>">
 			<th><?php _e('Region', 'updraftplus');?>:</th>
-			<td><input data-updraft_settings_test="region" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('region');?> value="<?php echo htmlspecialchars($opts['region']); ?>" />
+			<td><input data-updraft_settings_test="region" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('region');?> value="{{region}}" />
 			<br>
 			<em><?php _e('Leave this blank, and a default will be chosen.', 'updraftplus');?></em>
 			</td>
@@ -150,21 +149,22 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 
 		<tr class="<?php echo $classes; ?>">
 			<th><?php _e('Username', 'updraftplus');?>:</th>
-			<td><input data-updraft_settings_test="user" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('user');?> value="<?php echo htmlspecialchars($opts['user']); ?>" />
+			<td><input data-updraft_settings_test="user" type="text" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('user');?> value="{{user}}" />
 			</td>
 		</tr>
 
 		<tr class="<?php echo $classes; ?>">
 			<th><?php _e('Password', 'updraftplus');?>:</th>
-			<td><input data-updraft_settings_test="password" type="<?php echo apply_filters('updraftplus_admin_secret_field_type', 'password'); ?>" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('password');?> value="<?php echo htmlspecialchars($opts['password']); ?>" />
+			<td><input data-updraft_settings_test="password" type="<?php echo apply_filters('updraftplus_admin_secret_field_type', 'password'); ?>" autocomplete="off" style="width: 364px" <?php $this->output_settings_field_name_and_id('password');?> value="{{password}}" />
 			</td>
 		</tr>
 
 		<tr class="<?php echo $classes; ?>">
 			<th><?php echo __('Container', 'updraftplus');?>:</th>
-			<td><input data-updraft_settings_test="path" type="text" style="width: 364px" <?php $this->output_settings_field_name_and_id('path');?> value="<?php echo htmlspecialchars($opts['path']); ?>" /></td>
+			<td><input data-updraft_settings_test="path" type="text" style="width: 364px" <?php $this->output_settings_field_name_and_id('path');?> value="{{path}}" /></td>
 		</tr>
 		<?php
+		return ob_get_clean();
 	}
 
 	public function credentials_test($posted_settings) {

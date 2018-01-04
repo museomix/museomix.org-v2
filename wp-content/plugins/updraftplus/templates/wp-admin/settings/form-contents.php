@@ -104,7 +104,7 @@ foreach ($default_options as $k => $v) {
 	$active_service = UpdraftPlus_Options::get_updraft_option('updraft_service');
 ?>
 
-<table class="form-table width-900">
+<table id="remote-storage-holder" class="form-table width-900">
 	<tr>
 		<th><?php
 			echo __('Choose your remote storage', 'updraftplus').'<br>'.apply_filters('updraftplus_after_remote_storage_heading_message', '<em>'.__('(tap on an icon to select or unselect)', 'updraftplus').'</em>');
@@ -140,26 +140,6 @@ foreach ($default_options as $k => $v) {
 		<td></td>
 		<td><em><?php echo htmlspecialchars(__('If you choose no remote storage, then the backups remain on the web-server. This is not recommended (unless you plan to manually copy them to your computer), as losing the web-server would mean losing both your website and the backups in one event.', 'updraftplus'));?></em></td>
 	</tr>
-
-	<?php
-		$storage_objects_and_ids = $updraftplus->get_storage_objects_and_ids(array_keys($updraftplus->backup_methods));
-
-		foreach ($storage_objects_and_ids as $method => $method_information) {
-			$storage_object = $method_information['object'];
-			if (!$storage_object->supports_feature('multi_options')) {
-				do_action('updraftplus_config_print_before_storage', $method, null);
-				$storage_object->config_print();
-			} else {
-				foreach ($method_information['instance_settings'] as $instance_id => $storage_options) {
-					$storage_object->set_options($storage_options, false, $instance_id);
-					$storage_object->print_configuration();
-				}
-			}
-			do_action('updraftplus_config_print_after_storage', $method);
-		}
-
-	?>
-
 </table>
 
 <hr style="width:900px; float:left;">
@@ -300,7 +280,7 @@ foreach ($default_options as $k => $v) {
 <script type="text/javascript">
 /* <![CDATA[ */
 <?php
-
+	$storage_objects_and_ids = $updraftplus->get_storage_objects_and_ids(array_keys($updraftplus->backup_methods));
 	// In PHP 5.5+, there's array_column() for this
 	$method_objects = array();
 	foreach ($storage_objects_and_ids as $method => $method_information) {

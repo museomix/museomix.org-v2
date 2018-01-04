@@ -2,7 +2,7 @@
 /*
 Plugin Name: FacetWP - WPML
 Description: WPML support for FacetWP
-Version: 1.2.3
+Version: 1.3.0
 Author: FacetWP, LLC
 Author URI: https://facetwp.com/
 GitHub URI: facetwp/facetwp-wpml
@@ -12,6 +12,10 @@ defined( 'ABSPATH' ) or exit;
 
 class FWP_WPML
 {
+
+    public $default_language;
+    public $current_language;
+
 
     function __construct() {
         add_action( 'init' , array( $this, 'init' ) );
@@ -24,10 +28,14 @@ class FWP_WPML
     function init() {
         if ( defined( 'ICL_SITEPRESS_VERSION' ) && function_exists( 'FWP' ) ) {
             add_action( 'wp_footer', array( $this, 'wp_footer' ), 30 );
-            add_filter( 'facetwp_query_args', array( $this, 'facetwp_query_args' ), 10, 2 );
+            add_filter( 'facetwp_query_args', array( $this, 'facetwp_query_args' ) );
             add_filter( 'facetwp_render_params', array( $this, 'support_preloader' ) );
             add_filter( 'facetwp_indexer_query_args', array( $this, 'indexer_query_args' ) );
-            add_action( 'facetwp_indexer_post', array( $this, 'set_post_langcode' ) );
+            add_action( 'facetwp_indexer_post', array( $this, 'set_post_language_code' ) );
+
+            // Setup properties
+            $this->default_language = apply_filters( 'wpml_default_language', null );
+            $this->current_language = apply_filters( 'wpml_current_language', null );
 
             // Require WPML String Translation
             if ( function_exists( 'icl_register_string' ) ) {
@@ -42,7 +50,7 @@ class FWP_WPML
      * Put the language into FWP_HTTP
      */
     function wp_footer() {
-        $lang = ICL_LANGUAGE_CODE;
+        $lang = $this->current_language;
         echo "<script>var FWP_HTTP = FWP_HTTP || {}; FWP_HTTP.lang = '$lang';</script>";
     }
 
@@ -51,8 +59,8 @@ class FWP_WPML
      * Support FacetWP preloading (3.0.4+)
      */
     function support_preloader( $params ) {
-        if ( isset( $params['is_preload'] ) && defined( 'ICL_LANGUAGE_CODE' ) ) {
-            $params['http_params']['lang'] = ICL_LANGUAGE_CODE;
+        if ( isset( $params['is_preload'] ) ) {
+            $params['http_params']['lang'] = $this->current_language;
         }
 
         return $params;
@@ -62,10 +70,12 @@ class FWP_WPML
     /**
      * Query posts for the current language
      */
-    function facetwp_query_args( $args, $class ) {
-        if ( isset( $class->http_params['lang'] ) ) {
-            $GLOBALS['sitepress']->switch_lang( $class->http_params['lang'] );
+    function facetwp_query_args( $args ) {
+        $http = FWP()->facet->http_params;
+        if ( isset( $http['lang'] ) && $http['lang'] !== $this->default_language ) {
+            do_action( 'wpml_switch_language', $http['lang'] );
         }
+
         return $args;
     }
 
@@ -78,8 +88,8 @@ class FWP_WPML
             return $args;
         }
 
-        if ( -1 == $args['posts_per_page'] ) {
-            $GLOBALS['sitepress']->switch_lang( 'all' );
+        if ( -1 === $args['posts_per_page'] ) {
+            do_action( 'wpml_switch_language', 'all' );
         }
 
         $args['suppress_filters'] = true; // query posts in all languages
@@ -88,23 +98,22 @@ class FWP_WPML
 
 
     /**
-     * Set the indexer language code
-     */
-    function set_post_langcode( $params ) {
-        $post_id = $params['post_id'];
-        $language_code = $this->get_post_langcode( $post_id );
-        $GLOBALS['sitepress']->switch_lang( $language_code );
-    }
-
-
-    /**
      * Find a post's language code
      */
-    function get_post_langcode( $post_id ) {
+    function get_post_language_code( $post_id ) {
         global $wpdb;
 
         $query = $wpdb->prepare( "SELECT language_code FROM {$wpdb->prefix}icl_translations WHERE element_id = %d", $post_id );
         return $wpdb->get_var( $query );
+    }
+
+
+    /**
+     * Set the indexer language code
+     */
+    function set_post_language_code( $params ) {
+        $language_code = $this->get_post_language_code( $params['post_id'] );
+        do_action( 'wpml_switch_language', $language_code );
     }
 
 
@@ -119,7 +128,7 @@ class FWP_WPML
             foreach ( $facets as $facet ) {
                 foreach ( $whitelist as $k ) {
                     if ( ! empty( $facet[ $k ] ) ) {
-                        icl_register_string( 'FacetWP', $facet[ $k ], $facet[ $k ] );
+                        do_action( 'wpml_register_single_string', 'FacetWP', $facet[ $k ], $facet[ $k ] );
                     }
                 }
             }
@@ -131,16 +140,15 @@ class FWP_WPML
      * Handle string translations
      */
     function facetwp_i18n( $string ) {
-        $lang = ICL_LANGUAGE_CODE;
-        $default = $GLOBALS['sitepress']->get_default_language();
+        $lang = $this->current_language;
+        $default = $this->default_language;
 
         if ( isset( FWP()->facet->http_params['lang'] ) ) {
             $lang = FWP()->facet->http_params['lang'];
         }
 
         if ( $lang != $default ) {
-            $has_translation = null; // passed by reference
-            return icl_translate( 'FacetWP', $string, false, false, $has_translation, $lang );
+            return apply_filters( 'wpml_translate_single_string', $string, 'FacetWP', $string, $lang );
         }
 
         return $string;

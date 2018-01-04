@@ -2062,30 +2062,32 @@ class File_X509
         }
 
         if ($names = $this->getExtension('id-ce-subjectAltName')) {
-            foreach ($names as $key => $value) {
-                $value = str_replace(array('.', '*'), array('\.', '[^.]*'), $value);
-                switch ($key) {
-                    case 'dNSName':
-                        /* From RFC2818 "HTTP over TLS":
+            foreach ($names as $name) {
+                foreach ($name as $key => $value) {
+                    $value = str_replace(array('.', '*'), array('\.', '[^.]*'), $value);
+                    switch ($key) {
+                        case 'dNSName':
+                            /* From RFC2818 "HTTP over TLS":
 
-                           If a subjectAltName extension of type dNSName is present, that MUST
-                           be used as the identity. Otherwise, the (most specific) Common Name
-                           field in the Subject field of the certificate MUST be used. Although
-                           the use of the Common Name is existing practice, it is deprecated and
-                           Certification Authorities are encouraged to use the dNSName instead. */
-                        if (preg_match('#^' . $value . '$#', $components['host'])) {
-                            return true;
-                        }
-                        break;
-                    case 'iPAddress':
-                        /* From RFC2818 "HTTP over TLS":
+                               If a subjectAltName extension of type dNSName is present, that MUST
+                               be used as the identity. Otherwise, the (most specific) Common Name
+                               field in the Subject field of the certificate MUST be used. Although
+                               the use of the Common Name is existing practice, it is deprecated and
+                               Certification Authorities are encouraged to use the dNSName instead. */
+                            if (preg_match('#^' . $value . '$#', $components['host'])) {
+                                return true;
+                            }
+                            break;
+                        case 'iPAddress':
+                            /* From RFC2818 "HTTP over TLS":
 
-                           In some cases, the URI is specified as an IP address rather than a
-                           hostname. In this case, the iPAddress subjectAltName must be present
-                           in the certificate and must exactly match the IP in the URI. */
-                        if (preg_match('#(?:\d{1-3}\.){4}#', $components['host'] . '.') && preg_match('#^' . $value . '$#', $components['host'])) {
-                            return true;
-                        }
+                               In some cases, the URI is specified as an IP address rather than a
+                               hostname. In this case, the iPAddress subjectAltName must be present
+                               in the certificate and must exactly match the IP in the URI. */
+                            if (preg_match('#(?:\d{1-3}\.){4}#', $components['host'] . '.') && preg_match('#^' . $value . '$#', $components['host'])) {
+                                return true;
+                            }
+                    }
                 }
             }
             return false;
@@ -2114,7 +2116,9 @@ class File_X509
         }
 
         if (!isset($date)) {
-            $date = time();
+            $date = class_exists('DateTime') ?
+                new DateTime($date, new DateTimeZone(@date_default_timezone_get())) :
+                time();
         }
 
         $notBefore = $this->currentCert['tbsCertificate']['validity']['notBefore'];
@@ -2123,9 +2127,17 @@ class File_X509
         $notAfter = $this->currentCert['tbsCertificate']['validity']['notAfter'];
         $notAfter = isset($notAfter['generalTime']) ? $notAfter['generalTime'] : $notAfter['utcTime'];
 
+        if (class_exists('DateTime')) {
+            $notBefore = new DateTime($notBefore, new DateTimeZone(@date_default_timezone_get()));
+            $notAfter = new DateTime($notAfter, new DateTimeZone(@date_default_timezone_get()));
+        } else {
+            $notBefore = @strtotime($notBefore);
+            $notAfter = @strtotime($notAfter);
+        }
+
         switch (true) {
-            case $date < @strtotime($notBefore):
-            case $date > @strtotime($notAfter):
+            case $date < $notBefore:
+            case $date > $notAfter:
                 return false;
         }
 
@@ -3385,7 +3397,15 @@ class File_X509
      */
     function _timeField($date)
     {
-        $year = @gmdate("Y", @strtotime($date)); // the same way ASN1.php parses this
+        if (is_object($date) && strtolower(get_class($date)) == 'file_asn1_element') {
+            return $date;
+        }
+        if (!class_exists('DateTime')) {
+            $year = @gmdate("Y", @strtotime($date)); // the same way ASN1.php parses this
+        } else {
+            $dateObj = new DateTime($date, new DateTimeZone('GMT'));
+            $year = $dateObj->format('Y');
+        }
         if ($year < 2050) {
             return array('utcTime' => $date);
         } else {
@@ -3450,8 +3470,16 @@ class File_X509
                 return false;
             }
 
-            $startDate = !empty($this->startDate) ? $this->startDate : @date('D, d M Y H:i:s O');
-            $endDate = !empty($this->endDate) ? $this->endDate : @date('D, d M Y H:i:s O', strtotime('+1 year'));
+            if (!class_exists('DateTime')) {
+                $startDate = !empty($this->startDate) ? $this->startDate : @date('D, d M Y H:i:s O');
+                $endDate = !empty($this->endDate) ? $this->endDate : @date('D, d M Y H:i:s O', strtotime('+1 year'));
+            } else {
+                $startDate = new DateTime('now', new DateTimeZone(@date_default_timezone_get()));
+                $startDate = !empty($this->startDate) ? $this->startDate : $startDate->format('D, d M Y H:i:s O');
+
+                $endDate = new DateTime('+1 year', new DateTimeZone(@date_default_timezone_get()));
+                $endDate = !empty($this->endDate) ? $this->endDate : $endDate->format('D, d M Y H:i:s O');
+            }
             if (!empty($this->serialNumber)) {
                 $serialNumber = $this->serialNumber;
             } else {
@@ -3724,7 +3752,12 @@ class File_X509
 
         $currentCert = isset($this->currentCert) ? $this->currentCert : null;
         $signatureSubject = isset($this->signatureSubject) ? $this->signatureSubject : null;
-        $thisUpdate = !empty($this->startDate) ? $this->startDate : @date('D, d M Y H:i:s O');
+        if (!class_exists('DateTime')) {
+            $thisUpdate = !empty($this->startDate) ? $this->startDate : @date('D, d M Y H:i:s O');
+        } else {
+            $thisUpdate = new DateTime('now', new DateTimeZone(@date_default_timezone_get()));
+            $thisUpdate = !empty($this->startDate) ? $this->startDate : $thisUpdate->format('D, d M Y H:i:s O');
+        }
 
         if (isset($crl->currentCert) && is_array($crl->currentCert) && isset($crl->currentCert['tbsCertList'])) {
             $this->currentCert = $crl->currentCert;
@@ -3876,7 +3909,12 @@ class File_X509
      */
     function setStartDate($date)
     {
-        $this->startDate = @date('D, d M Y H:i:s O', @strtotime($date));
+        if (class_exists('DateTime')) {
+            $date = new DateTime($date, new DateTimeZone(@date_default_timezone_get()));
+            $this->startDate = $date->format('D, d M Y H:i:s O');
+        } else {
+            $this->startDate = @date('D, d M Y H:i:s O', @strtotime($date));
+        }
     }
 
     /**
@@ -3900,7 +3938,12 @@ class File_X509
             $temp = chr(FILE_ASN1_TYPE_GENERALIZED_TIME) . $asn1->_encodeLength(strlen($temp)) . $temp;
             $this->endDate = new File_ASN1_Element($temp);
         } else {
-            $this->endDate = @date('D, d M Y H:i:s O', @strtotime($date));
+            if (class_exists('DateTime')) {
+                $date = new DateTime($date, new DateTimeZone(@date_default_timezone_get()));
+                $this->endDate = $date->format('D, d M Y H:i:s O');
+            } else {
+                $this->endDate = @date('D, d M Y H:i:s O', @strtotime($date));
+            }
         }
     }
 
@@ -4640,9 +4683,16 @@ class File_X509
             return false;
         }
 
+        if (!class_exists('DateTime')) {
+            $revocationDate = @date('D, d M Y H:i:s O');
+        } else {
+            $revocationDate = new DateTime('now', new DateTimeZone(@date_default_timezone_get()));
+            $revocationDate = $revocationDate->format('D, d M Y H:i:s O');
+        }
+
         $i = count($rclist);
         $rclist[] = array('userCertificate' => $serial,
-                          'revocationDate'  => $this->_timeField(@date('D, d M Y H:i:s O')));
+                          'revocationDate'  => $this->_timeField($revocationDate));
         return $i;
     }
 

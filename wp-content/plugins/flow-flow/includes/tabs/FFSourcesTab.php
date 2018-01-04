@@ -1,7 +1,6 @@
 <?php namespace flow\tabs;
 
-use flow\settings\FFGeneralSettings;
-use flow\social\FFFeedUtils;
+use la\core\tabs\LATab;
 
 if ( ! defined( 'WPINC' ) ) die;
 /**
@@ -49,11 +48,10 @@ class FFSourcesTab implements LATab {
 							<tr>
 								<th></th>
 								<th>Feed</th>
-								<th>Status</th>
+								<th></th>
 								<th>Settings</th>
 								<th>Last update</th>
-								<th>Enabled?</th>
-								<th></th>
+								<th>Live</th>
 							</tr>
 							</thead>
 							<tbody id="feeds-list">
@@ -87,7 +85,7 @@ class FFSourcesTab implements LATab {
 									if (!empty($value)) {
 										/*if (isset($_GET['debug'])){
 											ini_set('xdebug.var_display_max_depth', '5');
-											$value = is_array($value) ? var_dump2str($value) : $value;
+											$value = is_array($value) ? print_r($value, true) : $value;
 											$settings .= '<span>' . $key . ':<span class="highlight">' . $value . '</span></span>';
 										}
 										else {*/
@@ -133,13 +131,12 @@ class FFSourcesTab implements LATab {
 
 								echo
 									'<tr data-uid="' . $id . '" data-network="'. $feed['type'] .'" class="' . ( $enabled ? 'feed-enabled' : '' ) . '">
-										<td class="controls"><i class="flaticon-pen"></i> <i class="flaticon-copy"></i> <i class="flaticon-trash"></i></td>
+										<td class="controls"><i class="flaticon-tool_more"></i><ul class="feed-dropdown-menu"><li data-action="filter">Filter feed</li><li data-action="cache">Rebuild cache</li></ul><i class="flaticon-tool_edit"></i> <i class="flaticon-copy"></i> <i class="flaticon-tool_delete"></i></td>
 										<td class="td-feed"><i class="flaticon-'. $feed['type'] .'"></i></td>
 										<td class="td-status"><span class="cache-status-' . ($feed['status'] == 1 ? 'ok' : 'error') . '"></span></td>
 										<td class="td-info">' . $settings . '</td>
 										<td class="td-last-update">' . $feed['last_update'] . '</td>
 										<td class="td-enabled"><label for="feed-enabled-' . $id .'"><input ' . ( $enabled ? 'checked' : '' ) . ' id="feed-enabled-' . $id .'" class="switcher" type="checkbox" name="feed-enabled-' . $id .'" value="yep"><div><div></div></div></label></td>
-										<td class="td-more"><i class="flaticon-more-1"></i><ul class="feed-dropdown-menu"><li data-action="filter">Filter feed</li><li data-action="cache">Rebuild cache</li></ul></td>
 									</tr>';
 							}
 
@@ -155,8 +152,7 @@ class FFSourcesTab implements LATab {
 							<div class="section">
 								<i class="popupclose flaticon-close-4"></i>
 								<div class="networks-choice add-feed-step">
-									<h1>Create feed to use in your streams.</h1>
-									<p class="desc">Choose source and then set up what content you want to load from it.</p>
+									<h1>Create new feed</h1>
 									<ul class="networks-list">
 										<li class="network-twitter"
 											data-network="twitter"
@@ -245,8 +241,9 @@ class FFSourcesTab implements LATab {
 									<div id="filter-views"></div>
 									<p class="feed-popup-controls add">
 										<span id="feed-sbmt-1"
-											  class="admin-button green-button submit-button">Add feed</span><span
-											class="space"></span><span class="admin-button grey-button button-go-back">Back to first step</span>
+											  class="admin-button green-button submit-button">Add feed</span>
+										<span
+											  class="space"></span><span class="admin-button grey-button button-go-back">Back to first step</span>
 									</p>
 									<p class="feed-popup-controls edit">
 										<span id="feed-sbmt-2"

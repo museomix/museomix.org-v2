@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
 
 class UpdraftCentral_Updates_Commands extends UpdraftCentral_Commands {
 
@@ -100,7 +100,7 @@ class UpdraftCentral_Updates_Commands extends UpdraftCentral_Commands {
 		wp_update_plugins();
 
 		// WP < 3.7
-		if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTPLUS_DIR.'/central/classes/class-automatic-upgrader-skin.php');
+		if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTCENTRAL_CLIENT_DIR.'/classes/class-automatic-upgrader-skin.php');
 		
 		$skin = new Automatic_Upgrader_Skin();
 		$upgrader = new Plugin_Upgrader($skin);
@@ -215,7 +215,7 @@ class UpdraftCentral_Updates_Commands extends UpdraftCentral_Commands {
 		$update = $get_core_updates[$core_update_key];
 
 		// WP < 3.7
-		if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTPLUS_DIR.'/central/classes/class-automatic-upgrader-skin.php');
+		if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTCENTRAL_CLIENT_DIR.'/classes/class-automatic-upgrader-skin.php');
 		
 		$skin = new Automatic_Upgrader_Skin();
 		$upgrader = new Core_Upgrader($skin);
@@ -288,7 +288,7 @@ class UpdraftCentral_Updates_Commands extends UpdraftCentral_Commands {
 		wp_update_themes();
 
 		// WP < 3.7
-		if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTPLUS_DIR.'/central/classes/class-automatic-upgrader-skin.php');
+		if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTCENTRAL_CLIENT_DIR.'/classes/class-automatic-upgrader-skin.php');
 		
 		$skin = new Automatic_Upgrader_Skin();
 		$upgrader = new Theme_Upgrader($skin);

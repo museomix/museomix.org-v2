@@ -1,9 +1,35 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
 
+/**
+ * Handles Users Commands
+ */
 class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 
+	/**
+	 * Compares two user object whether one is lesser than, equal to, greater than the other
+	 *
+	 * @internal
+	 * @param array $a First user in the comparison
+	 * @param array $b Second user in the comparison
+	 * @return integer Comparison results (0 = equal, -1 = less than, 1 = greater than)
+	 */
+	private function compare_user_id($a, $b) {
+		if ($a->ID === $b->ID) {
+			return 0;
+		}
+
+		return ($a->ID < $b->ID) ? -1 : 1;
+	}
+
+	/**
+	 * Searches users based from the keyword submitted
+	 *
+	 * @internal
+	 * @param array $query Parameter array containing the filter and keyword fields
+	 * @return array Contains the list of users found as well as the total users count
+	 */
 	private function _search_users($query) {
 		$this->_admin_include('user.php');
 		$query1 = new WP_User_Query(array(
@@ -11,6 +37,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 			'order' => 'ASC',
 			'role'=> $query["role"],
 			'search' => '*' . esc_attr($query["search"]) . '*',
+			'search_columns' => array('user_login', 'user_email')
 		));
 		$query2 = new WP_User_Query(array(
 			'orderby' => 'ID',
@@ -31,49 +58,47 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 			)
 		));
 
-		if (empty($query1->results)) {
-			$query1->results = array();
-		}
-		if (empty($query2->results)) {
-			$query2->results = array();
-		}
 		if (empty($query1->results) && empty($query2->results)) {
 			return array("message" => "users_not_found");
-		}
-		
-		$found_users = array_merge($query1->results, $query2->results);
-		$users = array();
-		foreach ($found_users as $new_user) {
-			$new = true;
-			foreach ($users as $user) {
-				if ($new_user == $user) {
-					$new = false;
+		} else {
+			$found_users = array_merge($query1->results, $query2->results);
+			$temp = array();
+			foreach ($found_users as $new_user) {
+				if (!isset($temp[$new_user->ID])) {
+					$temp[$new_user->ID] = $new_user;
 				}
 			};
-			if ($new) {
-				array_push($users, $new_user);
-			}
-		};
-		
-		return $users;
+
+			$users = array_values($temp);
+
+			// Sort users:
+			usort($users, array($this, 'compare_user_id'));
+			$offset = (intval($query['page_no']) * intval($query['per_page'])) - intval($query['per_page']);
+			$user_list = array_slice($users, $offset, $query['per_page']);
+			
+			return array(
+				'users' => $user_list,
+				'total_users' => count($users)
+			);
+		}
 	}
 
-	private function _calculate_pages($query) {
-	
+	/**
+	 * Calculates the number of pages needed to construct the pagination links
+	 *
+	 * @internal
+	 * @param array $query
+	 * @param array $total_users The total number of users found from the WP_User_Query query
+	 * @return array Contains information needed to construct the pagination links
+	 */
+	private function _calculate_pages($query, $total_users) {
+
 		$per_page_options = array(10, 20, 30, 40, 50);
 
 		if (!empty($query)) {
 			
-			if (!empty($query['search'])) {
-				return array(
-					page_count => 1,
-					page_no => 1
-				);
-			}
-			
 			$pages = array();
-			$page_query = new WP_User_Query(array('role' => $query["role"]));
-			$page_count = ceil($page_query->total_users / $query["per_page"]);
+			$page_count = ceil($total_users / $query["per_page"]);
 			if ($page_count > 1) {
 
 				for ($i = 0; $i < $page_count; $i++) {
@@ -118,7 +143,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 					"pages" => $pages,
 					"page_next" => $page_next,
 					"page_prev" => $page_prev,
-					"total_results" => $page_query->total_users,
+					"total_results" => $total_users,
 					"per_page_options" => $per_page_options
 				);
 
@@ -127,7 +152,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 					"page_no" => $query['page_no'],
 					"per_page" => $query["per_page"],
 					"page_count" => $page_count,
-					"total_results" => $page_query->total_users,
+					"total_results" => $total_users,
 					"per_page_options" => $per_page_options
 				);
 			}
@@ -138,6 +163,12 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		}
 	}
 	
+	/**
+	 * Validates whether the username exists
+	 *
+	 * @param array $params Contains the user name to check and validate
+	 * @return array An array containing the result of the current process
+	 */
 	public function check_username($params) {
 		$this->_admin_include('user.php');
 		$username = $params['user_name'];
@@ -180,7 +211,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 	 * If the site is a multisite, then sites under the network
 	 * will be pulled, otherwise, it will return an empty array.
 	 *
-	 * @returns Array - an array of sites
+	 * @return Array - an array of sites
 	 */
 	private function _get_blog_sites() {
 		
@@ -223,6 +254,12 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		return $sites;
 	}
 	
+	/**
+	 * Validates whether the email exists
+	 *
+	 * @param array $params Contains the email to check and validate
+	 * @return array An array containing the result of the current process
+	 */
 	public function check_email($params) {
 		$this->_admin_include('user.php');
 		$email = $params['email'];
@@ -267,13 +304,12 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 	 * based on the current search parameters/filters. Please see _search_users
 	 * for the breakdown of these parameters.
 	 *
-	 * @param  array $query
-	 * @return array
+	 * @param array $query Parameter array containing the filter and keyword fields
+	 * @return array An array containing the result of the current process
 	 */
 	public function get_users($query) {
 		$this->_admin_include('user.php');
 		
-		$users;
 		// Here, we're getting the current blog id. If blog id
 		// is passed along with the parameters then we override
 		// that current (default) value with the parameter blog id value.
@@ -288,20 +324,29 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		if (function_exists('switch_to_blog')) {
 			$switched = switch_to_blog($blog_id);
 		}
-		
+
+		// Set default:
+		if (empty($query["per_page"])) {
+			$query["per_page"] = 10;
+		}
+		if (empty($query['page_no'])) {
+			$query['page_no'] = 1;
+		}
+		if (empty($query["role"])) {
+			$query["role"] = "";
+		}
+
+		$users = array();
+		$total_users = 0;
+
 		if (!empty($query["search"])) {
-			$users = $this->_search_users($query);
+			$search_results = $this->_search_users($query);
+
+			if (isset($search_results['users'])) {
+				$users = $search_results['users'];
+				$total_users = $search_results['total_users'];
+			}
 		} else {
-			if (empty($query["per_page"])) {
-				$query["per_page"] = 10;
-			}
-			if (empty($query['page_no'])) {
-				$query['page_no'] = 1;
-			}
-			if (empty($query["role"])) {
-				$query["role"] = "";
-			}
-			
 			$user_query = new WP_User_Query(array(
 				'orderby' => 'ID',
 				'order' => 'ASC',
@@ -316,6 +361,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 			}
 			
 			$users = $user_query->results;
+			$total_users = $user_query->get_total();
 		}
 		
 		foreach ($users as &$user) {
@@ -333,7 +379,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		
 		$result = array(
 			"users"=>$users,
-			"paging" => $this->_calculate_pages($query)
+			"paging" => $this->_calculate_pages($query, $total_users)
 		);
 		
 		// Here, we're restoring to the current (default) blog before we
@@ -344,7 +390,13 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		}
 		return $this->_response($result);
 	}
-	
+
+	/**
+	 * Creates new user for the current blog
+	 *
+	 * @param array $user User information to add
+	 * @return array An array containing the result of the current process
+	 */
 	public function add_user($user) {
 		$this->_admin_include('user.php');
 		// Here, we're getting the current blog id. If blog id
@@ -365,7 +417,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		}
 		
 		if (!current_user_can('create_users') && !is_super_admin()) {
-			$result = array("error" => true, "message" => "user_create_no_permission");
+			$result = array('error' => true, 'message' => 'user_create_no_permission', 'data' => array('multisite' => is_multisite()));
 			return $this->_response($result);
 		}
 		if (is_email($user["user_email"]) === false) {
@@ -447,7 +499,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		}
 		
 		if (!current_user_can('delete_users') && !is_super_admin()) {
-			$result = array("error" => true, "message" => "user_delete_no_permission");
+			$result = array('error' => true, 'message' => 'user_delete_no_permission', 'data' => array('multisite' => is_multisite()));
 			return $this->_response($result);
 		}
 		if (get_userdata($user_id) === false) {
@@ -471,6 +523,12 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		return $this->_response($result);
 	}
 	
+	/**
+	 * Edits existing user information
+	 *
+	 * @param array $user User information to save
+	 * @return array An array containing the result of the current process
+	 */
 	public function edit_user($user) {
 		$this->_admin_include('user.php');
 		
@@ -490,7 +548,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		}
 		
 		if (!current_user_can('edit_users') && !is_super_admin() && get_current_user_id() !== $user["ID"]) {
-			$result = array("error" => true, "message" => "user_edit_no_permission");
+			$result = array('error' => true, 'message' => 'user_edit_no_permission', 'data' => array('multisite' => is_multisite()));
 			return $this->_response($result);
 		}
 		
@@ -542,12 +600,22 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		return $this->_response($result);
 	}
 
+	/**
+	 * Retrieves available roles to be used as filter options
+	 *
+	 * @return array An array containing all available roles
+	 */
 	public function get_roles() {
 		$this->_admin_include('user.php');
 		$roles = array_reverse(get_editable_roles());
 		return $this->_response($roles);
 	}
 
+	/**
+	 * Retrieves information to be use as filters
+	 *
+	 * @return array An array containing the filter fields and their data
+	 */
 	public function get_user_filters() {
 		$this->_admin_include('user.php');
 		
@@ -557,7 +625,7 @@ class UpdraftCentral_Users_Commands extends UpdraftCentral_Commands {
 		$result = array(
 			"sites" => $sites,
 			"roles" => array_reverse(get_editable_roles()),
-			"paging" => $this->_calculate_pages(null),
+			"paging" => $this->_calculate_pages(null, 0),
 		);
 		return $this->_response($result);
 	}

@@ -2,6 +2,7 @@
 if ( ! defined( 'WPINC' ) ) die;
 
 use flow\settings\FFSettingsUtils;
+use la\core\social\LAFeedWithComments;
 
 /**
  * Flow-Flow.
@@ -11,7 +12,7 @@ use flow\settings\FFSettingsUtils;
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFPosts extends FFBaseFeed {
+class FFPosts extends FFBaseFeed implements LAFeedWithComments {
     private $args;
     private $shortcodes;
     private $authors;
@@ -107,4 +108,52 @@ class FFPosts extends FFBaseFeed {
 		}
 		return $this->authors[ $author_id ][ $key ];
 	}
+	
+	public function getComments($item) {
+		if (is_object($item)){
+			return array();
+		}
+		
+		$objectId = $item;
+        $comments = get_comments(array(
+            "post_id" => $objectId,
+            "status" => "approve",
+            "type" => "comment"
+        ));
+
+        if (!is_array($comments)) {
+            if (isset($request['errors']) && is_array($request['errors'])){
+                if (!empty($request['errors'])){
+                    foreach ( $request['errors'] as $error ) {
+                        $error['type'] = 'wordpress';
+                        //TODO $this->filterErrorMessage
+                        $this->errors[] = $error;
+                        throw new \Exception();
+                    }
+                }
+            }
+            else {
+                $this->errors[] = array('type'=>'wordpress', 'message' => 'Bad request, post ID issue. <a href="http://docs.social-streams.com/article/55-400-bad-request" target="_blank">Troubleshooting</a>.', 'post_id' => $objectId);
+                throw new \Exception();
+            }
+            return array();
+        }
+        else {
+            // return first 5 comments
+            $data = array_slice($comments, 0, 5);
+            $result = array();
+            foreach ($data as $item){
+                $obj = new \stdClass();
+                $obj->id = $item->comment_ID;
+                $obj->from = array(
+                    "id" => $item->user_id,
+                    "name" => $item->comment_author,
+                );
+                $obj->text = $item->comment_content;
+                $obj->created_time = $item->comment_date;
+                $result[] = $obj;
+            }
+            return $result;
+        }
+    }
 }

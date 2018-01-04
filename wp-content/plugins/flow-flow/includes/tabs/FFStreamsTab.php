@@ -1,4 +1,7 @@
 <?php namespace flow\tabs;
+
+use la\core\tabs\LATab;
+
 if ( ! defined( 'WPINC' ) ) die;
 /**
  * FlowFlow.
@@ -68,17 +71,18 @@ class FFStreamsTab implements LATab{
 
 				<div class="section" id="streams-list-section">
 					<h1 class="desc-following"><span>List of your streams</span> <span class="admin-button green-button button-add">create stream</span></h1>
-					<p class="desc">Here is a list of your streams. Edit them to change styling or to add/remove social feeds. Status means all connected feeds are loaded or not.</p>
+					<p class="desc">Here is a list of your streams. Edit them to change styling or to add/remove social feeds. Green or red marks mean all connected feeds are loaded or not.</p>
 					<table>
 						<thead>
 						<tr>
+							<th></th>
 							<th></th>
 							<th>Stream</th>
 							<th>Layout</th>
 							<th>Feeds</th>
 							<?php
-							if (FF_USE_WP) echo '<th>Status</th><th>Shortcode</th>';
-							else echo '<th>ID</th><th>Status</th>';
+							if (FF_USE_WP) echo '<th>Shortcode</th>';
+							else echo '<th>ID</th>';
 							?>
 						</tr>
 						</thead>
@@ -91,8 +95,8 @@ class FFStreamsTab implements LATab{
 
 							$status = $stream['status'] == 1 ? 'ok' : 'error';
 							$additionalInfo = FF_USE_WP ?
-								'<td><span class="cache-status-'. $status .'"></span></td><td><span class="shortcode">[ff id="' . $id . '"]</span><span class="shortcode-copy">Copy</span></td>' :
-								'<td>' . $id . '</td><td><span class="cache-status-'. $status .'"></span></td>';
+								'<td><span class="shortcode">[ff id="' . $id . '"]</span></td>' :
+								'<td>' . $id . '</td>';
 
 							if (isset($_REQUEST['debug']) && isset($stream['error'])) {
 								$additionalInfo .= $stream['error'];
@@ -110,10 +114,11 @@ class FFStreamsTab implements LATab{
 
 							echo
 								'<tr data-stream-id="' . $id . '">
-							      <td class="controls"><div class="loader-wrapper"><div class="throbber-loader"></div></div><i class="flaticon-pen"></i> <i class="flaticon-copy"></i> <i class="flaticon-trash"></i></td>
+							      <td class="controls"><div class="loader-wrapper"><div class="throbber-loader"></div></div><i class="flaticon-tool_edit"></i> <i class="flaticon-tool_clone"></i> <i class="flaticon-tool_delete"></i></td>
+							      <td><span class="cache-status-'. $status .'"></span></td>
 							      <td class="td-name">' . (!empty($stream['name']) ? stripslashes($stream['name']) : 'Unnamed') . '</td>
 							      <td class="td-type">' . (isset($stream['layout']) ? '<span class="highlight">' . $stream['layout'] . '</span>': '-') . '</td>
-							      <td class="td-feed">' . (empty($info) ? '-' : $info) . '</td>'
+							      <td class="td-feed">' . (empty($info) ? '<span class="highlight-grey">No Feeds</span>' : $info) . '</td>'
 								. $additionalInfo .
 								'</tr>';
 						}
@@ -127,7 +132,7 @@ class FFStreamsTab implements LATab{
 					</table>
 				</div>
                 <div class="section rating-promo">
-                    <div class="fb-wrapper"><div class="fb-page" data-href="https://www.facebook.com/looksawesooome/" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/looksawesooome/"><a href="https://www.facebook.com/looksawesooome/">Looks Awesome</a></blockquote></div></div></div>
+                    <div class="fb-wrapper"><div class="fb-page" data-href="https://www.facebook.com/SocialStreamApps/" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/SocialStreamApps/"><a href="https://www.facebook.com/SocialStreamApps/">Looks Awesome</a></blockquote></div></div></div>
                     <h1 class="desc-following"><span>Help plugin to grow</span></h1>
                     <p class="">A lot of users only think to review Flow-Flow when something goes wrong while many more people use it satisfactory. Don't let this go unnoticed. If you find Flow-Flow useful please leave your honest rating and review on plugins <a href="http://codecanyon.net/downloads" target="_blank">Downloads page</a> to help Flow-Flow grow and endorse its further development!</p>
                 </div>

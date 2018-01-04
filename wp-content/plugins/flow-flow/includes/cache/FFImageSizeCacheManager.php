@@ -15,26 +15,13 @@ use flow\db\FFDB;
 class FFImageSizeCacheManager {
 	const FF_IMG_CACHE_SIZE = 1000;
 
-	private static $instance = null;
-	/**
-	 * @return FFImageSizeCacheManager
-	 */
-	public static function get() {
-		if ( null == self::$instance ) {
-			self::$instance = new self;
-		}
-		return self::$instance;
-	}
-
-	private $size;
-	private $image_cache;
+    private $size;
+    private $image_cache;
 	private $table_name;
 	private $new_images = array();
 
-	function __construct() {
-		global $flow_flow_context;
-		$db = $flow_flow_context['db_manager'];
-		$this->table_name = $db->image_cache_table_name;
+	public function __construct($image_cache_table_name) {
+		$this->table_name = $image_cache_table_name;
 
 		$sql = "SELECT `url`, `width`, `height`, `original_url`  FROM ?n ORDER BY `creation_time` DESC LIMIT ?i";
 		if (false === ($result = FFDB::conn()->getIndCol('url', $sql, $this->table_name, self::FF_IMG_CACHE_SIZE))) {

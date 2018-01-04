@@ -13,13 +13,18 @@ if ( ! defined( 'WPINC' ) ) die;
  * @copyright 2014-2016 Looks Awesome
  */
 class FlowFlowWPWidget extends \WP_Widget{
+	private $context;
 
-	function __construct() {
+	public function __construct() {
 		parent::__construct( 'ff_widget', 'Flow-Flow Widget',
 			array( 'description' => 'Place your social stream' ) // Args
 		);
 	}
 
+	public function setContext($context){
+		$this->context = $context;
+	}
+	
 	public function widget( $args, $instance ) {
 		echo $args['before_widget'];
 		if ( ! empty( $instance['title'] ) ) {
@@ -36,9 +41,8 @@ class FlowFlowWPWidget extends \WP_Widget{
 		//Important!
 		//It will be execute before migrations!
 		//Need to check exist tables and fields!
-		global $flow_flow_context;
 		/** @var FFDBManager $dbm */
-		$dbm = $flow_flow_context['db_manager'];
+		$dbm = $this->context['db_manager'];
 		$streams = array();
 		if (FFDB::existTable($dbm->streams_table_name)) $streams = FFDB::streams($dbm->streams_table_name);
 

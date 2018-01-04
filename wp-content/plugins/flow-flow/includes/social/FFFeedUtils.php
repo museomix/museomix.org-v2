@@ -62,74 +62,74 @@ class FFFeedUtils{
 	 *
 	 * @return array
 	 */
-    public static function getFeedData($url, $timeout = 60, $header = false, $log = true, $followLocation = true, $useIpv4 = true){
-        $c = curl_init();
-        curl_setopt($c, CURLOPT_USERAGENT, self::$USER_AGENT);
-        curl_setopt($c, CURLOPT_URL,$url);
-        curl_setopt($c, CURLOPT_POST, 0);
-        curl_setopt($c, CURLOPT_FAILONERROR, true);
 
-	    // Enable if you have 'Network is unreachable' error
-	    if ($useIpv4) curl_setopt( $c, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        if ($followLocation) curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($c, CURLOPT_AUTOREFERER, true);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($c, CURLOPT_VERBOSE, false);
-        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-	    curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
-	    if (isset($_COOKIE['XDEBUG_SESSION']) && $_COOKIE['XDEBUG_SESSION'] == 'PHPSTORM')
-		    curl_setopt($c, CURLOPT_COOKIE, 'XDEBUG_SESSION=PHPSTORM');
-	    if ($timeout != null)   curl_setopt($c, CURLOPT_TIMEOUT, $timeout);
-	    curl_setopt($c, CURLOPT_CONNECTTIMEOUT_MS, 5000);
-	    if (is_array($header))  curl_setopt($c, CURLOPT_HTTPHEADER, $header);
-        $page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
-        $error = curl_error($c);
-        $errors = array();
-        if (strlen($error) > 0){
-	        if ($log) {
-		        if (isset($_REQUEST['debug'])) {
-			        echo 'DEBUG:: <br>';
-			        var_dump($error);
-			        echo '<br>';
-			        var_dump(debug_backtrace());
-			        echo 'URL: ' . $url;
-			        echo '<br>-------<br>';
-                    error_log(var_dump2str($error));
-                    error_log(var_dump2str(debug_backtrace()));
-                    error_log($url);
-		        }
-		    }
-			
-			if (strpos($error, 'Failed to connect') !== false && strpos($error, 'Network is unreachable') !== false){
-				curl_setopt($c, CURLOPT_FAILONERROR, false);
-				$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
-				$error2 = curl_error($c);
-				if (strlen($error2) > 0){
-					$error .= '. Please, enable "USE IPV4 PROTOCOL" option at the settings tab.';
-					$errors[] = array('msg' => $error, 'url' => $url);
-					error_log('FFFeedUtils line 110 :: ' . $error);
-					error_log('FFFeedUtils line 111 :: ' . $error2);
-				}
-				curl_close($c);
-				return array('response' => $page, 'errors' => $errors);
-			}
-	        else if ((strpos($url, 'https://graph.facebook.com') === 0) ||
-	            (strpos($url, 'https://api.instagram.com') === 0) ||
-	            (strpos($url, 'https://api.linkedin.com') === 0) ||
-	            (strpos($url, 'https://www.googleapis.com') === 0)
-	        ) {
-		        curl_setopt($c, CURLOPT_FAILONERROR, false);
-		        $body = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
-		        $body = json_decode($body);
-		        if (isset($body->error->message)) $error = $body->error->message;
-		        else if (isset($body->meta->error_message)) $error = $body->meta->error_message;
-		        else if (isset($body->message)) $error = $body->message;
-		        else if (!is_null($body)) $error = var_dump2str($body);
-	        }
-	        $errors[] = array('msg' => $error, 'url' => $url);
-        }
-        curl_close($c);
-        return array('response' => $page, 'errors' => $errors);
+	public static function getFeedData($url, $timeout = 60, $header = false, $log = true, $followLocation = true, $useIpv4 = true){
+		$c = curl_init();
+		curl_setopt($c, CURLOPT_USERAGENT, self::$USER_AGENT);
+		curl_setopt($c, CURLOPT_URL,$url);
+		curl_setopt($c, CURLOPT_POST, 0);
+		curl_setopt($c, CURLOPT_FAILONERROR, true);
+		
+		// Enable if you have 'Network is unreachable' error
+		if ($useIpv4) curl_setopt( $c, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+		if ($followLocation) curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
+    	curl_setopt($c, CURLOPT_AUTOREFERER, true);
+    	curl_setopt($c, CURLOPT_RETURNTRANSFER,true);
+    	curl_setopt($c, CURLOPT_VERBOSE, false);
+    	curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+    	curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
+    	if (isset($_COOKIE['XDEBUG_SESSION']) && $_COOKIE['XDEBUG_SESSION'] == 'PHPSTORM')
+    		curl_setopt($c, CURLOPT_COOKIE, 'XDEBUG_SESSION=PHPSTORM');
+    		if ($timeout != null)   curl_setopt($c, CURLOPT_TIMEOUT, $timeout);
+    		curl_setopt($c, CURLOPT_CONNECTTIMEOUT_MS, 5000);
+    		if (is_array($header))  curl_setopt($c, CURLOPT_HTTPHEADER, $header);
+    		$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
+    		$error = curl_error($c);
+    		$errors = array();
+    		if (strlen($error) > 0){
+    			if ($log) {
+    				if (isset($_REQUEST['debug'])) {
+    					echo 'DEBUG:: <br>';
+    					var_dump($error);
+    					echo '<br>';
+    					var_dump(debug_backtrace());
+    					echo 'URL: ' . $url;
+    					echo '<br>-------<br>';
+    					error_log(print_r($error, true));
+    					error_log(print_r(debug_backtrace(), true));
+    					error_log($url);
+    				}
+    			}
+    			if (strpos($error, 'Failed to connect') !== false && strpos($error, 'Network is unreachable') !== false){
+    				curl_setopt($c, CURLOPT_FAILONERROR, false);
+    				$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
+    				$error2 = curl_error($c);
+    				if (strlen($error2) > 0){
+    					$error .= '. Please, enable "USE IPV4 PROTOCOL" option at the settings tab.';
+    					$errors[] = array('msg' => $error, 'url' => $url);
+    					error_log('FFFeedUtils line 110 :: ' . $error);
+    					error_log('FFFeedUtils line 111 :: ' . $error2);
+    				}
+    				curl_close($c);
+    				return array('response' => $page, 'errors' => $errors);
+    			}
+    			else if ((strpos($url, 'https://graph.facebook.com') === 0) ||
+    					(strpos($url, 'https://api.instagram.com') === 0) ||
+    					(strpos($url, 'https://api.linkedin.com') === 0) ||
+    					(strpos($url, 'https://www.googleapis.com') === 0)
+    					) {
+    						curl_setopt($c, CURLOPT_FAILONERROR, false);
+    						$body = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
+    						$body = json_decode($body);
+    						if (isset($body->error->message)) $error = $body->error->message;
+    						else if (isset($body->meta->error_message)) $error = $body->meta->error_message;
+    						else if (isset($body->message)) $error = $body->message;
+    						else if (!is_null($body)) $error = print_r($body, true);
+    					}
+    					$errors[] = array('msg' => $error, 'url' => $url);
+    		}
+    		curl_close($c);
+    		return array('response' => $page, 'errors' => $errors);
     }
 
 

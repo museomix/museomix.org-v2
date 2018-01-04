@@ -5,7 +5,7 @@
     function __construct() {
 
       $this->setVars();
-      $this->initFilters();
+      $this->assetsLoading();
 
     }
 
@@ -18,25 +18,29 @@
 
     }
 
-    private function initFilters() {
+    /* ---
+      Styles & scripts
+    --- */
 
-      add_filter('admin_enqueue_scripts', array($this, 'loadStyles')); 
-      add_filter('admin_enqueue_scripts', array($this, 'loadScripts')); 
+      private function assetsLoading() {
 
-    }
+        add_filter('admin_enqueue_scripts', [$this, 'loadStyles']); 
+        add_filter('admin_enqueue_scripts', [$this, 'loadScripts']); 
 
-    public function loadStyles() {
+      }
 
-      wp_register_style('acf-better-search', $this->path . '/css/styles.css');
-      wp_enqueue_style('acf-better-search');
+      public function loadStyles() {
 
-    }
+        wp_register_style('acf-better-search', $this->path . '/css/styles.css');
+        wp_enqueue_style('acf-better-search');
 
-    public function loadScripts() {
+      }
 
-      wp_register_script('acf-better-search', $this->path . '/js/scripts.js', 'jquery', '', true);
-      wp_enqueue_script('acf-better-search');
+      public function loadScripts() {
 
-    }
+        wp_register_script('acf-better-search', $this->path . '/js/scripts.js', 'jquery', '', true);
+        wp_enqueue_script('acf-better-search');
+
+      }
 
   }

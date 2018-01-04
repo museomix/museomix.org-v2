@@ -21,16 +21,24 @@ use flow\FlowFlow;
  * @copyright 2014-2016 Looks Awesome
  */
 class FFSnapshotManager {
-	private $context;
 	const VERSION = '2.10';
+	
+	private $context;
 
 	public function __construct($context) {
 		$this->context = $context;
+		$dbm = $context['db_manager'];
+		
+		add_action('wp_ajax_create_backup',  array( $this, 'processAjaxRequest'));
+		add_action('wp_ajax_restore_backup', array( $this, 'processAjaxRequest'));
+		add_action('wp_ajax_delete_backup',  array( $this, 'processAjaxRequest'));
 	}
 
 	public function getSnapshots(){
 		$result = array();
-		$rows = FFDB::conn()->getAll('SELECT * FROM ?n ORDER BY `creation_time` DESC', FF_SNAPSHOTS_TABLE_NAME);
+		
+		$dbm = $this->context['db_manager'];
+		$rows = FFDB::conn()->getAll('SELECT * FROM ?n ORDER BY `creation_time` DESC', $dbm->snapshot_table_name);
 		foreach ( $rows as $row ) {
 			$sn = new \stdClass();
 			$sn->id = $row['id'];
@@ -106,7 +114,7 @@ class FFSnapshotManager {
 		$all['sources'] = $dbm->sources();
 		$result = gzcompress(serialize($all), 6);
 
-		FFDB::conn()->query("INSERT INTO ?n (`description`, `settings`, `dump`, `version`) VALUES(?s, ?s, ?s, ?s)", FF_SNAPSHOTS_TABLE_NAME, $description, '', $result, FlowFlow::VERSION);
+		FFDB::conn()->query("INSERT INTO ?n (`description`, `settings`, `dump`, `version`) VALUES(?s, ?s, ?s, ?s)", $dbm->snapshot_table_name, $description, '', $result, $this->context['version']);
 
 		return array('backed_up' => true, 'result' => FFDB::conn()->affectedRows());
 	}
@@ -116,7 +124,7 @@ class FFSnapshotManager {
 	 * @return array
 	 */
 	public function restoreBackup ($dbm) {
-		if (false !== ($dump = FFDB::conn()->getOne('SELECT `dump` FROM ?n WHERE id=?s', FF_SNAPSHOTS_TABLE_NAME, $_REQUEST['id']))){
+		if (false !== ($dump = FFDB::conn()->getOne('SELECT `dump` FROM ?n WHERE id=?s', $dbm->snapshot_table_name, $_REQUEST['id']))){
 			$all = gzuncompress($dump);
 			$all = unserialize($all);
 			unset($dump);
@@ -133,12 +141,12 @@ class FFSnapshotManager {
 			$dbm->dataInit();
 
 			foreach ( $dbm->streams() as $stream ) {
-				FFDB::deleteStream($stream['id']);
+				FFDB::deleteStream($dbm->streams_table_name, $dbm->streams_sources_table_name, $stream['id']);
 			}
 
 			foreach ( $all['streams'] as $stream ) {
 				$obj = (object)$stream;
-				FFDB::setStream($obj->id, $obj);
+				FFDB::setStream($dbm->streams_table_name, $dbm->streams_sources_table_name, $obj->id, $obj);
 				$dbm->generateCss($obj);
 			}
 			unset($all['streams']);
@@ -160,7 +168,7 @@ class FFSnapshotManager {
 	 * @return array
 	 */
 	public function deleteBackup ($dbm) {
-		$op = FFDB::conn()->query ('DELETE FROM ?n WHERE `id`=?s', FF_SNAPSHOTS_TABLE_NAME, $_REQUEST['id']);
+		$op = FFDB::conn()->query ('DELETE FROM ?n WHERE `id`=?s', $dbm->snapshot_table_name, $_REQUEST['id']);
 		return array('deleted' => (false !== $op));
 	}
 } 

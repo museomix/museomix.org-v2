@@ -102,18 +102,36 @@ class Loco_admin_init_InitPoController extends Loco_admin_bundle_BaseController 
         $locales = array();
         foreach( $api->getAvailableCore() as $tag => $raw ){
             $locale = Loco_Locale::parse($tag);
+            $tag = (string) $locale;
             $vparam = new Loco_mvc_ViewParams( array(
+                'value' => $tag,
                 'icon'  => $locale->getIcon(),
-                'value' => (string) $locale,
-                'label' => $locale->fetchName($api),
+                'label' => $locale->ensureName($api),
             ) );
             if( $api->isInstalled($tag) ){
-                $installed[] = $vparam;
+                $installed[$tag] = $vparam;
             }
             else {
-                $locales[] = $vparam;
+                $locales[$tag] = $vparam;
             }
         }
+        // Pick up any non-standard languages installed
+        foreach( $api->getInstalledCore() as $tag ){
+            if( ! array_key_exists($tag,$installed) ){
+                $locale = Loco_Locale::parse($tag);
+                if( $locale->isValid() ){
+                    $tag = (string) $tag;
+                    // We may not have names for these, so just the language tag will show
+                    $installed[$tag] = new Loco_mvc_ViewParams( array(
+                        'value' => $tag,
+                        'icon'  => $locale->getIcon(),
+                        'label' => $locale->ensureName($api),
+                    ) );
+                }
+            }
+        }
+
+        // two locale lists built for "installed" and "available" dropdowns
         $this->set( 'locales', $locales );
         $this->set( 'installed', $installed );
 
@@ -126,7 +144,7 @@ class Loco_admin_init_InitPoController extends Loco_admin_bundle_BaseController 
             $filechoice = new Loco_fs_FileList;
         }
 
-        
+
         // show information about POT file if we are initialializing from template
         if( $potfile && $potfile->exists() ){
             $meta = Loco_gettext_Metadata::load($potfile);
@@ -181,6 +199,7 @@ class Loco_admin_init_InitPoController extends Loco_admin_bundle_BaseController 
         // there is no point checking whether any of these file exist, because we don't know what language will be chosen yet.
         $locations = array();
         $preferred = null;
+        $filesystem = new Loco_api_WordPressFileSystem;
         /* @var $pofile Loco_fs_File */
         foreach( $filechoice as $pofile ){
             $parent = new Loco_fs_LocaleDirectory( $pofile->dirname() );
@@ -202,12 +221,17 @@ class Loco_admin_init_InitPoController extends Loco_admin_bundle_BaseController 
             }
             $params = new Loco_mvc_ViewParams( array (
                 'locked' => ! $parent->writable(),
+                'unsafe' => $filesystem->isAutoUpdatable($pofile),
                 'parent' => Loco_mvc_FileParams::create( $parent ),
                 'hidden' => $pofile->getRelativePath($content_dir),
                 'holder' => str_replace( (string) $locale, '<span>&lt;locale&gt;</span>', $pofile->basename() ),
             ) );
+            // note that location may be vulnerable to overwites
+            if( $params['unsafe'] ){
+                $this->set('has_unsafe', true );
+            }
             // use first writable (or createable) location as default option
-            if( is_null($preferred) && ! $params['locked'] ){
+            if( is_null($preferred) && ! $params['locked'] && ! $params['unsafe'] ){
                 $preferred = $pofile;
                 $params['checked'] = 'checked';
             }

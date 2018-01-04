@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-05 14:00+0000\n"
+"POT-Creation-Date: 2017-11-30 18:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -26,37 +26,37 @@ msgid "Invalid locale"
 msgstr ""
 
 #. Plural category for languages that have no plurals
-#: src/Locale.php:243
+#: src/Locale.php:262
 msgctxt "Plural category"
 msgid "All forms"
 msgstr ""
 
 #. Plural category for singular quantity
-#: src/Locale.php:250
+#: src/Locale.php:269
 msgctxt "Plural category"
 msgid "One"
 msgstr ""
 
 #. Plural category used in some multi-plural languages
-#: src/Locale.php:252
+#: src/Locale.php:271
 msgctxt "Plural category"
 msgid "Two"
 msgstr ""
 
 #. Plural category used in some multi-plural languages
-#: src/Locale.php:254
+#: src/Locale.php:273
 msgctxt "Plural category"
 msgid "Few"
 msgstr ""
 
 #. Plural category used in some multi-plural languages
-#: src/Locale.php:256
+#: src/Locale.php:275
 msgctxt "Plural category"
 msgid "Many"
 msgstr ""
 
 #. General plural category not covered by other forms
-#: src/Locale.php:258
+#: src/Locale.php:277
 msgctxt "Plural category"
 msgid "Other"
 msgstr ""
@@ -466,20 +466,20 @@ msgstr ""
 msgid "Page not found"
 msgstr ""
 
-#: src/mvc/AjaxRouter.php:155
+#: src/mvc/AjaxRouter.php:161
 #, php-format
 msgid "Ajax route not found: \"%s\""
 msgstr ""
 
-#: src/mvc/AjaxRouter.php:160
+#: src/mvc/AjaxRouter.php:166
 msgid "Ajax controller returned empty JSON"
 msgstr ""
 
-#: src/mvc/AjaxRouter.php:187
+#: src/mvc/AjaxRouter.php:193
 msgid "Download action not found"
 msgstr ""
 
-#: src/mvc/AjaxRouter.php:192
+#: src/mvc/AjaxRouter.php:198
 msgid "Download controller returned empty output"
 msgstr ""
 
@@ -515,7 +515,7 @@ msgid_plural "%u configured domains have no extractable strings"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/package/Header.php:77 src/admin/file/InfoController.php:126
+#: src/package/Header.php:77 src/admin/file/InfoController.php:130
 msgid "Unknown author"
 msgstr ""
 
@@ -603,7 +603,7 @@ msgstr ""
 msgid "Child theme declares the same Text Domain as the parent theme"
 msgstr ""
 
-#: src/admin/bundle/ConfController.php:139 tpl/admin/bundle/setup/core.php:17
+#: src/admin/bundle/ConfController.php:140 tpl/admin/bundle/setup/core.php:17
 #: tpl/admin/bundle/setup/inc-nav.php:19
 msgid "Advanced configuration"
 msgstr ""
@@ -644,7 +644,7 @@ msgid "Edit template"
 msgstr ""
 
 #: src/admin/bundle/ViewController.php:126
-#: src/admin/init/InitPoController.php:153 tpl/admin/init/init-pot.php:40
+#: src/admin/init/InitPoController.php:171 tpl/admin/init/init-pot.php:40
 msgid "Create template"
 msgstr ""
 
@@ -776,11 +776,11 @@ msgctxt "Editor"
 msgid "Toggle code view"
 msgstr ""
 
-#: src/admin/file/InfoController.php:146
+#: src/admin/file/InfoController.php:150
 msgid "File does not have a valid header"
 msgstr ""
 
-#: src/admin/file/InfoController.php:163
+#: src/admin/file/InfoController.php:167
 #, php-format
 msgid "Language header is \"%s\" but file name contains \"%s\""
 msgstr ""
@@ -794,21 +794,21 @@ msgstr ""
 msgid "Initializing new translations in unknown set"
 msgstr ""
 
-#: src/admin/init/InitPoController.php:134
+#: src/admin/init/InitPoController.php:152
 #, php-format
 msgid "One string found in %2$s"
 msgid_plural "%s strings found in %s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/admin/init/InitPoController.php:162
+#: src/admin/init/InitPoController.php:180
 #, php-format
 msgid "1 source file will be scanned for translatable strings"
 msgid_plural "%s source files will be scanned for translatable strings"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/admin/init/InitPoController.php:168
+#: src/admin/init/InitPoController.php:186
 msgid "Skip template"
 msgstr ""
 
@@ -1367,6 +1367,22 @@ msgid ""
 "or make the directory writeable by %s"
 msgstr ""
 
+#: tpl/admin/file/info.php:107
+msgid "WordPress system file"
+msgstr ""
+
+#: tpl/admin/file/info.php:110
+msgid "This file location is managed by WordPress updates"
+msgstr ""
+
+#: tpl/admin/file/info.php:111
+msgid "It's not recommended to edit this file directly"
+msgstr ""
+
+#: tpl/admin/file/info.php:114
+msgid "See FAQ"
+msgstr ""
+
 #: tpl/admin/file/view-mo.php:11
 msgid "File is in binary MO format"
 msgstr ""
@@ -1436,25 +1452,29 @@ msgstr ""
 msgid "Choose a location"
 msgstr ""
 
-#: tpl/admin/init/init-po.php:119
+#: tpl/admin/init/init-po.php:84 tpl/admin/init/init-po.php:121
+msgid "What's this?"
+msgstr ""
+
+#: tpl/admin/init/init-po.php:118
 msgid "Template options"
 msgstr ""
 
-#: tpl/admin/init/init-po.php:125
+#: tpl/admin/init/init-po.php:129
 #, php-format
 msgid "Copy target translations from \"%s\""
 msgstr ""
 
-#: tpl/admin/init/init-po.php:131
+#: tpl/admin/init/init-po.php:135
 msgid "Just copy English source strings"
 msgstr ""
 
-#: tpl/admin/init/init-po.php:141
+#: tpl/admin/init/init-po.php:145
 #, php-format
 msgid "Use \"%s\" as template when running Sync"
 msgstr ""
 
-#: tpl/admin/init/init-po.php:151
+#: tpl/admin/init/init-po.php:155
 msgid "Start translating"
 msgstr ""
 
@@ -1486,28 +1506,28 @@ msgstr[1] ""
 msgid "Strings will be extracted to:"
 msgstr ""
 
-#: tpl/admin/init/init-prompt.php:12
+#: tpl/admin/init/init-pot.php:41 tpl/admin/init/init-prompt.php:27
+msgid "About templates"
+msgstr ""
+
+#: tpl/admin/init/init-prompt.php:10
 msgid "Template missing"
 msgstr ""
 
-#: tpl/admin/init/init-prompt.php:16
+#: tpl/admin/init/init-prompt.php:14
 msgid ""
 "This bundle's template file doesn't exist yet. We recommend you create it "
 "before adding languages"
 msgstr ""
 
-#: tpl/admin/init/init-prompt.php:20
+#: tpl/admin/init/init-prompt.php:18
 msgid "This bundle doesn't define a translations template file"
 msgstr ""
 
-#: tpl/admin/init/init-prompt.php:24
+#: tpl/admin/init/init-prompt.php:22
 msgid ""
 "Loco can sync directly with the source code, but this can be slow if there "
 "are many files"
-msgstr ""
-
-#: tpl/admin/init/init-prompt.php:29
-msgid "About templates"
 msgstr ""
 
 #: tpl/admin/list/inc-table.php:10

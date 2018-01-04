@@ -118,7 +118,7 @@ var FlowFlowApp = (function($){
       this.setupTabsAndContainer();
       this.attachGlobalEvents();
       Controller.confirmPopup = this.initConfirmPopup();
-      this.initClipBoard();
+      //this.initClipBoard();
 
     },
 
@@ -320,7 +320,7 @@ var FlowFlowApp = (function($){
       feedsView = new FeedsView({model: feedsModel, el: self.$form.find('#sources-list')[0]});
     },
     
-    tabs: (function () {
+    tabsCursor: (function () {
       var $cont;
       var $tabs;
       var $sections;
@@ -329,50 +329,48 @@ var FlowFlowApp = (function($){
       var moveCursor;
 
       function init ($el, id) {
-        this.$el = $el;
-        this.id = id;
-        this.$tabs = this.$el.find('.view-tabs');
-        this.$cursor = this.$tabs.find('.tab-cursor');
-        this.$sections = this.$el.find('.section[data-tab]');
+        this[id] = {};
+        var streamTabs = this[id];
+        streamTabs.$el = $el;
+        streamTabs.id = id;
+        streamTabs.$tabs = streamTabs.$el.find('.view-tabs');
+        streamTabs.$cursor = streamTabs.$tabs.find('.tab-cursor');
+        streamTabs.$sections = streamTabs.$el.find('.section[data-tab]');
         moveCursor = moveCursor.bind(this);
         //console.log('activating tabs', this);
-        setupActive.call(this);
-        attachEvents.call(this);
+        setupActive.call(this, id);
+        // attachEvents.call(this, $el);
+
+        streamTabs.$tabs.find('li').click(function () {
+          var val = $(this).data('tab');
+          var $active = $(this);
+          streamTabs.$tabs.find('.section-active-tab').removeClass('section-active-tab');
+          $active.addClass('section-active-tab');
+          streamTabs.$sections.removeClass('active-section').filter('[data-tab="' + val + '"]').addClass('active-section')
+          Controller.setHeight(streamTabs.id);
+          moveCursor($active, streamTabs.id);
+          sessionStorage.setItem('grace-s' + streamTabs.id + '-tab', val);
+        })
       }
-      
-      function setupActive () {
-        var $active = this.$tabs.find('li:not(".tab-cursor")').first();
-        this.$tabs.find('li:not(".tab-cursor")').first().addClass('section-active-tab');
-        this.$sections.first().addClass('active-section');
-        Controller.setHeight(this.id);
+
+      function setupActive (id) {
+        var $active = this[id].$tabs.find('li:not(".tab-cursor")').first();
+        this[id].$tabs.find('li:not(".tab-cursor")').first().addClass('section-active-tab');
+        this[id].$sections.first().addClass('active-section');
+        Controller.setHeight(id);
         setTimeout(function(){
-          moveCursor($active);
+          moveCursor($active, id);
         },0)
       }
-      
-      function attachEvents () {
-        var self = this;
 
-        this.$tabs.find('li').click(function () {
-          var val = this.innerHTML;
-          var $active = $(this);
-          self.$tabs.find('.section-active-tab').removeClass('section-active-tab');
-          $active.addClass('section-active-tab');
-          self.$sections.removeClass('active-section').filter('[data-tab="' + val + '"]').addClass('active-section')
-          Controller.setHeight(self.id);
-          moveCursor($active);
-          sessionStorage.setItem('s' + self.id + '-tab', val);
-        });
-      }
-
-      function moveCursor ($active) {
+      function moveCursor ($active, id) {
         var w = $active.outerWidth();
         var pos = $active.position();
-        this.$cursor.css({'left' : pos.left + 'px', minWidth: w + 'px'})
+        this[id].$cursor.css({'left' : pos.left + 'px', minWidth: w + 'px'})
       }
-      
+
       return {
-        init: init
+        initFor: init
       }
     })(),
     
@@ -579,7 +577,7 @@ var FlowFlowApp = (function($){
             if (!opts.doReload) self.makeOverlayTo('hide');
 
             $submitted = $('#' + sessionStorage.getItem('section-submit'));
-            $submitted.addClass('updated-button').html('&#10004;&nbsp;&nbsp;Updated');
+            $submitted.addClass('updated-button').html('<i class="flaticon-check_mark" data-action="edit"></i>&nbsp;&nbsp;Updated');
             $submitted.removeClass('button-in-progress');
 
             setTimeout( function () {
@@ -883,6 +881,7 @@ var FlowFlowApp = (function($){
         "private":               "nope",
         "hide-on-desktop":       "nope",
         "hide-on-mobile":        "nope",
+        "max-res":               "nope",
         "show-only-media-posts": "nope",
         "titles":                "nope",
         "hidemeta":              "nope",
@@ -1091,17 +1090,13 @@ var FlowFlowApp = (function($){
     template:  _.template(templates.streamRow),
     className: "stream-row",
     events: {
-      "click .flaticon-pen, .td-name": "edit",
-      "click .flaticon-trash": "destroy",
-      "click .flaticon-copy": "clone"
+      "click .flaticon-tool_edit, .td-name": "edit",
+      "click .flaticon-tool_delete": "destroy",
+      "click .flaticon-tool_clone": "clone",
+      "click span.shortcode": "selectShortcode"
     },
 
     initialize: function() {
-      // var self = this;
-      //
-      // this.listenTo(this.model, "change", function () {
-      //
-      // });
 
       this.model.on('change', function(){
         console.log('render row model on change', arguments)
@@ -1109,9 +1104,8 @@ var FlowFlowApp = (function($){
       }, this);
 
       this.model.view = this; // we can work with models collection now
-      if (!this.rendered && !this.$el.data('stream-id')) {
-        //this.render();
-      }
+
+      this.hideFeeds();
     },
 
     rendered: false,
@@ -1151,6 +1145,38 @@ var FlowFlowApp = (function($){
           this.$el.find('.td-name').html(changed.name || 'Unnamed');
         }
       }
+
+      this.hideFeeds();
+    },
+
+    hideFeeds: function(){
+      var _this = this;
+      setTimeout(function () {
+        var $cell = _this.$('.td-feed')
+        var cellWidth = $cell.get(0).offsetWidth - 100 // reserve space for "+ N more" badge
+        var $feeds = _this.$('i', $cell)
+        var feedsWidth = 0
+        var hiddenCount = 0
+
+        if($feeds.length === 0) return
+
+        $.each($feeds, function(i, feed){
+          feedsWidth += 26
+          $(feed).show()
+
+          if(cellWidth < feedsWidth){
+            $(feed).hide()
+            hiddenCount++
+          }
+        })
+
+        $cell.find('.link-more').remove();
+        if(cellWidth < feedsWidth){
+          $cell.append('<span class="link-more" data-action="edit">+ ' + hiddenCount + ' more')
+        }
+
+        console.log('hide feeds')
+      }, 4)
     },
 
     getFeedsStr: function (feeds) {
@@ -1160,13 +1186,13 @@ var FlowFlowApp = (function($){
         feeds = JSON.parse(feeds);
       }
 
-      if (!feeds || !feeds.length) return '-';
+      if (!feeds || !feeds.length) return '<span class="highlight-grey">No Feeds</span>';
 
       for (var i = 0, len = feeds.length; i < len; i++) {
           result += '<i class="flaticon-' + feeds[i]['type'] + '"></i>'
       }
 
-      return result || '-';
+      return result || '<span class="highlight-grey">No Feeds</span>';
     },
 
     edit: function(e, viewStays) {
@@ -1264,6 +1290,22 @@ var FlowFlowApp = (function($){
       }).fail(function(){
         alert('Something went wrong, please try to reload page');
       })
+    },
+
+    selectShortcode: function(e){
+      var el = e.target
+      var doc = window.document, sel, range;
+      if (window.getSelection && doc.createRange) {
+        sel = window.getSelection();
+        range = doc.createRange();
+        range.selectNodeContents(el);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else if (doc.body.createTextRange) {
+        range = doc.body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+      }
     }
   });
 
@@ -1403,7 +1445,7 @@ var FlowFlowApp = (function($){
         setTimeout(function () {
           self.$el.find(".input-not-obvious input").autoresize({padding:10,minWidth:56,maxWidth:400});
         })
-        Controller.tabs.init(this.$el, id);
+        Controller.tabsCursor.initFor(this.$el, id);
 
         setTimeout(function () {
           self.configDesign();
@@ -1667,20 +1709,20 @@ var FlowFlowApp = (function($){
           if (typeof optVal === 'object') {
             $input.each(function(){
               var $t = $( this );
-              $t.attr('checked', optVal[this.value]);
+              if (!this.disabled) $t.attr('checked', optVal[this.value]);
             });
             optVal = null;
           } else {
             $input.each(function(){
               var $t = $( this );
-              $t.attr('checked', $t.val() == optVal);
+              if (!this.disabled) $t.attr('checked', $t.val() == optVal);
             });
           }
         }
         else if ($input.is(':radio') || $input.is(':checkbox')) {
           $input.each(function(){
             var $t = $( this );
-            $t.attr( 'checked', $t.val() == attrs[name] );
+            if ( !this.disabled ) $t.attr( 'checked', attrs[name] === 'yep' );
           });
         } else {
           $input.val(val ? stripslashes(val.toString()) : '');
@@ -1925,9 +1967,7 @@ var FlowFlowApp = (function($){
           self.$el.find('.input-not-obvious input').focus();
 
         }
-        debugger
         self.rowModel.set('id', serverModel.id);
-        debugger
         self.model.trigger('stream-saved');
 
         if (wasEmptyList) {
@@ -1936,14 +1976,14 @@ var FlowFlowApp = (function($){
 
         sessionStorage.setItem('ff_stream', serverModel.id);
 
-        $t.addClass('updated-button').html('&#10004;&nbsp;&nbsp;Updated');
+        $t.addClass('updated-button').html('<i class="flaticon-check_mark" data-action="edit"></i>&nbsp;&nbsp;Updated');
         $t.removeClass('button-in-progress');
 
         setTimeout( function () {
           $t.html('Save changes').removeClass('updated-button');
         }, 2500);
       }).fail(function(){
-        alert('Something went wrong. Please try to reload page. If this repeats please contact support at http://looks-awesome.com/help')
+        alert('Something went wrong. Please try to reload page. If this repeats please contact support at https://social-streams.com/contact/')
       }).always(function () {
         self.saving = false;
       });
@@ -2065,7 +2105,7 @@ var FlowFlowApp = (function($){
         }
 
         if (changed) {
-debugger
+          
         }
       });
     },
@@ -2087,18 +2127,20 @@ debugger
     events: {
       "click .submit-button": "saveViaAjax",
       "click .button-add": "addFeedStepOne",
-      "click .flaticon-pen, .td-feed": "editFeed",
-      "mouseenter .td-more i": "toggleDropDown",
-      "mouseleave .td-more": "popupLeave",
+      "click .flaticon-tool_edit, .td-feed": "editFeed",
+      "click .flaticon-tool_more": "toggleDropDown",
+      "mouseleave .controls": "popupLeave",
       "click [data-action='filter']": "filterFeed",
       "click [data-action='cache']": "resetFeedCache",
-      "click .flaticon-copy": "cloneFeed",
-      "click .flaticon-trash": "deleteFeed",
+      "click .flaticon-tool_clone": "cloneFeed",
+      "click .flaticon-tool_delete": "deleteFeed",
       "click .tr-error": "hideError",
       "click .button-go-back": "addFeedGoBack",
       "click .networks-list > li": "createFeedView",
       "click .popup .button-cancel-action, .popupclose": "closeFeedPopup",
       "click .ff-pseudo-link": "toggleErrorFeeds",
+      "keyup [data-action='add-filter']": "addFilter",
+      "click [data-action='delete-filter']": "deleteFilter",
       "change .feed-view input": "updateModel",
       "change .feed-view textarea": "updateModel",
       "change .feed-view select": "updateModel",
@@ -2196,6 +2238,96 @@ debugger
       this.rendered = true;
 
     },
+
+      renderFilters: function(uid){
+          var $excludeList = $('.filter-labels[data-type="exclude"]');
+          var $includeList = $('.filter-labels[data-type="include"]');
+          var exclude = this.model.get('feeds')[uid]['filter-by-words'];
+          var include = this.model.get('feeds')[uid]['include'];
+
+          if (exclude == undefined) exclude = '';
+          if (include == undefined) include = '';
+
+          var excludeArr = exclude == '' ? [] : exclude.split(',');
+          var includeArr = include == '' ? [] : include.split(',');
+
+          $excludeList.html('');
+          $includeList.html('');
+
+          excludeArr.forEach(function (item, i) {
+              var $label =
+                  '<li class="filter-label">' + item +
+                  '<i data-action="delete-filter" data-id="' + uid + '" data-type="exclude" data-content="' + item + '" class="flaticon-feed_type_user"></i>' +
+                  '</li>';
+              $excludeList.append($label);
+          })
+
+          includeArr.forEach(function (item, i) {
+              var $label =
+                  '<li class="filter-label">' + item +
+                  '<i data-action="delete-filter" data-id="' + uid + '"  data-type="include" data-content="' + item + '" class="flaticon-feed_type_user"></i>' +
+                  '</li>';
+              $includeList.append($label);
+          })
+      },
+
+      addFilter: function (e) {
+          if (e.which != 13) return;
+
+          var $field = $(e.target);
+          var id = $field.data('id');
+          var type = $field.data('type');
+          var content = $field.val();
+          var $list = $('[data-filter-uid="' + id + '"] .filter-labels[data-type="' + type + '"]');
+          var $holder = $('[data-filter-uid="' + id + '"] [data-type="filter-' + type + '-holder"]');
+          var filters = $holder.val() == "" ? [] : $holder.val().split(',');
+          var $label =
+              '<li class="filter-label">' + content +
+              '<i data-action="delete-filter" data-id="' + id + '" data-type="' + type + '" data-content="' + content + '" class="flaticon-feed_type_user"></i>' +
+              '</li>';
+
+          if(filters.indexOf(content) == -1){
+              filters.push(content);
+              $list.append($label);
+              $holder.val(filters.join(','));
+
+              if(type == 'exclude'){
+                  this.model.attributes.feeds[id]['filter-by-words'] = filters.join(',');
+              }else{
+                  this.model.attributes.feeds[id]['include'] = filters.join(',');
+              }
+
+              $holder.trigger('change');
+          }
+
+          $field.val('');
+      },
+
+      deleteFilter: function(e){
+          var $el = $(e.target);
+          var id = $el.data('id') || $el.closest('.feed-view').data('filter-uid');
+          var type = $el.data('type');
+          var content = $(e.target).data('content');
+          var $label = $(e.target).closest('li');
+          var $holder = $('[data-filter-uid="' + id + '"] [data-type="filter-' + type + '-holder"]');
+          var filters = $holder.val() == "" ? [] : $holder.val().split(',');
+
+          filters.forEach(function (item, i) {
+              if(item == content) filters.splice(i, 1);
+          })
+
+          $holder.val(filters.join(','));
+          if(type == 'exclude'){
+              this.model.attributes.feeds[id]['filter-by-words'] = filters.join(',');
+          }else{
+              this.model.attributes.feeds[id]['include'] = filters.join(',');
+          }
+
+          console.log(this.model.attributes);
+          $holder.trigger('change');
+
+          $label.remove();
+      },
 
     toggleFeed: function (e) {
       var $t = $(e.target);
@@ -2347,13 +2479,12 @@ debugger
 
           feedsListStr = feedsListStr +
             '<tr data-uid="' + uid + '" data-network="' + feed.type + '" class="' + ( feed.enabled == 'yep' ? 'feed-enabled' : '' ) + '">' +
-              '<td class="controls"><i class="flaticon-pen"></i> <i class="flaticon-copy"></i> <i class="flaticon-trash"></i></td>' +
+              '<td class="controls"><i class="flaticon-tool_more"></i><ul class="feed-dropdown-menu"><li data-action="filter">Filter feed</li><li data-action="cache">Rebuild cache</li></ul><i class="flaticon-tool_edit"></i> <i class="flaticon-tool_delete"></i></td>' +
               '<td class="td-feed"><i class="flaticon-' + feed.type + '"></i>' + /*capitaliseFirstLetter(feed.type) +*/ '</td>' +
               '<td class="td-status">' +status+ '</span></td>' +
               '<td class="td-info">' + info + '</td>' +
               '<td class="td-last-update">' + lastUpdate + '</td>' +
               '<td class="td-enabled"><label for="feed-enabled-' + uid + '"><input ' + ( feed.enabled == 'yep' ? 'checked' : '' ) + ' id="feed-enabled-' + uid + '" class="switcher" type="checkbox" name="feed-enabled-' + uid + '" value="yep"><div><div></div></div></label></td>' +
-              '<td class="td-more"><i class="flaticon-more-1"></i><ul class="feed-dropdown-menu"><li data-action="filter">Filter feed</li><li data-action="cache">Rebuild cache</li></ul></td>' +
             '</tr>';
         });
 
@@ -2421,6 +2552,8 @@ debugger
       Controller.setScrollbar();
       Controller.$html.addClass('popup_visible');
       $popup.on('click', this.popupClick);
+
+      this.renderFilters(uid)
     },
 
     resetFeedCache: function (e) {
@@ -2596,7 +2729,7 @@ debugger
             try {
               errorStr += JSON.stringify(messages)
             } catch (e) {
-              errorStr += 'Unknown. Please ask support'
+              errorStr += 'Unknown error. Please ask for support <a href="https://social-streams.com/contact/">here</a>'
             }
           }
         } else if (typeof messages === 'string')  {
@@ -2611,21 +2744,25 @@ debugger
           try {
             errorStr += JSON.stringify(errorData[0])
           } catch (e) {
-            errorStr += 'Unknown error. Please <a href="http://looks-awesome.com/help">submit ticket</a> and send access'
+            errorStr += 'Unknown error. Please <a href="https://social-streams.com/contact/">submit ticket</a> and send access'
           }
         }
       } else {
         try {
           errorStr += JSON.stringify(errorData)
         } catch (e) {
-          errorStr += 'Unknown error. Please <a href="http://looks-awesome.com/help">submit ticket</a> and send access'
+          errorStr += 'Unknown error. Please <a href="https://social-streams.com/contact/">submit ticket</a> and send access'
         }
       }
 
       var offset = $error.offset();
       Controller.$errorPopup.addClass('visible').css({top: offset.top - 20, left: offset.left + 50});
 
-      Controller.$errorPopup.html('<h4>Plugin received next error from network API while requesting this feed:</h4><p>' + errorStr + '</p>')
+      if (errorData.type === 'facebook' && errorStr.indexOf('Application request limit') + 1) {
+        errorStr += '. Check <a href="http://docs.social-streams.com/article/133-facebook-app-request-limit-reached" target="_blank">more info</a>'
+      }
+
+      Controller.$errorPopup.html('<h4>Plugin received next error message from network API for this feed:</h4><p>' + errorStr + '</p>')
     },
 
     addFeedGoBack: function (e) {
@@ -2649,7 +2786,6 @@ debugger
       var $popup = this.$popup;
       var network = $t.data('network');
       var fid = Controller.getRandomId();
-
       var compiled = _.template(templates[network + 'View'])({uid: fid});
       var filterCompiled  = _.template(templates['filterView'])({uid: fid});
       var $view = $(compiled);
@@ -2732,7 +2868,8 @@ debugger
 
       obj['id'] = id;
       obj['type'] = $view.data('feed-type');
-      obj['filter-by-words'] = $view.parent().next().find('input').val() || '';
+      obj['include'] = $view.parent().next().find('input[name="include"]').val() || '';
+      obj['filter-by-words'] = $view.parent().next().find('input[name="filter-by-words"]').val() || '';
       if (errors) obj['errors'] = errors;
       if (modelFeeds) {
         modelFeeds[id] = obj;
@@ -2814,7 +2951,7 @@ debugger
 
         self.render();
 
-        $t.addClass('updated-button').html('&#10004;&nbsp;&nbsp;Updated');
+        $t.addClass('updated-button').html('<i class="flaticon-check_mark" data-action="edit"></i>&nbsp;&nbsp;Updated');
         $t.removeClass('button-in-progress');
 
         setTimeout( function () {
@@ -2822,7 +2959,7 @@ debugger
         }, 2500);
 
       }).fail(function(){
-        alert('Something went wrong. Please try to reload page. If this repeats please contact support at http://looks-awesome.com/help')
+        alert('Something went wrong. Please try to reload page. If this repeats please contact support at https://social-streams.com/contact/')
       });
     }
   });

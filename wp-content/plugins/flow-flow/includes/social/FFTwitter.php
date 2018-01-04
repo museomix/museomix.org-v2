@@ -22,8 +22,9 @@ class FFTwitter extends FFBaseFeed{
     private $timeline;
 	/** @var FFTwitterAPIExchange */
     private $restService;
-	private $image = null;
+	private $image;
 	private $media;
+	private $carousel;
 
 	public function __construct() {
 		parent::__construct( 'twitter' );
@@ -72,6 +73,7 @@ class FFTwitter extends FFBaseFeed{
             foreach ($tmp as $t) {
             	$this->image = null;
 	            $this->media = null;
+	            $this->carousel = array();
                 $tc = new \stdClass();
 	            $tc->feed_id = $this->id();
 	            $tc->id = $t['id_str'];
@@ -84,10 +86,15 @@ class FFTwitter extends FFBaseFeed{
                 $tc->userlink = 'https://twitter.com/'.$t['user']['screen_name'];
                 $tc->permalink = $tc->userlink . '/status/' . $tc->id;
 	            $tc->media = $this->getMedia($t);
+
 	            if (!is_null($this->image)) {
 	            	$tc->img = $this->image;
+	            	if (sizeof($this->carousel) > 0 && is_null($tc->media)){
+	            		$tc->media = $this->carousel[0];
+	            	}
 		            if (is_null($tc->media)) $tc->media = $this->image;
 	            }
+	            $tc->carousel = $this->carousel;
 	            @$tc->additional = array('shares' => (string)$t['retweet_count'], 'likes' => (string)$t['favorite_count'], 'comments' => (string)$t['reply_count']);
                 if ($this->isSuitablePost($tc)) $result[$tc->id] = $tc;
             }
@@ -113,7 +120,7 @@ class FFTwitter extends FFBaseFeed{
             default:
                 $timeline = new FFSearch();
         }
-        $timeline->init($feed);
+        $timeline->init($this, $feed);
         return $timeline;
     }
 
@@ -147,7 +154,7 @@ class FFTwitter extends FFBaseFeed{
 	                $this->image = $this->createImage($entity['media_url_https'], $sizes['w'],$sizes['h']);
                     $ChAr[$entity['indices'][0]] .= "<img src='" . $entity['media_url_https'] . "' style='width:%WIDTH%px;height:%HEIGHT%px'/>";
 	                $sizes = $entity['sizes']['large'];//medium or large ???
-	                $this->media = $this->createMedia($entity['media_url_https'], $sizes['w'],$sizes['h']);
+	                $this->media = $this->createMedia($entity['media_url_https'], $sizes['w'],$sizes['h'], 'image', true);
                 } else {
                     $ChAr[$entity['indices'][0]] .= $entity['display_url'];
                 }
@@ -190,12 +197,20 @@ class FFTwitter extends FFBaseFeed{
 			}
 			$entities = $tweet['retweeted_status']['extended_entities'];
 		}
-		else if (isset($tweet['extended_entities'])){
+        if (isset($tweet['entities']['media'])){
+            if (isset($tweet['entities']['media'][0])){
+                $entity = $tweet['entities']['media'][0];
+                $sizes = $entity['sizes']['small'];
+                $this->image = $this->createImage($entity['media_url_https'], $sizes['w'],$sizes['h']);
+            }
+        }
+		if (isset($tweet['extended_entities'])){
 			$entities = $tweet['extended_entities'];
 		}
 
 		if (!is_null($entities)){
 			if (isset($entities['media']))
+			    $result = array();
 				foreach ($entities['media'] as $entity) {
 					if (isset($entity['video_info']['variants']) && sizeof($entity['video_info']['variants']) > 0) {
 						if ($entity['type'] == 'video' || $entity['type'] == 'animated_gif') {
@@ -211,7 +226,15 @@ class FFTwitter extends FFBaseFeed{
 								}
 							}
 						}
-					}
+					}else{
+                        $width = $entity['sizes']['large']['w'];
+                        $height = $entity['sizes']['large']['h'];
+                        if ($width > 600 || FF_FORCE_FIT_MEDIA) {
+                            $height = FFFeedUtils::getScaleHeight(600, $width, $height);
+                            $width = 600;
+                        }
+                        $this->carousel[] = $this->createMedia($entity['media_url_https'], $width, $height, $entity['type'] == 'photo' ? 'image' : $entity['type']);
+                    }
 				}
 		}
 		return $this->media;

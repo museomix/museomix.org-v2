@@ -17,29 +17,6 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Check to enable uninstall plugin
 $value = get_option('flow_flow_general_uninstall');
 if ($value == 'yep') {
-//	global $wpdb;
-//
-//	if ( is_multisite() ) {
-//		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
-//		delete_transients();
-//		delete_options();
-//		delete_custom_file_directory();
-//		if ( $blogs ) {
-//			foreach ( $blogs as $blog ) {
-//				switch_to_blog( $blog['blog_id'] );
-//				delete_options();
-//				delete_custom_file_directory();
-//				clean_db();
-//				restore_current_blog();
-//			}
-//		}
-//	} else {
-//		delete_transients();
-//		delete_options();
-//		delete_custom_file_directory();
-//		clean_db();
-//	}
-
 	delete_transients();
 	delete_options();
 	delete_custom_file_directory();
@@ -94,5 +71,9 @@ function clean_db() {
 	$table_name = $prefix . 'streams_sources';
 	$wpdb->query("DROP TABLE {$table_name}");
 	$table_name = $prefix . 'snapshots';
+	$wpdb->query("DROP TABLE {$table_name}");
+	$table_name = $prefix . 'comments';
+	$wpdb->query("DROP TABLE {$table_name}");
+	$table_name = $prefix . 'post_media';
 	$wpdb->query("DROP TABLE {$table_name}");
 }

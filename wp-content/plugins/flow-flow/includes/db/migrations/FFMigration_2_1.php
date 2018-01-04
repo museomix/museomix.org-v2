@@ -1,5 +1,5 @@
 <?php namespace flow\db\migrations;
-use flow\db\FFDBMigration;
+use la\core\db\migrations\ILADBMigration;
 
 if ( ! defined( 'WPINC' ) ) die;
 /**
@@ -7,11 +7,11 @@ if ( ! defined( 'WPINC' ) ) die;
  *
  * @package   FlowFlow
  * @author    Looks Awesome <email@looks-awesome.com>
-
+ *
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFMigration_2_1 implements FFDBMigration {
+class FFMigration_2_1 implements ILADBMigration{
 
 	public function version() {
 		return '2.1';

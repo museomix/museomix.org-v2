@@ -1,6 +1,7 @@
 <?php
 
 class WPML_Post_Edit_Ajax {
+	const AJAX_ACTION_SWITCH_POST_LANGUAGE = 'wpml_switch_post_language';
 
 	/**
 	 * Ajax handler for adding a term via Ajax.
@@ -158,6 +159,11 @@ class WPML_Post_Edit_Ajax {
 	 */
 	public static function wpml_switch_post_language() {
 		global $sitepress, $wpdb;
+
+		$nonce = $_POST['nonce'];
+		if ( ! wp_verify_nonce( $nonce, self::AJAX_ACTION_SWITCH_POST_LANGUAGE ) ) {
+			wp_send_json_error();
+		}
 
 		$to      = false;
 		$post_id = false;

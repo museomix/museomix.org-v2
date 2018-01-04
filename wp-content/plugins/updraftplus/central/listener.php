@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
 
 /**
  * This class is the basic glue between the lower-level UpdraftPlus_Remote_Communications (UDRPC) class, and UpdraftPlus. It does not contain actual commands themselves; the class names to use for actual commands are passed in as a parameter to the constructor.
@@ -125,7 +125,7 @@ class UpdraftPlus_UpdraftCentral_Listener {
 
 		$command_php_class = $this->command_classes[$class_prefix];
 		
-		$command_base_class_at = apply_filters('updraftcentral_command_base_class_at', UPDRAFTPLUS_DIR.'/central/commands.php');
+		$command_base_class_at = apply_filters('updraftcentral_command_base_class_at', UPDRAFTCENTRAL_CLIENT_DIR.'/commands.php');
 		
 		if (!class_exists('UpdraftCentral_Commands')) include_once($command_base_class_at);
 		
@@ -133,8 +133,8 @@ class UpdraftPlus_UpdraftCentral_Listener {
 		do_action('updraftcentral_command_class_wanted', $command_php_class);
 		
 		if (!class_exists($command_php_class)) {
-			if (file_exists(UPDRAFTPLUS_DIR.'/central/modules/'.$class_prefix.'.php')) {
-				include_once(UPDRAFTPLUS_DIR.'/central/modules/'.$class_prefix.'.php');
+			if (file_exists(UPDRAFTCENTRAL_CLIENT_DIR.'/modules/'.$class_prefix.'.php')) {
+				include_once(UPDRAFTCENTRAL_CLIENT_DIR.'/modules/'.$class_prefix.'.php');
 			}
 		}
 		

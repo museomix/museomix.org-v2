@@ -27,7 +27,7 @@ $disabled = $activated ? ' class="disabled"' : '';
 	    <?php
         if (!$activated) {
             echo '<h1>Activate Flow-Flow</h1>';
-            echo '<h3>Plugin activation with Envato purchase code is required to get access to easy updating via WP dashboard. We need your email address for additional confirmation. You can subscribe to important notifications if you mark checkbox in the form below. These notifications will include announcements about major updates and Flow-Flow extension releases.</h3>';
+            echo '<h3>Plugin activation with Envato purchase code is required to get access to easy updating via WP dashboard. We need your email address for additional confirmation. You can subscribe to important notifications if you mark checkbox in the form below. These notifications will include announcements about major updates and Flow-Flow extension releases. (*) — Required fields</h3>';
         }
         ?>
 

@@ -98,9 +98,9 @@ class AC_Helper_Html {
 	 *
 	 * @return string
 	 */
-	public function tooltip( $label, $tooltip ) {
-		if ( $label && $tooltip ) {
-			$label = '<span ' . $this->get_tooltip_attr( $tooltip ) . '>' . $label . '</span>';
+	public function tooltip( $label, $tooltip, $attributes = array() ) {
+		if ( ac_helper()->string->is_not_empty( $label ) && $tooltip ) {
+			$label = '<span ' . $this->get_tooltip_attr( $tooltip ) . $this->get_attributes( $attributes ) . '>' . $label . '</span>';
 		}
 
 		return $label;
@@ -133,13 +133,9 @@ class AC_Helper_Html {
 	 * @param string $label
 	 * @param string $column_name
 	 *
-	 * @return string|false HTML
+	 * @return string
 	 */
-	public function toggle_box_ajax( $id, $label, $column_name ) {
-		if ( ! $label ) {
-			return false;
-		}
-
+	public function get_ajax_toggle_box_link( $id, $label, $column_name ) {
 		return ac_helper()->html->link( '#', $label . '<div class="spinner"></div>', array(
 			'class'              => 'ac-toggle-box-link',
 			'data-column'        => $column_name,
@@ -171,12 +167,57 @@ class AC_Helper_Html {
 		$_attributes = array();
 
 		foreach ( $attributes as $attribute => $value ) {
-			if ( in_array( $attribute, array( 'title', 'id', 'class', 'style', 'target' ) ) || 'data-' === substr( $attribute, 0, 5 ) ) {
+			if ( in_array( $attribute, array( 'title', 'id', 'class', 'style', 'target', 'rel', 'download' ) ) || 'data-' === substr( $attribute, 0, 5 ) ) {
 				$_attributes[] = $this->get_attribute_as_string( $attribute, $value );
 			}
 		}
 
 		return ' ' . implode( ' ', $_attributes );
+	}
+
+	/**
+	 * Returns an array with internal / external  links
+	 *
+	 * @param $string
+	 *
+	 * @return false|array [ internal | external ]
+	 */
+	public function get_internal_external_links( $string ) {
+		if ( ! class_exists( 'DOMDocument' ) ) {
+			return false;
+		}
+
+		// Just do a very simple check to check for possible links
+		if ( false === strpos( $string, '<a' ) ) {
+			return false;
+		}
+
+		$internal_links = array();
+		$external_links = array();
+
+		$dom = new DOMDocument();
+		$dom->loadHTML( $string );
+
+		$links = $dom->getElementsByTagName( 'a' );
+
+		foreach ( $links as $link ) {
+			/** @var DOMElement $link */
+			$href = $link->getAttribute( 'href' );
+
+			if ( false !== strpos( $href, home_url() ) ) {
+				$internal_links[] = $href;
+			} else {
+				$external_links[] = $href;
+			}
+		}
+
+		if ( empty( $internal_links ) && empty( $external_links ) ) {
+			return false;
+		}
+
+		return array(
+			$internal_links, $external_links,
+		);
 	}
 
 	/**
@@ -404,6 +445,20 @@ class AC_Helper_Html {
 		</span>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * @param string $value HTML
+	 * @param int    $removed
+	 *
+	 * @return string
+	 */
+	public function images( $value, $removed = false ) {
+		if ( $removed ) {
+			$value .= ac_helper()->html->rounded( '+' . $removed );
+		}
+
+		return '<div class="ac-image-container">' . $value . '</div>';
 	}
 
 }

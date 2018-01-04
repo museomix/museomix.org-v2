@@ -13,10 +13,10 @@
             </div>
             <div class="ff-cell">
                 <h1>USEFUL LINKS</h1>
-                <a href="http://looks-awesome.com/help">Help Center</a><br>
-                <a href="http://looks-awesome.com/">Looks Awesome Site</a><br>
-                <a href="https://twitter.com/looks_awesooome">LA Twitter</a><br>
-                <a href="https://www.facebook.com/looksawesooome">LA Facebook</a>
+                <a href="http://go.social-streams.com/help">Help Center</a><br>
+                <a href="https://social-streams.com/">Social Stream Apps</a><br>
+                <a href="http://go.social-streams.com/twitter">Twitter</a><br>
+                <a href="http://go.social-streams.com/facebook">Facebook</a>
             </div>
         </div>
     </div>

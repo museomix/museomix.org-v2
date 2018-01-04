@@ -69,7 +69,12 @@ class WPML_End_User_Loader_Factory implements IWPML_Deferred_Action_Loader, IWPM
 	 * @return bool
 	 */
 	private function is_site_registered() {
-		return false !== WP_Installer_API::get_site_key( 'wpml' );
+		if ( class_exists( 'WP_Installer_API' ) ) {
+			return false !== WP_Installer_API::get_site_key( 'wpml' );
+		} else {
+			/** @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-4855 */
+			return false;
+		}
 	}
 
 	/**

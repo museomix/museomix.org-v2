@@ -1,4 +1,7 @@
 <?php namespace flow\tabs;
+
+use la\core\tabs\LATab;
+
 if ( ! defined( 'WPINC' ) ) die;
 /**
  * FlowFlow.

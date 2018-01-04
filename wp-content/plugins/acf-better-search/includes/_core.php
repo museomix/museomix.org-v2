@@ -10,14 +10,14 @@
 
     private function init() {
 
-      add_filter('wp_loaded', array($this, 'selectCore'));
+      add_filter('wp_loaded', [$this, 'selectCore']);
 
     }
 
     public function selectCore() {
 
       $isAjax       = defined('DOING_AJAX') && DOING_AJAX;
-      $isAjaxAction = isset($_POST['action']) && in_array($_POST['action'], array('acf_better_search_notice', 'query-attachments'));
+      $isAjaxAction = isset($_POST['action']) && in_array($_POST['action'], ['acf_better_search_notice', 'query-attachments']);
 
       if (!is_admin() || ($isAjax && !$isAjaxAction)) {
 

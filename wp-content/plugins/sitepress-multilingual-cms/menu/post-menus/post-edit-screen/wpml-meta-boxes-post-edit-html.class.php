@@ -83,6 +83,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML extends WPML_SP_And_PT_User {
 
 			<?php
 			$disabled_language = disabled( false, $this->can_translate_post, false );
+			wp_nonce_field( WPML_Post_Edit_Ajax::AJAX_ACTION_SWITCH_POST_LANGUAGE, 'nonce' );
 			?>
 			<select name="icl_post_language" id="icl_post_language" <?php echo $disabled_language; ?>>
 				<?php

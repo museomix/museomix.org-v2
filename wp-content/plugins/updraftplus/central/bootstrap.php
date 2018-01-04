@@ -2,6 +2,10 @@
 
 if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
 
+if (defined('UPDRAFTCENTRAL_CLIENT_DIR')) return;
+
+define('UPDRAFTCENTRAL_CLIENT_DIR', dirname(__FILE__));
+
 // This file is included during plugins_loaded
 
 // Load the listener class that we rely on to pick up messages
@@ -24,8 +28,8 @@ class UpdraftPlus_UpdraftCentral_Main {
 			'updates' => 'UpdraftCentral_Updates_Commands',
 			'users' => 'UpdraftCentral_Users_Commands',
 			'comments' => 'UpdraftCentral_Comments_Commands',
-			'updraftvault' => 'UpdraftCentral_UpdraftVault_Commands',
-			'analytics' => 'UpdraftCentral_Analytics_Commands'
+			'analytics' => 'UpdraftCentral_Analytics_Commands',
+			'plugin' => 'UpdraftCentral_Plugin_Commands'
 		));
 	
 		// If nothing was sent, then there is no incoming message, so no need to set up a listener (or CORS request, etc.). This avoids a DB SELECT query on the option below in the case where it didn't get autoloaded, which is the case when there are no keys.
@@ -233,7 +237,7 @@ class UpdraftPlus_UpdraftCentral_Main {
 			$created['keys_guide'] = '<h2 class="updraftcentral_wizard_success">'. __('UpdraftCentral key created successfully') .'</h2>';
 
 			if ('__updraftpluscom' != $where_send) {
-				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'.sprintf(__('You now need to copy the key below and enter it at your %s.', 'updraftplus'), '<a href="'.$where_send.'">UpdraftCentral dashboard</a>').'</p><p>'.sprintf(__('Detailed instructions for this can be found at %s', 'updraftplus'), '<a target="_blank" href="https://updraftplus.com/updraftcentral-how-to-add-a-site/">UpdraftPlus.com</a>').'</p></div>';
+				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'.sprintf(__('You now need to copy the key below and enter it at your %s.', 'updraftplus'), '<a href="'.$where_send.'" target="_blank">UpdraftCentral dashboard</a>').'</p><p>'.__('At your UpdraftCentral dashboard you should press the "Add Site" button then paste the key in the input box.', 'updraftplus').'</p><p>'.sprintf(__('Detailed instructions for this can be found at %s', 'updraftplus'), '<a target="_blank" href="https://updraftplus.com/updraftcentral-how-to-add-a-site/">UpdraftPlus.com</a>').'</p></div>';
 			} else {
 				$created['keys_guide'] .= '<div class="updraftcentral_wizard_success"><p>'. sprintf(__('You can now control this site via your UpdraftCentral dashboard at %s.', 'updraftplus'), '<a target="_blank" href="http://updraftplus.com/my-account/remote-control/">UpdraftPlus.com</a>').'</p></div>';
 			}
@@ -446,7 +450,7 @@ class UpdraftPlus_UpdraftCentral_Main {
 		
 		ob_start();
 		?>
-		<div id="updraftcentral_keys_content">
+		<div id="updraftcentral_keys_content" style="margin: 10px 0;">
 			<?php if (!empty($our_keys)) { ?>
 				<a href="#" class="updraftcentral_keys_show hidden-in-updraftcentral"><?php printf(__('Manage existing keys (%d)...', 'updraftplus'), count($our_keys)); ?></a>
 			<?php } ?>
@@ -470,36 +474,43 @@ class UpdraftPlus_UpdraftCentral_Main {
 		return ob_get_clean();
 	}
 
-	private function create_key_markup(){
+	private function create_key_markup() {
 		ob_start();
 		?> 
 		<div class="create_key_container"> 
 			<h4 class="updraftcentral_wizard_stage1"> <?php _e('Connect this site to an UpdraftCentral dashboard found at...', 'updraftplus'); ?></h4> 
-			<table style="width: auto; table-layout:fixed;"> 
+			<table style="width: 100%; table-layout:fixed;"> 
 				<thead></thead> 
 				<tbody>
-					<tr class="updraft_debugrow updraftcentral_wizard_stage1">
+					<tr class="updraftcentral_wizard_stage1">
 						<td>
-							<label>
-								<input checked="checked" type="radio" name="updraftcentral_mothership" id="updraftcentral_mothership_updraftpluscom">
-								UpdraftPlus.Com (<?php printf(__('i.e. if you have %s there', 'updraftplus'), '<a target="_blank" href="https://updraftplus.com/my-account/">'.__('an account', 'updraftplus').'</a>'); ?>)
-							</label>
-							<br>
-							<label>
-								<input type="radio" name="updraftcentral_mothership" id="updraftcentral_mothership_other">
-								<?php echo __('On my own website on which I have installed', 'updraftplus').' <a target="_blank" href="https://wordpress.org/plugins/updraftcentral/">'.__('the UpdraftCentral dashboard plugin', 'updraftplus').'</a>'; ?>
-							</label>
-							<br>
-							<input disabled="disabled" id="updraftcentral_keycreate_mothership" type="text" size="40" placeholder="<?php _e('URL of mothership', 'updraftplus'); ?>" value="">
-							<br>
-							<button style="margin-top: 5px;" type="button" class="button button-primary" id="updraftcentral_stage2_go"><?php _e('Next', 'updraftplus'); ?></button>
-							<p style="font-size: 13px;" id="updraftcentral_wizard_stage1_error"></p>
+							<div class="updraftcentral_wizard_mothership updraftcentral_wizard_option">
+								<label class="button-primary">
+									<input checked="checked" type="radio" name="updraftcentral_mothership" id="updraftcentral_mothership_updraftpluscom" style="display: none;">
+									<?php _e('UpdraftPlus.Com', 'updraftplus');?>
+								</label><br>
+								<div><?php printf(__('i.e. if you have %s there', 'updraftplus'), '<a target="_blank" href="https://updraftplus.com/my-account/">'.__('an account', 'updraftplus').'</a>'); ?></div>
+
+							</div>
+							<div class="updraftcentral_wizard_self_hosted_stage1 updraftcentral_wizard_option">
+								<label class="button-primary">
+									<input type="radio" name="updraftcentral_mothership" id="updraftcentral_mothership_other" style="display: none;">
+									<?php _e('Self-hosted dashboard', 'updraftplus');?>
+								</label><br>
+								<div><?php printf(__('A website where you have installed %s', 'updraftplus'), '<a target="_blank" href="https://wordpress.org/plugins/updraftcentral/">UpdraftCentral</a>'); ?></div>
+							</div>
+							<div class="updraftcentral_wizard_self_hosted_stage2" style="float:left; clear:left;display:none;">
+								<p style="font-size: 13px;"><?php echo __('Enter the URL where your self-hosted install of UpdraftCentral is located:', 'updraftplus');?></p>
+								<p style="font-size: 13px;" id="updraftcentral_wizard_stage1_error"></p>
+								<input disabled="disabled" id="updraftcentral_keycreate_mothership" type="text" size="40" placeholder="<?php _e('URL for the site of your UpdraftCentral dashboard', 'updraftplus'); ?>" value="">
+								<button type="button" class="button button-primary" id="updraftcentral_stage2_go"><?php _e('Next', 'updraftplus'); ?></button>
+							</div>
 						</td>
 					</tr>
 
 					<tr class="updraft_debugrow updraftcentral_wizard_stage2" style="display: none;">
 						<h4 class="updraftcentral_wizard_stage2" style="display: none;"><?php _e('UpdraftCentral dashboard connection details', 'updraftplus'); ?></h4>
-						<td>
+						<td class="updraftcentral_keycreate_description">
 							<?php _e('Description', 'updraftplus'); ?>:
 							<input id="updraftcentral_keycreate_description" type="text" size="20" placeholder="<?php _e('Enter any description', 'updraftplus'); ?>" value="" >
 						</td>
@@ -547,12 +558,12 @@ class UpdraftPlus_UpdraftCentral_Main {
 		return ob_get_clean();
 	}
 
-	private function create_log_markup(){
+	private function create_log_markup() {
 		ob_start();
 		?>
-			<div id="updraftcentral_view_log_container">
+			<div id="updraftcentral_view_log_container" style="margin: 10px 0;">
 				<a href="#" id="updraftcentral_view_log"><?php _e('View recent UpdraftCentral log events', 'updraftplus'); ?>...</a><br>
-				<pre id="updraftcentral_view_log_contents" style="padding: 0 4px;">
+				<pre id="updraftcentral_view_log_contents" style="min-height: 110px; padding: 0 4px;">
 				</pre>
 			</div>
 		<?php

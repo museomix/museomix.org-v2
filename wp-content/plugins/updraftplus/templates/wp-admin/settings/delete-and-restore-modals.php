@@ -78,24 +78,8 @@
 					}
 					}
 				?>
-				<div><input id="updraft_restore_db" type="checkbox" name="updraft_restore[]" value="db"> <label for="updraft_restore_db"><?php _e('Database', 'updraftplus'); ?></label><br>
-
-					<div id="updraft_restorer_dboptions" class="updraft-hidden" style="display:none;"><h4><?php echo sprintf(__('%s restoration options:', 'updraftplus'), __('Database', 'updraftplus')); ?></h4>
-
-					<?php
-
-					do_action("updraftplus_restore_form_db");
-
-					if (!class_exists('UpdraftPlus_Addons_Migrator')) {
-
-						echo '<a href="'.apply_filters('updraftplus_com_link', "https://updraftplus.com/faqs/tell-me-more-about-the-search-and-replace-site-location-in-the-database-option/").'">'.__('You can search and replace your database (for migrating a website to a new location/URL) with the Migrator add-on - follow this link for more information', 'updraftplus').'</a>';
-
-					}
-
-					?>
-
-					</div>
-
+				<div>
+					<input id="updraft_restore_db" type="checkbox" name="updraft_restore[]" value="db"> <label for="updraft_restore_db"><?php _e('Database', 'updraftplus'); ?></label>
 				</div>
 			</fieldset>
 		</form>

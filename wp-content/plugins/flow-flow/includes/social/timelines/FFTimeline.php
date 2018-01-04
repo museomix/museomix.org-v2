@@ -10,7 +10,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @copyright 2014-2016 Looks Awesome
  */
 interface FFTimeline {
-    public function init($feed);
-    public function getUrl();
-    public function getField();
+	public function init($twitter, $feed);
+	public function getUrl();
+	public function getField();
 }

@@ -42,10 +42,11 @@ class UpdraftPlus_BackupModule_template extends UpdraftPlus_BackupModule {
 	}
 
 	/**
-	 * This function list the files
+	 * This function lists the files found in the configured storage location
 	 *
-	 * @param  string $match a substring to require (tested via strpos() !== false)
-	 * @return array
+	 * @param  String $match a substring to require (tested via strpos() !== false)
+	 *
+	 * @return Array - each file is represented by an array with entries 'name' and (optional) 'size'
 	 */
 	public function listfiles($match = 'backup_') {
 		// This function needs to return an array of arrays. The keys for the sub-arrays are name (a path-less filename, i.e. a basename), (optional)size, and should be a list of matching files from the storage backend. A WP_Error object can also be returned; and the error code should be no_settings if that is relevant.

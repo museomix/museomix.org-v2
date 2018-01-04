@@ -41,7 +41,7 @@ abstract class AC_Column_Meta extends AC_Column {
 	public function get_raw_value( $id ) {
 		$value = $this->get_meta_value( $id, $this->get_meta_key(), true );
 
-		if( ! $value ){
+		if ( ! $value ) {
 			return false;
 		}
 
@@ -61,9 +61,9 @@ abstract class AC_Column_Meta extends AC_Column {
 	/**
 	 * Get meta value
 	 *
-	 * @param int $id
+	 * @param int    $id
 	 * @param string $meta_key
-	 * @param bool $single
+	 * @param bool   $single
 	 *
 	 * @return mixed
 	 */

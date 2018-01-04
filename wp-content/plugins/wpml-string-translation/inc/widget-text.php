@@ -106,12 +106,12 @@ function icl_widget_text_convert_to_multilingual($text_widget, $instance) {
     }
 
     // Refresh
-    echo '
+	echo ' 
 <script type="text/javascript">
-<!--
-window.location = "' . admin_url('widgets.php') . '";
-//-->
-</script>
-';
+	jQuery(document).ajaxSuccess(function(e, xhr, settings) {
+	     window.location = "' . admin_url( 'widgets.php' ) . '";  
+	});
+</script> 
+	';
     return TRUE;
 }

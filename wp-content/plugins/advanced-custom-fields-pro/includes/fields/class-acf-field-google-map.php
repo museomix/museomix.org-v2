@@ -297,7 +297,7 @@ class acf_field_google_map extends acf_field {
 	   	
 ?>
 <script type="text/javascript">
-	if( acf ) acf.fields.google_map.url = '<?php echo esc_js($url); ?>';
+	if( acf ) acf.fields.google_map.url = '<?php echo $url; ?>';
 </script>
 <?php
 	

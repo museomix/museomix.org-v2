@@ -43,10 +43,15 @@ if (!$dbm->canCreateCssFolder()){
 	?>
 	<div class="wrapper">
 		<?php
-                echo '<h2>'. $context['admin_page_title'] . ' v. ' . $context['version'] . ' <a href="http://docs.social-streams.com/" target="_blank">Documentation & FAQ</a></h2>';
+			if (FF_USE_WP) {
+                echo '<h2>' . $context['admin_page_title'] . ($context['slug'] == 'flow-flow' ? ' Social Stream v. ' : ' Feed Gallery v. ' ) . $context['version'] . ' <a href="' . $context['faq_url'] . '" target="_blank">Documentation & FAQ</a></h2>';
+
                 echo '<div id="ff-cats">';
-                if (FF_USE_WP) { wp_dropdown_categories( ); }
+                if (FF_USE_WP) {
+                    wp_dropdown_categories();
+                }
                 echo '</div>';
+            }
 		?>
 		<ul class="section-tabs">
 			<?php
@@ -73,7 +78,7 @@ if (!$dbm->canCreateCssFolder()){
 				<div class="ff-table">
 					<div class="ff-cell">
 						Flow-Flow Social Hub plugin<br>
-						<?php if (defined( 'FF_PLUGIN_VER' )) echo 'Version: ' . FF_PLUGIN_VER;?><br>
+						<?php if (defined( 'FF_PLUGIN_VER' )) echo 'Version: ' . FF_PLUGIN_VER; ?><br>
 						Made by <a href="http://looks-awesome.com/">Looks Awesome</a>
 					</div>
 					<div class="ff-cell">
@@ -85,7 +90,7 @@ if (!$dbm->canCreateCssFolder()){
 					</div>
 					<div class="ff-cell">
 						<h1>CONTACT US</h1>
-						<a href="http://looks-awesome.com/help">Support request</a><br>
+						<a href="https://social-streams.com/contact/">Support request</a><br>
 						<a href="http://looks-awesome.com/">Looks Awesome site</a><br>
 						<a href="https://twitter.com/looks_awesooome">Twitter</a><br>
 						<a href="https://www.facebook.com/looksawesooome">Facebook</a>
@@ -106,6 +111,4 @@ if (!$dbm->canCreateCssFolder()){
     </div> <!-- cd-popup-container -->
 </div> <!-- cd-popup -->
 
-<script>
-jQuery(document).trigger('html_ready')
-</script>
+<script>jQuery(document).trigger('html_ready')</script>

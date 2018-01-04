@@ -25,7 +25,10 @@ abstract class FFBaseFeed implements FFFeed{
     private $imageWidth;
     private $useProxyServer;
 	private $type;
+	/** @var  Exclude words */
 	private $filterByWords;
+    /** @var  Include words */
+	private $include;
 	private $criticalError = true;
 	/** @var FFGeneralSettings */
 	protected $options;
@@ -70,27 +73,43 @@ abstract class FFBaseFeed implements FFFeed{
 	 * @return void
 	 */
     public final function init($context, $options, $feed){
-	    $this->context = $context;
-	    $this->options = $options;
-	    $this->feed = $feed;
+		$this->context = $context;
+		$this->options = $options;
+		$this->errors = array();
+		$this->useProxyServer = $options->useProxyServer();
+		$this->imageWidth = defined('FF_MAX_IMAGE_WIDTH') ? FF_MAX_IMAGE_WIDTH : 300;
+		
+		if (!is_null($feed)){
+			$this->cache = new FFImageSizeCacheManager($context['db_manager']->image_cache_table_name);
+			$this->feed = $feed;
+			$this->id = $feed->id;
+			if ($feed->last_update === 'N/A' && isset($context['count_posts_4init'])){
+				$this->count = $context['count_posts_4init'];
+			}
+			else {
+				$this->count = isset($feed->posts) ? intval($feed->posts) : 10;
+			}
+			if (isset($feed->{'include'}) && strlen($feed->{'include'}) > 0) {
+				$this->include =  explode(',', $feed->{'include'});
+				if ($this->include === false) $this->include = array();
+			} else {
+				$this->include = array();
+			}
+			if (isset($feed->{'filter-by-words'}) && strlen($feed->{'filter-by-words'}) > 0) {
+				$this->filterByWords =  explode(',', $feed->{'filter-by-words'});
+				if ($this->filterByWords === false) $this->filterByWords = array();
+			} else {
+				$this->filterByWords = array();
+			}
+		}
+	}
 
-        $this->id = $feed->id;
-        $this->errors = array();
-        $this->useProxyServer = $options->useProxyServer();
-        $this->count = isset($feed->posts) ? intval($feed->posts) : 10;
-        $this->imageWidth = defined('FF_MAX_IMAGE_WIDTH') ? FF_MAX_IMAGE_WIDTH : 300;
-        $this->cache = FFImageSizeCacheManager::get();
-	    if (isset($feed->{'filter-by-words'})) {
-		    $this->filterByWords =  explode(',', $feed->{'filter-by-words'});
-		    if ($this->filterByWords === false) $this->filterByWords = array();
-	    } else {
-		    $this->filterByWords = array();
-	    }
-    }
-
-	public final function posts() {
+	public final function posts($is_empty_feed) {
 		$result = array();
 		try {
+			if ($is_empty_feed) {
+				$this->count = defined('FF_FEED_INIT_COUNT_POSTS') ? FF_FEED_INIT_COUNT_POSTS : 50;
+			}
 			if ($this->beforeProcess()) {
 				$this->deferredInit($this->options, $this->feed);
 				if (sizeof($this->errors) == 0){
@@ -181,37 +200,85 @@ abstract class FFBaseFeed implements FFFeed{
         return array( 'type' => 'article', 'url' => $link, 'displayName' => $name);
     }
 
+    protected function includePost($post)
+    {
+        if(count($this->include) == 0) return true;
+
+        foreach ( $this->include as $word ) {
+            $word = mb_strtolower($word);
+            $firstLetter = mb_substr($word, 0, 1);
+
+            if ($firstLetter !== false){
+                switch ($firstLetter) {
+                    case '@':
+                        $word = mb_substr($word, 1);
+                        if ((mb_strpos(mb_strtolower($post->screenname), $word) !== false) || (mb_strpos(mb_strtolower($post->nickname), $word) !== false)) {
+                            return true;
+                        }
+                        break;
+                    case '#':
+                        $word = mb_substr($word, 1);
+                        if (mb_strpos(mb_strtolower($post->permalink), $word) !== false) {
+                            return true;
+                        }
+                        break;
+                    default:
+                        if (!empty($word) && ((mb_strpos(mb_strtolower($post->text), $word) !== false) || (isset($post->header) && mb_strpos(mb_strtolower($post->header), $word) !== false))) {
+                            return true;
+                        }
+                        break;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    protected function excludePost($post)
+    {
+        if(count($this->filterByWords) == 0) return true;
+
+        foreach ( $this->filterByWords as $word ) {
+            $word = mb_strtolower($word);
+            $firstLetter = mb_substr($word, 0, 1);
+            if ($firstLetter !== false){
+                switch ($firstLetter) {
+                    case '@':
+                        $word = mb_substr($word, 1);
+                        if ((mb_strpos(mb_strtolower($post->screenname), $word) !== false) || (mb_strpos(mb_strtolower($post->nickname), $word) !== false)) {
+                            return false;
+                        }
+                        break;
+                    case '#':
+                        $word = mb_substr($word, 1);
+                        if (mb_strpos(mb_strtolower($post->permalink), $word) !== false) {
+                            return false;
+                        }
+                        break;
+                    default:
+                        if (!empty($word) && ((mb_strpos(mb_strtolower($post->text), $word) !== false) || (isset($post->header) && mb_strpos(mb_strtolower($post->header), $word) !== false))) {
+                            return false;
+                        }
+                }
+            }
+        }
+
+        return true;
+    }
+
 	/**
 	 * @param stdClass $post
 	 * @return bool
 	 */
 	protected function isSuitablePost($post){
 		if ($post == null) return false;
-		foreach ( $this->filterByWords as $word ) {
-			$word = strtolower($word);
-			$firstLetter = substr($word, 0, 1);
-			if ($firstLetter !== false){
-				switch ($firstLetter) {
-					case '@':
-						$word = substr($word, 1);
-						if ((strpos(strtolower($post->screenname), $word) !== false) || (strpos(strtolower($post->nickname), $word) !== false)) {
-							return false;
-						}
-						break;
-					case '#':
-						$word = substr($word, 1);
-						if (strpos(strtolower($post->permalink), $word) !== false) {
-							return false;
-						}
-						break;
-					default:
-						if (!empty($word) && ((strpos(strtolower($post->text), $word) !== false) || (isset($post->header) && strpos(strtolower($post->header), $word) !== false))) {
-							return false;
-						}
-				}
-			}
-		}
-		return true;
+
+		$suitable = $this->includePost($post);
+		if($suitable){
+            $suitable = $this->excludePost($post);
+        }
+
+		return $suitable;
 	}
 
 	/**

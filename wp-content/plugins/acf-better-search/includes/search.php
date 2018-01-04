@@ -6,181 +6,164 @@
 
       $this->getDatabaseClass();
       $this->loadSettings();
-
-      $this->loadFilters();
+      $this->initActions();
 
     }
 
     private function getDatabaseClass() {
 
       global $wpdb;
-
       $this->wpdb = $wpdb;
 
     }
 
     private function loadSettings() {
 
-      if (get_option('acfbs_fields_types') !== false) {
-
-        $this->fieldsTypes = is_array(get_option('acfbs_fields_types')) ? get_option('acfbs_fields_types') : array();
-
-      } else {
-
-        $this->fieldsTypes = array('text', 'textarea', 'wysiwyg');
-
-      }
-
-
-      if (get_option('acfbs_whole_phrases') !== false) {
-
-        $this->wholePhrases = get_option('acfbs_whole_phrases') ? true : false;
-
-      } else {
-
-        $this->wholePhrases = false;
-
-      }
+      $this->fieldsTypes  = get_option('acfbs_fields_types',  ['text', 'textarea', 'wysiwyg']);
+      $this->wholePhrases = get_option('acfbs_whole_phrases', false) ? true : false;
+      $this->liteMode     = get_option('acfbs_lite_mode',     false) ? true : false;
 
     }
 
-    private function loadFilters() {
+    /* ---
+      Hooks
+    --- */
 
-      add_filter('posts_search',  array($this, 'sqlWhere'),    10, 2); 
-      add_filter('posts_join',    array($this, 'sqlJoin'),     10, 2);
-      add_filter('posts_request', array($this, 'sqlDistinct'), 10, 2); 
+      private function initActions() {
 
-    }
+        add_filter('posts_search',  [$this, 'sqlWhere'],    10, 2); 
+        add_filter('posts_join',    [$this, 'sqlJoin'],     10, 2);
+        add_filter('posts_request', [$this, 'sqlDistinct'], 10, 2); 
 
-    public function sqlWhere($where, $query) {
+      }
 
-      if (!isset($query->query_vars['s']) || empty($query->query_vars['s']))
+    /* ---
+      Where clause
+    --- */
+
+      public function sqlWhere($where, $query) {
+
+        if (!isset($query->query_vars['s']) || empty($query->query_vars['s']))
+          return $where;
+
+        $acfConditions       = $this->getACFConditions($query->query_vars['s']);
+        $wordpressConditions = $this->getDefaultWordPressConditions($query->query_vars['s']);
+        
+        $where = 'AND (' . $acfConditions . ' OR ' . $wordpressConditions . ')';
+
         return $where;
 
+      }
 
-      $acfConditions       = $this->getACFConditions($query->query_vars['s']);
-      $wordpressConditions = $this->getDefaultWordPressConditions($query->query_vars['s']);
-      
-      $where = 'AND (' . $acfConditions . ' OR ' . $wordpressConditions . ')';
+      private function getACFConditions($words) {
 
-      return $where;
+        if (!$this->fieldsTypes && !$this->liteMode)
+          return '(1 = 2)';
 
-    }
+        $words           = !$this->wholePhrases ? explode(' ', $words) : [$words];
+        $wordsConditions = [];
 
-    private function getACFConditions($words) {
+        foreach ($words as $word) {
 
-      if (!$this->fieldsTypes)
-        return '(1 = 2)';
+          $word              = addslashes($word);
+          $wordsConditions[] = 'a.meta_value LIKE \'%' . $word . '%\'';
 
+        }
 
-      $words           = !$this->wholePhrases ? explode(' ', $words) : array($words);
-      $wordsConditions = array();
+        $wordsConditions = '(' . implode(') AND (', $wordsConditions) . ')';
 
-      foreach ($words as $word) {
+        if (!$this->liteMode)
+          $conditions = '(' . $wordsConditions . ' AND (b.meta_id = a.meta_id + 1) AND (c.post_name = b.meta_value))';
+        else
+          $conditions = '(' . $wordsConditions . ' AND (b.meta_id = a.meta_id + 1) AND (b.meta_value LIKE \'field_%\'))';
 
-        $word = addslashes($word);
-
-        $wordsConditions[] = 'a.meta_value LIKE \'%' . $word . '%\'';
+        return $conditions;
 
       }
 
-      $wordsConditions = '(' . implode(') AND (', $wordsConditions) . ')';
-      $conditions      = '(' . $wordsConditions . ' AND (b.meta_id = a.meta_id + 1) AND (c.post_name = b.meta_value))';
+      private function getDefaultWordPressConditions($words) {
 
-      return $conditions;
+        $words           = !$this->wholePhrases ? explode(' ', $words) : [$words];
+        $wordsConditions = [];
 
-    }
+        foreach ($words as $word) {
 
-    private function getDefaultWordPressConditions($words) {
+          $word = addslashes($word);
 
-      $words           = !$this->wholePhrases ? explode(' ', $words) : array($words);
-      $wordsConditions = array();
+          $wordConditions   = [];
+          $wordConditions[] = '(' . $this->wpdb->posts . '.post_title LIKE \'%' . $word . '%\')';
+          $wordConditions[] = '(' . $this->wpdb->posts . '.post_content LIKE \'%' . $word . '%\')';
+          $wordConditions[] = '(' . $this->wpdb->posts . '.post_excerpt LIKE \'%' . $word . '%\')';
 
-      foreach ($words as $word) {
+          $wordsConditions[] = '(' . implode(' OR ', $wordConditions) . ')';
 
-        $word = addslashes($word);
+        }
 
-        $wordConditions   = array();
-        $wordConditions[] = '(' . $this->wpdb->posts . '.post_title LIKE \'%' . $word . '%\')';
-        $wordConditions[] = '(' . $this->wpdb->posts . '.post_content LIKE \'%' . $word . '%\')';
-        $wordConditions[] = '(' . $this->wpdb->posts . '.post_excerpt LIKE \'%' . $word . '%\')';
+        if (count($wordsConditions) > 1)
+          $conditions = '(' . implode(' AND ', $wordsConditions) . ')';
+        else
+          $conditions = $wordsConditions[0];
 
-        $wordsConditions[] = '(' . implode(' OR ', $wordConditions) . ')';
-
-      }
-
-      if (count($wordsConditions) > 1) {
-
-        $conditions = '(' . implode(' AND ', $wordsConditions) . ')';
-
-      } else {
-
-        $conditions = $wordsConditions[0];
+        return $conditions;
 
       }
 
-      return $conditions;
+    /* ---
+      Join clause
+    --- */
 
-    }
+      public function sqlJoin($join, $query) {
 
-    public function sqlJoin($join, $query) {
+        if (empty($query->query_vars['s']) || (!$this->fieldsTypes && !$this->liteMode))
+          return $join;
 
-      if (empty($query->query_vars['s']))
+        $parts   = [];
+        $parts[] = 'LEFT JOIN ' . $this->wpdb->postmeta . ' AS a ON (a.post_id = ' . $this->wpdb->posts . '.ID)';
+        $parts[] = 'LEFT JOIN ' . $this->wpdb->postmeta . ' AS b ON (b.post_id = ' . $this->wpdb->posts . '.ID)';
+
+        if (!$this->liteMode)
+          $parts[] = 'LEFT JOIN ' . $this->wpdb->posts . ' AS c ON ' . $this->getFieldsTypesConditions();
+
+        $join .= implode(' ', $parts);
+
         return $join;
 
-      if (!$this->fieldsTypes)
-        return $join;
+      }
 
+      private function getFieldsTypesConditions() {
 
-      $parts   = array();
-      $parts[] = 'LEFT JOIN ' . $this->wpdb->postmeta . ' AS a ON (a.post_id = ' . $this->wpdb->posts . '.ID)';
-      $parts[] = 'LEFT JOIN ' . $this->wpdb->postmeta . ' AS b ON (b.post_id = ' . $this->wpdb->posts . '.ID)';
-      $parts[] = 'LEFT JOIN ' . $this->wpdb->posts . ' AS c ON ' . $this->getFieldsTypesConditions();
-      $join   .= implode(' ', $parts);
+        $typesConditions  = [];
+        $conditions       = [];
 
-      return $join;
+        foreach ($this->fieldsTypes as $type)
+          $typesConditions[] = '(c.post_content LIKE \'%:"' . $type. '"%\')';
 
-    }
+        $conditions[] = '(c.post_type = \'acf-field\')';
 
-    private function getFieldsTypesConditions() {
+        if (count($typesConditions) > 1)
+          $conditions[] = '(' . implode(' OR ', $typesConditions) . ')';
+        else
+          $conditions[] = $typesConditions[0];
+        
+        $conditions = '(' . implode(' AND ', $conditions) . ')';
 
-      $typesConditions  = array();
-      $conditions       = array();
-
-      foreach ($this->fieldsTypes as $type) {
-
-        $typesConditions[] = '(c.post_content LIKE \'%:"' . $type. '"%\')';
+        return $conditions;
 
       }
 
-      $conditions[] = '(c.post_type = \'acf-field\')';
+    /* ---
+      Filter SQL query
+    --- */
 
-      if (count($typesConditions) > 1) {
+      public function sqlDistinct($sql, $query) {
 
-        $conditions[] = '(' . implode(' OR ', $typesConditions) . ')';
+        if (empty($query->query_vars['s']))
+          return $sql;
 
-      } else {
+        $sql = str_replace('SELECT', 'SELECT DISTINCT', $sql);
 
-        $conditions[] = $typesConditions[0];
-
-      }
-      
-      $conditions = '(' . implode(' AND ', $conditions) . ')';
-
-      return $conditions;
-
-    }
-
-    public function sqlDistinct($sql, $query) {
-
-      if (empty($query->query_vars['s']))
         return $sql;
 
-
-      $sql = str_replace('SELECT', 'SELECT DISTINCT', $sql);
-
-      return $sql;
-
-    }
+      }
 
   }

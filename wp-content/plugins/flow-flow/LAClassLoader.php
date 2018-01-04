@@ -32,6 +32,13 @@ class LAClassLoader {
 			/** @noinspection PhpIncludeInspection */
 			require_once($path);
 		}
+		else if (0 === strpos($className, 'la\\')){
+			$path = $this->root . 'includes';
+			$cls = str_replace('la', $path, $className);
+			$path = str_replace('\\', DIRECTORY_SEPARATOR, $cls) . '.php';
+			/** @noinspection PhpIncludeInspection */
+			require_once($path);
+		}
 	}
 
 	public function register($with_config = false) {

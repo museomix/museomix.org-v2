@@ -1,9 +1,16 @@
-/*globals CodeMirror, vkbeautify, jQuery */
+/*globals vkbeautify, jQuery, wp */
 
+var WPML = WPML || {};
 var WPML_TM = WPML_TM || {};
+
+//Hack required for the core CodeMirror extensions to work
+var CodeMirror = wp.CodeMirror || CodeMirror;
 
 (function () {
 	'use strict';
+
+	//Make easier to deal with changing namespaces
+	WPML.CodeMirror = WPML.CodeMirror || CodeMirror || null;
 
 	WPML_TM.Custom_XML_Editor = function (element) {
 		this.container = element;
@@ -18,7 +25,10 @@ var WPML_TM = WPML_TM || {};
 			this.initCodeMirror();
 		},
 		initCodeMirror:        function () {
-			this.editor = CodeMirror.fromTextArea(this.content, {
+			if (!WPML.CodeMirror) {
+				return;
+			}
+			this.editor = WPML.CodeMirror.fromTextArea(this.content, {
 				lineNumbers: true,
 				mode:        {
 					name:     'xml',
@@ -51,6 +61,7 @@ var WPML_TM = WPML_TM || {};
 				stable:   true
 			});
 
+			this.editor.setOption('theme', 'dracula');
 			this.editor.setCursor(0, 0);
 		},
 		highlightErrors:       function (errors) {
@@ -176,7 +187,7 @@ var WPML_TM = WPML_TM || {};
 			};
 		},
 		getKeysMap:            function () {
-			var mac = CodeMirror.keyMap["default"] === CodeMirror.keyMap.macDefault;
+			var mac = WPML.CodeMirror.keyMap["default"] === WPML.CodeMirror.keyMap.macDefault;
 			var ctrl = mac ? "Cmd-" : "Ctrl-";
 
 			var extraKeys = {
@@ -201,13 +212,13 @@ var WPML_TM = WPML_TM || {};
 					}
 				}, 100);
 			}
-			return CodeMirror.Pass;
+			return WPML.CodeMirror.Pass;
 
 		},
 		completeIfAfterLt:     function (cm) {
 			return this.completeAfter(cm, function () {
 				var cur = cm.getCursor();
-				return cm.getRange(CodeMirror.Pos(cur.line, cur.ch - 1), cur) === "<";
+				return cm.getRange(WPML.CodeMirror.Pos(cur.line, cur.ch - 1), cur) === "<";
 			});
 		},
 		completeIfInTag:       function (cm) {
@@ -216,7 +227,7 @@ var WPML_TM = WPML_TM || {};
 				if (tok.type === "string" && (!/['"]/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length === 1)) {
 					return false;
 				}
-				var inner = CodeMirror.innerMode(cm.getMode(), tok.state).state;
+				var inner = WPML.CodeMirror.innerMode(cm.getMode(), tok.state).state;
 				return inner.tagName;
 			});
 		}

@@ -3,7 +3,7 @@ Contributors: TigrouMeow
 Tags: rename, file, media, management, image, renamer, wpml, wp-retina-2x
 Requires at least: 4.2
 Tested up to: 4.8
-Stable tag: 3.6.8
+Stable tag: 3.7.2
 
 Automatically rename files depending on Media titles dynamically + update links. Pro version has many more options. Check the description :)
 
@@ -99,6 +99,19 @@ You are welcome to create plugins using Media File Renamer using special rules f
 5. Options for the automatic renaming (there are more options than just this).
 
 == Changelog ==
+
+= 3.7.2 =
+* Update: Now uploading Media into Post rename the filename accordingly.
+
+= 3.7.1 =
+* Fix: Rename on Upload issue in a few cases.
+
+= 3.7.0 =
+* Update: Improved Rename on Upload.
+* Fix: Annoying warning (but it was not causing any error).
+
+= 3.6.9 =
+* Update: Manual Rename allows a new extension.
 
 = 3.6.8 =
 * Add: Little API.

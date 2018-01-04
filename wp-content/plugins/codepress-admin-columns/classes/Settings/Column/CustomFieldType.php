@@ -31,7 +31,7 @@ class AC_Settings_Column_CustomFieldType extends AC_Settings_Column
 
 				break;
 			case 'excerpt' :
-				$settings[] = new AC_Settings_Column_CharacterLimit( $this->column );
+				$settings[] = new AC_Settings_Column_StringLimit( $this->column );
 
 				break;
 			case 'link' :
@@ -217,7 +217,7 @@ class AC_Settings_Column_CustomFieldType extends AC_Settings_Column
 				$values = array();
 				foreach ( $this->get_ids_from_array_or_string( $value ) as $id ) {
 					$user = get_userdata( $id );
-					$values[] = ac_helper()->html->link( get_edit_user_link( $user ), ac_helper()->user->get_display_name( $user ) );
+					$values[] = ac_helper()->html->link( get_edit_user_link( $id ), ac_helper()->user->get_display_name( $user ) );
 				}
 
 				$value = implode( ac_helper()->html->divider(), $values );
@@ -233,7 +233,12 @@ class AC_Settings_Column_CustomFieldType extends AC_Settings_Column
 				break;
 			case "checkmark" :
 				$is_true = ! empty( $value ) && 'false' !== $value && '0' !== $value;
-				$value = ac_helper()->icon->yes_or_no( $is_true );
+
+				if ( $is_true ) {
+					$value = ac_helper()->icon->dashicon( array( 'icon' => 'yes', 'class' => 'green' ) );
+				} else {
+					$value = ac_helper()->icon->dashicon( array( 'icon' => 'no-alt', 'class' => 'red' ) );
+				}
 
 				break;
 			case "color" :

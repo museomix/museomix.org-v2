@@ -4,20 +4,18 @@
  * @author OnTheGo Systems
  */
 class WPML_TM_Custom_XML_UI_Resources {
-	private $is_vk_beautify_installed;
 	private $wpml_wp_api;
-	private $is_code_mirror_installed;
 
 	private $wpml_tm_path;
-
 	private $wpml_tm_url;
 
+	private $code_mirror_installed;
+	private $vk_beautify_installed;
+
 	function __construct( WPML_WP_API $wpml_wp_api ) {
-		$this->wpml_wp_api              = $wpml_wp_api;
-		$wpml_tm_path                   = $this->wpml_wp_api->constant( 'WPML_TM_PATH' );
-		$this->wpml_tm_url              = $this->wpml_wp_api->constant( 'WPML_TM_URL' );
-		$this->is_code_mirror_installed = file_exists( $wpml_tm_path . '/libraries/CodeMirror/lib/codemirror.js' );
-		$this->is_vk_beautify_installed = file_exists( $wpml_tm_path . '/libraries/vkBeautify/vkbeautify.js' );
+		$this->wpml_wp_api  = $wpml_wp_api;
+		$this->wpml_tm_path = $this->wpml_wp_api->constant( 'WPML_TM_PATH' );
+		$this->wpml_tm_url  = $this->wpml_wp_api->constant( 'WPML_TM_URL' );
 	}
 
 	function admin_enqueue_scripts() {
@@ -26,7 +24,7 @@ class WPML_TM_Custom_XML_UI_Resources {
 			$this->add_code_mirror();
 
 			$wpml_tm_custom_xml_config_dependencies = array( 'jquery' );
-			if ( $this->is_code_mirror_installed ) {
+			if ( $this->is_code_mirror_installed() ) {
 				$wpml_tm_custom_xml_config_dependencies[] = 'wpml-tm-custom-xml-editor';
 			}
 
@@ -39,18 +37,17 @@ class WPML_TM_Custom_XML_UI_Resources {
 	}
 
 	private function add_code_mirror() {
-		if ( $this->is_code_mirror_installed ) {
+		if ( $this->is_code_mirror_installed() ) {
 			$this->add_code_mirror_scripts();
 			$this->add_code_mirror_styles();
 		}
 	}
 
 	private function add_code_mirror_scripts() {
-		$code_mirror_url = $this->get_code_mirror_url();
-		wp_register_script( 'codemirror', $code_mirror_url . '/lib/codemirror.js', array(), WPML_TM_VERSION );
+		$this->register_main_codemirror_script();
 
-		$wpml_tm_custom_xml_editor_dependencies = array( 'codemirror' );
-		if ( $this->is_vk_beautify_installed ) {
+		$wpml_tm_custom_xml_editor_dependencies = array( $this->get_codemirror_resource_handle() );
+		if ( $this->is_vk_beautify_installed() ) {
 			$wpml_tm_custom_xml_editor_dependencies[] = 'vkbeautify';
 		}
 
@@ -75,39 +72,91 @@ class WPML_TM_Custom_XML_UI_Resources {
 		);
 
 		foreach ( $modes as $mode => $path ) {
-			wp_enqueue_script( 'codemirror-mode-' . $mode, $code_mirror_url . '/mode/' . $path, array( 'wpml-tm-custom-xml-config' ), WPML_TM_VERSION );
+			wp_enqueue_script( 'codemirror-mode-' . $mode, $this->get_code_mirror_directory_url() . '/mode/' . $path, array( 'wpml-tm-custom-xml-config' ), WPML_TM_VERSION );
 		}
 
 		foreach ( $addons as $addon => $path ) {
-			wp_enqueue_script( 'codemirror-addon-' . $addon, $code_mirror_url . '/addon/' . $path, array( 'wpml-tm-custom-xml-config' ), WPML_TM_VERSION );
+			wp_enqueue_script( 'codemirror-addon-' . $addon, $this->get_code_mirror_directory_url() . '/addon/' . $path, array( 'wpml-tm-custom-xml-config' ), WPML_TM_VERSION );
 		}
 	}
 
 	private function add_code_mirror_styles() {
-		$code_mirror_url = $this->get_code_mirror_url();
-
-		wp_register_style( 'codemirror', $code_mirror_url . '/lib/codemirror.css', array( 'wpml-tm-custom-xml-config' ), WPML_TM_VERSION );
-		wp_enqueue_style( 'codemirror-theme', $code_mirror_url . '/theme/dracula.css', array( 'codemirror' ), WPML_TM_VERSION );
+		$this->register_main_codemirror_style();
 
 		$addons = array(
 			'foldgutter' => 'fold/foldgutter.css',
 			'xml-hint'   => 'hint/show-hint.css',
 		);
 		foreach ( $addons as $addon => $path ) {
-			wp_enqueue_style( 'codemirror-addon-' . $addon, $code_mirror_url . '/addon/' . $path, array( 'codemirror' ), WPML_TM_VERSION );
+			wp_enqueue_style( 'codemirror-addon-' . $addon, $this->get_code_mirror_directory_url() . '/addon/' . $path, array( $this->get_codemirror_resource_handle() ), WPML_TM_VERSION );
 		}
 	}
 
 	private function add_vk_beautify() {
-		if ( $this->is_vk_beautify_installed ) {
+		if ( $this->is_vk_beautify_installed() ) {
 			wp_enqueue_script( 'vkbeautify', $this->wpml_tm_url . '/libraries/vkBeautify/vkbeautify.js', array(), WPML_TM_VERSION );
+		}
+	}
+
+	private function register_main_codemirror_style() {
+		if ( ! $this->is_codemirror_in_wp_core() ) {
+			wp_register_style( $this->get_codemirror_resource_handle(), $this->get_code_mirror_directory_url() . '/lib/codemirror.css', array( 'wpml-tm-custom-xml-config' ), WPML_TM_VERSION );
+		}
+		wp_enqueue_style( 'codemirror-theme', $this->get_code_mirror_directory_url() . '/theme/dracula.css', array( $this->get_codemirror_resource_handle() ), WPML_TM_VERSION );
+	}
+
+	private function register_main_codemirror_script() {
+		if ( ! $this->is_codemirror_in_wp_core() ) {
+			wp_register_script( $this->get_codemirror_resource_handle(), $this->get_code_mirror_directory_url() . '/lib/codemirror.js', array(), WPML_TM_VERSION );
 		}
 	}
 
 	/**
 	 * @return string
 	 */
-	private function get_code_mirror_url() {
+	private function get_code_mirror_directory_url() {
 		return $this->wpml_tm_url . '/libraries/CodeMirror';
+	}
+
+	/**
+	 * @return string
+	 */
+	private function get_codemirror_resource_handle() {
+		if ( $this->is_codemirror_in_wp_core() ) {
+			return 'wp-codemirror';
+		}
+
+		return 'codemirror';
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function is_code_mirror_installed() {
+		if ( null === $this->code_mirror_installed ) {
+			$this->code_mirror_installed = $this->is_codemirror_in_wp_core() || file_exists( $this->wpml_tm_path . '/libraries/CodeMirror/lib/codemirror.js' );
+		}
+
+		return $this->code_mirror_installed;
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function is_vk_beautify_installed() {
+		if ( null === $this->vk_beautify_installed ) {
+			$this->vk_beautify_installed = file_exists( $this->wpml_tm_path . '/libraries/vkBeautify/vkbeautify.js' );
+		}
+
+		return $this->vk_beautify_installed;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function is_codemirror_in_wp_core() {
+		global $wp_version;
+
+		return $this->wpml_wp_api->version_compare_naked( $wp_version, '4.9', '>=' );
 	}
 }

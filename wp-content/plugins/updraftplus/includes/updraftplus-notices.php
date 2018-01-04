@@ -28,8 +28,8 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 		$child_notice_content = array(
 			1 => array(
 				'prefix' => __('UpdraftPlus Premium:', 'updraftplus'),
-				'title' => __('support', 'updraftplus'),
-				'text' => __('Enjoy professional, fast, and friendly help whenever you need it.', 'updraftplus'),
+				'title' => __('Support', 'updraftplus'),
+				'text' => __('Enjoy professional, fast, and friendly help whenever you need it with Premium.', 'updraftplus'),
 				'image' => 'notices/support.png',
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'button_meta' => 'updraftplus',
@@ -190,7 +190,7 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 			'keyy' => array(
 				'prefix' => '',
 				'title' => 'Keyy',
-				'text' => __("Instant and secure logon with a wave of your phone.", "updraftplus") . ' ' . $this->url_start(true, 'getkeyy.com') . __("Find out more about our revolutionary new WordPress plugin.", 'updraftplus') . $this->url_end(true, 'getkeyy.com'),
+				'text' => __("Instant and secure logon with a wave of your phone.", "updraftplus") . ' ' . $this->url_start(true, 'getkeyy.com') . __("No more forgotten passwords. Find out more about our revolutionary new WordPress plugin", 'updraftplus') . $this->url_end(true, 'getkeyy.com'),
 				'image' => 'notices/keyy_logo.png',
 				'dismiss_time' => 'dismiss_notice',
 				'supported_positions' => $this->anywhere,
@@ -198,8 +198,8 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 			),
 			'metaslider' => array(
 				'prefix' => '',
-				'title' => 'MetaSlider: The #1 WordPress slider plugin',
-				'text' => __("From the team behind UpdraftPlus.", "updraftplus") . ' ' . $this->url_start(true, 'metaslider.com') . __("Find out more.", 'updraftplus') . $this->url_end(true, 'metaslider.com'),
+				'title' => "MetaSlider: The world's #1 slider plugin from the makers of UpdraftPlus",
+				'text' => __("With Metaslider, you can easily add style and flare with beautifully-designed sliders.", "updraftplus") . ' ' . $this->url_start(true, 'metaslider.com'),
 				'image' => 'notices/metaslider_logo.png',
 				'dismiss_time' => 'dismiss_notice',
 				'supported_positions' => $this->anywhere,
@@ -375,7 +375,7 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 		return false;
 	}
 	
-	protected function check_notice_dismissed($dismiss_time){
+	protected function check_notice_dismissed($dismiss_time) {
 
 		$time_now = defined('UPDRAFTPLUS_NOTICES_FORCE_TIME') ? UPDRAFTPLUS_NOTICES_FORCE_TIME : time();
 	

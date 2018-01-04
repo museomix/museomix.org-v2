@@ -1,7 +1,6 @@
 <?php namespace flow\db\migrations;
 use flow\db\FFDB;
-use flow\db\FFDBMigration;
-use flow\db\FFDBUpdate;
+use la\core\db\migrations\ILADBMigration;
 
 if ( ! defined( 'WPINC' ) ) die;
 /**
@@ -9,11 +8,11 @@ if ( ! defined( 'WPINC' ) ) die;
  *
  * @package   FlowFlow
  * @author    Looks Awesome <email@looks-awesome.com>
-
+ *
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFMigration_2_16 implements FFDBMigration{
+class FFMigration_2_16 implements ILADBMigration{
 	private $sources;
 
 	public function version() {
@@ -23,7 +22,7 @@ class FFMigration_2_16 implements FFDBMigration{
 	public function execute($conn, $manager) {
 		$this->sources = array();
 
-		FFDBUpdate::create_cache_table($manager->cache_table_name, $manager->posts_table_name, $manager->streams_sources_table_name);
+		$this->create_cache_table($manager->cache_table_name, $manager->posts_table_name, $manager->streams_sources_table_name);
 
 		if (!FFDB::existColumn($manager->cache_table_name, 'settings')){
 			$sql = "ALTER TABLE ?n ADD COLUMN ?n BLOB";
@@ -146,5 +145,87 @@ class FFMigration_2_16 implements FFDBMigration{
 			}
 		}
 		return null;
+	}
+	
+	private function create_cache_table ($cache_table, $posts_table, $streams2sources_table) {
+		/*
+		 * We'll set the default character set and collation for this table.
+		 * If we don't do this, some characters could end up being converted
+		 * to just ?'s when saved in our table.
+		 */
+		$charset_collate = '';
+		
+		$charset = FFDB::charset();
+		if ( !empty( $charset ) ) {
+			$charset_collate = " CHARACTER SET {$charset}";
+			$charset = " CHARACTER SET {$charset}";
+		}
+		
+		$collate = FFDB::collate();
+		if ( !empty( $collate ) ) {
+			$charset_collate .= " COLLATE {$collate}";
+		}
+		
+		if(!FFDB::existTable($cache_table)){
+			$sql = "
+			CREATE TABLE `{$cache_table}`
+			(
+			`feed_id` VARCHAR(20) NOT NULL,
+			`last_update` INT NOT NULL,
+			`status` INT NOT NULL DEFAULT 0,
+			`errors` BLOB,
+			`settings` BLOB,
+			`enabled` TINYINT(1) DEFAULT 0,
+			`system_enabled` TINYINT(1) DEFAULT 1,
+			`changed_time` INT DEFAULT 0,
+			`cache_lifetime` INT DEFAULT 60,
+			PRIMARY KEY (`feed_id`)
+			){$charset}";
+			FFDB::conn()->query($sql);
+		}
+		
+		if(!FFDB::existTable($streams2sources_table)){
+			$sql = "
+			CREATE TABLE `{$streams2sources_table}`
+			(
+			`feed_id` VARCHAR(20) NOT NULL,
+			`stream_id` INT NOT NULL,
+			PRIMARY KEY (`feed_id`, `stream_id`)
+			){$charset}";
+			FFDB::conn()->query($sql);
+		}
+		
+		if(!FFDB::existTable($posts_table)) {
+			$sql = "
+			CREATE TABLE `{$posts_table}`
+			(
+			`feed_id` VARCHAR(20) NOT NULL,
+			`post_id` VARCHAR(50) NOT NULL,
+			`post_type` VARCHAR(10) NOT NULL,
+			`post_date` TIMESTAMP,
+			`post_text` BLOB,
+			`post_permalink` VARCHAR(300),
+			`post_header` VARCHAR(200){$charset_collate},
+			`user_nickname` VARCHAR(100){$charset_collate},
+			`user_screenname` VARCHAR(200){$charset_collate},
+			`user_pic` VARCHAR(300) NOT NULL,
+			`user_link` VARCHAR(300),
+			`user_bio` VARCHAR(200),
+			`user_counts_media` INT,
+			`user_counts_follows` INT,
+			`user_counts_followed_by` INT,
+			`rand_order` REAL,
+			`creation_index` INT NOT NULL DEFAULT 0,
+			`image_url` VARCHAR(500),
+			`image_width` INT,
+			`image_height` INT,
+			`media_url` VARCHAR(500),
+			`media_width` INT,
+			`media_height` INT,
+			`media_type` VARCHAR(100),
+			PRIMARY KEY (`post_id`, `post_type`, `feed_id`)
+			){$charset}";
+			FFDB::conn()->query($sql);
+		}
 	}
 }

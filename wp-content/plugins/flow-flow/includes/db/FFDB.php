@@ -163,13 +163,13 @@ class FFDB {
 		return array();
 	}
 
-	public static function sources($stream = null, $only_enable = false){
-		global $flow_flow_context;
-		/** @var FFDBManager $dbm */
-		$dbm = $flow_flow_context['db_manager'];
-		$cache_table_name = $dbm->cache_table_name;
-		$streams_sources_table_name = $dbm->streams_sources_table_name;
-
+	/**
+	 * @param FFDBManager $dbm
+	 * @param string $stream
+	 * @param bool $only_enable
+	 * @return array|array
+	 */
+	public static function sources($cache_table_name, $streams_sources_table_name, $stream = null, $only_enable = false){
 		$sql_part = '';
 		if ($only_enable && $stream == null)  $sql_part = self::conn()->parse('WHERE `enabled` = 1');
 		if ($stream != null) $sql_part = self::conn()->parse('inner join ?n `conn` on `cach`.`feed_id` = `conn`.`feed_id` WHERE `enabled` = 1 and `conn`.`stream_id` = ?s', $streams_sources_table_name, $stream);
@@ -274,12 +274,7 @@ class FFDB {
 		return $options;
 	}
 
-	public static function getStatusInfo($cache_table_name, $streamId, $format = true) {
-		global $flow_flow_context;
-		$dbm = $flow_flow_context['db_manager'];
-		$cache_table_name = $dbm->cache_table_name;
-		$streams_sources_table_name = $dbm->streams_sources_table_name;
-
+	public static function getStatusInfo($cache_table_name, $streams_sources_table_name, $streamId, $format = true) {
 		$sql_part = FFDB::conn()->parse('where `src`.`stream_id` = ?s and `cach`.`enabled` = true', $streamId);
 		$sql = FFDB::conn()->parse('select `src`.`stream_id` as `id`, MIN(`cach`.`status`) as `status`, COUNT(`cach`.`feed_id`) as `feeds_count` from ?n `cach` inner join ?n `src` on `cach`.`feed_id` = `src`.`feed_id`  ?p  group by `src`.`stream_id`', $cache_table_name, $streams_sources_table_name, $sql_part);
 		$status_info = FFDB::conn()->getAll($sql);
@@ -288,17 +283,12 @@ class FFDB {
 		}
 		$status_info = $status_info[0];
 		if ($status_info['status'] == '0') {
-			$status_info['error'] = self::getError($cache_table_name, $streamId, $format);
+			$status_info['error'] = self::getError($cache_table_name, $streams_sources_table_name, $streamId, $format);
 		}
 		return $status_info;
 	}
 
-	public static function getError($cache_table_name, $streamId, $format = true){
-		global $flow_flow_context;
-		$dbm = $flow_flow_context['db_manager'];
-		$cache_table_name = $dbm->cache_table_name;
-		$streams_sources_table_name = $dbm->streams_sources_table_name;
-
+	public static function getError($cache_table_name, $streams_sources_table_name, $streamId, $format = true){
 		$result = '';
 		$errors = FFDB::conn()->getInd('feed_id', 'select `cach`.`errors`, `cach`.`feed_id` from ?n `cach` inner join ?n `src` on `cach`.`feed_id` = `src`.`feed_id` where `src`.`stream_id` = ?s and `cach`.`enabled` = 1', $cache_table_name, $streams_sources_table_name, $streamId);
 		foreach ( $errors as $feed => $error ) {
@@ -323,15 +313,10 @@ class FFDB {
 
 			}
 		}
-		return $format ? var_dump2str($result) : $result;
+		return $format ? print_r($result, true) : $result;
 	}
 
-	public static function setStream($id, $stream){
-		global $flow_flow_context;
-		$dbm = $flow_flow_context['db_manager'];
-		$streams_table_name = $dbm->streams_table_name;
-		$streams_sources_table_name = $dbm->streams_sources_table_name;
-
+	public static function setStream($streams_table_name, $streams_sources_table_name, $id, $stream){
 		self::$cache[$id] = clone $stream;
 		$name = $stream->name;
 		$originalFeed = $stream->feeds;
@@ -379,12 +364,7 @@ class FFDB {
 		self::commit();
 	}
 
-	public static function deleteStream($id){
-		global $flow_flow_context;
-		$dbm = $flow_flow_context['db_manager'];
-		$streams_table_name = $dbm->streams_table_name;
-		$streams_sources_table_name = $dbm->streams_sources_table_name;
-
+	public static function deleteStream($streams_table_name, $streams_sources_table_name, $id){
 		unset(self::$cache[$id]);
 		if (false === self::conn()->query('DELETE FROM ?n WHERE `id`=?s', $streams_table_name, $id)){
 			return new \Exception();

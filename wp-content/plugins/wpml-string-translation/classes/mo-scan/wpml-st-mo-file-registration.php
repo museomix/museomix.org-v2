@@ -14,6 +14,9 @@ class WPML_ST_MO_File_Registration {
 	/** @var array */
 	private $active_languages;
 
+	/** @var array */
+	private $cache = array();
+
 	/**
 	 * @param WPML_ST_MO_Dictionary $mo_dictionary
 	 * @param WPML_File $wpml_file
@@ -33,7 +36,15 @@ class WPML_ST_MO_File_Registration {
 	}
 
 	public function add_hooks() {
-		add_filter( 'override_load_textdomain', array( $this, 'save_mo_file_info' ), 11, 3 );
+		add_filter( 'override_load_textdomain', array( $this, 'cached_save_mo_file_info' ), 11, 3 );
+	}
+
+	public function cached_save_mo_file_info( $override, $domain, $mo_file_path ) {
+		if ( !isset( $this->cache[ $mo_file_path ] ) ) {
+			$this->cache[ $mo_file_path ] = $this->save_mo_file_info( $override, $domain, $mo_file_path );
+		}
+
+		return $this->cache[ $mo_file_path ];
 	}
 
 	public function save_mo_file_info( $override, $domain, $mo_file_path ) {
@@ -88,3 +99,4 @@ class WPML_ST_MO_File_Registration {
 		}
 	}
 }
+

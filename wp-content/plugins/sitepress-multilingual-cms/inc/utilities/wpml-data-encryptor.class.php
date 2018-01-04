@@ -27,7 +27,11 @@ class WPML_Data_Encryptor {
 	 * @param string $method
 	 *
 	 */
-	public function __construct( $key_salt = NONCE_SALT, $method = 'AES-256-CTR' ) {
+	public function __construct( $key_salt = '', $method = 'AES-256-CTR' ) {
+
+		if ( ! $key_salt ) {
+			$key_salt = $this->get_key_salt();
+		}
 
 		if ( function_exists( 'openssl_encrypt' ) && function_exists( 'openssl_decrypt' )
 		     && version_compare( phpversion(), '5.3.2', '>' ) ) {
@@ -101,4 +105,18 @@ class WPML_Data_Encryptor {
 		return $this->library;
 	}
 
+	/**
+	 * @return string
+	 */
+	private function get_key_salt() {
+		require_once ABSPATH . '/wp-includes/pluggable.php';
+
+		if ( defined( 'NONCE_SALT' ) ){
+			$key_salt = NONCE_SALT;
+		} else {
+			$key_salt = wp_generate_password( 64, true, true );
+		}
+
+		return $key_salt;
+	}
 }

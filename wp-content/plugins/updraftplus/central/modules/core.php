@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
+if (!defined('UPDRAFTCENTRAL_CLIENT_DIR')) die('No access.');
 
 /**
  * - A container for RPC commands (core UpdraftCentral commands). Commands map exactly onto method names (and hence this class should not implement anything else, beyond the constructor, and private methods)
@@ -168,16 +168,16 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 			if (is_array($redirect_to) && !empty($redirect_to['module'])) {
 				switch ($redirect_to['module']) {
 					case 'updraftplus':
-					if ('initiate_restore' == $redirect_to['action'] && class_exists('UpdraftPlus_Options')) {
+						if ('initiate_restore' == $redirect_to['action'] && class_exists('UpdraftPlus_Options')) {
 							$redirect_url = UpdraftPlus_Options::admin_page_url().'?page=updraftplus&udaction=initiate_restore&entities='.urlencode($redirect_to['data']['entities']).'&showdata='.urlencode($redirect_to['data']['showdata']).'&backup_timestamp='.(int) $redirect_to['data']['backup_timestamp'];
-					} elseif ('download_file' == $redirect_to['action']) {
-												$findex = empty($redirect_to['data']['findex']) ? 0 : (int) $redirect_to['data']['findex'];
-												// e.g. ?udcentral_action=dl&action=updraftplus_spool_file&backup_timestamp=1455101696&findex=0&what=plugins
-												$redirect_url = site_url().'?udcentral_action=spool_file&action=updraftplus_spool_file&findex='.$findex.'&what='.urlencode($redirect_to['data']['what']).'&backup_timestamp='.(int) $redirect_to['data']['backup_timestamp'];
-					}
+						} elseif ('download_file' == $redirect_to['action']) {
+							$findex = empty($redirect_to['data']['findex']) ? 0 : (int) $redirect_to['data']['findex'];
+							// e.g. ?udcentral_action=dl&action=updraftplus_spool_file&backup_timestamp=1455101696&findex=0&what=plugins
+							$redirect_url = site_url().'?udcentral_action=spool_file&action=updraftplus_spool_file&findex='.$findex.'&what='.urlencode($redirect_to['data']['what']).'&backup_timestamp='.(int) $redirect_to['data']['backup_timestamp'];
+						}
 						break;
 					case 'direct_url':
-					$redirect_url = $redirect_to['url'];
+						$redirect_url = $redirect_to['url'];
 						break;
 				}
 			}
@@ -200,6 +200,11 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 		}
 	}
 
+	/**
+	 * Get information derived from phpinfo()
+	 *
+	 * @return Array
+	 */
 	public function phpinfo() {
 		$phpinfo = $this->_get_phpinfo_array();
 		
@@ -209,14 +214,12 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 		
 		return $this->_generic_error_response('phpinfo_fail');
 	}
-	
-
 		
 	/**
-	 * This is intended to be short-lived. Hence, there's no intention other than that it is random and only used once - only the most recent one is valid.
+	 * The key obtained is only intended to be short-lived. Hence, there's no intention other than that it is random and only used once - only the most recent one is valid.
 	 *
-	 * @param  string $user_id Specific user ID to get the autologin key
-	 * @return array
+	 * @param  Integer $user_id Specific user ID to get the autologin key
+	 * @return Array
 	 */
 	public function _get_autologin_key($user_id) {
 		$secure_auth_key = defined('SECURE_AUTH_KEY') ? SECURE_AUTH_KEY : hash('sha256', DB_PASSWORD).'_'.rand(0, 999999999);
@@ -254,7 +257,7 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 	 * @param  array $data Array of Data to be used within call_wp_action
 	 * @return array
 	 */
-	public function call_wordpress_action($data){
+	public function call_wordpress_action($data) {
 		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return $this->_generic_error_response('no_updraftplus');
 
 		$response = $updraftplus_admin->call_wp_action($data);
@@ -270,7 +273,17 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 		));
 	}
 
-	public function count($entity){
+	/**
+	 * Get disk space used
+	 *
+	 * @uses UpdraftPlus_Admin::get_disk_space_used()
+	 *
+	 * @param String $entity - the entity to count (e.g. 'plugins', 'themes')
+	 *
+	 * @return Array - response
+	 */
+	public function count($entity) {
+	
 		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return $this->_generic_error_response('no_updraftplus');
 
 		$response = $updraftplus_admin->get_disk_space_used($entity);
@@ -278,9 +291,6 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 		return $this->_response($response);
 	}
 	
-
-	/*Private Functions*/
-
 	/**
 	 * https://secure.php.net/phpinfo
 	 *
@@ -310,6 +320,11 @@ class UpdraftCentral_Core_Commands extends UpdraftCentral_Commands {
 		return false;
 	}
 
+	/**
+	 * Return an UpdraftPlus_Admin object
+	 *
+	 * @return UpdraftPlus_Admin|Boolean - false in case of failure
+	 */
 	private function _load_ud_admin() {
 		if (!defined('UPDRAFTPLUS_DIR') || !is_file(UPDRAFTPLUS_DIR.'/admin.php')) return false;
 		include_once(UPDRAFTPLUS_DIR.'/admin.php');

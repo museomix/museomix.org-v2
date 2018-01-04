@@ -45,6 +45,8 @@ class Updraft_Restorer extends WP_Upgrader {
 
 	private $statements_run = 0;
 	
+	private $use_wpdb = null;
+	
 	// Constants for use with the move_backup_in method
 	// These can't be arbitrarily changed; there is legacy code doing bitwise operations and numerical comparisons, and possibly legacy code still using the values directly.
 	const MOVEIN_OVERWRITE_NO_BACKUP = 0;
@@ -55,12 +57,11 @@ class Updraft_Restorer extends WP_Upgrader {
 	public function __construct($skin = null, $info = null, $shortinit = false, $restore_options = array()) {
 
 		global $wpdb;
-		// Line up a wpdb-like object
-		$this->use_wpdb = ((!function_exists('mysql_query') && !function_exists('mysqli_query')) || !$wpdb->is_mysql || !$wpdb->ready) ? true : false;
-
+		
 		$this->our_siteurl = untrailingslashit(site_url());
 
-		if (false == $this->use_wpdb) {
+		// Line up a wpdb-like object
+		if (!$this->use_wpdb()) {
 			// We have our own extension which drops lots of the overhead on the query
 			$wpdb_obj = new UpdraftPlus_WPDB(DB_USER, DB_PASSWORD, DB_NAME, DB_HOST);
 			// Was that successful?
@@ -91,6 +92,35 @@ class Updraft_Restorer extends WP_Upgrader {
 		$this->is_multisite = is_multisite();
 	}
 
+	/**
+	 * Get the wpdb-like object that we are using, if we are using one
+	 *
+	 * @return UpdraftPlus_WPDB|Boolean
+	 */
+	public function get_db_object() {
+		return $this->wpdb_obj;
+	}
+	
+	/**
+	 * Whether or not we must use the global $wpdb object for database queries.
+	 * That is to say: we *can* always use it. But we prefer to avoid the overhead since we are potentially doing very many queries.
+	 *
+	 * This is the getter. We have no use-case for a setter outside of this class, so we just set it directly.
+	 *
+	 * @return Boolean
+	 */
+	public function use_wpdb() {
+		if (!is_bool($this->use_wpdb)) {
+			global $wpdb;
+			if (defined('UPDRAFTPLUS_USE_WPDB')) {
+				$this->use_wpdb = (bool) UPDRAFTPLUS_USE_WPDB;
+			} else {
+				$this->use_wpdb = ((!function_exists('mysql_query') && !function_exists('mysqli_query')) || !$wpdb->is_mysql || !$wpdb->ready) ? true : false;
+			}
+		}
+		return $this->use_wpdb;
+	}
+	
 	public function ud_get_skin() {
 		return $this->skin;
 	}
@@ -955,6 +985,11 @@ class Updraft_Restorer extends WP_Upgrader {
 					if ($wp_filesystem->delete($working_dir)) $fixed_it_now = true;
 				}
 				
+				if (file_exists($working_dir . DIRECTORY_SEPARATOR . 'updraftplus-manifest.json')) {
+					$wp_filesystem->delete($working_dir . DIRECTORY_SEPARATOR . 'updraftplus-manifest.json');
+					if ($wp_filesystem->delete($working_dir)) $fixed_it_now = true;
+				}
+
 				if (!$fixed_it_now) {
 					$updraftplus->log_e('Error: %s', $this->strings['delete_failed'].' ('.$working_dir.')');
 					// List contents
@@ -1328,7 +1363,7 @@ ENDHERE;
 	private function chmod_if_needed($dir, $chmod, $recursive = false, $wpfs = false, $suppress = true) {
 
 		// Do nothing on Windows
-		if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN') return true;
+		if ('WIN' === strtoupper(substr(php_uname('s'), 0, 3))) return true;
 
 		if (false == $wpfs) {
 			global $wp_filesystem;
@@ -1355,11 +1390,12 @@ ENDHERE;
 	}
 
 	/**
+	 * This will return the path with the actual content we want to restore, ignoring any other files that may be in the top level of the zip file
 	 * $dirnames: an array of preferred names
 	 *
 	 * @param  string $working_dir specify working directory
 	 * @param  string $dirnames    directory names
-	 * @return string
+	 * @return string the final path with the content we want to restore
 	 */
 	public function get_first_directory($working_dir, $dirnames) {
 		global $wp_filesystem, $updraftplus;
@@ -1435,8 +1471,8 @@ ENDHERE;
 	 *
 	 * @param  string $working_dir           specify working directory
 	 * @param  string $working_dir_localpath specify working local directory
-	 * @param  string $import_table_prefix   speficy import
-	 * @return boolean
+	 * @param  string $import_table_prefix   specify import
+	 * @return boolean|WP_Error
 	 */
 	private function restore_backup_db($working_dir, $working_dir_localpath, $import_table_prefix) {
 
@@ -1500,7 +1536,7 @@ ENDHERE;
 
 		$this->line = 0;
 
-		if (true == $this->use_wpdb) {
+		if ($this->use_wpdb()) {
 			$updraftplus->log_e('Database access: Direct MySQL access is not available, so we are falling back to wpdb (this will be considerably slower)');
 		} else {
 			$updraftplus->log("Using direct MySQL access; value of use_mysqli is: ".($this->use_mysqli ? '1' : '0'));
@@ -1515,6 +1551,9 @@ ENDHERE;
 		// Find the supported engines - in case the dump had something else (case seen: saved from MariaDB with engine Aria; imported into plain MySQL without)
 		$supported_engines = $wpdb->get_results("SHOW ENGINES", OBJECT_K);
 		$supported_charsets = $wpdb->get_results("SHOW CHARACTER SET", OBJECT_K);
+		$db_supported_collations_res = $wpdb->get_results('SHOW COLLATION', OBJECT_K);
+		$supported_collations = (null !== $db_supported_collations_res) ? $db_supported_collations_res : array();
+		$updraft_restorer_collate = isset($this->ud_restore_options['updraft_restorer_collate']) ? $this->ud_restore_options['updraft_restorer_collate'] : '';
 
 		$this->errors = 0;
 		$this->statements_run = 0;
@@ -1543,7 +1582,7 @@ ENDHERE;
 		$random_table_name = 'updraft_tmp_'.rand(0, 9999999).md5(microtime(true));
 
 		// The only purpose in funnelling queries directly here is to be able to get the error number
-		if ($this->use_wpdb) {
+		if ($this->use_wpdb()) {
 			$req = $wpdb->query("CREATE TABLE $random_table_name (test INT)");
 			// WPDB, for several query types, returns the number of rows changed; in distinction from an error, indicated by (bool)false
 			if (0 === $req) {
@@ -1566,7 +1605,7 @@ ENDHERE;
 			}
 		}
 
-		if (!$req && ($this->use_wpdb || 1142 === $this->last_error_no)) {
+		if (!$req && ($this->use_wpdb() || 1142 === $this->last_error_no)) {
 			$this->create_forbidden = true;
 			// If we can't create, then there's no point dropping
 			$this->drop_forbidden = true;
@@ -1583,7 +1622,7 @@ ENDHERE;
 				$updraftplus->log("Database user has no permission to lock tables - will not lock after CREATE");
 			}
 		
-			if ($this->use_wpdb) {
+			if ($this->use_wpdb()) {
 				$req = $wpdb->query("DROP TABLE $random_table_name");
 				// WPDB, for several query types, returns the number of rows changed; in distinction from an error, indicated by (bool)false
 				if (0 === $req) {
@@ -1605,7 +1644,7 @@ ENDHERE;
 					$this->last_error_no = ($this->use_mysqli) ? mysqli_errno($this->mysql_dbh) : mysql_errno($this->mysql_dbh);
 				}
 			}
-			if (!$req && ($this->use_wpdb || 1142 === $this->last_error_no)) {
+			if (!$req && ($this->use_wpdb() || 1142 === $this->last_error_no)) {
 				$this->drop_forbidden = true;
 
 				$updraftplus->log(sprintf('Your database user does not have permission to drop tables. We will attempt to restore by simply emptying the tables; this should work as long as you are restoring from a WordPress version with the same database structure (%s)', '('.$this->last_error.', '.$this->last_error_no.')'));
@@ -1652,7 +1691,7 @@ ENDHERE;
 			}
 
 			// Discard comments
-			if (empty($buffer) || substr($buffer, 0, 1) == '#' || preg_match('/^--(\s|$)/', substr($buffer, 0, 3))) {
+			if (empty($buffer) || '#' == substr($buffer, 0, 1) || preg_match('/^--(\s|$)/', substr($buffer, 0, 3))) {
 				if ('' == $this->old_siteurl && preg_match('/^\# Backup of: (http(.*))$/', $buffer, $matches)) {
 					$this->old_siteurl = untrailingslashit($matches[1]);
 					$updraftplus->log("Backup of: ".$this->old_siteurl);
@@ -1766,7 +1805,7 @@ ENDHERE;
 
 				if (!isset($printed_new_table_prefix)) {
 					$import_table_prefix = $this->pre_sql_actions($import_table_prefix);
-					if (false===$import_table_prefix || is_wp_error($import_table_prefix)) return $import_table_prefix;
+					if (false === $import_table_prefix || is_wp_error($import_table_prefix)) return $import_table_prefix;
 					$printed_new_table_prefix = true;
 				}
 
@@ -1878,6 +1917,37 @@ ENDHERE;
 						}
 					}
 				}
+				$collate_change_message = '';
+				$unsupported_collates_in_sql_line = array();
+				if (!empty($updraft_restorer_collate) && preg_match('/ COLLATE=([^\s]+)/i', $sql_line, $collate_match)) {
+					$collate = $collate_match[1];
+					if (!isset($supported_collations[$collate])) {
+						$unsupported_collates_in_sql_line[] = $collate;
+						$sql_line = $updraftplus->str_lreplace("COLLATE=$collate", "COLLATE=".$updraft_restorer_collate, $sql_line, false);
+					}
+				}
+				if (!empty($updraft_restorer_collate) && preg_match_all('/ COLLATE ([a-zA-Z0-9._-]+) /i', $sql_line, $collate_matches)) {
+					$collates = array_unique($collate_matches[1]);
+					foreach ($collates as $collate) {
+						if (!isset($supported_collations[$collate])) {
+							$unsupported_collates_in_sql_line[] = $collate;
+							$sql_line = str_ireplace("COLLATE $collate ", "COLLATE ".$updraft_restorer_collate." ", $sql_line);
+						}
+					}
+				}
+				if (!empty($updraft_restorer_collate) && preg_match_all('/ COLLATE ([a-zA-Z0-9._-]+),/i', $sql_line, $collate_matches)) {
+					$collates = array_unique($collate_matches[1]);
+					foreach ($collates as $collate) {
+						if (!isset($supported_collations[$collate])) {
+							$unsupported_collates_in_sql_line[] = $collate;
+							$sql_line = str_ireplace("COLLATE $collate,", "COLLATE ".$updraft_restorer_collate.",", $sql_line);
+						}
+					}
+				}
+				if (count($unsupported_collates_in_sql_line) > 0) {
+					$unsupported_unique_collates_in_sql_line = array_unique($unsupported_collates_in_sql_line);
+					$collate_change_message = sprintf(_n('Requested table collation (%1$s) is not present - changing to %2$s.', 'Requested table collations (%1$s) are not present - changing to %2$s.', count($unsupported_unique_collates_in_sql_line), 'updraftplus'), esc_html(implode(', ', $unsupported_unique_collates_in_sql_line)), esc_html($this->ud_restore_options['updraft_restorer_collate']));
+				}
 				$print_line = sprintf(__('Processing table (%s)', 'updraftplus'), $engine).":  ".$this->table_name;
 				$logline = "Processing table ($engine): ".$this->table_name;
 				if ('' != $this->old_table_prefix && $import_table_prefix != $this->old_table_prefix) {
@@ -1893,6 +1963,7 @@ ENDHERE;
 				$updraftplus->log($print_line, 'notice-restore');
 				$restoring_table = $this->new_table_name;
 				if ($charset_change_message) $updraftplus->log($charset_change_message, 'notice-restore');
+				if ($collate_change_message) $updraftplus->log($collate_change_message, 'notice-restore');
 				if ($engine_change_message) $updraftplus->log($engine_change_message, 'notice-restore');
 
 			} elseif (preg_match('/^\s*(insert into \`?([^\`]*)\`?\s+(values|\())/i', $sql_line, $matches)) {
@@ -1968,7 +2039,7 @@ ENDHERE;
 		global $updraftplus;
 		$table = $updraftplus->backquote($table);
 		
-		if ($this->use_wpdb) {
+		if ($this->use_wpdb()) {
 			$req = $wpdb->query("LOCK TABLES $table WRITE;");
 		} else {
 			if ($this->use_mysqli) {
@@ -1982,7 +2053,7 @@ ENDHERE;
 				$lock_error_no = $this->use_mysqli ? mysqli_errno($this->mysql_dbh) : mysql_errno($this->mysql_dbh);
 			}
 		}
-		if (!$req && ($this->use_wpdb || 1142 === $lock_error_no)) {
+		if (!$req && ($this->use_wpdb() || 1142 === $lock_error_no)) {
 			// Permission denied
 			return 1142;
 		}
@@ -1992,7 +2063,7 @@ ENDHERE;
 	public function unlock_tables() {
 		return;
 		// Not yet working
-		if ($this->use_wpdb) {
+		if ($this->use_wpdb()) {
 			$wpdb->query("UNLOCK TABLES;");
 		} elseif ($this->use_mysqli) {
 			$req = mysqli_query($this->mysql_dbh, "UNLOCK TABLES;");
@@ -2109,7 +2180,7 @@ ENDHERE;
 	 * @param  integer $sql_type            sql type
 	 * @param  string  $import_table_prefix import type prefix
 	 * @param  boolean $check_skipping      if true, then check whether the table is on the list of tables to skip
-	 * @return array
+	 * @return Boolean|WP_Error|Void
 	 */
 	public function sql_exec($sql_line, $sql_type, $import_table_prefix = '', $check_skipping = true) {
 
@@ -2128,7 +2199,7 @@ ENDHERE;
 				// We choose, for now, to be very conservative - we only do the apparently-missing drop if we have never seen any drop - i.e. assume that in SQL dumps with missing DROPs, that it's because there are no DROPs at all
 				if (!in_array($this->new_table_name, $this->tables_been_dropped)) {
 					$updraftplus->log_e('Table to be implicitly dropped: %s', $this->new_table_name);
-					$this->sql_exec('DROP TABLE IF EXISTS '.esc_sql($this->new_table_name), 1, '', false);
+					$this->sql_exec('DROP TABLE IF EXISTS '.$updraftplus->backquote($this->new_table_name), 1, '', false);
 					$this->tables_been_dropped[] = $this->new_table_name;
 				}
 			}
@@ -2154,7 +2225,7 @@ ENDHERE;
 				return false;
 			}
 
-			if ($this->use_wpdb) {
+			if ($this->use_wpdb()) {
 				$req = $wpdb->query($sql_line);
 				// WPDB, for several query types, returns the number of rows changed; in distinction from an error, indicated by (bool)false
 				if (0 === $req) {
@@ -2213,6 +2284,7 @@ ENDHERE;
 		} elseif (2 == $sql_type) {
 			if (!$this->lock_forbidden) $this->lock_table($this->new_table_name);
 			$this->tables_created++;
+			do_action('updraftplus_creating_table', $this->new_table_name);
 		}
 
 		if ($this->line >0 && ($this->line)%50 == 0) {
@@ -2303,7 +2375,7 @@ ENDHERE;
 						} else {
 							$updraftplus->log_e("Uploads path (%s) has changed during a migration - resetting (to: %s)", $new_upload_path, $this->prior_upload_path);
 						}
-						if (false === $wpdb->query("UPDATE ${import_table_prefix}".$mprefix."options SET option_value='".esc_sql($this->prior_upload_path)."' WHERE option_name='upload_path' LIMIT 1")) {
+						if (false === $wpdb->query($wpdb->prepare("UPDATE ${import_table_prefix}".$mprefix."options SET option_value='%s' WHERE option_name='upload_path' LIMIT 1", array($this->prior_upload_path)))) {
 							$updraftplus->log(__('Error', 'updraftplus'), 'notice-restore');
 							$updraftplus->log("Error when changing upload path: ".$wpdb->last_error);
 							$updraftplus->log("Failed");
@@ -2474,9 +2546,16 @@ class Updraft_Restorer_Skin extends WP_Upgrader_Skin {
  * Get a protected property
  */
 class UpdraftPlus_WPDB extends wpdb {
+
 	public function updraftplus_getdbh() {
 		return $this->dbh;
 	}
+	
+	/**
+	 * Return whether the object is using mysqli or not.
+	 *
+	 * @return Boolean
+	 */
 	public function updraftplus_use_mysqli() {
 		return !empty($this->use_mysqli);
 	}

@@ -1423,7 +1423,7 @@ class SitePress extends WPML_WPDB_User{
 			$this->scripts_handler->add_admin_hooks();
 
 			if ( isset( $_SERVER[ 'SCRIPT_NAME' ] ) && ( strpos( $_SERVER[ 'SCRIPT_NAME' ], 'post-new.php' ) || strpos( $_SERVER[ 'SCRIPT_NAME' ], 'post.php' ) ) ) {
-				wp_register_script( 'sitepress-post-edit-tags', ICL_PLUGIN_URL . '/res/js/post-edit-terms.js', array( 'jquery', 'underscore' ) );
+				wp_register_script( 'sitepress-post-edit-tags', ICL_PLUGIN_URL . '/res/js/post-edit-terms.js', array( 'jquery' ) );
 				$post_edit_messages = array(
 					'switch_language_title' => __( 'You are about to change the language of {post_name}.', 'sitepress' ),
 					'switch_language_alert' => __( 'All categories and tags will be translated if possible.', 'sitepress' ),

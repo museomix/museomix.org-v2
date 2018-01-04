@@ -116,6 +116,7 @@ class AC_Settings_Column_User extends AC_Settings_Column
 			'ID'              => __( 'User ID', 'codepress-admin-columns' ),
 			'first_last_name' => __( 'First and Last Name', 'codepress-admin-columns' ),
 			'user_nicename'   => __( 'User Nicename', 'codepress-admin-columns' ),
+			'roles'           => __( 'Roles', 'codepress-admin-columns' ),
 		);
 
 		// resort for possible translations
@@ -129,9 +130,9 @@ class AC_Settings_Column_User extends AC_Settings_Column
 	 */
 	private function get_link_options() {
 		$options = array(
-			'edit_user'       => __( 'Edit User Profile' ),
-			'email_user'      => __( 'User Email' ),
-			'view_user_posts' => __( 'View User Posts' ),
+			'edit_user'       => __( 'Edit User Profile', 'codepress-admin-columns' ),
+			'email_user'      => __( 'User Email', 'codepress-admin-columns' ),
+			'view_user_posts' => __( 'View User Posts', 'codepress-admin-columns' ),
 			'view_author'     => __( 'View Public Author Page', 'codepress-admin-columns' ),
 		);
 

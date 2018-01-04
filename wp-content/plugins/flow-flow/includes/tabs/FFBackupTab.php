@@ -1,5 +1,7 @@
 <?php namespace flow\tabs;
+
 use flow\settings\FFSnapshotManager;
+use la\core\tabs\LATab;
 
 if ( ! defined( 'WPINC' ) ) die;
 /**

@@ -23,7 +23,7 @@ $disableCache = isset($_REQUEST['disable-cache']);
 $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '0';
 ?>
 	<!-- Flow-Flow — Social stream plugin for WordPress -->
-	<div class="ff-stream" id="ff-stream-<?php echo $id;?>"><span class="ff-loader"><span class="ff-square" ></span><span class="ff-square"></span><span class="ff-square ff-last"></span><span class="ff-square ff-clear"></span><span class="ff-square"></span><span class="ff-square ff-last"></span><span class="ff-square ff-clear"></span><span class="ff-square"></span><span class="ff-square ff-last"></span></span></div>
+	<div class="ff-stream" data-plugin="flow_flow" id="ff-stream-<?php echo $id;?>"><span class="ff-loader"><span class="ff-square" ></span><span class="ff-square"></span><span class="ff-square ff-last"></span><span class="ff-square ff-clear"></span><span class="ff-square"></span><span class="ff-square ff-last"></span><span class="ff-square ff-clear"></span><span class="ff-square"></span><span class="ff-square ff-last"></span></span></div>
 
 	<script type="text/javascript">
 
@@ -51,8 +51,9 @@ $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '0';
 			};
 			var isMobile = /android|blackBerry|iphone|ipad|ipod|opera mini|iemobile/i.test(navigator.userAgent);
 			var streamOpts = <?php echo json_encode($stream); ?>;
+            streamOpts.plugin = 'flow_flow';
             opts.streams['stream' + streamOpts.id] = streamOpts;
-			var $cont = $("#ff-stream-"+data['stream-id']);
+			var $cont = $("[data-plugin='flow_flow']#ff-stream-"+data['stream-id']);
 			var ajaxDeferred;
 			var script, style;
 			var layout_pre = streamOpts.layout.charAt(0);
@@ -139,6 +140,7 @@ $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '0';
 
                 resourcesLoaded.done(function(){
                     var $stream, width;
+                    console.log(response);
                     $stream = FlowFlow.buildStreamWith(response, streamOpts, moderation, FlowFlowOpts.dependencies);
                     <?php if (!$admin) {echo 'if (isLS && response.items.length > 0 && response.hash.length > 0) sessionStorage.setItem(response.hash, original);' . PHP_EOL;}?>
                     var num = streamOpts.layout === 'compact' || (streamOpts.mobileslider === 'yep' && isMobile)? (streamOpts.mobileslider === 'yep' ? 3 : streamOpts['cards-num']) : false;

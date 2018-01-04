@@ -38,7 +38,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		$this->container = $opts['path'];
 
 		try {
-			$service = $this->get_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
+			$storage = $this->get_openstack_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
 		} catch (AuthenticationError $e) {
 			$updraftplus->log($this->desc.' authentication failed ('.$e->getMessage().')');
 			$updraftplus->log(sprintf(__('%s authentication failed', 'updraftplus'), $this->desc).' ('.$e->getMessage().')', 'error');
@@ -50,7 +50,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		}
 		// Get the container
 		try {
-			$this->container_object = $service->getContainer($this->container);
+			$this->container_object = $storage->getContainer($this->container);
 		} catch (Exception $e) {
 			$updraftplus->log('Could not access '.$this->desc.' container ('.get_class($e).', '.$e->getMessage().') (line: '.$e->getLine().', file: '.$e->getFile().')');
 			$updraftplus->log(sprintf(__('Could not access %s container', 'updraftplus'), $this->desc).' ('.get_class($e).', '.$e->getMessage().')', 'error');
@@ -103,6 +103,13 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		}
 	}
 
+	/**
+	 * This function lists the files found in the configured storage location
+	 *
+	 * @param  String $match a substring to require (tested via strpos() !== false)
+	 *
+	 * @return Array - each file is represented by an array with entries 'name' and (optional) 'size'
+	 */
 	public function listfiles($match = 'backup_') {
 		$opts = $this->get_options();
 		$container = $opts['path'];
@@ -111,39 +118,59 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		if (empty($opts['user']) || (empty($opts['apikey']) && empty($opts['password']))) return new WP_Error('no_settings', __('No settings were found', 'updraftplus'));
 
 		try {
-			$service = $this->get_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
+			$storage = $this->get_openstack_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
 		} catch (Exception $e) {
 			return new WP_Error('no_access', sprintf(__('%s error - failed to access the container', 'updraftplus'), $this->desc).' ('.$e->getMessage().')');
 		}
 
 		// Get the container
 		try {
-			$this->container_object = $service->getContainer($container);
+			$this->container_object = $storage->getContainer($container);
 		} catch (Exception $e) {
 			return new WP_Error('no_access', sprintf(__('%s error - failed to access the container', 'updraftplus'), $this->desc).' ('.$e->getMessage().')');
 		}
 
 		$results = array();
+		$marker = '';
+		$page_size = 1000;
 		try {
-			$objects = $this->container_object->objectList(array('prefix' => $match));
-			$index = 0;
-			while (false !== ($file = $objects->offsetGet($index)) && !empty($file)) {
-				try {
-					if ((is_object($file) && !empty($file->name))) {
-						$result = array('name' => $file->name);
-						// Rackspace returns the size of a manifested file properly; other OpenStack implementations may not
-						if (!empty($file->bytes)) {
-							$result['size'] = $file->bytes;
-						} else {
-							$size = $this->get_remote_size($file->name);
-							if (false !== $size && $size > 0) $result['size'] = $size;
+			// http://php-opencloud.readthedocs.io/en/latest/services/object-store/objects.html#list-objects-in-a-container
+			while (null !== $marker) {
+
+				$params = array(
+					'prefix' => $match,
+					'limit' => $page_size,
+					'marker' => $marker
+				);
+				
+				$objects = $this->container_object->objectList($params);
+				
+				$total = $objects->count();
+				
+				if (0 == $total) break;
+				
+				$index = 0;
+				
+				while (false !== ($file = $objects->offsetGet($index)) && !empty($file)) {
+					$index++;
+					try {
+						if ((is_object($file) && !empty($file->name))) {
+							$result = array('name' => $file->name);
+							// Rackspace returns the size of a manifested file properly; other OpenStack implementations may not
+							if (!empty($file->bytes)) {
+								$result['size'] = $file->bytes;
+							} else {
+								$size = $this->get_remote_size($file->name);
+								if (false !== $size && $size > 0) $result['size'] = $size;
+							}
+							$results[] = $result;
 						}
-						$results[] = $result;
+					} catch (Exception $e) {
+						// Catch
 					}
-				} catch (Exception $e) {
-					// Catch
+					$marker = (!empty($file->name) && $total >= $page_size) ? $file->name : null;
 				}
-				$index++;
+				
 			}
 		} catch (Exception $e) {
 			// Catch
@@ -319,7 +346,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 			$container = $opts['path'];
 			$path = $container;
 			try {
-				$service = $this->get_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
+				$storage = $this->get_openstack_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
 			} catch (AuthenticationError $e) {
 				$updraftplus->log($this->desc.' authentication failed ('.$e->getMessage().')');
 				$updraftplus->log(sprintf(__('%s authentication failed', 'updraftplus'), $this->desc).' ('.$e->getMessage().')', 'error');
@@ -331,7 +358,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 			}
 			// Get the container
 			try {
-				$container_object = $service->getContainer($container);
+				$container_object = $storage->getContainer($container);
 			} catch (Exception $e) {
 				$updraftplus->log('Could not access '.$this->desc.' container ('.get_class($e).', '.$e->getMessage().')');
 				$updraftplus->log(sprintf(__('Could not access %s container', 'updraftplus'), $this->desc).' ('.get_class($e).', '.$e->getMessage().')', 'error');
@@ -384,7 +411,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		$opts = $this->get_options();
 
 		try {
-			$service = $this->get_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
+			$storage = $this->get_openstack_service($opts, UpdraftPlus_Options::get_updraft_option('updraft_ssl_useservercerts'), UpdraftPlus_Options::get_updraft_option('updraft_ssl_disableverify'));
 		} catch (AuthenticationError $e) {
 			$updraftplus->log($this->desc.' authentication failed ('.$e->getMessage().')');
 			$updraftplus->log(sprintf(__('%s authentication failed', 'updraftplus'), $this->desc).' ('.$e->getMessage().')', 'error');
@@ -400,7 +427,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 
 		// Get the container
 		try {
-			$this->container_object = $service->getContainer($container);
+			$this->container_object = $storage->getContainer($container);
 		} catch (Exception $e) {
 			$updraftplus->log('Could not access '.$this->desc.' container ('.get_class($e).', '.$e->getMessage().')');
 			$updraftplus->log(sprintf(__('Could not access %s container', 'updraftplus'), $this->desc).' ('.get_class($e).', '.$e->getMessage().')', 'error');
@@ -447,7 +474,7 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		}
 
 		try {
-			$service = $this->get_service($opts, $useservercerts, $disableverify);
+			$storage = $this->get_openstack_service($opts, $useservercerts, $disableverify);
 		// @codingStandardsIgnoreLine
 		} catch (Guzzle\Http\Exception\ClientErrorResponseException $e) {
 			$response = $e->getResponse();
@@ -468,14 +495,14 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 		}
 
 		try {
-			$container_object = $service->getContainer($container);
+			$container_object = $storage->getContainer($container);
 		// @codingStandardsIgnoreLine
 		} catch (Guzzle\Http\Exception\ClientErrorResponseException $e) {
 			$response = $e->getResponse();
 			$code = $response->getStatusCode();
 			$reason = $response->getReasonPhrase();
 			if (404 == $code) {
-				$container_object = $service->createContainer($container);
+				$container_object = $storage->createContainer($container);
 			} else {
 				echo __('Authorisation failed (check your credentials)', 'updraftplus')." ($code:$reason)";
 				return;
@@ -515,16 +542,14 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 
 	}
 
-	public function config_print_middlesection() {
-	}
-
 	/**
-	 * This outputs the html to the settings page for the Openstack settings.
+	 * Get the configuration template
+	 *
+	 * @return String - the template, ready for substitutions to be carried out
 	 */
-	public function config_print() {
-
+	public function get_configuration_template() {
+		ob_start();
 		$classes = $this->get_css_classes();
-
 		?>
 		<tr class="<?php echo $classes; ?>">
 			<td></td>
@@ -538,7 +563,6 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 					?>
 				<p><em><?php printf(__('%s is a great choice, because UpdraftPlus supports chunked uploads - no matter how big your site is, UpdraftPlus can upload it a little at a time, and not get thwarted by timeouts.', 'updraftplus'), $this->long_desc);?></em></p></td>
 		</tr>
-
 		<tr class="<?php echo $classes; ?>">
 			<th></th>
 			<td>
@@ -552,10 +576,10 @@ class UpdraftPlus_BackupModule_openstack_base extends UpdraftPlus_BackupModule {
 			?>
 			</td>
 		</tr>
-
 		<?php
-		$this->config_print_middlesection();
-
-		echo $this->get_test_button_html($this->desc);
+		$template_str = ob_get_clean();
+		$template_str .= $this->get_configuration_middlesection_template();
+		$template_str .= $this->get_test_button_html($this->desc);
+		return $template_str;
 	}
 }

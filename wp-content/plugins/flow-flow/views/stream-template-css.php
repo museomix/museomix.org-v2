@@ -8,6 +8,8 @@ $prefix = $stream->layout === 'grid' ? '' : ( $stream->layout === 'masonry' ? 'm
 #ff-stream-<?php echo $id;?> .ff-header h2 { color: <?php echo $stream->subheadingcolor;?>; }
 #ff-stream-<?php echo $id;?> .ff-filter-holder .ff-filter,
 #ff-stream-<?php echo $id;?> .ff-filter-holder:before,
+#ff-stream-<?php echo $id;?> .selectric,
+#ff-stream-<?php echo $id;?> .ff-filter-holder .selectric-ff-filters-select .selectric-items,
 #ff-stream-<?php echo $id;?> .ff-loadmore-wrapper .ff-btn:hover {
 	background-color: <?php echo $stream->filtercolor;?>;
 }
@@ -21,8 +23,16 @@ $prefix = $stream->layout === 'grid' ? '' : ( $stream->layout === 'masonry' ? 'm
 #ff-stream-<?php echo $id;?> .ff-filter-holder .ff-search input {
 	border-color: <?php echo $stream->filtercolor;?>;
 }
+#ff-stream-<?php echo $id;?> .ff-search input:focus,
+#ff-stream-<?php echo $id;?> .ff-search input:hover {
+border-color: <?php echo $stream->headingcolor;?>;
+}
+
 #ff-stream-<?php echo $id;?> .ff-filter-holder .ff-search:after {
 	color: <?php echo $stream->filtercolor;?>;
+}
+#ff-stream-<?php echo $id;?> .selectric .button:before{
+    border-top-color: <?php echo $stream->filtercolor;?>;
 }
 #ff-stream-<?php echo $id;?>, #ff-stream-<?php echo $id;?> .ff-popup,
 #ff-stream-<?php echo $id;?> .ff-search input {
@@ -110,7 +120,6 @@ $prefix = $stream->layout === 'grid' ? '' : ( $stream->layout === 'masonry' ? 'm
 	color: <?php echo $stream->textcolor;?>;
 }
 #ff-stream-<?php echo $id;?> li,
-#ff-stream-<?php echo $id;?>-slideshow li,
 #ff-stream-<?php echo $id;?> .ff-square {
 	background: <?php echo $stream->cardcolor;?>;
 }
@@ -119,9 +128,6 @@ $prefix = $stream->layout === 'grid' ? '' : ( $stream->layout === 'masonry' ? 'm
 }
 #ff-stream-<?php echo $id;?> .ff-style-2 .ff-icon:after {
 	text-shadow: -1px 0 <?php echo $stream->cardcolor;?>, 0 1px <?php echo $stream->cardcolor;?>, 1px 0 <?php echo $stream->cardcolor;?>, 0 -1px <?php echo $stream->cardcolor;?>;
-}
-#ff-stream-<?php echo $id;?> .ff-content a, #ff-stream-<?php echo $id;?>-slideshow  a{
-	color: <?php echo $stream->linkscolor;?>;
 }
 
 #ff-stream-<?php echo $id;?> .ff-item h1, #ff-stream-<?php echo $id;?> .ff-item h4, #ff-stream-<?php echo $id;?>-slideshow h4,#ff-stream-<?php echo $id;?>-slideshow h4 a,
@@ -133,13 +139,9 @@ $prefix = $stream->layout === 'grid' ? '' : ( $stream->layout === 'masonry' ? 'm
 	background-color: <?php echo $stream->namecolor;?>;
 }
 #ff-stream-<?php echo $id;?> .ff-nickname,
-#ff-stream-<?php echo $id;?>-slideshow .ff-nickname,
 #ff-stream-<?php echo $id;?> .ff-timestamp,
 #ff-stream-<?php echo $id;?> .ff-item-bar,
-#ff-stream-<?php echo $id;?> .ff-item-bar a,
-#ff-stream-<?php echo $id;?>-slideshow .ff-item-bar a,
-#ff-stream-<?php echo $id;?>-slideshow .ff-item-bar i,
-#ff-stream-<?php echo $id;?>-slideshow .ff-timestamp {
+#ff-stream-<?php echo $id;?> .ff-item-bar a {
 	color: <?php echo $stream->restcolor;?> !important;
 }
 #ff-stream-<?php echo $id;?>-slideshow .ff-item-meta:before {

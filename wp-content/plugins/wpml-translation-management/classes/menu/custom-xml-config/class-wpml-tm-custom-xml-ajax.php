@@ -6,9 +6,10 @@
 class WPML_TM_Custom_XML_AJAX {
 	const AJAX_ACTION_BASE = 'wpml-tm-custom-xml';
 
-	function __construct( WPML_Custom_XML $custom_xml, WPML_XML_Config_Validate $validate ) {
-		$this->custom_xml = $custom_xml;
-		$this->validate = $validate;
+	function __construct( WPML_Custom_XML $custom_xml, WPML_XML_Config_Validate $validate, $reload_config_callback = null ) {
+		$this->custom_xml             = $custom_xml;
+		$this->validate               = $validate;
+		$this->reload_config_callback = $reload_config_callback;
 	}
 
 	function validate_content() {
@@ -36,6 +37,9 @@ class WPML_TM_Custom_XML_AJAX {
 
 			if ( null !== $content ) {
 				$this->custom_xml->set( $content );
+				if ( $this->reload_config_callback ) {
+					call_user_func( $this->reload_config_callback );
+				}
 				wp_send_json_success( __( 'The XML has been saved.', 'wpml-translation-management' ) );
 			} else {
 				wp_send_json_error( __( 'The XML could not be saved.', 'wpml-translation-management' ) );

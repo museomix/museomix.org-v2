@@ -72,7 +72,6 @@ if (isset($_REQUEST['action'])){
 			break;
 		default:
 			if (strpos($_REQUEST['action'], "backup") !== false) {
-				define('FF_SNAPSHOTS_TABLE_NAME', DB_TABLE_PREFIX . 'ff_snapshots');
 				$snapshotManager = new flow\settings\FFSnapshotManager($context);
 				$snapshotManager->processAjaxRequest();
 			}

@@ -1,5 +1,5 @@
 var ff_templates = {
-    streamRow:      '<td class="controls"><div class="loader-wrapper"><div class="throbber-loader"></div></div><i class="flaticon-pen"></i> <i class="flaticon-copy"></i> <i class="flaticon-trash"></i></td> <td class="td-name"><%= name %></td> <td class="td-type"><%= layout %></span></td> <td class="td-feed"><%= feeds %></td><td><span class="cache-status-<%= status %>"></span></td><td><span class="shortcode">[ff id="<%= id %>"]</span><span class="shortcode-copy">Copy</span></td>',
+    streamRow:      '<td class="controls"><div class="loader-wrapper"><div class="throbber-loader"></div></div><i class="flaticon-tool_edit"></i> <i class="flaticon-tool_clone"></i> <i class="flaticon-tool_delete"></i></td><td><span class="cache-status-<%= status %>"></span></td><td class="td-name"><%= name %></td> <td class="td-type"><%= layout %></span></td> <td class="td-feed"><%= feeds %></td><td><span class="shortcode">[ff id="<%= id %>"]</span></td>',
     streamRowEmpty: '<tr class="empty-row"><td class="empty-cell" colspan="6">Please create at least one stream</td></tr>',
     listRowEmpty: '<tr><td  class="empty-cell" colspan="4">Add at least one feed</td></tr>',
 
@@ -7,7 +7,7 @@ var ff_templates = {
                 <div class="section clearfix" id="stream-name-<%= id %>">\
                     <h1 class="float-left"><%= header %><span class="admin-button grey-button button-go-back">Go back to list</span></h1>\
                     <p class="float-left input-not-obvious"><input type="text" name="stream-<%= id %>-name" placeholder="Type name and hit Enter..."/>\
-                    <ul class="view-tabs float-left"><li class="tab-cursor"></li><li data-tab="source">source</li><li data-tab="general">general</li><%= TVtab %><li data-tab="grid">grid</li><li data-tab="stylings">stylings</li><li data-tab="css">css</li><li data-tab="shortcode">shortcode</li></ul>\
+                    <ul class="view-tabs float-left"><li class="tab-cursor"></li><li data-tab="source">source</li><li data-tab="general">general</li><%= TVtab %><li data-tab="grid">layout</li><li data-tab="stylings">styling</li><li data-tab="css">css</li><li data-tab="shortcode">shortcode</li></ul>\
                 </div>\
                 <div class="section" id="stream-feeds-<%= id %>" data-tab="source">\
                     <input type="hidden" name="stream-<%= id %>-feeds"/>\
@@ -38,7 +38,7 @@ var ff_templates = {
                         </dt>\
                         <dd class="hidden"><input type="text"  name="stream-<%= id %>-posts" value="40" class="short clearcache"/> posts <span class="space"></span><input type="text" class="short clearcache" name="stream-<%= id %>-days"/> days</dd>\
                         <dt>Number of visible items\
-                            <p class="desc">Overall number of items from all connected feeds to show in stream on first load. Button "Show more" will appear if there are more items loaded and cached.</p>\
+                            <p class="desc">Total number of visible posts from all connected feeds. "Show more" button appears if there are more posts loaded and cached.</p>\
                         </dt>\
                         <dd><input type="text"  name="stream-<%= id %>-page-posts" value="20" class="short clearcache"/> posts</dd>\
                         <dt class="multiline" style="display:none">Cache\
@@ -52,7 +52,7 @@ var ff_templates = {
                             <label for="stream-<%= id %>-cache-lifetime"><input id="stream-<%= id %>-cache-lifetime" class="short clearcache" type="text" name="stream-<%= id %>-cache-lifetime" value="10"/> minutes</label>\
                         </dd>\
                         <dt class="multiline">Show lightbox on card click\
-                            <p class="desc">Otherwise click will open original URL.</p></dt>\
+                            <p class="desc">If disabled, click on the post opens original post URL.</p></dt>\
                         <dd>\
                             <label for="stream-<%= id %>-gallery"><input id="stream-<%= id %>-gallery" class="switcher" type="checkbox" checked name="stream-<%= id %>-gallery" value="yep"/><div><div></div></div></label>\
                         </dd>\
@@ -68,11 +68,11 @@ var ff_templates = {
                         <dd>\
                             <label for="stream-<%= id %>-hide-on-mobile"><input id="stream-<%= id %>-hide-on-mobile" class="switcher" type="checkbox" name="stream-<%= id %>-hide-on-mobile" value="yep"/><div><div></div></div></label>\
                         </dd>\
-                        <dt class="multiline">Show only media posts<p class="desc">Will filter cached posts and show only that with media.</p></dt>\
+                        <dt class="multiline">Show only media posts<p class="desc">Display posts with images/video only.</p></dt>\
                         <dd>\
                             <label for="stream-<%= id %>-show-only-media-posts"><input id="stream-<%= id %>-show-only-media-posts" class="switcher" type="checkbox" name="stream-<%= id %>-show-only-media-posts" value="yep"/><div><div></div></div></label>\
                         </dd>\
-                        <dt class="multiline">Titles link<p class="desc">If yes and lightbox is enabled then titles will link to original posts.</p></dt>\
+                        <dt class="multiline">Titles link<p class="desc">Visit original post URL by clicking on post title, even if lightbox is enabled.</p></dt>\
                         <dd>\
                             <label for="stream-<%= id %>-titles"><input id="stream-<%= id %>-titles" class="switcher" type="checkbox" name="stream-<%= id %>-titles" value="yep"/><div><div></div></div></label>\
                         </dd>\
@@ -84,6 +84,10 @@ var ff_templates = {
                         <dd>\
                             <label for="stream-<%= id %>-hidetext"><input id="stream-<%= id %>-hidetext" class="switcher" type="checkbox" name="stream-<%= id %>-hidetext" value="yep"/><div><div></div></div></label>\
                         </dd>\
+                        <dt class="multiline">Max image resolution<p class="desc">Use only for streams with large-sized posts. Not recommended for default stream design.</p></dt>\
+                        <dd>\
+                        <label for="stream-<%= id %>-max-res"><input id="stream-<%= id %>-max-res" class="switcher" type="checkbox" name="stream-<%= id %>-max-res" value="nope"/><div><div></div></div></label>\
+                        </dd>\
                     </dl>\
                     <span id="stream-settings-sbmt-<%= id %>" class="admin-button green-button submit-button">Save Changes</span>\
                 </div>\
@@ -91,35 +95,35 @@ var ff_templates = {
 <div class="section grid-layout-chosen"  data-tab="grid" id="cont-settings-<%= id %>">\
 <div class="design-step-1">\
     <h1 class="desc-following">Stream layout</h1>\
-    <p class="desc">Choose layout to have different set of size and styling options.</p>\
+    <p class="desc">Each layout offers unique design and set of styling options.</p>\
     <div class="choose-wrapper">\
-        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-masonry-<%= id %>" type="radio" value="masonry" checked/><label for="stream-layout-masonry-<%= id %>"><span class="choose-button"><i class="sprite-masonry"></i>Masonry</span><br><span class="desc">This Pinterest-style format will create grid where each card size depends on its content.</span></label>\
-        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-grid-<%= id %>" type="radio" value="grid" /><label for="stream-layout-grid-<%= id %>"><span class="choose-button"><i class="sprite-grid"></i>Grid</span><br><span class="desc">Classic grid with cards of same size. Recommended for posts with similar format.</span></label>\
-        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-justified-<%= id %>" type="radio" value="justified"/><label for="stream-layout-justified-<%= id %>"><span class="choose-button"><i class="sprite-justified"></i>Justified</span><br><span class="desc">Cards width is justified to have the same height. Only for image posts. Content always overlays.</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-masonry-<%= id %>" type="radio" value="masonry" checked/><label for="stream-layout-masonry-<%= id %>"><span class="choose-button"><i class="sprite-masonry"></i>Masonry</span><br><span class="desc">Pinterest-like layout with flexible post height (depending on post content).</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-grid-<%= id %>" type="radio" value="grid" /><label for="stream-layout-grid-<%= id %>"><span class="choose-button"><i class="sprite-grid"></i>Grid</span><br><span class="desc">Classic grid with posts of the same height. Recommended for posts of similar format.</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-justified-<%= id %>" type="radio" value="justified"/><label for="stream-layout-justified-<%= id %>"><span class="choose-button"><i class="sprite-justified"></i>Justified</span><br><span class="desc">One-height posts with fluid adjustable width. Only for image posts. Content always overlays.</span></label>\
         </div>\
     </div>\
     <dl class="section-settings settings-masonry">\
 <dt class="multiline">Gallery mode\
-        <p class="desc">Affects only image posts. Choose if post content overlays post image on mouseover / on touch.</p>\
+        <p class="desc">Affects media posts only. Enable if post content overlays post image on mouseover / on touch.</p>\
     </dt>\
     <dd>\
         <label for="stream-<%= id %>-m-overlay"><input id="stream-<%= id %>-m-overlay" class="switcher" type="checkbox" name="stream-<%= id %>-m-overlay" value="yep"/><div><div></div></div></label>\
     </dd>\
-                    <dt class="multiline">Responsive settings\
-        <p class="desc">Set number of columns you want to show on various screen sizes and space between cards.</p>\
+    <dt class="multiline">Responsive settings\
+        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes.</p>\
     </dt>\
     <dd class="device-list">\
-        <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-m-c-desktop" id="stream-<%= id %>-m-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-desktop" name="stream-<%= id %>-m-s-desktop" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-laptop"></i> <input name="stream-<%= id %>-m-c-laptop" id="stream-<%= id %>-m-c-laptop" type="range" min="1" max="12" step="1" value="4" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-laptop" name="stream-<%= id %>-m-s-laptop" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-tablet rotated"></i> <input name="stream-<%= id %>-m-c-tablet-l" id="stream-<%= id %>-m-c-tablet-l" type="range" min="1" max="12" step="1" value="3" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-tablet-l" name="stream-<%= id %>-m-s-tablet-l" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-tablet"></i> <input name="stream-<%= id %>-m-c-tablet-p" id="stream-<%= id %>-m-c-tablet-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-tablet-p" name="stream-<%= id %>-m-s-tablet-p" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-phone2 rotated"></i> <input name="stream-<%= id %>-m-c-smart-l" id="stream-<%= id %>-m-c-smart-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-smart-l" name="stream-<%= id %>-m-s-smart-l" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-phone2"></i> <input name="stream-<%= id %>-m-c-smart-p" id="stream-<%= id %>-m-c-smart-p" type="range" min="1" max="12" step="1" value="1" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-smart-p" name="stream-<%= id %>-m-s-smart-p" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-m-c-desktop" id="stream-<%= id %>-m-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-desktop" name="stream-<%= id %>-m-s-desktop" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-laptop"></i> <input name="stream-<%= id %>-m-c-laptop" id="stream-<%= id %>-m-c-laptop" type="range" min="1" max="12" step="1" value="4" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-laptop" name="stream-<%= id %>-m-s-laptop" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-tablet rotated"></i> <input name="stream-<%= id %>-m-c-tablet-l" id="stream-<%= id %>-m-c-tablet-l" type="range" min="1" max="12" step="1" value="3" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-tablet-l" name="stream-<%= id %>-m-s-tablet-l" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-tablet"></i> <input name="stream-<%= id %>-m-c-tablet-p" id="stream-<%= id %>-m-c-tablet-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-tablet-p" name="stream-<%= id %>-m-s-tablet-p" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-phone2 rotated"></i> <input name="stream-<%= id %>-m-c-smart-l" id="stream-<%= id %>-m-c-smart-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-smart-l" name="stream-<%= id %>-m-s-smart-l" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-phone2"></i> <input name="stream-<%= id %>-m-c-smart-p" id="stream-<%= id %>-m-c-smart-p" type="range" min="1" max="12" step="1" value="1" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-smart-p" name="stream-<%= id %>-m-s-smart-p" value="0" class="extra-small"> px gaps</div>\
     </dd>\
     </dl>\
     <dl class="section-settings settings-grid">\
     <dt class="multiline">Gallery mode\
-        <p class="desc">Affects only image posts. Choose if post content overlays post image on mouseover / on touch.</p>\
+        <p class="desc">Affects media posts only. Enable if post content overlays post image on mouseover / on touch.</p>\
     </dt>\
     <dd>\
         <label for="stream-<%= id %>-g-overlay"><input id="stream-<%= id %>-g-overlay" class="switcher" type="checkbox" name="stream-<%= id %>-g-overlay" value="yep"/><div><div></div></div></label>\
@@ -143,32 +147,32 @@ var ff_templates = {
         </div>\
     </dd>\
      <dt class="multiline">Responsive settings\
-        <p class="desc">Set number of columns and space between cards you want to show on various sizes. Keep in mind that size depends on container which can have not full width of screen.</p>\
+        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes.</p>\
     </dt>\
     <dd class="device-list">\
-        <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-c-desktop" id="stream-<%= id %>-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-desktop" name="stream-<%= id %>-s-desktop" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-laptop"></i> <input name="stream-<%= id %>-c-laptop" id="stream-<%= id %>-c-laptop" type="range" min="1" max="12" step="1" value="4" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-laptop" name="stream-<%= id %>-s-laptop" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-tablet rotated"></i> <input name="stream-<%= id %>-c-tablet-l" id="stream-<%= id %>-c-tablet-l" type="range" min="1" max="12" step="1" value="3" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-tablet-l" name="stream-<%= id %>-s-tablet-l" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-tablet"></i> <input name="stream-<%= id %>-c-tablet-p" id="stream-<%= id %>-c-tablet-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-tablet-p" name="stream-<%= id %>-s-tablet-p" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-phone2 rotated"></i> <input name="stream-<%= id %>-c-smart-l" id="stream-<%= id %>-c-smart-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-smart-l" name="stream-<%= id %>-s-smart-l" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-phone2"></i> <input name="stream-<%= id %>-c-smart-p" id="stream-<%= id %>-c-smart-p" type="range" min="1" max="12" step="1" value="1" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-smart-p" name="stream-<%= id %>-s-smart-p" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-c-desktop" id="stream-<%= id %>-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-desktop" name="stream-<%= id %>-s-desktop" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-laptop"></i> <input name="stream-<%= id %>-c-laptop" id="stream-<%= id %>-c-laptop" type="range" min="1" max="12" step="1" value="4" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-laptop" name="stream-<%= id %>-s-laptop" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-tablet rotated"></i> <input name="stream-<%= id %>-c-tablet-l" id="stream-<%= id %>-c-tablet-l" type="range" min="1" max="12" step="1" value="3" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-tablet-l" name="stream-<%= id %>-s-tablet-l" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-tablet"></i> <input name="stream-<%= id %>-c-tablet-p" id="stream-<%= id %>-c-tablet-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-tablet-p" name="stream-<%= id %>-s-tablet-p" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-phone2 rotated"></i> <input name="stream-<%= id %>-c-smart-l" id="stream-<%= id %>-c-smart-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-smart-l" name="stream-<%= id %>-s-smart-l" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-phone2"></i> <input name="stream-<%= id %>-c-smart-p" id="stream-<%= id %>-c-smart-p" type="range" min="1" max="12" step="1" value="1" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-smart-p" name="stream-<%= id %>-s-smart-p" value="0" class="extra-small"> px gaps</div>\
     </dd>\
     </dl>\
 <dl class="section-settings settings-justified">\
     <dt class="multiline">Responsive settings\
-        <p class="desc">Set height of row you want to show on various screen sizes and space between cards. Please notice that height can\'t always be precise due to algorythm technical details.</p>\
+        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes.</p>\
     </dt>\
     <dd class="device-list">\
-        <div><i class="flaticon-desktop"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-desktop" name="stream-<%= id %>-j-h-desktop" value="260" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-desktop" name="stream-<%= id %>-j-s-desktop" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-laptop"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-laptop" name="stream-<%= id %>-j-h-laptop" value="240" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-laptop" name="stream-<%= id %>-j-s-laptop" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-tablet rotated"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-tablet-l" name="stream-<%= id %>-j-h-tablet-l" value="220" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-tablet-l" name="stream-<%= id %>-j-s-tablet-l" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-tablet"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-tablet-p" name="stream-<%= id %>-j-h-tablet-p" value="200" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-tablet-p" name="stream-<%= id %>-j-s-tablet-p" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-phone2 rotated"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-smart-l" name="stream-<%= id %>-j-h-smart-l" value="180" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-smart-l" name="stream-<%= id %>-j-s-smart-l" value="0" class="extra-small"> px spacing</div>\
-        <div><i class="flaticon-phone2"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-smart-p" name="stream-<%= id %>-j-h-smart-p" value="160" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-smart-p" name="stream-<%= id %>-j-s-smart-p" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-desktop"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-desktop" name="stream-<%= id %>-j-h-desktop" value="260" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-desktop" name="stream-<%= id %>-j-s-desktop" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-laptop"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-laptop" name="stream-<%= id %>-j-h-laptop" value="240" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-laptop" name="stream-<%= id %>-j-s-laptop" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-tablet rotated"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-tablet-l" name="stream-<%= id %>-j-h-tablet-l" value="220" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-tablet-l" name="stream-<%= id %>-j-s-tablet-l" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-tablet"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-tablet-p" name="stream-<%= id %>-j-h-tablet-p" value="200" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-tablet-p" name="stream-<%= id %>-j-s-tablet-p" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-phone2 rotated"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-smart-l" name="stream-<%= id %>-j-h-smart-l" value="180" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-smart-l" name="stream-<%= id %>-j-s-smart-l" value="0" class="extra-small"> px gaps</div>\
+        <div><i class="flaticon-phone2"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-smart-p" name="stream-<%= id %>-j-h-smart-p" value="160" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-smart-p" name="stream-<%= id %>-j-s-smart-p" value="0" class="extra-small"> px gaps</div>\
     </dd>\
     </dl>\
 <div class="button-wrapper"><span id="stream-layout-sbmt-<%= id %>" class="admin-button green-button submit-button" style="margin-bottom:35px">Save Changes</span></div>\
-<h1>Grid container settings</h1>\
+<h1>Layout Design Settings</h1>\
 <dl class="section-settings section-compact">\
     <dt class="multiline">Stream heading\
         <p class="desc">Leave empty to not show.</p></dt>\
@@ -176,7 +180,7 @@ var ff_templates = {
         <input id="stream-<%= id %>-heading" type="text" name="stream-<%= id %>-heading" placeholder="Enter heading"/>\
     </dd>\
     <dt class="multiline">Heading color\
-        <p class="desc">Click on input to open colorpicker.</p>\
+        <p class="desc"></p>\
     </dt>\
     <dd>\
         <input id="heading-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-headingcolor" type="text" value="rgb(59, 61, 64)" tabindex="-1">\
@@ -186,7 +190,7 @@ var ff_templates = {
             <input id="stream-<%= id %>-subheading" type="text" name="stream-<%= id %>-subheading" placeholder="Enter subheading"/>\
         </dd>\
         <dt class="multiline">Subheading color\
-            <p class="desc">You can also paste color in input.</p>\
+            <p class="desc"></p>\
         </dt>\
         <dd>\
             <input id="subheading-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-subheadingcolor" type="text" value="rgb(114, 112, 114)" tabindex="-1">\
@@ -202,13 +206,13 @@ var ff_templates = {
                 </div>\
             </dd>\
             <dt class="multiline">Container background color\
-                <p class="desc">You can see it in live preview under Stylings.</p>\
+                <p class="desc"></p>\
             </dt>\
             <dd>\
                 <input data-prop="backgroundColor" id="bg-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-bgcolor" type="text" value="rgb(240, 240, 240)" tabindex="-1">\
                 </dd>\
-                <dt class="multiline">Include filters and search in grid\
-                <p class="desc">Toggle filters and search visibility.</p>\
+                <dt class="multiline">SORTING AND SEARCH BAR\
+                <p class="desc"></p>\
                 </dt>\
                 <dd>\
                     <label for="stream-<%= id %>-filter"><input id="stream-<%= id %>-filter" class="switcher" type="checkbox" name="stream-<%= id %>-filter" checked value="yep"/><div><div></div></div></label>\
@@ -218,11 +222,11 @@ var ff_templates = {
                 <dd>\
                     <input id="filter-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-filtercolor" type="text" value="rgb(205, 205, 205)" tabindex="-1">\
                     </dd>\
-                    <dt class="multiline">Slider on mobiles <p class="desc">On mobiles grid will turn into slider with 3 items per slide.</p></dt>\
+                    <dt class="multiline">Slider on mobiles <p class="desc">Stream will turn into a slider with 3 items per slide on mobile devices.</p></dt>\
                     <dd>\
                         <label for="stream-<%= id %>-mobileslider"><input id="stream-<%= id %>-mobileslider" class="switcher" type="checkbox" name="stream-<%= id %>-mobileslider" value="yep"/><div><div></div></div></label>\
                     </dd>\
-                    <dt class="multiline">Animate grid items <p class="desc">When they appear in viewport (otherwise all items are visible immediately).</p></dt>\
+                    <dt class="multiline">Animate stream items <p class="desc">Posts are revealed with animation effect if they appear in viewport. Otherwise all posts are visible immediately.</p></dt>\
                     <dd>\
                         <label for="stream-<%= id %>-viewportin"><input id="stream-<%= id %>-viewportin" class="switcher" type="checkbox" name="stream-<%= id %>-viewportin" checked value="yep"/><div><div></div></div></label>\
                     </dd>\
@@ -254,7 +258,7 @@ var ff_templates = {
             </select>\
         </div>\
     </dd>\
-    <dt><span class="valign">Author picture position & size</span></dt>\
+    <dt><span class="valign">AVATAR STYLE</span></dt>\
     <dd>\
         <div class="select-wrapper">\
             <select name="stream-<%= id %>-upic-pos" id="stream-<%= id %>-upic-pos">\
@@ -265,7 +269,10 @@ var ff_templates = {
             </select>\
         </div>\
     </dd>\
-    <dt><span class="valign">Card corners style</span></dt>\
+    <dt class="multiline">\
+        SHAPE STYLE\
+        <p class="desc">Common setting for avatar shape and card corners.</p>\
+    </dt>\
     <dd>\
         <div class="select-wrapper">\
             <select name="stream-<%= id %>-upic-style" id="stream-<%= id %>-upic-style">\
@@ -285,14 +292,12 @@ var ff_templates = {
             </select>\
         </div>\
     </dd>\
-    <dt class="multiline">Card background color\
-        <p class="desc">Click on field to open colorpicker.</p>\
-    </dt>\
+    <dt><span class="valign">Card background color</span></dt>\
     <dd>\
         <input data-prop="backgroundColor" id="card-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-cardcolor" type="text" value="rgb(255,255,255)" tabindex="-1">\
         </dd>\
-        <dt class="multiline">Color for heading & name\
-            <p class="desc">Also for social buttons hover.</p>\
+        <dt class="multiline">ACCENT COLOR\
+            <p class="desc">Applies to post heading, name and social buttons hover effect.</p>\
         </dt>\
         <dd>\
             <input data-prop="color" id="name-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-namecolor" type="text" value="rgb(59, 61, 64)" tabindex="-1">\
@@ -306,8 +311,8 @@ var ff_templates = {
                 <dd>\
                     <input data-prop="color" id="links-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-linkscolor" type="text" value="rgb(94, 159, 202)" tabindex="-1">\
                     </dd>\
-                    <dt class="multiline">Other text color\
-                        <p class="desc">Nicknames, timestamps.</p></dt>\
+                    <dt class="multiline">SECONDARY COLOR\
+                        <p class="desc">Applies to timestamp and social counters.</p></dt>\
                     <dd>\
                         <input data-prop="color" id="other-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-restcolor" type="text" value="rgb(132, 118, 129)" tabindex="-1">\
                         </dd>\
@@ -329,7 +334,7 @@ var ff_templates = {
                                         </select>\
                                     </div>\
                                 </dd>\
-                                <dt><span class="valign">Icons look & feel</span></dt>\
+                                <dt><span class="valign">COUNTER ICONS STYLE</span></dt>\
                                 <dd class="">\
                                     <div class="select-wrapper">\
                                         <select name="stream-<%= id %>-icons-style" id="icons-style-<%= id %>">\
@@ -393,40 +398,48 @@ var ff_templates = {
 </div>\
 <div class="ff-cell">\
     <h1>USEFUL LINKS</h1>\
-<a href="http://looks-awesome.com/help">Help Center</a><br>\
-<a href="http://looks-awesome.com/">Looks Awesome Site</a><br>\
-<a href="https://twitter.com/looks_awesooome">LA Twitter</a><br>\
-    <a href="https://www.facebook.com/looksawesooome">LA Facebook</a>\
+    <a href="http://go.social-streams.com/help">Help Center</a><br>\
+    <a href="https://social-streams.com/">Social Stream Apps</a><br>\
+    <a href="http://go.social-streams.com/twitter">Twitter</a><br>\
+    <a href="http://go.social-streams.com/facebook">Facebook</a>\
     </div>\
     </div>\
     </div>\
     </div>',
     twitterView:    '\
 <div class="feed-view" data-feed-type="twitter" data-uid="<%= uid %>">\
-<h1>Content settings for Twitter feed</h1>\
+<h1>Twitter feed settings</h1>\
 <dl class="section-settings">\
-<dt>Timeline type </dt>\
+<dt>FEED TYPE </dt>\
 <dd>\
 <input id="<%= uid %>-home-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="home_timeline" checked/>\
 <label for="<%= uid %>-home-timeline-type">Home timeline</label><br><br>\
 <input id="<%= uid %>-user-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="user_timeline" />\
-<label for="<%= uid %>-user-timeline-type">User timeline</label><br><br>\
+<label for="<%= uid %>-user-timeline-type">User feed</label><br><br>\
 <input id="<%= uid %>-search-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="search"/>\
 <label for="<%= uid %>-search-timeline-type">Tweets by search</label><br><br>\
 <input id="<%= uid %>-list-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="list_timeline"/>\
 <label for="<%= uid %>-list-timeline-type">User list</label><br><br>\
 <input id="<%= uid %>-fav-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="favorites"/>\
-<label for="<%= uid %>-fav-timeline-type">User favorites</label><br><br>\
+<label for="<%= uid %>-fav-timeline-type">User\'s likes</label><br><br>\
 </dd>\
-<dt>Content to show</dt>\
-<dd><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-<p class="desc">1. For home timeline enter you own nickname (without @)<br>\
-2. For user timeline enter nickname (without @) of any public Twitter<br>\
-3. For search enter any word or #hashtag (look <a href="https://dev.twitter.com/rest/public/search">here</a> for advanced terms)<br>\
-4. For user list enter username here and list name in field below<br>\
-5. For user favorites enter username\
-</p>\
-</dd>\
+<dt>\
+Content to show\
+<div class="desc hint-block">\
+    <span class="hint-link">\
+        <img src="<%= plugin_url %>/assets/info_icon.svg">\
+    </span>\
+    <div class="hint hint-pro">\
+        <h1>Content to show</h1>\
+        1. <b>Home timeline</b> — enter your own username (without @).<br>\
+        2. <b>User feed</b> — enter username of any public Twitter account (without @).<br>\
+        3. <b>Tweets by search</b> — enter any word or #hashtag. <a href="https://developer.twitter.com/en/docs/api-reference-index" target="_blank">Advanced search terms</a>.<br>\
+        4. <b>User list</b> — enter username here and List name in corresponding field below.<br>\
+        5. <b>User’s likes</b> —  enter username.\
+    </div>\
+</div>\
+</dt>\
+<dd><input type="text" name="<%= uid %>-content"/></dd>\
 <dt>List name</dt>\
 <dd>\
 <input type="text" name="<%= uid %>-list-name" placeholder=""/>\
@@ -516,7 +529,10 @@ var ff_templates = {
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -526,26 +542,33 @@ var ff_templates = {
 ',
     facebookView:   '\
 <div class="feed-view"  data-feed-type="facebook" data-uid="<%= uid %>">\
-<h1>Content settings for Facebook feed</h1>\
+<h1>Facebook feed settings</h1>\
 <dl class="section-settings">\
-<dt>Timeline type </dt>\
+<dt>FEED TYPE </dt>\
 <dd>\
 <input id="<%= uid %>-page-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="page_timeline" checked />\
-<label for="<%= uid %>-page-timeline-type">Facebook public page</label><br><br>\
+<label for="<%= uid %>-page-timeline-type">Page</label><br><br>\
 <input id="<%= uid %>-group-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="group" />\
-<label for="<%= uid %>-group-timeline-type">Public group page</label><br><br>\
+<label for="<%= uid %>-group-timeline-type">Group</label><br><br>\
 <input id="<%= uid %>-album-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="album" />\
-<label for="<%= uid %>-album-timeline-type">Public album</label>\
+<label for="<%= uid %>-album-timeline-type">Album</label>\
 </dd>\
 <dt>\
 Content to show\
+<div class="desc hint-block">\
+    <span class="hint-link">\
+        <img src="<%= plugin_url %>/assets/info_icon.svg">\
+    </span>\
+    <div class="hint hint-pro">\
+        <h1>Content to show</h1>\
+        1. <b>Page</b> — enter nickname of any public page or Page ID.<br>\
+        2. <b>Group</b> — enter Group ID.<br>\
+        3. <b>Album</b> — enter Album ID. <a href="http://docs.social-streams.com/article/50-find-facebook-album-id" target="_blank">What is it?</a> <br><br>\
+        Use <a href="http://lookup-id.com" target="_blank">Find my Facebook ID</a> tool to find your Page ID or Group ID.\
+    </div>\
+</div>\
 </dt>\
-<dd><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-<p class="desc">\
-1. For public Page posts enter nickname of any public page (or ID if it is in page address)<br>\
-2. For public Group enter its ID (use <a target="_blank" href="http://lookup-id.com/">this tool</a>)<br>\
-3. For public Album enter its ID. <a target="_blank" href="http://docs.social-streams.com/article/50-find-facebook-album-id">Where to find?</a>\
-</p></dd>\
+<dd><input type="text" name="<%= uid %>-content"/></dd>\
 <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
@@ -553,7 +576,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -563,36 +589,42 @@ Content to show\
 ',
     vimeoView:      '\
 <div class="feed-view"  data-feed-type="vimeo" data-uid="<%= uid %>">\
-<h1>Content settings for Vimeo feed</h1>\
+<h1>Vimeo feed settings</h1>\
 <dl class="section-settings">\
 <dt>Feed type </dt>\
 <dd>\
 <input id="<%= uid %>-type-videos" type="radio" name="<%= uid %>-timeline-type" value="videos" checked/>\
-<label for="<%= uid %>-type-videos">Own videos</label><br><br>\
+<label for="<%= uid %>-type-videos">User videos</label><br><br>\
 <input id="<%= uid %>-type-likes" type="radio" name="<%= uid %>-timeline-type" value="likes" />\
 <label for="<%= uid %>-type-likes">Liked videos</label><br><br>\
 <input id="<%= uid %>-type-channel" type="radio" name="<%= uid %>-timeline-type" value="channel" />\
-<label for="<%= uid %>-type-channel">Channel videos</label><br><br>\
+<label for="<%= uid %>-type-channel">Channel</label><br><br>\
 <input id="<%= uid %>-type-group" type="radio" name="<%= uid %>-timeline-type" value="group" />\
-<label for="<%= uid %>-type-group">Group videos</label><br><br>\
+<label for="<%= uid %>-type-group">Group</label><br><br>\
 <input id="<%= uid %>-type-album" type="radio" name="<%= uid %>-timeline-type" value="album" />\
-<label for="<%= uid %>-type-album">Album videos</label>\
+<label for="<%= uid %>-type-album">Album</label>\
 </dd>\
 <dt>\
-Content to show\
+    Content to show\
+    <div class="desc hint-block">\
+        <span class="hint-link">\
+            <img src="<%= plugin_url %>/assets/info_icon.svg">\
+        </span>\
+        <div class="hint hint-pro">\
+            <h1>Content to show</h1>\
+            1. <b>User videos</b> — enter nickname of Vimeo user.<br>\
+            2. <b>Liked videos</b> — enter nickname of Vimeo user.<br>\
+            3. <b>Channel</b> — enter nickname of Vimeo channel.<br>\
+            4. <b>Group</b> — enter nickname of Vimeo group.<br>\
+            5. <b>Album</b> — enter nickname of Vimeo album.\
+        </div>\
+    </div>\
 </dt>\
-<dd>\
-<input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-<p class="desc">Enter nickname of Vimeo user/album/channel (only users have <strong>liked</strong> videos feed).</p>\
-</dd>\
+<dd><input type="text" name="<%= uid %>-content"/></dd>\
 <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
-<dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
-</dd>\
-<dt>Moderation enabled</dt>\
+<dt>MODERATE THIS FEED</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -602,14 +634,21 @@ Content to show\
 ',
     googleView:     '\
 <div class="feed-view" data-feed-type="google" data-uid="<%= uid %>">\
-  <h1>Content settings for Google+ feed</h1>\
+  <h1>Google+ feed settings</h1>\
   <dl class="section-settings">\
       <dt>\
-      Content to show\
+        Content to show\
+        <div class="desc hint-block">\
+            <span class="hint-link">\
+                <img src="<%= plugin_url %>/assets/info_icon.svg">\
+            </span>\
+            <div class="hint hint-pro">\
+                <h1>Content to show</h1>\
+                Google username starting with plus or numeric ID of your page.\
+            </div>\
+        </div>\
       </dt>\
-      <dd><input type="text" name="<%= uid %>-content" placeholder="+UserName"/>\
-          <p class="desc">Google username starting with plus or numeric ID of your page.</p>\
-      </dd>\
+      <dd><input type="text" name="<%= uid %>-content" placeholder="+UserName"/></dd>\
       <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
@@ -617,7 +656,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -627,7 +669,7 @@ Content to show\
 ',
     rssView:        '\
   <div class="feed-view"  data-feed-type="rss" data-uid="<%= uid %>">\
-      <h1>Content settings for RSS feed</h1>\
+      <h1>RSS feed settings</h1>\
       <dl class="section-settings">\
           <dt class="">Content to show</dt>\
           <dd class=""><input type="text" name="<%= uid %>-content" placeholder="Enter RSS feed full URL"/></dd>\
@@ -647,11 +689,10 @@ Content to show\
           <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
-<dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
-</dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -661,20 +702,29 @@ Content to show\
 ',
     pinterestView:  '\
   <div class="feed-view" data-feed-type="pinterest" data-uid="<%= uid %>">\
-      <h1>Content settings for Pinterest feed</h1>\
+      <h1>Pinterest feed settings</h1>\
       <dl class="section-settings">\
-          <dt class="">Content to show</dt>\
-          <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-              <p class="desc">e.g. <strong>elainen</strong> (for user feed) or <strong>elainen/cute-animals</strong> (for user board).\
-              </p></dd>\
+          <dt class="">\
+            Content to show\
+            <div class="desc hint-block">\
+                <span class="hint-link">\
+                    <img src="<%= plugin_url %>/assets/info_icon.svg">\
+                </span>\
+                <div class="hint hint-pro">\
+                    <h1>Content to show</h1>\
+                    1. <b>User feed</b> — enter username e.g. <i>elainen</i>.<br>\
+                    2. <b>User board</b> — enter user board slug e.g. <i>elainen/cute-animals</i>.<br>\
+                </div>\
+            </div>\
+          </dt>\
+          <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
               <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
-<dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
-</dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -684,28 +734,36 @@ Content to show\
                       ',
     instagramView:  '\
   <div class="feed-view" data-feed-type="instagram" data-uid="<%= uid %>">\
-      <h1>Content settings for Instagram feed</h1>\
+      <h1>Instagram feed settings</h1>\
       <dl class="section-settings">\
-          <dt>Timeline type</dt>\
+          <dt>FEED TYPE</dt>\
           <dd>\
           <input id="<%= uid %>-user-timeline-type" checked type="radio" name="<%= uid %>-timeline-type" value="user_timeline"/>\
-            <label for="<%= uid %>-user-timeline-type">User</label><br><br>\
+            <label for="<%= uid %>-user-timeline-type">User feed</label><br><br>\
           <input id="<%= uid %>-likes-type"  type="radio" name="<%= uid %>-timeline-type" value="likes"/>\
-            <label for="<%= uid %>-likes-type">Likes timeline</label><br><br>\
+            <label for="<%= uid %>-likes-type">User\'s likes</label><br><br>\
           <input id="<%= uid %>-search-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="tag"/>\
             <label for="<%= uid %>-search-timeline-type">Hashtag</label><br><br>\
           <input id="<%= uid %>-location-type" type="radio" name="<%= uid %>-timeline-type" value="location"/>\
-            <label for="<%= uid %>-location-type">Location</label>\
+            <label for="<%= uid %>-location-type">Location</label><br><br>\
           </dt>\
-          <dt>Content to show</dt>\
+          <dt>\
+            Content to show\
+            <div class="desc hint-block">\
+                <span class="hint-link">\
+                    <img src="<%= plugin_url %>/assets/info_icon.svg">\
+                </span>\
+                <div class="hint hint-pro">\
+                    <h1>Content to show</h1>\
+                    1. <b>User feed</b> — enter nickname of any public Instagram account.<br>\
+                    2. <b>User\'s likes</b> — enter nickname of your own account.<br>\
+                    3. <b>Hashtag</b> — enter one word without #.<br>\
+                    4. <b>Location</b> — enter <a href="http://docs.social-streams.com/article/118-find-instagram-location-id" target="_blank">Location ID</a>.\
+                </div>\
+            </div>\
+          </dt>\
           <dd>\
-              <input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-              <p class="desc">\
-                    1. For user timeline enter nickname of any public Instagram account<br>\
-                    2. For likes timeline enter you own nickname<br>\
-                    3. For photos by hashtag enter one word without #<br>\
-                    4. For photos by location enter location id\
-              </p>\
+              <input type="text" name="<%= uid %>-content"/>\
                       </dd>\
                       <dt>Feed updates frequency</dt>\
 <dd>\
@@ -714,7 +772,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -724,29 +785,38 @@ Content to show\
                                                       ',
     wordpressView:  '\
 <div class="feed-view" data-feed-type="wordpress" data-uid="<%= uid %>">\
-  <h1>Content settings for WordPress feed</h1>\
+  <h1>WordPress feed settings</h1>\
   <dl class="section-settings">\
       <dt>Show latest</dt>\
       <dd>\
           <input id="<%= uid %>-wordpress-posts" type="radio" name="<%= uid %>-wordpress-type" checked value="posts"/> <label for="<%= uid %>-wordpress-posts">Posts</label>\
           <input id="<%= uid %>-wordpress-comments" type="radio" name="<%= uid %>-wordpress-type" value="comments"/> <label for="<%= uid %>-wordpress-comments">Comments</label>\
       </dd>\
-      <dt>Category Name</dt>\
+      <dt>\
+        Category\
+        <p class="desc">Works for posts only. Enter one or multiple categories separated by commas, or leave empty to show all posts.</p>\
+      </dt>\
       <dd>\
           <input type="text" name="<%= uid %>-category-name" placeholder="Category name"/>\
-          <p class="desc">If you choose Posts then you can show specific category,<br> enter category name or names divided by comma or leave empty to show all.</p>\
           </dd>\
-          <dt>Post ID</dt>\
+          <dt>\
+            SPECIFIC POST COMMENTS\
+            <p class="desc">Enter post ID to show comments from a single post.</p>\
+          </dt>\
           <dd>\
               <input type="text" name="<%= uid %>-post-id" placeholder="Post ID"/>\
-              <p class="desc">If you choose Comments then you can show specific post comments,<br> enter post ID.</p>\
               </dd>\
-              <dt>Custom post slug</dt>\
+              <dt>\
+                Custom post slug\
+                <p class="desc">Display only custom posts of specific type.</p>\
+              </dt>\
               <dd>\
                   <input type="text" name="<%= uid %>-slug" placeholder="Custom post slug"/>\
-                  <p class="desc">If you want to show only custom posts of specific type.</p>\
               </dd>\
-              <dt>Shortcodes in post</dt>\
+              <dt>\
+                Shortcodes in post\
+                <p class="desc">! We don’t guarantee compatibility with any shortcodes if you choose expanding option.</p>\
+              </dt>\
               <dd>\
               <input id = "<%= uid %>-strip" type = "radio" name = "<%= uid %>-shortcodes" checked value = "strip" /> <label for="<%= uid %>-strip">Remove shortcodes</label>\
               <input id="<%= uid %>-expand" type="radio" name="<%= uid %>-shortcodes" value="expand"/> <label for="<%= uid %>-expand">Expand shortcodes</label> <br>\
@@ -771,7 +841,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -781,12 +854,12 @@ Content to show\
               ',
     youtubeView:    '\
   <div class="feed-view" data-feed-type="youtube" data-uid="<%= uid %>">\
-      <h1>Content settings for YouTube feed</h1>\
+      <h1>YouTube feed settings</h1>\
       <dl class="section-settings">\
-          <dt>Timeline type</dt>\
+          <dt>FEED TYPE</dt>\
           <dd>\
               <input id="<%= uid %>-user-timeline-type"  type="radio" name="<%= uid %>-timeline-type" value="user_timeline" checked/>\
-              <label for="<%= uid %>-user-timeline-type">User</label><br><br>\
+              <label for="<%= uid %>-user-timeline-type">User feed</label><br><br>\
               <input id="<%= uid %>-channel-type"  type="radio" name="<%= uid %>-timeline-type" value="channel"/>\
               <label for="<%= uid %>-channel-type">Channel</label><br><br>\
                   <input id="<%= uid %>-pl-type"  type="radio" name="<%= uid %>-timeline-type" value="playlist"/>\
@@ -794,15 +867,23 @@ Content to show\
                       <input id="<%= uid %>-search-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="search"/>\
                       <label for="<%= uid %>-search-timeline-type">Search</label>\
                   </dt>\
-                      <dt class="">Content to show</dt>\
-                      <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-                          <p class="desc">\
-                          1. For user feed enter YouTube username with public access eg. <strong>VEVO</strong><br>\
-                          2. For channel enter channel ID<br>\
-                              3. For playlist enter playlist ID<br>\
-                                  4. For search enter any word</p>\
-                              </dd>\
-                              <dt>Playlist reverse order</dt>\
+                      <dt class="">\
+                        Content to show\
+                        <div class="desc hint-block">\
+                            <span class="hint-link">\
+                                <img src="<%= plugin_url %>/assets/info_icon.svg">\
+                            </span>\
+                            <div class="hint hint-pro">\
+                                <h1>Content to show</h1>\
+                                1. <b>User feed</b> — enter YouTube username with public access.<br>\
+                                2. <b>Channel</b> — enter channel ID. <a href="admin-old.jshttps://support.google.com/youtube/answer/3250431?hl=en" target="_blank">What is it?</a><br>\
+                                3. <b>Playlist</b> — enter playlist ID. <a href="http://docs.social-streams.com/article/139-find-youtube-playlist-id" target="_blank">What is it?</a><br>\
+                                4. <b>Search</b> — enter any search query.\
+                            </div>\
+                        </div>\
+                      </dt>\
+                      <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
+                      <dt>Playlist reverse order</dt>\
       <dd>\
           <label for="<%= uid %>-playlist-order">\
               <input id="<%= uid %>-playlist-order" class="switcher" type="checkbox" name="<%= uid %>-playlist-order" value="yep"/> <div><div></div></div>\
@@ -815,7 +896,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -825,9 +909,9 @@ Content to show\
       ',
     vineView:       '\
 <div class="feed-view" data-feed-type="vine" data-uid="<%= uid %>">\
-<h1>Content settings for Vine feed</h1>\
+<h1>Vine feed settings</h1>\
 <dl class="section-settings">\
- <dt>Timeline type</dt>\
+ <dt>FEED TYPE</dt>\
  <dd>\
      <input id="<%= uid %>-user-timeline-type"  type="radio" name="<%= uid %>-timeline-type" value="user_timeline" checked/>\
      <label for="<%= uid %>-user-timeline-type">User</label><br><br>\
@@ -838,7 +922,7 @@ Content to show\
      </dt>\
          <dt class="">Content to show</dt>\
          <dd class="">\
-             <input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
+             <input type="text" name="<%= uid %>-content"/>\
              <p class="desc">\
              1. For user timeline enter Vine account username or ID <a target="_blank" href="http://docs.social-streams.com/article/52-find-vine-id">See instructions</a><br>\
              2. For liked timeline enter Vine account username or ID <a target="_blank" href="http://docs.social-streams.com/article/52-find-vine-id">See instructions</a><br>\
@@ -852,7 +936,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -862,19 +949,20 @@ Content to show\
      ',
     dribbbleView:   '\
      <div class="feed-view" data-feed-type="dribbble" data-uid="<%= uid %>">\
-         <h1>Content settings for Dribbble feed</h1>\
+         <h1>Dribbble feed settings</h1>\
      <dl class="section-settings">\
-         <dt>Timeline type</dt>\
+         <dt>FEED TYPE</dt>\
          <dd>\
              <input id="<%= uid %>-user-timeline-type"  type="radio" name="<%= uid %>-timeline-type" value="user_timeline" checked/>\
-             <label for="<%= uid %>-user-timeline-type">User</label><br><br>\
+             <label for="<%= uid %>-user-timeline-type">User feed</label><br><br>\
              <input id="<%= uid %>-popular-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="liked"/>\
-             <label for="<%= uid %>-popular-timeline-type">Liked by user</label><br><br>\
+             <label for="<%= uid %>-popular-timeline-type">Liked shots</label><br><br>\
              </dt>\
-                 <dt class="">Content to show</dt>\
-                 <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-                     <p class="desc">Enter Dribbble username.</p>\
-                 </dd>\
+                 <dt class="">\
+                    Content to show\
+                    <p class="desc">Enter Dribbble username.</p>\
+                 </dt>\
+                 <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
                  <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
@@ -882,7 +970,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -892,10 +983,13 @@ Content to show\
                                                                                                                  ',
     foursquareView: '\
      <div class="feed-view" data-feed-type="foursquare" data-uid="<%= uid %>">\
-         <h1>Content settings for Foursquare feed</h1>\
+         <h1>Foursquare feed settings</h1>\
          <dl class="section-settings">\
-             <dt class="">Content to show</dt>\
-             <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
+             <dt class="">\
+                LOCATION ID\
+                <p class="desc">http://docs.social-streams.com/article/116-find-foursquare-location-id</p>\
+             </dt>\
+             <dd class=""><input type="text" name="<%= uid %>-content"/>\
                  <p class="desc">Enter venue ID (<a target="_blank" href="http://docs.social-streams.com/article/116-find-foursquare-location-id">Find it in location URL</a> ).</p>\
              </dd>\
              <dt>Content type</dt>\
@@ -914,7 +1008,10 @@ Content to show\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -924,27 +1021,36 @@ Content to show\
                                                                                                                  ',
     flickrView:     '\
      <div class="feed-view" data-feed-type="flickr" data-uid="<%= uid %>">\
-         <h1>Content settings for Flickr feed</h1>\
+         <h1>Flickr feed settings</h1>\
          <dl class="section-settings">\
-             <dt>Timeline type</dt>\
+             <dt>FEED TYPE</dt>\
              <dd>\
                  <input id="<%= uid %>-user_timeline" type="radio" checked name="<%= uid %>-timeline-type" value="user_timeline"/>\
-                 <label for="<%= uid %>-user_timeline">User timeline</label><br><br>\
+                 <label for="<%= uid %>-user_timeline">User Photostream</label><br><br>\
                  <input id="<%= uid %>-tag" type="radio" name="<%= uid %>-timeline-type" value="tag"/>\
                  <label for="<%= uid %>-tag">Tag</label>\
              </dt>\
-                 <dt class="">Content to show</dt>\
-                 <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-                     <p class="desc">1. For user timeline enter Flickr username<br>2. For tag enter word or words divided by comma</p>\
-                     </dd>\
-                     <dt>Feed updates frequency</dt>\
+                 <dt class="">\
+                    Content to show\
+                    <div class="desc hint-block">\
+                        <span class="hint-link">\
+                            <img src="<%= plugin_url %>/assets/info_icon.svg">\
+                        </span>\
+                        <div class="hint hint-pro">\
+                            <h1>Content to show</h1>\
+                            1. <b>User Photostream</b> — enter Flickr username.<br>\
+                            2. <b>Tag</b> — enter one or multiple words separated by commas.<br>\
+                        </div>\
+                    </div>\
+                 </dt>\
+                 <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
+                 <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
-<dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
-</dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -954,12 +1060,21 @@ Content to show\
                                                                                                                              ',
 tumblrView:     '\
      <div class="feed-view" data-feed-type="tumblr" data-uid="<%= uid %>">\
-         <h1>Content settings for Tumblr feed</h1>\
+         <h1>Tumblr feed settings</h1>\
          <dl class="section-settings">\
-             <dt class="">Content to show</dt>\
-             <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-                 <p class="desc">Enter Tumblr username to show images from tlog.</p>\
-             </dd>\
+             <dt class="">\
+                Content to show\
+                <div class="desc hint-block">\
+                    <span class="hint-link">\
+                        <img src="<%= plugin_url %>/assets/info_icon.svg">\
+                    </span>\
+                    <div class="hint hint-pro">\
+                        <h1>Content to show</h1>\
+                        Enter Tumblr username to show images from tlog.\
+                    </div>\
+                </div>\
+             </dt>\
+             <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
              <dt>Rich text</dt>\
              <dd>\
                  <label for="<%= uid %>-rich-text"><input id="<%= uid %>-rich-text" class="switcher" type="checkbox" name="<%= uid %>-rich-text" value="yep"/><div><div></div></div></label>\
@@ -971,7 +1086,10 @@ tumblrView:     '\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -981,10 +1099,13 @@ tumblrView:     '\
  ',
 linkedinView:   '\
      <div class="feed-view" data-feed-type="linkedin" data-uid="<%= uid %>">\
-         <h1>Content settings for LinkedIn feed</h1>\
+         <h1>LinkedIn feed settings</h1>\
          <dl class="section-settings">\
-             <dt class="">Content to show</dt>\
-             <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
+             <dt class="">\
+                COMPANY PAGE ID\
+                <p class="desc"><a href="http://docs.social-streams.com/article/51-find-linkedin-id" target="_blank">What is it?</a></p>\
+            </dt>\
+             <dd class=""><input type="text" name="<%= uid %>-content"/>\
                  <p class="desc">Enter company ID, <a href="http://docs.social-streams.com/article/51-find-linkedin-id" target="_blank">find out where to get</a> if it is not in company page URL.</p>\
              </dd>\
              <dt>Event type</dt>\
@@ -1000,7 +1121,10 @@ linkedinView:   '\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -1010,16 +1134,18 @@ linkedinView:   '\
      ',
 soundcloudView: '\
          <div class="feed-view" data-feed-type="soundcloud" data-uid="<%= uid %>">\
-             <h1>Content settings for SoundCloud feed</h1>\
+             <h1>SoundCloud feed settings</h1>\
              <dl class="section-settings">\
-                 <dt class="">Username</dt>\
-                 <dd class=""><input type="text" name="<%= uid %>-username" placeholder="What content to stream"/>\
-                     <p class="desc">Enter SoundCloud username, eg. <strong>username</strong> in soundcloud.com/<strong>username</strong>/sets/playlist.</p>\
-                 </dd>\
-                 <dt class="">Playlist</dt>\
-                 <dd class=""><input type="text" name="<%= uid %>-content" placeholder="What content to stream"/>\
-                     <p class="desc">Enter playlist ID, eg. <strong>playlist</strong> in soundcloud.com/username/sets/<strong>playlist</strong>.</p>\
-                 </dd>\
+                 <dt class="">\
+                    Username\
+                    <p class="desc">Find username in URL: soundcloud.com/<b>username</b>/sets/playlist.</p> \
+                 </dt>\
+                 <dd class=""><input type="text" name="<%= uid %>-username"/>\</dd>\
+                 <dt class="">\
+                    Playlist\
+                    <p class="desc">Find playlist ID in URL: soundcloud.com/username/sets/<b>playlist</b>.</p>\
+                 </dt>\
+                 <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
                  <dt>Feed updates frequency</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
@@ -1027,7 +1153,10 @@ soundcloudView: '\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
-<dt>Moderation enabled</dt>\
+<dt>\
+    MODERATE THIS FEED\
+    <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
+</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
 </dd>\
@@ -1036,19 +1165,45 @@ soundcloudView: '\
 </div>\
      ',
 filterView:     '\
-         <div class="feed-view" data-filter-uid="<%= uid %>">\
-     <h1>Moderation settings</h1>\
-     <dl class="section-settings">\
- <dt class="">Content to exclude</dt>\
- <dd class=""><input type="text" name="<%= uid %>-filter-by-words" placeholder="What content to exclude"/>\
-     <p class="desc">\
-     1. To exclude posts by word in text enter any word<br>\
-     2. To exclude by URL enter any substring with hash like this <strong>#badpost</strong> or <strong>#1234512345</strong><br>\
-         3. To exclude by nickname enter word like this <strong>@nickname</strong><br>\
-             4. You can enter multiple exclusion rules separated by comma without spaces eg <strong>anyword,@nickname,#URLpart</strong>\
-             </p>\
-         </dd>\
-     </dl>\
+         <div class="feed-view filter-feed" data-filter-uid="<%= uid %>">\
+             <h1>Filter Feed Content</h1>\
+             <dl class="section-settings">\
+                <dt class="">Exclude all</dt>\
+                <dd class="">\
+                    <input type="hidden" data-type="filter-exclude-holder" name="<%= uid %>-filter-by-words"/>\
+                    <input type="text" data-action="add-filter" data-id="<%= uid %>" data-type="exclude" placeholder="Type and hit Enter"/>\
+                    <ul class="filter-labels" data-type="exclude"></ul>\
+                </dd>\
+             </dl>\
+             <dl class="section-settings">\
+                <dt class="">Include all</dt>\
+                <dd class="">\
+                    <input type="hidden" data-type="filter-include-holder" name="<%= uid %>-include"/>\
+                    <input type="text" data-action="add-filter" data-id="<%= uid %>" data-type="include" placeholder="Type and hit Enter"/>\
+                    <ul class="filter-labels" data-type="include"></ul>\
+                </dd>\
+             </dl>\
+             <div class="hint-block">\
+                 <a class="hint-link" href="#" data-action="hint-toggle">How to Filter</a>\
+                 <div class="hint">\
+                    <h1>Hints on Filtering</h1>\
+                    <div class="desc">\
+                        <p>\
+                        1. <strong>Filter by word</strong> — type any word<br>\
+                        </p>\
+                        <p>\
+                        2. <strong>Filter by URL</strong> — enter any substring with hash like this #badpost or #1234512345<br>\
+                        </p>\
+                        <p>\
+                        3. <strong>Filter by account</strong> — type word with @ symbol e.g. @apple<br>\
+                        </p>\
+                        <br>\
+                        <p>\
+                        <a target="_blank" title="Learn more" href="http://docs.social-streams.com/article/71-automatic-moderation-with-filters">Learn more</a>\
+                        </p>\
+                    </div>\
+                </div>\
+            </div>\
      </div>'
 }
 

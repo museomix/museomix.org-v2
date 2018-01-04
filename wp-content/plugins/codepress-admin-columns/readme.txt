@@ -3,8 +3,8 @@ Contributors: codepress, tschutter, davidmosterd, engelen, dungengronovius
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ZDZRSYLQ4Z76J
 Tags: plugins, wordpress, admin, column, columns, custom columns, custom fields, image, dashboard, sortable, filters, posts, media, users, pages, posttypes, manage columns, wp-admin
 Requires at least: 4.5
-Tested up to: 4.8
-Stable tag: 3.0.3
+Tested up to: 4.8.1
+Stable tag: 3.0.5
 
 Customise columns on the administration screens for post(types), pages, media, comments, links and users with an easy to use drag-and-drop interface.
 
@@ -218,6 +218,47 @@ You can find a list of the available actions and filters (and examples on how to
 
 == Changelog ==
 
+= 3.0.5 =
+
+Release Date: November 9th, 2017
+
+* [Added] Events Calendar integration add-on is now available from the add-ons tab
+* [Added] Added before/after fields for ID column
+* [Changed] Changed Ajax value interface
+* [Fixed] Fixed php warning on count() for php 7.2
+* [Improved] Column interface for post relations
+* [Improved] Attachment count column combined with Attachment column
+* [Improved] Pro banner
+* [Improved] Published date shows when a post is not published
+* [Improved] Custom field keys for users are now grouped by site option
+* [Improved] Added the AC_Plugin class as a more DRY approach to asking meta data about a plugin
+* [Improved] Redone the way user preferences are stored. Less records and better compatible with Multisite.
+* [Improved] Added the option to write database updates and apply them on a new version
+* [Improved] Empty character is just a method now instead of getter/setter with a filter
+* [Improved] Added AC_Services class to register services to a column on the fly (DI approach)
+* [Improved] Custom fields for users are now grouped per network site
+
+= 3.0.4 =
+
+Release Date: August 17, 2017
+
+* [Improved] Attachment column: you can now limit the number of items being displayed
+* [Improved] Only apply before/after when the value is not empty
+* [Improved] EXIF Data now have added before and after fields
+* [Improved] Renamed Alt column to Alternative Text
+* [Improved] Renamed Before More Tag column to More Tag
+* [Improved] Renamed Comment Status column to Allow Comments
+* [Improved] Renamed Title without actions column to Title Only
+* [Improved] Available Sizes column for media now has the option to include missing file sizes
+* [Improved] Added Orientation and Keywords to EXIF data column
+* [Improved] Added a tooltip to the actions column
+* [Improved] Date Published column now shows a status icon when the post has not yet been published
+* [Improved] Post Formats column now has the option to show an icons
+* [Improved] Author column can now display the role(s) of the author
+* [Improved] Added many helper methods to ac_helper()
+* [Removed] Removed the "Attached to Post" column. The column has been replaced by the "Uploaded to" column in WordPress 4.0
+* [Fixed] Time difference option in the date column now uses the correct GMT offset
+
 = 3.0.3 =
 
 Release Date: July 26th, 2017
@@ -243,6 +284,7 @@ Release Date: July 3rd, 2017
 Release Date: June 12th, 2017
 
 * [Improved] Clicking the toggle icons in the header of the column settings won't open the column settings anymore
+* [Added] The Last Modified Author and Last Modified Date columns are now available for the Media overview
 * [Improved] Fallback for the autoloader to work with lowercase files
 * [Improved] User Nicename available as an option for User display
 * [Fixed] Media Path now shows correct http protocol
@@ -268,6 +310,7 @@ Release Date: May 3rd, 2017
 * [Added] Filter for enabling a 'clear all columns' button to the setting page. 'ac/settings/enable_clear_columns_button'
 * [Added] New method for singleton for Admin Columns main class. 'ac()'
 * [Fixed] Comment Response column is no longer displayed in the table when viewing "Comments On".
+* [Fixed] Post Roles columns works again
 
 = 2.5.6.4 =
 

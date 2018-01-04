@@ -19,6 +19,7 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 					add_action( 'admin_menu', array( $this, 'admin_menu_start' ) );
 					add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 					add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
+					add_filter( 'updraftplus_com_link', array( $this, 'updraftplus_com_link' ) );
 				}
 				MeowApps_Admin::$loaded = true;
 			}
@@ -40,6 +41,11 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 					add_action( 'admin_notices', array( $this, 'admin_notices_rating' ) );
 				}
 			}
+		}
+
+		function updraftplus_com_link( $url ) {
+			$url = $url . "?afref=460";
+			return $url;
 		}
 
 		function show_meowapps_create_rating_date() {
@@ -77,8 +83,8 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 				return;
 			}
 			$rating_date = get_option( $this->prefix . '_rating_date' );
-			echo '<div class="notice notice-success" data-rating-date="' . $rating_date . '>';
-				echo '<p style="font-size: 120%;">You have been using <b>' . $this->nice_name_from_file( $this->mainfile  ) . '</b> for some time now. If you enjoy it, could you share your thoughts and give the developers a sweet spike of motivation? In that case, please: <a target="_blank" href="https://wordpress.org/support/plugin/' . $this->nice_short_url_from_file( $this->mainfile ) . '/reviews/?rate=5#new-post">review it</a>. Thank you :)';
+			echo '<div class="notice notice-success" data-rating-date="' . date( 'Y-m-d', $rating_date ) . '">';
+				echo '<p style="font-size: 100%;">You have been using <b>' . $this->nice_name_from_file( $this->mainfile  ) . '</b> for some time now. If you enjoy it, could you share your thoughts and give the developers a sweet spike of motivation? In that case, please: <a target="_blank" href="https://wordpress.org/support/plugin/' . $this->nice_short_url_from_file( $this->mainfile ) . '/reviews/?rate=5#new-post">review it</a>. Thank you :)';
 			echo '<p>
 				<form method="post" action="" style="float: right;">
 					<input type="hidden" name="' . $this->prefix . '_never_remind_me" value="true">
@@ -196,7 +202,7 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 			$value = get_option( 'meowapps_hide_ads', null );
 			$html = '<input type="checkbox" id="meowapps_hide_ads" name="meowapps_hide_ads" value="1" ' .
 				checked( 1, get_option( 'meowapps_hide_ads' ), false ) . '/>';
-	    $html .= __( '<label>Hide</label><br /><small>Doesn\'t display the ads.</small>', 'wp-retina-2x' );
+	    $html .= __( '<label>Hide</label><br /><small>Doesn\'t display the ads.</small>', 'meowapps' );
 	    echo $html;
 		}
 
@@ -204,7 +210,7 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 			$value = get_option( 'meowapps_hide_meowapps', null );
 			$html = '<input type="checkbox" id="meowapps_hide_meowapps" name="meowapps_hide_meowapps" value="1" ' .
 				checked( 1, get_option( 'meowapps_hide_meowapps' ), false ) . '/>';
-	    $html .= __( '<label>Hide <b>Meow Apps</b> Menu</label><br /><small>Hide Meow Apps menu and all its components, for a nicer an faster WordPress admin UI. An option will be added in Settings > General to display it again.</small>', 'wp-retina-2x' );
+	    $html .= __( '<label>Hide <b>Meow Apps</b> Menu</label><br /><small>Hide Meow Apps menu and all its components, for a nicer an faster WordPress admin UI. An option will be added in Settings > General to display it again.</small>', 'meowapps' );
 	    echo $html;
 		}
 

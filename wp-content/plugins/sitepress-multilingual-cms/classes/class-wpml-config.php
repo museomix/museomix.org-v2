@@ -340,7 +340,13 @@ class WPML_Config {
 			$custom_xml_config = new WPML_XML_Config_Read_Option( $custom_xml_option, $validate, $transform );
 			$custom_config     = $custom_xml_config->get();
 			if ( $custom_config ) {
-				do_action( 'wpml_parse_custom_config', $custom_config );
+				$config_object = (object) array(
+					'config'             => $custom_config,
+					'type'               => 'wpml-custom-xml',
+					'admin_text_context' => 'wpml-custom-xml',
+				);
+
+				do_action( 'wpml_parse_custom_config', $config_object );
 				return $custom_config;
 			}
 		}

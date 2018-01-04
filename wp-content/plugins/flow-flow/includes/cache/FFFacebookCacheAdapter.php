@@ -13,9 +13,18 @@ if ( ! defined( 'WPINC' ) ) die;
  * @copyright 2014-2016 Looks Awesome
  */
 class FFFacebookCacheAdapter implements LAFacebookCacheManager{
+	private $context;
+	
+	public function __construct(){
+	}
+	
 	/** @var $manager LAFacebookCacheManager */
 	private $manager = null;
 
+	public function setContext($context){
+		$this->context = $context;
+	}
+	
 	public function clean() {
 		$this->get()->clean();
 	}
@@ -37,11 +46,10 @@ class FFFacebookCacheAdapter implements LAFacebookCacheManager{
 	 */
 	private function get(){
 		if ($this->manager == null){
-			global $flow_flow_context;
-			$db = $flow_flow_context['db_manager'];
+			$db = $this->context['db_manager'];
 			$auth = $db->getOption('fb_auth_options', true);
 			$fb_use_own = FFSettingsUtils::YepNope2ClassicStyleSafe($auth, 'facebook_use_own_app', true);
-			$this->manager = $fb_use_own ? new FFFacebookCacheManager($flow_flow_context) : new FFFacebookCacheManager2($flow_flow_context);
+			$this->manager = $fb_use_own ? new FFFacebookCacheManager($this->context) : new FFFacebookCacheManager2($this->context);
 		}
 		return $this->manager;
 	}

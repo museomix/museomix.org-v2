@@ -34,6 +34,13 @@ function wpml_plugins_integration_setup() {
 		$wpml_google_sitemap_generator = new WPML_Google_Sitemap_Generator( $wpdb, $sitepress );
 		$wpml_google_sitemap_generator->init_hooks();
 	}
+
+	if ( defined( 'EP_VERSION' ) ) {
+		$elastic_press_integration = new WPML_Compatibility_ElasticPress(
+			new WPML_Compatibility_ElasticPress_Lang( new WPML_Translation_Element_Factory( $sitepress ), $sitepress )
+		);
+		$elastic_press_integration->register_feature();
+	}
 }
 
 add_action( 'after_setup_theme', 'wpml_themes_integration_setup' );

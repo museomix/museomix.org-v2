@@ -540,7 +540,7 @@ h3 .thank-you {
 	margin: 4px 0;
 }
 
-ul.updraft_premium_description_list {
+ul.updraft_premium_description_list, ul#updraft_restore_warnings {
 	list-style: disc inside;
 }
 
@@ -1710,6 +1710,16 @@ div#updraft-wrap a {
 	cursor: pointer !important;
 }
 
+.updraftcentral_wizard_option {
+	width: 45%;
+	float: left;
+	text-align: center;
+}
+
+.updraftcentral_wizard_option label {
+	margin-bottom: 8px;
+}
+
 #updraftcentral_keys_table {
 	display: none;
 }
@@ -1719,10 +1729,6 @@ div#updraft-wrap a {
 	border-radius: 4px;
 	padding: 0 0 6px 6px;
 	margin-bottom: 8px;
-}
-
-#updraftcentral_keycreate_mothership {
-	margin-left: 24px;
 }
 
 @media screen and (min-width: 670px) {

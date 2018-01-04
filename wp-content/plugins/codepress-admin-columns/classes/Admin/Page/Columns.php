@@ -6,8 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class AC_Admin_Page_Columns extends AC_Admin_Page {
 
-	const OPTION_CURRENT = 'cpac_current_model';
-
 	/**
 	 * @var array
 	 */
@@ -78,14 +76,6 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 		do_action( 'ac/settings/scripts' );
 	}
 
-	public function set_layout_preference( $layout ) {
-		ac_helper()->user->update_meta_site( self::OPTION_CURRENT . '_layout', $layout );
-	}
-
-	public function get_layout_preference() {
-		return ac_helper()->user->get_meta_site( self::OPTION_CURRENT . '_layout', true );
-	}
-
 	private function get_first_list_screen() {
 		$list_screens = AC()->get_list_screens();
 
@@ -102,7 +92,7 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 
 		// Preference
 		if ( ! $key ) {
-			$key = $this->get_list_screen_preference();
+			$key = $this->preferences()->get( 'list_screen' );
 		}
 
 		// First one
@@ -125,7 +115,7 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 			$this->set_original_table_headers( $list_screen );
 		}
 
-		$this->set_list_screen_preference( $list_screen->get_key() );
+		$this->preferences()->set( 'list_screen', $list_screen->get_key() );
 
 		$this->current_list_screen = $list_screen;
 
@@ -339,7 +329,7 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 			if ( 'same-settings' === $result->get_error_code() ) {
 				wp_send_json_error( array(
 						'type'    => 'notice notice-warning',
-						'message' => sprintf( __( 'You are trying to store the same settings for %s.', 'codepress-admin-columns' ), "<strong>" . $this->get_list_screen_message_label( $list_screen ) . "</strong>" ) . ' ' . $view_link
+						'message' => sprintf( __( 'You are trying to store the same settings for %s.', 'codepress-admin-columns' ), "<strong>" . $this->get_list_screen_message_label( $list_screen ) . "</strong>" ) . ' ' . $view_link,
 					)
 				);
 			}
@@ -399,12 +389,8 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 		return $grouped;
 	}
 
-	private function set_list_screen_preference( $list_screen_key ) {
-		ac_helper()->user->update_meta_site( self::OPTION_CURRENT, $list_screen_key );
-	}
-
-	private function get_list_screen_preference() {
-		return ac_helper()->user->get_meta_site( self::OPTION_CURRENT, true );
+	private function preferences() {
+		return new AC_Preferences( 'settings' );
 	}
 
 	/**
@@ -437,6 +423,20 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return int
+	 */
+	private function get_discount_percentage() {
+		return 10;
+	}
+
+	/**
+	 * @return int
+	 */
+	private function get_lowest_pro_price() {
+		return 49;
 	}
 
 	/**
@@ -570,7 +570,7 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 									<?php endif; ?>
 
 									<p class="center">
-										<?php echo ac_helper()->html->link( ac_get_site_utm_url( 'upgrade-to-admin-columns-pro', 'banner' ), sprintf( __( 'Prices starting from %s', 'codepress-admin-columns' ), '$39.20' ), array( 'class' => 'ac-pro-prices' ) ); ?> <sup>$49</sup>
+										<?php echo ac_helper()->html->link( ac_get_site_utm_url( 'upgrade-to-admin-columns-pro', 'banner' ), sprintf( __( 'Prices starting from %s', 'codepress-admin-columns' ), '$' . $this->get_lowest_pro_price() ), array( 'class' => 'ac-pro-prices' ) ); ?>
 									</p>
 									<p class="center nopadding">
 										<?php if ( ! $active_promotion ) : ?>
@@ -592,11 +592,11 @@ class AC_Admin_Page_Columns extends AC_Admin_Page {
 
 								<div class="padding-box ac-pro-newsletter">
 									<h3>
-										<?php echo esc_html( sprintf( __( 'Get %s Off!', 'codepress-admin-columns' ), '20%' ) ); ?>
+										<?php echo esc_html( sprintf( __( 'Get %s Off!', 'codepress-admin-columns' ), $this->get_discount_percentage() . '%' ) ); ?>
 									</h3>
 									<div class="inside">
 										<p>
-											<?php echo esc_html( sprintf( __( "Submit your email and we'll send you a discount for %s off.", 'codepress-admin-columns' ), '20%' ) ); ?>
+											<?php echo esc_html( sprintf( __( "Submit your email and we'll send you a discount for %s off.", 'codepress-admin-columns' ), $this->get_discount_percentage() . '%' ) ); ?>
 										</p>
 										<?php
 										$user_data = get_userdata( get_current_user_id() );

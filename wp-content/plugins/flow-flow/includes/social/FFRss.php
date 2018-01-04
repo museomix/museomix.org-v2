@@ -150,14 +150,16 @@ class FFRss extends FFHttpRequestFeed {
 				$attributes = $imageNode->attributes();
 				if (!is_null($attributes) && isset($attributes->url)){
 					$url = (string) $attributes->url;
-					$url = (string) $attributes->url;
 					if (isset($attributes->height) && isset($attributes->width)){
 						$height = (string) $attributes->height;
 						$width = (string) $attributes->width;
 						$this->image = $this->createImage($url, $width, $height);
+						$this->media = $this->createMedia($url, $width, $height);
 					}
-					else
+					else {
 						$this->image = $this->createImage($url);
+						$this->media = $this->createMedia($url, $this->image['width'], $this->image['height']);
+					}
 					return true;
 				}
 			}

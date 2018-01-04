@@ -244,7 +244,7 @@ abstract class AC_ListScreen {
 	/**
 	 * @param string $layout_id
 	 *
-	 * @return $this
+	 * @return AC_ListScreen
 	 */
 	public function set_layout_id( $layout_id ) {
 		$this->layout_id = $layout_id;
@@ -449,6 +449,17 @@ abstract class AC_ListScreen {
 
 		$this->column_types[ $column->get_type() ] = $column;
 
+		/**
+		 * Fires when a column type is registered to a list screen. Can be used to attach additional
+		 * functionality to a column type, such as exporting, sorting or filtering
+		 *
+		 * @since 3.0.5
+		 *
+		 * @param AC_Column     $column      Column type object
+		 * @param AC_ListScreen $list_screen List screen object to which the column was registered
+		 */
+		do_action( 'ac/list_screen/column_type_registered', $column, $this );
+
 		return true;
 	}
 
@@ -612,6 +623,17 @@ abstract class AC_ListScreen {
 	 */
 	protected function register_column( AC_Column $column ) {
 		$this->columns[ $column->get_name() ] = $column;
+
+		/**
+		 * Fires when a column is registered to a list screen, i.e. when it is created. Can be used
+		 * to attach additional functionality to a column, such as exporting, sorting or filtering
+		 *
+		 * @since 3.0.5
+		 *
+		 * @param AC_Column     $column      Column type object
+		 * @param AC_ListScreen $list_screen List screen object to which the column was registered
+		 */
+		do_action( 'ac/list_screen/column_registered', $column, $this );
 	}
 
 	/**
@@ -818,11 +840,6 @@ abstract class AC_ListScreen {
 		 */
 		$value = apply_filters( 'ac/column/value', $value, $id, $column );
 
-		// Display a toggle box with an ajax callback.
-		if ( $column instanceof AC_Column_AjaxValue && $value !== $column->get_empty_char() ) {
-			$value = ac_helper()->html->toggle_box_ajax( $id, $value, $column->get_name() );
-		}
-
 		return $value;
 	}
 
@@ -837,6 +854,17 @@ abstract class AC_ListScreen {
 		$this->get_list_table()->single_row( $this->get_object_by_id( $object_id ) );
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * get_object_by_id made 'public' for backwards compatibility
+	 *
+	 * @param int $object_id
+	 *
+	 * @return mixed
+	 */
+	public function get_object( $object_id ) {
+		return $this->get_object_by_id( $object_id );
 	}
 
 	/**

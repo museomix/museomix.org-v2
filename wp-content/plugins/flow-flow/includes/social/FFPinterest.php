@@ -84,7 +84,7 @@ class FFPinterest extends FFRss {
 
 	protected function getAdditionalInfo( $item ) {
 		$additional = parent::getAdditionalInfo( $item );
-		$additional['likes']  = (string)@$this->pin->like_count;
+		$additional['likes']  = (string)@$this->pin->board->pin_count;
 		$additional['shares'] = (string)@$this->pin->repin_count;
 		return $additional;
 	}
@@ -122,7 +122,7 @@ class FFPinterest extends FFRss {
         if (sizeof($data['errors']) > 0){
 	        $this->errors[] = array(
 		        'type'    => 'pinterest',
-		        'message' =>  var_dump2str(isset($data['errors']['msg']) ? $data['errors']['msg'] : 'No error message'),
+		        'message' =>  print_r(isset($data['errors']['msg']) ? $data['errors']['msg'] : 'No error message', true),
 		        'url' => $this->additionalUrl
 	        );
         } else {

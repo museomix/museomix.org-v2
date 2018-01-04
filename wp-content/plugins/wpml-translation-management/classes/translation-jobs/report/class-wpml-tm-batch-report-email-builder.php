@@ -51,6 +51,8 @@ class WPML_TM_Batch_Report_Email_Builder {
 				$body       = $this->email_template->render_header( $translator->display_name );
 				$body      .= $render_jobs_list;
 
+				$assigned_jobs  = $this->email_template->get_assigned_jobs();
+
 				$title                = __( 'There %s, which you can take (not specifically assigned to you):', 'wpml-translation-management' );
 				$unassigned_jobs_body = $this->email_template->render_jobs_list(
 					$this->batch_report->get_unassigned_jobs(),
@@ -63,7 +65,6 @@ class WPML_TM_Batch_Report_Email_Builder {
 				}
 
 				$body          .= $this->email_template->render_footer();
-				$assigned_jobs  = $this->email_template->get_assigned_jobs();
 				$email['body']  = $body;
 				$email          = $this->add_attachments( $email, $assigned_jobs );
 				$this->emails[] = array(

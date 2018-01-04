@@ -1,5 +1,6 @@
 <?php namespace flow\social;
 use flow\settings\FFSettingsUtils;
+use la\core\social\LAFeedWithComments;
 use SimpleXMLElement;
 
 if ( ! defined( 'WPINC' ) ) die;
@@ -12,7 +13,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFYoutube extends FFHttpRequestFeed{
+class FFYoutube extends FFHttpRequestFeed implements LAFeedWithComments {
 	private $profile = null;
 	private $profiles = array();
 	private $userlink = null;
@@ -64,7 +65,7 @@ class FFYoutube extends FFHttpRequestFeed{
 					break;
 				case 'search':
 					$this->isSearch = true;
-					$this->url = "https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&q={$content}&type=video&maxResults=50" . $this->apiKeyPart;
+					$this->url = "https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&q={$content}&type=video&order=date&maxResults=50" . $this->apiKeyPart;
 					break;
 			}
 		}
@@ -314,4 +315,61 @@ class FFYoutube extends FFHttpRequestFeed{
 		}
 		return null;
 	}
+	
+	public function getComments($item) {
+		if (is_object($item)){
+			return array();
+		}
+		
+		$objectId = $item;
+        $original = $this->options->original();
+        $accessToken = $original['google_api_key'];
+        $url = "https://www.googleapis.com/youtube/v3/commentThreads?videoId={$objectId}&maxResults={$this->getCount()}&part=snippet&key={$accessToken}";
+        $request = $this->getFeedData($url);
+        $json = json_decode($request['response']);
+
+        if (!is_object($json) || (is_object($json) && sizeof($json->items) == 0)) {
+            if (isset($request['errors']) && is_array($request['errors'])){
+                if (!empty($request['errors'])){
+                    foreach ( $request['errors'] as $error ) {
+                        $error['type'] = 'youtube';
+                        //TODO $this->filterErrorMessage
+                        $this->errors[] = $error;
+                        throw new \Exception();
+                    }
+                }
+            }
+            else {
+                $this->errors[] = array('type'=>'youtube', 'message' => 'Bad request, access token issue. <a href="http://docs.social-streams.com/article/55-400-bad-request" target="_blank">Troubleshooting</a>.', 'url' => $url);
+                throw new \Exception();
+            }
+            return array();
+        }
+        else {
+            if($json->items){
+                // return first 5 comments
+                $data = array_slice($json->items, 0, 5);
+                $result = array();
+                foreach ($data as $item){
+                    $obj = new \stdClass();
+                    $obj->id = $item->snippet->topLevelComment->id;
+                    $obj->from = array(
+                        'id' => $item->snippet->topLevelComment->snippet->authorChannelId->value,
+                        'full_name' => $item->snippet->topLevelComment->snippet->authorDisplayName
+                    );
+                    $obj->text = $item->snippet->topLevelComment->snippet->textDisplay;
+                    $obj->created_time = $item->snippet->topLevelComment->snippet->publishedAt;
+                    $result[] = $obj;
+                }
+                return $result;
+            }else{
+                $this->errors[] = array(
+                    'type' => 'instagram',
+                    'message' => 'User not found',
+                    'url' => $url
+                );
+                throw new \Exception();
+            }
+        }
+    }
 }

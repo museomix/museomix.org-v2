@@ -31,6 +31,24 @@ class WPML_URL_Converter_Parameter_Strategy extends WPML_URL_Converter_Abstract_
 	}
 
 	/**
+	 * @param string $url
+	 * @param string $langauge
+	 *
+	 * @return string
+	 */
+	public function get_home_url_relative( $url, $language ) {
+		if ( $language === $this->default_language ) {
+			$language = '';
+		}
+
+		if ( $language ) {
+			return add_query_arg( 'lang', $language, $url );
+		} else {
+			return $url;
+		}
+	}
+
+	/**
 	 * Replace double ? to &
 	 *
 	 * @param string $url

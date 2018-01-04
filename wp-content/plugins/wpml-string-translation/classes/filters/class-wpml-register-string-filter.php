@@ -151,9 +151,7 @@ class WPML_Register_String_Filter extends WPML_Displayed_String_Filter {
 			// preload all the strings for this domain.
 
 			$query = $this->wpdb->prepare( "SELECT id, value, gettext_context, name FROM {$this->wpdb->prefix}icl_strings WHERE context=%s",
-										   $domain,
-										   $context,
-										   $name );
+										   $domain );
 			$res   = $this->wpdb->get_results( $query );
 			$this->registered_string_cache[ $domain ] = array();
 			

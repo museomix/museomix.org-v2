@@ -93,6 +93,7 @@ class Dropbox_Encrypter
         $cipherText = substr($cipherText, self::IV_SIZE);
     
         if (function_exists('mcrypt_decrypt')) {
+            // @codingStandardsIgnoreLine
             $token = @mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->key, $cipherText, MCRYPT_MODE_CBC, $iv);
         } else {
             global $updraftplus;

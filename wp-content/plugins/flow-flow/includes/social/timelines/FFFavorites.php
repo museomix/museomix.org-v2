@@ -11,19 +11,19 @@ if ( ! defined( 'WPINC' ) ) die;
  */
 class FFFavorites implements FFTimeline{
 	const URL = 'https://api.twitter.com/1.1/favorites/list.json';
-
+	
 	private $screenName;
 	private $count;
-
-	public function init($feed){
-		$this->count = isset($feed->posts) ? $feed->posts : 10;
+	
+	public function init($twitter, $feed){
+		$this->count = $twitter->getCount();
 		$this->screenName = $feed->content;
 	}
-
+	
 	public function getUrl(){
 		return self::URL;
 	}
-
+	
 	public function getField(){
 		$getfield = "?screen_name={$this->screenName}&count={$this->count}&include_entities=true&tweet_mode=extended";
 		return $getfield;

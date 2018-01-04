@@ -16,7 +16,7 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
 <div class="section-content" data-tab="auth-tab">
 	<div class="section" id="auth-settings">
 		<h1 class="desc-following">Twitter auth settings</h1>
-		<p class="desc">Valid for all (public) twitter accounts. You need to authenticate one (and any) twitter account here. <a target="_blank" href="http://docs.social-streams.com/article/48-authenticate-with-twitter">Follow setup guide</a></p>
+		<p class="desc"><a target="_blank" href="http://docs.social-streams.com/article/48-authenticate-with-twitter">Setup guide</a></p>
 		<dl class="section-settings">
 			<dt class="vert-aligned">Consumer Key (API Key)</dt>
 			<dd>
@@ -38,7 +38,7 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
 		<p class="button-wrapper"><span id="tw-auth-settings-sbmt" class='admin-button green-button submit-button'>Save Changes</span></p>
 
 		<h1 class="desc-following" style="min-height: 38px"><span style="vertical-align: middle;line-height: 38px;">Facebook auth settings</span> <span id="facebook-auth" class='admin-button auth-button blue-button'>Authorize</span></h1>
-		<p class="desc">Valid to pull any public FB page. <a target="_blank" href="http://docs.social-streams.com/article/46-authenticate-with-facebook">Follow manual setup guide</a></p>
+		<p class="desc"><a target="_blank" href="http://docs.social-streams.com/article/46-authenticate-with-facebook">Setup guide</a></p>
 		<dl class="section-settings">
 			<dt class="ff-toggler">Use own app</dt>
             <dd class="ff-toggler">
@@ -72,7 +72,7 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
 
 
 		<h1 class="desc-following ">Instagram auth settings <span id="inst-auth" class='admin-button auth-button blue-button'>Authorize</span></h1>
-		<p class="desc">You can use your own token or get token authorizing our app. <a target="_blank" href="http://docs.social-streams.com/article/47-authenticate-with-instagram">Follow manual setup guide</a></p>
+		<p class="desc"><a target="_blank" href="http://docs.social-streams.com/article/47-authenticate-with-instagram">Setup guide</a></p>
         <dl class="section-settings">
 			<dt class="vert-aligned">Access Token</dt>
 			<dd>
@@ -82,7 +82,7 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
 		<p class="button-wrapper"><span id="inst-auth-settings-sbmt" class='admin-button green-button submit-button'>Save Changes</span></p>
 
 		<h1 class="desc-following">Google+ and YouTube auth settings</h1>
-		<p class="desc">Valid to pull any public Google+ and YouTube page feed. <a target="_blank" href="http://docs.social-streams.com/article/49-authenticate-with-google-and-youtube">Follow setup guide</a></p>
+		<p class="desc"><a target="_blank" href="http://docs.social-streams.com/article/49-authenticate-with-google-and-youtube">Setup guide</a></p>
 		<dl class="section-settings">
 			<dt class="vert-aligned">API key</dt>
 			<dd>
@@ -93,7 +93,7 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
 
 
 		<h1 class="desc-following">Foursquare auth settings  <span id="foursquare-auth" class='admin-button auth-button blue-button'>Authorize</span></h1>
-		<p class="desc">Valid to pull any public Foursquare location comments. <a target="_blank" href="http://docs.social-streams.com/article/54-authenticate-with-foursquare">Follow setup guide</a></p>
+		<p class="desc"><a target="_blank" href="http://docs.social-streams.com/article/54-authenticate-with-foursquare">Setup guide</a></p>
 		<dl class="section-settings">
 			<dt class="vert-aligned">Access Token</dt>
 			<dd>
@@ -111,7 +111,7 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
 		<p class="button-wrapper"><span id="fq-auth-settings-sbmt" class='admin-button green-button submit-button'>Save Changes</span></p>
 
 		<h1 class="desc-following">LinkedIn auth settings</h1>
-		<p class="desc">Valid to pull company pages where you are added as admin. <a target="_blank" href="http://docs.social-streams.com/article/53-authenticate-with-linkedin">Follow setup guide</a></p>
+		<p class="desc"><a target="_blank" href="http://docs.social-streams.com/article/53-authenticate-with-linkedin">Setup guide</a></p>
 
 		<dl class="section-settings">
 			<dt class="vert-aligned">Client ID</dt>

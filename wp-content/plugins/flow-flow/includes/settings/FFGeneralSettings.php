@@ -49,18 +49,15 @@ class FFGeneralSettings {
     }
 
     public function useProxyServer(){
-        $value = $this->options["general-settings-disable-proxy-server"];
-        return FFSettingsUtils::notYepNope2ClassicStyle($value, true);
+        return FFSettingsUtils::notYepNope2ClassicStyleSafe($this->options, "general-settings-disable-proxy-server", true);
     }
 
     public function useCurlFollowLocation(){
-        $value = $this->options["general-settings-disable-follow-location"];
-        return FFSettingsUtils::notYepNope2ClassicStyle($value, true);
+    	return FFSettingsUtils::notYepNope2ClassicStyleSafe($this->options, "general-settings-disable-follow-location", true);
     }
 
     public function useIPv4(){
-        $value = $this->options["general-settings-ipv4"];
-        return FFSettingsUtils::YepNope2ClassicStyle($value, true);
+        return FFSettingsUtils::YepNope2ClassicStyleSafe($this->options, "general-settings-ipv4", true);
     }
 
     public function getCountOfPostsByFeed(){
@@ -73,8 +70,7 @@ class FFGeneralSettings {
     }
 
 	public function isSEOMode(){
-		$value = $this->options["general-settings-seo-mode"];
-		return FFSettingsUtils::YepNope2ClassicStyle($value, false);
+		return FFSettingsUtils::YepNope2ClassicStyleSafe($this->options, "general-settings-seo-mode", false);
 	}
 
 	public function canModerate() {

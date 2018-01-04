@@ -29,6 +29,7 @@ class WPML_Slug_Translation {
 		if ( ! empty( $slug_settings['on'] ) ) {
 			add_filter( 'option_rewrite_rules', array( $this, 'rewrite_rules_filter' ), 1, 1 ); // high priority
 			add_filter( 'post_type_link', array( $this, 'post_type_link_filter' ), 1, 4 ); // high priority
+			add_filter( 'edit_post', array( $this, 'clear_post_link_cache'), 1, 2 );
 			add_filter( 'query_vars', array( $this, 'add_cpt_names' ), 1, 2 );
 			add_filter( 'pre_get_posts', array( $this, 'filter_pre_get_posts' ), - 1000, 2 );
 			// Slug translation API
@@ -165,6 +166,10 @@ class WPML_Slug_Translation {
 		}
 
 		return $post_link;
+	}
+
+	public function clear_post_link_cache( $post_ID, $post ) {
+		unset( $this->post_link_cache[ $post_ID ] );
 	}
 
 	private static function get_all_slug_translations() {

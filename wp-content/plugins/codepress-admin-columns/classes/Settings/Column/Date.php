@@ -95,7 +95,7 @@ class AC_Settings_Column_Date extends AC_Settings_Column
 		}
 
 		$custom_label = $this->get_html_label( array(
-				'label'       => __( 'Custom:', 'codepress-admin columns' ),
+				'label'       => __( 'Custom:', 'codepress-admin-columns' ),
 				'description' => sprintf( __( 'Learn more about %s.', 'codepress-admin-columns' ), ac_helper()->html->link( 'http://codex.wordpress.org/Formatting_Date_and_Time', __( 'date and time formatting', 'codepress-admin-columns' ) ), array( 'target' => '_blank' ) ),
 			)
 		);
@@ -175,13 +175,15 @@ class AC_Settings_Column_Date extends AC_Settings_Column
 			return false;
 		}
 
+		$current_time = current_time( 'timestamp' );
+
 		$tpl = __( '%s ago' );
 
-		if ( $timestamp > current_time( 'U' ) ) {
+		if ( $timestamp > $current_time ) {
 			$tpl = __( 'in %s', 'codepress-admin-columns' );
 		}
 
-		return sprintf( $tpl, human_time_diff( $timestamp ) );
+		return sprintf( $tpl, human_time_diff( $timestamp, $current_time ) );
 	}
 
 }

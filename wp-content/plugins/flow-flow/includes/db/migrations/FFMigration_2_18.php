@@ -1,6 +1,6 @@
 <?php namespace flow\db\migrations;
 use flow\db\FFDB;
-use flow\db\FFDBMigration;
+use la\core\db\migrations\ILADBMigration;
 use flow\db\LADBManager;
 use flow\db\SafeMySQL;
 
@@ -10,11 +10,11 @@ if ( ! defined( 'WPINC' ) ) die;
  *
  * @package   FlowFlow
  * @author    Looks Awesome <email@looks-awesome.com>
-
+ *
  * @link      http://looks-awesome.com
  * @copyright 2014-2016 Looks Awesome
  */
-class FFMigration_2_18 implements FFDBMigration {
+class FFMigration_2_18 implements ILADBMigration{
 
 	public function version() {
 		return '2.18';

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.me/mateuszgbiorczyk/
 Tags: acf, acf search, advanced custom fields, better search, search
 Requires at least: 3.6.0
 Tested up to: 4.8.0
-Stable tag: 2.0.7
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,9 @@ This plugin adds to default WordPress search engine the ability to search by con
 
 Everything works automatically, no need to add any additional code.
 
-**New feature:** Now you can search for whole phrases instead of each single word of phrase. As a result, search will be more accurate than before.
+Additionally you can search for whole phrases instead of each single word of phrase. As a result, search will be more accurate than before.
+
+**New feature:** Lite mode available! Now search content on your site may be even faster.
 
 == Installation ==
 
@@ -55,6 +57,10 @@ All versions of Advanced Custom Fields PRO. ACF below version 5 has a different 
 1. Screenshot of the options panel
 
 == Changelog ==
+
+= 2.1.0 =
+* Faster search using lite mode
+* Improve PHP code
 
 = 2.0.7 =
 * Turn off plugin core while searching uploads media items

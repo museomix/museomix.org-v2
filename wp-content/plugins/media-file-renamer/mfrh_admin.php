@@ -9,13 +9,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 		if ( is_admin() ) {
 			add_action( 'admin_menu', array( $this, 'app_menu' ) );
 			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
-			add_filter( 'updraftplus_com_link', array( $this, 'updraftplus_com_link' ) );
 		}
-	}
-
-	function updraftplus_com_link( $url ) {
-		$url = $url . "?afref=460";
-		return $url;
 	}
 
 	function admin_notices() {
@@ -328,7 +322,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 	function admin_on_upload_callback( $args ) {
 		$html = '<input type="checkbox" id="mfrh_on_upload" name="mfrh_on_upload" value="1" ' .
 			checked( 1, get_option( 'mfrh_on_upload', false ), false ) . '/>';
-    $html .= __( '<label>Enable</label><br /><small>During upload, the filename will be renamed based on the title of the media.</small>', 'media-file-renamer' );
+    $html .= __( '<label>Enable</label><br /><small>During upload, the filename will be renamed based on the title of the media if there is any EXIF with the file. Otherwise, it will optimize the upload filename.</small>', 'media-file-renamer' );
     echo $html;
   }
 
@@ -376,7 +370,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
     $value = get_option( 'mfrh_log', null );
 		$html = '<input type="checkbox" id="mfrh_log" name="mfrh_log" value="1" ' .
 			checked( 1, get_option( 'mfrh_log' ), false ) . '/>';
-    $html .= __( '<label>Enabled</label><br/><small>Simple logging that explains which actions has been run. The file is <a target="_blank" href="' . plugins_url("media-file-renamer") . '/media-file-renamer.log">media-file-renamer.log</a>.</small>', 'media-file-renamer' );
+    $html .= __( '<label>Enabled</label><br/><small>Simple logging that explains which actions has been run. The file is <a target="_blank" href="' . plugin_dir_url( __FILE__ ) . 'media-file-renamer.log">media-file-renamer.log</a>.</small>', 'media-file-renamer' );
     echo $html;
   }
 
@@ -384,7 +378,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
     $value = get_option( 'mfrh_logsql', null );
 		$html = '<input ' . disabled( $this->is_registered(), false, false ) . ' type="checkbox" id="mfrh_logsql" name="mfrh_logsql" value="1" ' .
 			checked( 1, get_option( 'mfrh_logsql' ), false ) . '/>';
-    $html .= __( '<label>Enabled</label><br/><small>The files <a target="_blank" href="' . plugins_url( "media-file-renamer" ) . '/mfrh_sql.log">mfrh_sql.log</a> and <a target="_blank" href="' . plugins_url( "media-file-renamer" ) . '/mfrh_sql_revert.log">mfrh_sql_revert.log</a> will be created and they will include the raw SQL queries which were run by the plugin. If there is an issue, the revert file can help you reverting the changes more easily.</small>', 'media-file-renamer' );
+    $html .= __( '<label>Enabled</label><br/><small>The files <a target="_blank" href="' . plugin_dir_url( __FILE__ ) . 'mfrh_sql.log">mfrh_sql.log</a> and <a target="_blank" href="' . plugin_dir_url( __FILE__ ) . 'mfrh_sql_revert.log">mfrh_sql_revert.log</a> will be created and they will include the raw SQL queries which were run by the plugin. If there is an issue, the revert file can help you reverting the changes more easily.</small>', 'media-file-renamer' );
     echo $html;
   }
 
