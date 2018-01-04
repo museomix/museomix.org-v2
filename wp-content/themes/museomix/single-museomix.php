@@ -12,6 +12,7 @@ $edition = get_field('edition');
 /* Menu */
 $items = array();
 $playgrounds = get_field('playground');
+$partners = get_field('sponsor');
 $resume = get_field('resume');
 $gallery = get_field('galerie');
 $local_coordinators = get_field('coordinator_local');
@@ -44,6 +45,12 @@ if ($resume || $gallery):
 	$items[] = array(
 		'text' => __('Feedback', 'museomix'),
 		'url' => get_the_permalink().'#feedback'
+	);
+endif;
+if ($partners):
+	$items[] = array(
+		'text' => __('Partners', 'museomix'),
+		'url' => get_the_permalink().'#partners'
 	);
 endif;
 
@@ -228,7 +235,7 @@ add_subitems_to_menu(__('Location menu','museomix'),0,  $items);
   <?php
   $community_news = $community_museums = false;
 
-  if ($playgrounds || $community_museums || $museum_prototypes):
+  if ($playgrounds || $community_museums || $museum_prototypes ||  $partners):
   ?>
   	<div class="et_pb_section et_section_regular sep_section" id="playgrounds">
 			<?php if ($playgrounds): ?>
@@ -272,6 +279,11 @@ add_subitems_to_menu(__('Location menu','museomix'),0,  $items);
 						</div>
 						<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_center icecubes_title big_titles">
 							<h2 id="location-edition"><?php echo sprintf( __('%1$s edition','museomix'), $edition->post_title); ?></h2>
+							<?php if (!empty(strip_tags(get_the_content()))): ?>
+								<div class="et_pb_text_align_left">
+									<?php the_content(); ?>
+								</div>
+							<?php endif; ?>
 						</div>
 					</div>
 				</div>
@@ -386,6 +398,15 @@ add_subitems_to_menu(__('Location menu','museomix'),0,  $items);
 						<h2 class="yellow_sub_title"><?php _e('Prototypes','museomix'); ?></h2>
 						<div class="columns">
 		          <?php display_news($museum_prototypes); ?>
+		        </div>
+					</div>
+				<?php endif; ?>
+				<?php
+				if ($partners): ?>
+					<div class=" et_pb_row tricolumn_block">
+						<h2 class="yellow_sub_title" name="#partners"><?php _e('Partners','museomix'); ?></h2>
+						<div class="columns">
+		          <?php display_news($partners); ?>
 		        </div>
 					</div>
 				<?php endif; ?>

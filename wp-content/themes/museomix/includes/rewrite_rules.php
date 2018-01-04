@@ -1,9 +1,11 @@
 <?php
-add_action('init', 'custom_rewrite_rules', 0);
+add_action('init', 'custom_rewrite_rules');
 function custom_rewrite_rules() {
-  add_rewrite_rule('^editions/([0-9]+)?/([a-z-0-9]+)$', 'index.php?museomix=$matches[2]', 'top');
-  add_rewrite_rule('^editions/([0-9]+)?$', 'index.php?post_type=museomix&edition_year=$matches[1]', 'top');
-  add_rewrite_rule('^editions/([0-9]+)/([a-z-0-9]+)/prototypes/([a-z-0-9]+)?', 'index.php?post_type=prototype&pagename=$matches[3]', 'top');
+	add_rewrite_tag('%prototype%', '([^&]+)');
+	add_rewrite_rule('editions/([^/]+)/([^/]+)/prototypes/([^/]+)$', 'index.php?prototype=$matches[3]', 'top');
+	add_rewrite_rule('editions/([^/]+)?/([^/]+)?$', 'index.php?museomix=$matches[2]', 'top');
+	add_rewrite_rule('editions/([^/]+)?$', 'index.php?post_type=museomix&edition_year=$matches[1]', 'top'); 
+	
 }
 
 //add_filter( 'template_include', 'portfolio_page_template', 10 );

@@ -1,9 +1,9 @@
 {
-    "key": "group_57266c263ad23",
+    "key": "group_5767b4c08ed7b",
     "title": "Infos LIEUX",
     "fields": [
         {
-            "key": "field_518d559f1d4ae",
+            "key": "field_5767b4c0c8754",
             "label": "infos",
             "name": "",
             "type": "tab",
@@ -19,11 +19,10 @@
             "endpoint": 0
         },
         {
-            "key": "field_51b8324a42811",
-            "label": "langage",
-            "name": "langage",
+            "key": "field_5767b4c0ca699",
+            "label": "Lingua",
+            "name": "Lingua",
             "type": "radio",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -34,21 +33,21 @@
             },
             "choices": {
                 "fr": "Français",
-                "en": "English"
+                "en": "English",
+                "it: Italiano": "it: Italiano"
             },
+            "allow_null": 0,
             "other_choice": 0,
             "save_other_choice": 0,
-            "default_value": "fr",
+            "default_value": "it",
             "layout": "vertical",
-            "allow_null": 0,
             "return_format": "value"
         },
         {
-            "key": "field_516d858ee3c69",
-            "label": "édition",
+            "key": "field_5767b4c0cb6bb",
+            "label": "Edizione",
             "name": "edition",
             "type": "post_object",
-            "value": null,
             "instructions": "edition",
             "required": 1,
             "conditional_logic": 0,
@@ -67,11 +66,10 @@
             "ui": 1
         },
         {
-            "key": "field_516d851664f8e",
-            "label": "pays",
-            "name": "pays",
+            "key": "field_5767b4c0cc157",
+            "label": "Paese",
+            "name": "Paese",
             "type": "text",
-            "value": null,
             "instructions": "country",
             "required": 0,
             "conditional_logic": 0,
@@ -80,21 +78,17 @@
                 "class": "",
                 "id": ""
             },
-            "default_value": "France",
+            "default_value": "Italia",
             "placeholder": "",
             "prepend": "",
             "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
+            "maxlength": ""
         },
         {
-            "key": "field_55906361fb1cd",
-            "label": "Communauté",
+            "key": "field_5767b4c0cc1e0",
+            "label": "Community",
             "name": "community",
             "type": "relationship",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -103,7 +97,6 @@
                 "class": "",
                 "id": ""
             },
-            "return_format": "object",
             "post_type": [
                 "community"
             ],
@@ -111,17 +104,16 @@
             "filters": [
                 "search"
             ],
-            "result_elements": "",
+            "elements": "",
+            "min": "",
             "max": "",
-            "min": 0,
-            "elements": []
+            "return_format": "object"
         },
         {
-            "key": "field_516d845564f8b",
-            "label": "ville",
-            "name": "ville",
+            "key": "field_5767b4c0cc273",
+            "label": "Città",
+            "name": "Città",
             "type": "text",
-            "value": null,
             "instructions": "City",
             "required": 1,
             "conditional_logic": 0,
@@ -134,17 +126,13 @@
             "placeholder": "",
             "prepend": "",
             "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
+            "maxlength": ""
         },
         {
-            "key": "field_516d849b64f8c",
-            "label": "musées",
+            "key": "field_5767b4c0cc315",
+            "label": "Museo",
             "name": "museum",
             "type": "relationship",
-            "value": null,
             "instructions": "museum",
             "required": 0,
             "conditional_logic": 0,
@@ -153,7 +141,6 @@
                 "class": "",
                 "id": ""
             },
-            "return_format": "object",
             "post_type": [
                 "museum"
             ],
@@ -161,18 +148,16 @@
             "filters": [
                 "search"
             ],
+            "elements": "",
+            "min": "",
             "max": "",
-            "min": 0,
-            "elements": [
-                "post_type"
-            ]
+            "return_format": "object"
         },
         {
-            "key": "field_516dafc6f088a",
-            "label": "date de début",
+            "key": "field_5767b4c0cc3a1",
+            "label": "Giorno d'inizio",
             "name": "date_debut",
             "type": "date_picker",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -181,16 +166,15 @@
                 "class": "",
                 "id": ""
             },
-            "first_day": 1,
+            "display_format": "d\/m\/Y",
             "return_format": "Ymd",
-            "display_format": "d\/m\/Y"
+            "first_day": 1
         },
         {
-            "key": "field_516db03a819d2",
-            "label": "date de fin",
+            "key": "field_5767b4c0cc427",
+            "label": "Giorno di fine",
             "name": "date_fin",
             "type": "date_picker",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -199,16 +183,15 @@
                 "class": "",
                 "id": ""
             },
-            "first_day": 1,
+            "display_format": "d\/m\/Y",
             "return_format": "Ymd",
-            "display_format": "d\/m\/Y"
+            "first_day": 1
         },
         {
-            "key": "field_51ad19c428f6b",
-            "label": "date d'exposition",
+            "key": "field_5767b4c0cc4ac",
+            "label": "Giorno di presentazione",
             "name": "date_exposition",
             "type": "date_picker",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -217,122 +200,16 @@
                 "class": "",
                 "id": ""
             },
-            "first_day": 1,
+            "display_format": "d\/m\/Y",
             "return_format": "Ymd",
-            "display_format": "d\/m\/Y"
+            "first_day": 1
         },
         {
-            "key": "field_54593f473494b",
-            "label": "Site web",
+            "key": "field_5767b4c0cc534",
+            "label": "Sito web",
             "name": "website",
             "type": "text",
-            "value": null,
             "instructions": "URL du site, surtout pendant l'évènement",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "formatting": "html",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
-        },
-        {
-            "key": "field_51ad1f3e28f71",
-            "label": "images",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
-            "key": "field_518d4d641d4a9",
-            "label": "image de la bannière",
-            "name": "visuel_page",
-            "type": "image",
-            "value": null,
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "preview_size": "large",
-            "library": "all",
-            "return_format": "id",
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
-            "mime_types": ""
-        },
-        {
-            "key": "field_51ad1f0f28f70",
-            "label": "Image de vignette",
-            "name": "vignette_lieu",
-            "type": "image",
-            "value": null,
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "preview_size": "thumbnail",
-            "library": "all",
-            "return_format": "id",
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
-            "mime_types": ""
-        },
-        {
-            "key": "field_518d53e21d4ab",
-            "label": "Présentation",
-            "name": "",
-            "type": "tab",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "placement": "top",
-            "endpoint": 0
-        },
-        {
-            "key": "field_518d4ce81d4a8",
-            "label": "sous-titre",
-            "name": "sous-titre",
-            "type": "text",
-            "value": null,
-            "instructions": "",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -347,11 +224,109 @@
             "maxlength": ""
         },
         {
-            "key": "field_518d52f61d4aa",
-            "label": "contexte",
+            "key": "field_5767b4c0cc5bc",
+            "label": "Immagini",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5767b4c0cc651",
+            "label": "Banner",
+            "name": "visuel_page",
+            "type": "image",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "preview_size": "large",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
+        },
+        {
+            "key": "field_5767b4c0cc6d7",
+            "label": "Anteprima",
+            "name": "vignette_lieu",
+            "type": "image",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "preview_size": "thumbnail",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
+        },
+        {
+            "key": "field_5767b4c0cc76b",
+            "label": "Presentazione",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5767b4c0cc7f8",
+            "label": "Sottotitolo",
+            "name": "sous-titre",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5767b4c0cc87d",
+            "label": "Contesto",
             "name": "contexte",
             "type": "textarea",
-            "value": null,
             "instructions": "Please explain why your location is great to be museomixed. This can include the general context of the museum(s), current problematics that need to be treated, etc. (HTML authorized)",
             "required": 0,
             "conditional_logic": 0,
@@ -364,16 +339,13 @@
             "placeholder": "",
             "maxlength": "",
             "rows": "",
-            "new_lines": "",
-            "readonly": 0,
-            "disabled": 0
+            "new_lines": ""
         },
         {
-            "key": "field_526f83e36d18b",
-            "label": "zone de contenu facultatif",
+            "key": "field_5767b4c0cc903",
+            "label": "Testo facoltativo",
             "name": "other_content",
             "type": "wysiwyg",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -383,17 +355,16 @@
                 "id": ""
             },
             "default_value": "",
+            "tabs": "all",
             "toolbar": "full",
             "media_upload": 1,
-            "tabs": "all",
             "delay": 0
         },
         {
-            "key": "field_574df5c711c7f",
-            "label": "Terrains de jeux",
+            "key": "field_5767b4c0cc991",
+            "label": "Terreni di gioco",
             "name": "playground",
             "type": "repeater",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -409,11 +380,10 @@
             "button_label": "Ajouter un terrain",
             "sub_fields": [
                 {
-                    "key": "field_574df5fd11c80",
+                    "key": "field_5767b4c191c9a",
                     "label": "Titre",
                     "name": "title",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -431,11 +401,10 @@
                     "disabled": 0
                 },
                 {
-                    "key": "field_574df61311c81",
+                    "key": "field_5767b4c191d25",
                     "label": "Description",
                     "name": "description",
                     "type": "textarea",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -447,33 +416,15 @@
                     "default_value": "",
                     "placeholder": "",
                     "maxlength": "",
-                    "rows": "",
-                    "new_lines": "wpautop"
-                },
-                {
-                    "key": "field_58ee26040b24c",
-                    "label": "Problématiques",
-                    "name": "problems",
-                    "type": "wysiwyg",
-                    "value": null,
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "default_value": "",
-                    "tabs": "all",
-                    "toolbar": "full",
-                    "media_upload": 1,
-                    "delay": 0
+                    "rows": 4,
+                    "new_lines": "br",
+                    "readonly": 0,
+                    "disabled": 0
                 }
             ]
         },
         {
-            "key": "field_518d54c71d4ac",
+            "key": "field_5767b4c0cca1f",
             "label": "actualités",
             "name": "",
             "type": "tab",
@@ -489,11 +440,10 @@
             "endpoint": 0
         },
         {
-            "key": "field_5367fdc381030",
+            "key": "field_5767b4c0ccaa7",
             "label": "catégories d'actualités",
             "name": "categorie_blog",
             "type": "taxonomy",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -513,11 +463,10 @@
             "save_terms": 0
         },
         {
-            "key": "field_518d56e61d4b0",
+            "key": "field_5767b4c0ccb2a",
             "label": "suivez-nous sur le web",
             "name": "medias_sociaux",
             "type": "repeater",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -535,11 +484,10 @@
             "collapsed": "",
             "sub_fields": [
                 {
-                    "key": "field_51cb290141e5e",
+                    "key": "field_5767b4c1bf2a6",
                     "label": "réseau",
                     "name": "reseau",
                     "type": "select",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -571,11 +519,10 @@
                     "return_format": "value"
                 },
                 {
-                    "key": "field_51ad1abf28f6c",
+                    "key": "field_5767b4c1bf336",
                     "label": "lien",
                     "name": "link_title",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -594,11 +541,10 @@
                     "disabled": 0
                 },
                 {
-                    "key": "field_51ad1b4028f6d",
+                    "key": "field_5767b4c1bf3b6",
                     "label": "URL",
                     "name": "url",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -619,8 +565,8 @@
             ]
         },
         {
-            "key": "field_518d55261d4ad",
-            "label": "l'équipe",
+            "key": "field_5767b4c0ccbb0",
+            "label": "Il team",
             "name": "",
             "type": "tab",
             "instructions": "",
@@ -635,11 +581,10 @@
             "endpoint": 0
         },
         {
-            "key": "field_51b8c5e5ad111",
-            "label": "Co-ordinateurs locaux",
+            "key": "field_5767b4c0ccc3b",
+            "label": "Coordinatori locali",
             "name": "coordinator_local",
             "type": "repeater",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -648,20 +593,17 @@
                 "class": "",
                 "id": ""
             },
-            "row_min": "",
-            "row_limit": "",
-            "layout": "table",
-            "button_label": "Ajouter",
+            "collapsed": "",
             "min": 0,
             "max": 0,
-            "collapsed": "",
+            "layout": "table",
+            "button_label": "Ajouter",
             "sub_fields": [
                 {
-                    "key": "field_51b8c61bad112",
-                    "label": "Prénom",
-                    "name": "prenom",
+                    "key": "field_5767b4c20b019",
+                    "label": "Nome",
+                    "name": "nome",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -674,17 +616,13 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "formatting": "none",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
-                    "key": "field_51b8c628ad113",
-                    "label": "Nom de famille",
+                    "key": "field_5767b4c20b0a6",
+                    "label": "Cognome",
                     "name": "nom_de_famille",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -697,17 +635,13 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "formatting": "none",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
-                    "key": "field_51b8eba3d23a1",
+                    "key": "field_5767b4c20b12b",
                     "label": "Descriptif",
                     "name": "descriptif",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -726,11 +660,10 @@
                     "disabled": 0
                 },
                 {
-                    "key": "field_51b8c64ead115",
-                    "label": "Compte twitter",
+                    "key": "field_5767b4c20b1b1",
+                    "label": "Profilo Twitter",
                     "name": "compte_twitter",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -743,17 +676,13 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "formatting": "none",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
-                    "key": "field_51b8c639ad114",
+                    "key": "field_5767b4c20b236",
                     "label": "Email",
                     "name": "email",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -770,40 +699,14 @@
                     "maxlength": "",
                     "readonly": 0,
                     "disabled": 0
-                },
-                {
-                    "key": "field_58ef844fb5500",
-                    "label": "Photo",
-                    "name": "photo",
-                    "type": "image",
-                    "value": null,
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "id",
-                    "preview_size": "thumbnail",
-                    "library": "all",
-                    "min_width": "",
-                    "min_height": "",
-                    "min_size": "",
-                    "max_width": "",
-                    "max_height": "",
-                    "max_size": "",
-                    "mime_types": ""
                 }
             ]
         },
         {
-            "key": "field_518d55ec1d4af",
-            "label": "Référents",
+            "key": "field_5767b4c0cccc8",
+            "label": "Referenti",
             "name": "co-organisateurs",
             "type": "repeater",
-            "value": null,
             "instructions": "Please list your co-organizers. You may use HTML to include formatting and links.",
             "required": 0,
             "conditional_logic": 0,
@@ -812,20 +715,17 @@
                 "class": "",
                 "id": ""
             },
-            "row_min": "",
-            "row_limit": "",
-            "layout": "table",
-            "button_label": "Ajouter",
+            "collapsed": "",
             "min": 0,
             "max": 0,
-            "collapsed": "",
+            "layout": "table",
+            "button_label": "Ajouter",
             "sub_fields": [
                 {
-                    "key": "field_518e969ebf62d",
-                    "label": "Prénom",
+                    "key": "field_5767b4c267cf6",
+                    "label": "Nome",
                     "name": "prenom",
                     "type": "text",
-                    "value": null,
                     "instructions": "first name",
                     "required": 0,
                     "conditional_logic": 0,
@@ -838,17 +738,13 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "formatting": "none",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
-                    "key": "field_518e96e2bf62e",
-                    "label": "Nom de famille",
+                    "key": "field_5767b4c268971",
+                    "label": "Cognome",
                     "name": "nom_de_famille",
                     "type": "text",
-                    "value": null,
                     "instructions": "name",
                     "required": 0,
                     "conditional_logic": 0,
@@ -861,17 +757,13 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "formatting": "none",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
-                    "key": "field_51b8ea415e66b",
+                    "key": "field_5767b4c2689fa",
                     "label": "Descriptif",
                     "name": "descriptif",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -890,11 +782,10 @@
                     "disabled": 0
                 },
                 {
-                    "key": "field_51b8ea555e66c",
-                    "label": "Compte Twitter",
+                    "key": "field_5767b4c268b68",
+                    "label": "Profilo Twitter",
                     "name": "compte_twitter",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -907,17 +798,13 @@
                     "placeholder": "",
                     "prepend": "",
                     "append": "",
-                    "formatting": "none",
-                    "maxlength": "",
-                    "readonly": 0,
-                    "disabled": 0
+                    "maxlength": ""
                 },
                 {
-                    "key": "field_51b8ebc8d23a2",
+                    "key": "field_5767b4c268c84",
                     "label": "Email",
                     "name": "email",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -936,11 +823,10 @@
                     "disabled": 0
                 },
                 {
-                    "key": "field_51b8e8e3f096c",
+                    "key": "field_5767b4c268d10",
                     "label": "Link title",
                     "name": "link_title",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -959,11 +845,10 @@
                     "disabled": 0
                 },
                 {
-                    "key": "field_51b8e8eff096d",
+                    "key": "field_5767b4c268e67",
                     "label": "URL",
                     "name": "url",
                     "type": "text",
-                    "value": null,
                     "instructions": "",
                     "required": 0,
                     "conditional_logic": 0,
@@ -980,37 +865,12 @@
                     "maxlength": "",
                     "readonly": 0,
                     "disabled": 0
-                },
-                {
-                    "key": "field_58ef845eb5501",
-                    "label": "Photo",
-                    "name": "photo",
-                    "type": "image",
-                    "value": null,
-                    "instructions": "",
-                    "required": 0,
-                    "conditional_logic": 0,
-                    "wrapper": {
-                        "width": "",
-                        "class": "",
-                        "id": ""
-                    },
-                    "return_format": "array",
-                    "preview_size": "thumbnail",
-                    "library": "all",
-                    "min_width": "",
-                    "min_height": "",
-                    "min_size": "",
-                    "max_width": "",
-                    "max_height": "",
-                    "max_size": "",
-                    "mime_types": ""
                 }
             ]
         },
         {
-            "key": "field_51ad1d8928f6e",
-            "label": "partenaires",
+            "key": "field_5767b4c0ccd4b",
+            "label": "Partner",
             "name": "",
             "type": "tab",
             "instructions": "",
@@ -1025,11 +885,10 @@
             "endpoint": 0
         },
         {
-            "key": "field_516e4dcc232d9",
-            "label": "partenaires",
+            "key": "field_5767b4c0ccdd0",
+            "label": "Sponsor",
             "name": "sponsor",
             "type": "relationship",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1038,7 +897,6 @@
                 "class": "",
                 "id": ""
             },
-            "return_format": "object",
             "post_type": [
                 "sponsor"
             ],
@@ -1046,15 +904,14 @@
             "filters": [
                 "search"
             ],
+            "elements": "",
+            "min": "",
             "max": "",
-            "min": 0,
-            "elements": [
-                "post_type"
-            ]
+            "return_format": "object"
         },
         {
-            "key": "field_51bdcc58d3515",
-            "label": "Retour sur l'évènement",
+            "key": "field_5767b4c0cce5a",
+            "label": "Gallery",
             "name": "",
             "type": "tab",
             "instructions": "",
@@ -1069,31 +926,10 @@
             "endpoint": 0
         },
         {
-            "key": "field_58ef9ac1186fd",
-            "label": "Résume",
-            "name": "resume",
-            "type": "wysiwyg",
-            "value": null,
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "tabs": "all",
-            "toolbar": "full",
-            "media_upload": 1,
-            "delay": 0
-        },
-        {
-            "key": "field_51bdcc71d3516",
-            "label": "galerie",
+            "key": "field_5767b4c0ccee7",
+            "label": "Gallery",
             "name": "galerie",
             "type": "gallery",
-            "value": null,
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1102,18 +938,17 @@
                 "class": "",
                 "id": ""
             },
-            "preview_size": "thumbnail",
+            "min": "",
+            "max": "",
+            "insert": "append",
             "library": "all",
-            "min": 0,
-            "max": 0,
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
-            "mime_types": "",
-            "insert": "append"
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
         }
     ],
     "location": [
@@ -1146,5 +981,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1510075541
+    "modified": 1513414388
 }

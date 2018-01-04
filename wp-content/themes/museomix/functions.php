@@ -41,9 +41,11 @@ require_once(dirname(__FILE__).'/includes/menus.php');
 require_once(dirname(__FILE__).'/includes/permalinks.php');
 require_once(dirname(__FILE__).'/includes/locations.php');
 require_once(dirname(__FILE__).'/includes/taxonomies.php');
+require_once(dirname(__FILE__).'/includes/shortcodes.php');
 
 add_image_size('community_image', 528,297, true);
 add_image_size('news_thumbnail', 346,200, true);
+add_image_size('sponsor_thumbnail', 346,200);
 add_image_size('museum_picture', 276, 418, true);
 add_image_size('hexa_image', 94, 94, true);
 if( function_exists('acf_add_options_page') ) {
@@ -142,3 +144,8 @@ function my_facetwp_pager_html( $output, $params ) {
 }
 
 add_filter( 'facetwp_pager_html', 'my_facetwp_pager_html', 10, 2 );
+
+function mysite_opengraph_content($val) {
+    return preg_replace("/<img[^>]+\>/i", "", $val); 
+ }
+add_filter('wpseo_pre_analysis_post_content', 'mysite_opengraph_content');

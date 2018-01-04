@@ -2,7 +2,7 @@
 /* bloc 'get involved'
    =================== */
 
-add_shortcode( 'getinvolved', 'BlocGetInvolved' );
+// add_shortcode( 'getinvolved', 'BlocGetInvolved' );
 function BlocGetInvolved($langage){
 	$bloc = ($langage=="en") ? get_field( 'infos_config',111 ) : $bloc = get_field( 'infos_config',718 );
 	
@@ -12,7 +12,7 @@ function BlocGetInvolved($langage){
 
 /* Raccourci 'section'
    =================== */
-add_shortcode( 'section', 'SectionDePage' );
+// add_shortcode( 'section', 'SectionDePage' );
 function SectionDePage($atts){
 	global $SectionsPage;
 
@@ -42,7 +42,7 @@ function SectionDePage($atts){
 
 /* Liste des médias-sociaux associés ¨¤ une page
    ====================== */
-add_shortcode( 'social', 'DisplaySocialMedia' );
+// add_shortcode( 'social', 'DisplaySocialMedia' );
 function DisplaySocialMedia() {
 	$r = '';
 	$rows = get_field('medias_sociaux');
@@ -62,8 +62,27 @@ function DisplaySocialMedia() {
 
 /* Raccourci 'liste lieux'
    ====================== */
+add_shortcode( 'locations-list', 'ListeLieux' );
 add_shortcode( 'liste-lieux', 'ListeLieux' );
-function ListeLieux($atts){
+function ListeLieux($atts) {
+	extract(shortcode_atts(array(
+		'edition' => '',
+		'show_local_website' => '',
+		'elements_number' => -1
+	), $atts));
+	
+	$editions_ids = wp_list_pluck(get_posts(array('s' => $edition, 'post_type' => 'edition', 'posts_per_page' => -1)), 'ID');
+	$args = array('post_type'=>'museomix', 'order' => 'asc', 'orderby' => 'title', 
+		'meta_key' => 'edition',
+		'meta_value' => $editions_ids,
+		'meta_compare' => 'IN',
+		'posts_per_page' => $elements_number
+	);
+	$lieux = get_posts($args);
+	if(!count($lieux)){ return ''; }
+	return display_news($lieux, null, false);
+}
+function ListeLieuxOld($atts){
 	global $SectionsPage;
 	extract(shortcode_atts(array(
 		'edition' => '',
@@ -100,7 +119,7 @@ function ListeLieux($atts){
 
 /* Flux live
    ====================== */
-add_shortcode( 'live', 'ListeLive' );
+// add_shortcode( 'live', 'ListeLive' );
 function ListeLive($atts){
 
 	/* */
@@ -143,7 +162,7 @@ function ListeLive($atts){
 
 /* Raccourci 'liste prototypes'
    ====================== */
-add_shortcode( 'protos', 'ListePrototypes' );
+// add_shortcode( 'protos', 'ListePrototypes' );
 function ListePrototypes($atts){
 	$r = '';
 	global $post;
@@ -198,7 +217,7 @@ function ListePrototypes($atts){
 
 /* Raccourci 'formulaire Google'
    ============================ */
-add_shortcode( 'FORMULAIRE-GOOGLE', 'FormulaireGoogle' );
+// add_shortcode( 'FORMULAIRE-GOOGLE', 'FormulaireGoogle' );
 function FormulaireGoogle($atts){
 	global $SectionsPage;
 	extract(shortcode_atts(array(
@@ -222,7 +241,7 @@ function FormulaireGoogle($atts){
 
 /* Raccourci 'formulaire Google'
    ============================ */
-add_shortcode( 'TABLEUR-GOOGLE', 'TableurGoogle' );
+// add_shortcode( 'TABLEUR-GOOGLE', 'TableurGoogle' );
 function TableurGoogle($atts){
 	global $SectionsPage;
 	extract(shortcode_atts(array(
@@ -237,7 +256,7 @@ function TableurGoogle($atts){
 
 /* Shortcode partenaires liste
    ==================================== */
-add_shortcode( 'partners-list', 'ListePartners' );
+// add_shortcode( 'partners-list', 'ListePartners' );
 function ListePartners($atts){
 	extract(shortcode_atts(array(
 		'level' => false,
@@ -339,7 +358,7 @@ endif;
 
 /* Raccourci 'liste lieux'
    ====================== */
-add_shortcode( 'communities', 'shortcodeCommunities' );
+// add_shortcode( 'communities', 'shortcodeCommunities' );
 function shortcodeCommunities($atts){
 	extract(shortcode_atts(array(
 		'including' => '',

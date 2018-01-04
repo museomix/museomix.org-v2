@@ -22,5 +22,15 @@ ul.et_pb_communities_list li.et_pb_community span a {
     padding: 2px 5px;
 }
 .single-community .tricolumn_block .post_type-museomix {
-	min-height:360px;
+	/* min-height:360px; */
+}
+.et_pb_column.post_type-museomix {
+	float: none;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.et_pb_column.post_type-museomix .news_image .size-news_thumbnail{
+	height:200px;
+	width:346px;
 }

@@ -1,13 +1,13 @@
 {
-    "key": "group_57266c27979f3",
+    "key": "group_59f9a19d2a3e5",
     "title": "Infos PROTOTYPE",
     "fields": [
         {
-            "key": "field_518e56b1bcde8",
-            "label": "Image de la bannière",
+            "key": "field_59f9a19d86229",
+            "label": "Banner image",
             "name": "visuel_page",
             "type": "image",
-            "instructions": "Grande image de votre prototype (idéalement 2000x400 px). Elle apparaitra en haut de la page prototype.",
+            "instructions": "Adds a large image to your prototype. It should be 2000 x 400 pixels ideally. This will display at the very top of your page.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -15,23 +15,23 @@
                 "class": "",
                 "id": ""
             },
+            "return_format": "id",
             "preview_size": "full",
             "library": "all",
-            "return_format": "id",
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
             "mime_types": ""
         },
         {
-            "key": "field_518e3a794d7f7",
-            "label": "sous-titre",
+            "key": "field_59f9a19d86295",
+            "label": "Sub-title",
             "name": "sous-titre",
             "type": "text",
-            "instructions": "Présentation en peu de mots du prototype et de la problématique à laquelle il répond. Ne rentrez que du texte (pas d’image).",
+            "instructions": "This should, in as few words as possible, quickly and simply define the prototype and problem it is trying to solve. This is text only and cannot contain images.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -43,17 +43,14 @@
             "placeholder": "",
             "prepend": "",
             "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
+            "maxlength": ""
         },
         {
-            "key": "field_5258566b914ce",
-            "label": "résumé du projet",
+            "key": "field_59f9a19d86300",
+            "label": "Project Summary",
             "name": "resume_du_projet",
             "type": "text",
-            "instructions": "Description d’environ 120 mots de votre projet. Si le titre est le nom du projet, le sous-titre sa tagline, cette description pourrait être sa description pour un tweet. Ne rentrez que du texte (pas d’image).",
+            "instructions": "This is a medium length description of your project, limited to around 120 words. If the title is the name of the project, and the sous-titre its tagline, think of this as a twitter-ready description. This is text only and cannot contain images.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -65,181 +62,14 @@
             "placeholder": "",
             "prepend": "",
             "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
+            "maxlength": ""
         },
         {
-            "key": "field_525858d7914d0",
-            "label": "vignette du projet",
+            "key": "field_59f9a19d86358",
+            "label": "Project Thumbnail",
             "name": "visuel_prototype",
             "type": "image",
-            "instructions": "Ceci est une version rectangulaire de la photo de votre prototype. Elle sera utilisée comme vignette par la suite (min 400x300 px).",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "preview_size": "medium",
-            "library": "all",
-            "return_format": "id",
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
-            "mime_types": ""
-        },
-        {
-            "key": "field_525857ed914cf",
-            "label": "scénario utilisateur",
-            "name": "scenario",
-            "type": "wysiwyg",
-            "instructions": "Décrivez l’expérience de visite nouvelle avec votre prototype. Que vont voir, entendre, sentir les visiteur du musée quand ils entreront en contact avec lui ? Qu’arrive-t-il lorsqu’ils l’approche, et quand ils sont tout proche ? Que sont-ils en mesure de sentir ou de faire ? Pensez à ce scénario à un storyboard écrit, et utilisez l’éditeur de texte pour ajouter des images et d’autres médias embarqués au milieu du texte. Gardez la mise en forme du texte simple.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "toolbar": "full",
-            "media_upload": 1,
-            "tabs": "all",
-            "delay": 0
-        },
-        {
-            "key": "field_52585979914d1",
-            "label": "intentions et Processus",
-            "name": "intentions",
-            "type": "wysiwyg",
-            "instructions": "Alors que le “scénario utilisateur” décrit ce que vous avez créé, ce paragraphe décrit comment vous l’avez fait. C’est un peu la recette de montage de votre prototype, mais avec un peu d’histoire dedans (pensez-y comme la recette de la tarte-tatin, mais avec un peu de son histoire originelle dedans). Quelques idées que vous pouvez intégrer : que vouliez-vous faire au départ ? à quel public se destinait votre prototype ? votre objectif était-il bien défini ? quelles problématiques sont à son origine ? Pour le processus : décrivez comment vous avez discuté, élaboré et modifié le prototype. Quelles idées avez-vous suivies ? Quelles idées ont été abandonnées ? Comment ces décisions ont-elles été faites ? Vous pouvez utiliser l’éditeur de texte pour ajouter des médias.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "toolbar": "full",
-            "media_upload": 1,
-            "tabs": "all",
-            "delay": 0
-        },
-        {
-            "key": "field_52585ad5914d2",
-            "label": "matériel",
-            "name": "materiel",
-            "type": "wysiwyg",
-            "instructions": "Ce sont les ingrédients de votre recette. Alors que les intentions et processus de création décrivaient comment vous avez construit votre prototype étape par étape, ce paragraphe documente ce que vous avez utilisé pour le construire. Listez et décrivez tout ce qui est entré en compte : le matériel physique (bois, plastique…), le code, les microcontrolleurs, le son et les images sources, le texte, la performance...etc.",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "toolbar": "full",
-            "media_upload": 1,
-            "tabs": "all",
-            "delay": 0
-        },
-        {
-            "key": "field_518e45304d7fb",
-            "label": "retours d'expérience",
-            "name": "experience",
-            "type": "wysiwyg",
-            "instructions": "Remplissez ceci lorsque votre prototype est fini, après avoir reçu l’avis des visiteurs et de vos collègues. Quels étaient les points forts et faibles de votre idée, de sa mise en oeuvre, du processus de création ? Après avoir jeté un oeil à ce que vous auriez pu faire mieux, que pourrait-on faire maintenant pour améliorer le prototype ?",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "toolbar": "full",
-            "media_upload": 1,
-            "tabs": "all",
-            "delay": 0
-        },
-        {
-            "key": "field_52586268914d3",
-            "label": "questions fréquentes",
-            "name": "faq",
-            "type": "wysiwyg",
-            "instructions": "Ceci est une catégorie optionnelle, que vous pouvez utiliser comme FAQ. Une fois que votre page prototype est publique, il se peut que vous receviez des questions récurrentes de blogueurs, visiteurs ou journalistes. Au lieu de répéter la même chose, envoyez-les directement ici où vous aurez répondu à cette question (seulement du texte). ",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "toolbar": "full",
-            "media_upload": 1,
-            "tabs": "all",
-            "delay": 0
-        },
-        {
-            "key": "field_52586747914d4",
-            "label": "numéro de l'équipe",
-            "name": "numero_de_lequipe",
-            "type": "number",
-            "instructions": "",
-            "required": 1,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "min": "",
-            "max": "",
-            "step": "",
-            "readonly": 0,
-            "disabled": 0
-        },
-        {
-            "key": "field_518e582bbcdea",
-            "label": "nom de l'équipe",
-            "name": "nom_de_lequipe",
-            "type": "text",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
-        },
-        {
-            "key": "field_525867f9914d6",
-            "label": "photo collective de l'équipe",
-            "name": "photo_equipe",
-            "type": "image",
-            "instructions": "Téléchargez une photo de groupe de votre équipe, min. 600 px de largeur.",
+            "instructions": "This is a rectangular image that will be used as your prototype's vignette. It should be 400 x 300 pixels minimum.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -259,11 +89,11 @@
             "mime_types": ""
         },
         {
-            "key": "field_52586797914d5",
-            "label": "déscriptif de l'équipe et équipiers",
-            "name": "descriptif_equipe",
+            "key": "field_59f9a19d863c2",
+            "label": "User Scenario",
+            "name": "scenario",
             "type": "wysiwyg",
-            "instructions": "Un court texte qui apparaitra sous la photo de votre équipe. Utilisez-le comme vous voulez, mais assurez vous de listez chaque membres de l’équipe un par un en utilisant le format <strong>Prénom Nom,<\/strong> \"role ou mission\", <link>",
+            "instructions": "Describe what visiting the prototype is like. What does a museum visitor see, hear, and feel as he enters the place the prototype is installed? What happens as they approach it? When they are near it? What are they able to sense or do? Think of it as a verbal storyboard, and use the WYSIWIG editor to add images and other embedded multimedia throughout your text. Please keep text formatting to a minimum.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -272,14 +102,173 @@
                 "id": ""
             },
             "default_value": "",
+            "tabs": "all",
             "toolbar": "full",
             "media_upload": 1,
-            "tabs": "all",
             "delay": 0
         },
         {
-            "key": "field_516e4f5b08137",
-            "label": "Lieux",
+            "key": "field_59f9a19d8642c",
+            "label": "Intentions and Process",
+            "name": "intentions",
+            "type": "wysiwyg",
+            "instructions": "While the \"User scenario\" describes what you did, this should describe how you did it - it's the step-by-step part of the recipe, with a bit of storytelling included (think of it as how to make a tarte-tatin, but with the origin story). \r\nSome ideas to consider including:\r\nIntention: What did you initially want to do? What public did you want to reach? Did you have a well-defined objective? What were the problematics you discussed?\r\nProcess: Describe how you discussed, elaborated, and iterated on the prototype. What ideas did you use? What ideas did you abandon? How did you make these decisions?\r\nUse the WYSIWYG editor to add media documenting your processes.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_59f9a19d86496",
+            "label": "Material",
+            "name": "materiel",
+            "type": "wysiwyg",
+            "instructions": "This is the ingredients list of the recipe. While \"Intentions and Process\" is about how you built your prototype step-by-step; \"Material\" documents what you used to build it. List and describe everything that went into the project: physical material, code, microcontrollers, sound and image resources, text, performance, etc.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_59f9a19d864ff",
+            "label": "Feed back",
+            "name": "experience",
+            "type": "wysiwyg",
+            "instructions": "Fill this out once the prototype is finished. Consider it your team's \"post-mortem\" on the project. What were the strong or weak points - of the idea, of your process, of your implementation? Once you have looked at what you could have done better, what could be done now to improve the prototype as-it-is?",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_59f9a19d86569",
+            "label": "FAQ",
+            "name": "faq",
+            "type": "wysiwyg",
+            "instructions": "This is an optional section for dealing with \"Frequently Asked Questions\". Once your prototype is public, you may find that visitors or journalists always ask the same thing. Instead of telling them to read the whole Prototype page, just point them here.\r\n\r\nThe FAQ section is text only. Please use full line breaks - <br> - between each question-and-answer pair, and use the <strong> tags to differentiate each question from its answer.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1,
+            "delay": 0
+        },
+        {
+            "key": "field_59f9a19d865d3",
+            "label": "Team Number",
+            "name": "numero_de_lequipe",
+            "type": "number",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "min": "",
+            "max": "",
+            "step": ""
+        },
+        {
+            "key": "field_59f9a19d8663d",
+            "label": "Team Name",
+            "name": "nom_de_lequipe",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_59f9a19d866a7",
+            "label": "Team Photo",
+            "name": "photo_equipe",
+            "type": "image",
+            "instructions": "Please upload a group photo of your team. It should be at least 600 pixels wide.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
+        },
+        {
+            "key": "field_59f9a19d8670b",
+            "label": "Team Description and Team Member Roles",
+            "name": "descriptif_equipe",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_59f9a19d86776",
+            "label": "Location",
             "name": "museomix",
             "type": "post_object",
             "instructions": "Choisir le lieu (le Museomix local) dans le cadre duquel ce prototype a été créé",
@@ -300,11 +289,11 @@
             "ui": 1
         },
         {
-            "key": "field_59c525659d7ea",
-            "label": "Musée",
+            "key": "field_59f9a19d867e0",
+            "label": "Museum",
             "name": "proto_musee",
             "type": "post_object",
-            "instructions": "Choisir le lieu musée dans le cadre duquel ce prototype a été créé",
+            "instructions": "",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -322,12 +311,12 @@
             "ui": 1
         },
         {
-            "key": "field_52825071d7e94",
-            "label": "année",
+            "key": "field_59f9a19d8684b",
+            "label": "Year",
             "name": "year",
             "type": "radio",
             "instructions": "",
-            "required": 1,
+            "required": 0,
             "conditional_logic": 0,
             "wrapper": {
                 "width": "",
@@ -343,16 +332,16 @@
                 "2012": "2012",
                 "2011": "2011"
             },
-            "allow_null": 1,
+            "allow_null": 0,
             "other_choice": 0,
             "save_other_choice": 0,
             "default_value": "",
-            "layout": "horizontal",
+            "layout": "vertical",
             "return_format": "value"
         },
         {
-            "key": "field_518e555dbcde6",
-            "label": "mots-clés",
+            "key": "field_59f9a19d868b5",
+            "label": "Keywords or Tags",
             "name": "mots-cles",
             "type": "text",
             "instructions": "Add several keywords or tags that are relevant to your prototype.",
@@ -367,17 +356,14 @@
             "placeholder": "",
             "prepend": "",
             "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
+            "maxlength": ""
         },
         {
-            "key": "field_516e51c776fe7",
-            "label": "lien externe",
+            "key": "field_59f9a19d8691f",
+            "label": "External Link",
             "name": "lien_externe",
             "type": "text",
-            "instructions": "link",
+            "instructions": "If you built an additional site or other web presence for your prototype, please link it here.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -389,13 +375,10 @@
             "placeholder": "",
             "prepend": "",
             "append": "",
-            "formatting": "none",
-            "maxlength": "",
-            "readonly": 0,
-            "disabled": 0
+            "maxlength": ""
         },
         {
-            "key": "field_5267e7c2f185e",
+            "key": "field_59f9a19d86989",
             "label": "langue",
             "name": "langage",
             "type": "radio",
@@ -419,8 +402,8 @@
             "return_format": "value"
         },
         {
-            "key": "field_52696bdc869c2",
-            "label": "galerie",
+            "key": "field_59f9a19d869f3",
+            "label": "galery",
             "name": "galerie",
             "type": "gallery",
             "instructions": "",
@@ -431,21 +414,20 @@
                 "class": "",
                 "id": ""
             },
-            "preview_size": "thumbnail",
+            "min": "",
+            "max": "",
+            "insert": "append",
             "library": "all",
-            "min": 0,
-            "max": 0,
-            "min_width": 0,
-            "min_height": 0,
-            "min_size": 0,
-            "max_width": 0,
-            "max_height": 0,
-            "max_size": 0,
-            "mime_types": "",
-            "insert": "append"
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": ""
         },
         {
-            "key": "field_528250b944036",
+            "key": "field_59f9a19d86a5d",
             "label": "bulk content",
             "name": "bulk_content",
             "type": "wysiwyg",
@@ -464,8 +446,8 @@
             "delay": 0
         },
         {
-            "key": "field_57fce994077bb",
-            "label": "URL externe",
+            "key": "field_59f9a19d86ac7",
+            "label": "External URL",
             "name": "url_externe",
             "type": "url",
             "instructions": "",
@@ -480,8 +462,8 @@
             "placeholder": ""
         },
         {
-            "key": "field_580065cbbf533",
-            "label": "Prototype pérennisé par le musée",
+            "key": "field_59f9a19d86b26",
+            "label": "Is the prototype still used by the museum?",
             "name": "prototype_perennise",
             "type": "true_false",
             "instructions": "",
@@ -499,8 +481,8 @@
             "ui_off_text": ""
         },
         {
-            "key": "field_580069d22c945",
-            "label": "Thème",
+            "key": "field_59f9a19d86b90",
+            "label": "Thema",
             "name": "theme",
             "type": "taxonomy",
             "instructions": "",
@@ -521,8 +503,8 @@
             "multiple": 0
         },
         {
-            "key": "field_58006c1e98c7e",
-            "label": "Technologie",
+            "key": "field_59f9a19d86bfa",
+            "label": "Technology",
             "name": "technologie",
             "type": "taxonomy",
             "instructions": "3 maximum",
@@ -543,8 +525,8 @@
             "multiple": 0
         },
         {
-            "key": "field_580072d4d0325",
-            "label": "Concerne",
+            "key": "field_59f9a19d86c64",
+            "label": "Is about",
             "name": "concerne",
             "type": "taxonomy",
             "instructions": "",
@@ -565,8 +547,8 @@
             "multiple": 0
         },
         {
-            "key": "field_59c26e860834a",
-            "label": "Type de musée",
+            "key": "field_59f9a19d86cce",
+            "label": "Type of museum",
             "name": "type_de_musee",
             "type": "checkbox",
             "instructions": "Dans quel type de musée êtes-vous ?",
@@ -602,27 +584,6 @@
             "layout": "horizontal",
             "toggle": 0,
             "return_format": "value"
-        },
-        {
-            "key": "field_5a13ca70433d3",
-            "label": "Année (bis)",
-            "name": "annee_cpt",
-            "type": "page_link",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "post_type": [
-                "edition"
-            ],
-            "taxonomy": [],
-            "allow_null": 1,
-            "allow_archives": 0,
-            "multiple": 0
         }
     ],
     "location": [
@@ -644,5 +605,5 @@
     ],
     "active": 1,
     "description": "",
-    "modified": 1511249584
+    "modified": 1510248914
 }

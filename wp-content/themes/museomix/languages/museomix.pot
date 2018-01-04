@@ -1,32 +1,326 @@
-# <!=Copyright (C) 2017 Samy Rabih
-# This file is distributed under the GNU General Public License v2 or later.=!>
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Museomix 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/style\n"
-"POT-Creation-Date: 2017-04-20 17:39:58+00:00\n"
+"POT-Creation-Date: 2017-11-09 21:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"X-Generator: grunt-wp-i18n1.0.0\n"
+"X-Generator: Loco - https://localise.biz/\n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION"
+
+#: single-sponsor.php:55
+msgid "Site"
+msgstr ""
+
+#: single-prototype.php:31 single-prototype.php:152
+msgid "Scenario"
+msgstr ""
+
+#: single-prototype.php:37
+msgid "Intentions"
+msgstr ""
+
+#: single-prototype.php:43 single-prototype.php:168
+msgid "Hardware"
+msgstr ""
+
+#: single-prototype.php:49 single-prototype.php:55 single-prototype.php:176
+msgid "Experience"
+msgstr ""
+
+#: single-prototype.php:61 single-prototype.php:184
+msgid "FAQ"
+msgstr ""
+
+#: single-prototype.php:67 single-prototype.php:192 single-museomix.php:40
+msgid "Team"
+msgstr ""
+
+#: single-prototype.php:72 single-prototype.php:122 includes/menus.php:14
+msgid "Prototype menu"
+msgstr ""
+
+#: single-prototype.php:160
+msgid "Objectives"
+msgstr ""
+
+#: single-community.php:54 single-museomix.php:28
+msgid "Presentation"
+msgstr ""
+
+#: single-community.php:60 includes/custom_post_types.php:216
+#: includes/custom_post_types.php:225 includes/custom_post_types.php:226
+#: includes/custom_post_types.php:236
+msgid "News"
+msgstr ""
+
+#: single-community.php:66 single-community.php:208
+msgid "Remixed museums"
+msgstr ""
+
+#: single-community.php:70 single-community.php:105 includes/menus.php:6
+msgid "Community menu"
+msgstr ""
+
+#: single-community.php:141 single-museomix.php:198
+msgid "Contacts"
+msgstr ""
+
+#: single-community.php:144 single-museomix.php:201
+msgid "Phone :"
+msgstr ""
+
+#: single-community.php:156 single-museomix.php:215
+msgid "Facebook"
+msgstr ""
+
+#: single-community.php:160 single-museomix.php:219
+msgid "Twitter"
+msgstr ""
+
+#: single-community.php:167 single-museomix.php:223
+msgid "E-mail"
+msgstr ""
+
+#: single-community.php:178
+msgid "Influence area"
+msgstr ""
+
+#: single-community.php:195
+#, php-format
+msgid "%1$s news"
+msgstr ""
 
 #: archive-museomix.php:46
+#, php-format
 msgid "%1$s locations"
 msgstr ""
 
+#: single-museomix.php:34 single-museomix.php:245
+msgid "Playgrounds"
+msgstr ""
+
+#: single-museomix.php:46
+msgid "Feedback"
+msgstr ""
+
+#: single-museomix.php:52 single-museomix.php:407
+#: includes/custom_post_types.php:162
+msgid "Partners"
+msgstr ""
+
+#: single-museomix.php:75 single-museomix.php:398
+#: includes/custom_post_types.php:132
+msgid "Prototypes"
+msgstr ""
+
+#: single-museomix.php:79 single-museomix.php:126 includes/menus.php:10
+msgid "Location menu"
+msgstr ""
+
+#: single-museomix.php:192
+msgid "Opening hours"
+msgstr ""
+
+#: single-museomix.php:261
+msgid "Problems"
+msgstr ""
+
+#: single-museomix.php:281
+#, php-format
+msgid "%1$s edition"
+msgstr ""
+
+#: single-museomix.php:295
+msgid "The team"
+msgstr ""
+
+#: single-museomix.php:363
+msgid "Feedback on event"
+msgstr ""
+
+#: includes/divi_modules.php:61
+msgid "More info"
+msgstr ""
+
+#: includes/menus.php:5
+msgid "Community page"
+msgstr ""
+
+#: includes/menus.php:9
+msgid "Location page"
+msgstr ""
+
+#: includes/menus.php:13
+msgid "Prototype page"
+msgstr ""
+
+#: includes/sidebars.php:6
+msgid "Footer left sidebar"
+msgstr ""
+
+#: includes/sidebars.php:15
+msgid "Footer center sidebar"
+msgstr ""
+
+#: includes/sidebars.php:24
+msgid "Footer right sidebar"
+msgstr ""
+
+#: includes/taxonomies.php:6
+msgctxt "taxonomy general name"
+msgid "Theme"
+msgstr ""
+
+#: includes/taxonomies.php:7
+msgctxt "taxonomy singular name"
+msgid "Theme"
+msgstr ""
+
+#: includes/taxonomies.php:8
+msgid "Search Themes"
+msgstr ""
+
+#: includes/taxonomies.php:9
+msgid "All Themes"
+msgstr ""
+
+#: includes/taxonomies.php:10
+msgid "Parent Themes"
+msgstr ""
+
+#: includes/taxonomies.php:11
+msgid "Parent Themes:"
+msgstr ""
+
+#: includes/taxonomies.php:12
+msgid "Edit Theme"
+msgstr ""
+
+#: includes/taxonomies.php:13
+msgid "Update Theme"
+msgstr ""
+
+#: includes/taxonomies.php:14
+msgid "Add New Theme"
+msgstr ""
+
+#: includes/taxonomies.php:15
+msgid "New Theme Name"
+msgstr ""
+
+#: includes/taxonomies.php:16
+msgid "Themes"
+msgstr ""
+
+#: includes/taxonomies.php:31
+msgctxt "taxonomy general name"
+msgid "Technology"
+msgstr ""
+
+#: includes/taxonomies.php:32
+msgctxt "taxonomy singular name"
+msgid "Technology"
+msgstr ""
+
+#: includes/taxonomies.php:33
+msgid "Search Technology"
+msgstr ""
+
+#: includes/taxonomies.php:34
+msgid "All Technologies"
+msgstr ""
+
+#: includes/taxonomies.php:35
+msgid "Parent Technology"
+msgstr ""
+
+#: includes/taxonomies.php:36
+msgid "Parent Technology:"
+msgstr ""
+
+#: includes/taxonomies.php:37
+msgid "Edit Technology"
+msgstr ""
+
+#: includes/taxonomies.php:38
+msgid "Update Technology"
+msgstr ""
+
+#: includes/taxonomies.php:39
+msgid "Add New Technology"
+msgstr ""
+
+#: includes/taxonomies.php:40
+msgid "New Technology Name"
+msgstr ""
+
+#: includes/taxonomies.php:41
+msgid "Technologies"
+msgstr ""
+
+#: includes/taxonomies.php:56
+msgctxt "taxonomy general name"
+msgid "Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:57
+msgctxt "taxonomy singular name"
+msgid "Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:58
+msgid "Search Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:59
+msgid "All Perimeters"
+msgstr ""
+
+#: includes/taxonomies.php:60
+msgid "Parent Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:61
+msgid "Parent Perimeter:"
+msgstr ""
+
+#: includes/taxonomies.php:62
+msgid "Edit Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:63
+msgid "Update Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:64
+msgid "Add New Perimeter"
+msgstr ""
+
+#: includes/taxonomies.php:65
+msgid "New Perimeter Name"
+msgstr ""
+
+#: includes/taxonomies.php:66
+msgid "Perimeters"
+msgstr ""
+
 #: includes/custom_post_types.php:21 includes/custom_post_types.php:22
-#: includes/display_functions.php:39
+#: includes/display_functions.php:46
 msgid "Edition"
 msgstr ""
 
 #: includes/custom_post_types.php:23 includes/custom_post_types.php:56
 #: includes/custom_post_types.php:89 includes/custom_post_types.php:122
-#: includes/custom_post_types.php:151 includes/custom_post_types.php:181
-#: includes/custom_post_types.php:217 includes/custom_post_types.php:226
-#: includes/custom_post_types.php:227
+#: includes/custom_post_types.php:152 includes/custom_post_types.php:182
+#: includes/custom_post_types.php:218 includes/custom_post_types.php:227
+#: includes/custom_post_types.php:228
 msgid "Add"
 msgstr ""
 
@@ -52,22 +346,22 @@ msgstr ""
 
 #: includes/custom_post_types.php:29 includes/custom_post_types.php:62
 #: includes/custom_post_types.php:95 includes/custom_post_types.php:128
-#: includes/custom_post_types.php:157 includes/custom_post_types.php:187
-#: includes/custom_post_types.php:232
+#: includes/custom_post_types.php:158 includes/custom_post_types.php:188
+#: includes/custom_post_types.php:233
 msgid "Search"
 msgstr ""
 
 #: includes/custom_post_types.php:30 includes/custom_post_types.php:63
 #: includes/custom_post_types.php:96 includes/custom_post_types.php:129
-#: includes/custom_post_types.php:158 includes/custom_post_types.php:188
-#: includes/custom_post_types.php:233
+#: includes/custom_post_types.php:159 includes/custom_post_types.php:189
+#: includes/custom_post_types.php:234
 msgid "No element"
 msgstr ""
 
 #: includes/custom_post_types.php:31 includes/custom_post_types.php:64
 #: includes/custom_post_types.php:97 includes/custom_post_types.php:130
-#: includes/custom_post_types.php:159 includes/custom_post_types.php:189
-#: includes/custom_post_types.php:234
+#: includes/custom_post_types.php:160 includes/custom_post_types.php:190
+#: includes/custom_post_types.php:235
 msgid "No element in trash"
 msgstr ""
 
@@ -92,8 +386,8 @@ msgid "Edit the location"
 msgstr ""
 
 #: includes/custom_post_types.php:59 includes/custom_post_types.php:92
-#: includes/custom_post_types.php:125 includes/custom_post_types.php:154
-#: includes/custom_post_types.php:229
+#: includes/custom_post_types.php:125 includes/custom_post_types.php:155
+#: includes/custom_post_types.php:230
 msgid "New"
 msgstr ""
 
@@ -149,81 +443,67 @@ msgstr ""
 msgid "Show prototype"
 msgstr ""
 
-#: includes/custom_post_types.php:132 single-museomix.php:377
-msgid "Prototypes"
-msgstr ""
-
-#: includes/custom_post_types.php:149 includes/custom_post_types.php:150
+#: includes/custom_post_types.php:150 includes/custom_post_types.php:151
 msgid "Partner"
 msgstr ""
 
-#: includes/custom_post_types.php:152
+#: includes/custom_post_types.php:153
 msgid "Add a partner"
 msgstr ""
 
-#: includes/custom_post_types.php:153
+#: includes/custom_post_types.php:154
 msgid "Edit partner"
 msgstr ""
 
-#: includes/custom_post_types.php:155
+#: includes/custom_post_types.php:156
 msgid "All partners"
 msgstr ""
 
-#: includes/custom_post_types.php:156
+#: includes/custom_post_types.php:157
 msgid "Show partner"
 msgstr ""
 
-#: includes/custom_post_types.php:161
-msgid "Partners"
-msgstr ""
-
-#: includes/custom_post_types.php:179 includes/custom_post_types.php:191
+#: includes/custom_post_types.php:180 includes/custom_post_types.php:192
 msgid "Communities"
 msgstr ""
 
-#: includes/custom_post_types.php:180
+#: includes/custom_post_types.php:181
 msgid "Community"
 msgstr ""
 
-#: includes/custom_post_types.php:182
+#: includes/custom_post_types.php:183
 msgid "Add an community"
 msgstr ""
 
-#: includes/custom_post_types.php:183
+#: includes/custom_post_types.php:184
 msgid "Edit community"
 msgstr ""
 
-#: includes/custom_post_types.php:184
+#: includes/custom_post_types.php:185
 msgid "New community"
 msgstr ""
 
-#: includes/custom_post_types.php:185
+#: includes/custom_post_types.php:186
 msgid "All communities"
 msgstr ""
 
-#: includes/custom_post_types.php:186
+#: includes/custom_post_types.php:187
 msgid "Show community"
 msgstr ""
 
-#: includes/custom_post_types.php:215 includes/custom_post_types.php:224
-#: includes/custom_post_types.php:225 includes/custom_post_types.php:235
-#: single-community.php:57
-msgid "News"
-msgstr ""
-
-#: includes/custom_post_types.php:216 includes/custom_post_types.php:230
+#: includes/custom_post_types.php:217 includes/custom_post_types.php:231
 msgid "All news"
 msgstr ""
 
-#: includes/custom_post_types.php:218
+#: includes/custom_post_types.php:219
 msgid "keywords"
 msgstr ""
 
-#: includes/custom_post_types.php:228
+#: includes/custom_post_types.php:229
 msgid "Edit"
 msgstr ""
 
-#: includes/custom_post_types.php:231
+#: includes/custom_post_types.php:232
 msgid "Show"
 msgstr ""
 
@@ -231,178 +511,16 @@ msgstr ""
 msgid "Read more"
 msgstr ""
 
-#: includes/display_functions.php:29
-msgid "editions"
-msgstr ""
-
-#: includes/divi_modules.php:19
-msgid "Communities map"
-msgstr ""
-
-#: includes/divi_modules.php:32
-msgid "Admin Label"
-msgstr ""
-
-#: includes/divi_modules.php:34
-msgid ""
-"This will change the label of the module in the builder for easy "
-"identification."
-msgstr ""
-
-#: includes/divi_modules.php:57
-msgid "More info"
-msgstr ""
-
-#: includes/menus.php:5
-msgid "Community page"
-msgstr ""
-
-#: includes/menus.php:6 single-community.php:67 single-community.php:100
-msgid "Community menu"
-msgstr ""
-
-#: includes/menus.php:9
-msgid "Location page"
-msgstr ""
-
-#: includes/menus.php:10 single-museomix.php:50 single-museomix.php:110
-msgid "Location menu"
-msgstr ""
-
-#: includes/menus.php:13
-msgid "Prototype page"
-msgstr ""
-
-#: includes/menus.php:14 single-prototype.php:72 single-prototype.php:121
-msgid "Prototype menu"
-msgstr ""
-
-#: includes/permalinks.php:12
-msgid "prototypes"
-msgstr ""
-
-#: includes/sidebars.php:6
-msgid "Footer left sidebar"
-msgstr ""
-
-#: includes/sidebars.php:8 includes/sidebars.php:17 includes/sidebars.php:26
-msgid "Widgets in this area will be shown on all posts and pages."
-msgstr ""
-
-#: includes/sidebars.php:15
-msgid "Footer center sidebar"
-msgstr ""
-
-#: includes/sidebars.php:24
-msgid "Footer right sidebar"
-msgstr ""
-
-#: page.php:67
-msgid "Pages:"
-msgstr ""
-
-#: single-community.php:51 single-museomix.php:27
-msgid "Presentation"
-msgstr ""
-
-#: single-community.php:63 single-community.php:202
-msgid "Remixed museums"
-msgstr ""
-
-#: single-community.php:135 single-museomix.php:182
-msgid "Contacts"
-msgstr ""
-
-#: single-community.php:138 single-museomix.php:185
-msgid "Phone :"
-msgstr ""
-
-#: single-community.php:150 single-museomix.php:199
-msgid "Facebook"
-msgstr ""
-
-#: single-community.php:154 single-museomix.php:203
-msgid "Twitter"
-msgstr ""
-
-#: single-community.php:161 single-museomix.php:207
-msgid "E-mail"
-msgstr ""
-
-#: single-community.php:172
-msgid "Influence area"
-msgstr ""
-
-#: single-community.php:189
-msgid "%1$s news"
-msgstr ""
-
-#: single-museomix.php:33 single-museomix.php:229
-msgid "Playgrounds"
-msgstr ""
-
-#: single-museomix.php:39 single-prototype.php:67 single-prototype.php:191
-msgid "Team"
-msgstr ""
-
-#: single-museomix.php:45
-msgid "Feedback"
-msgstr ""
-
-#: single-museomix.php:176
-msgid "Opening hours"
-msgstr ""
-
-#: single-museomix.php:245
-msgid "Problems"
-msgstr ""
-
-#: single-museomix.php:265
-msgid "%1$s edition"
-msgstr ""
-
-#: single-museomix.php:274
-msgid "The team"
-msgstr ""
-
-#: single-museomix.php:342
-msgid "Feedback on event"
-msgstr ""
-
-#: single-prototype.php:31 single-prototype.php:151
-msgid "Scenario"
-msgstr ""
-
-#: single-prototype.php:37
-msgid "Intentions"
-msgstr ""
-
-#: single-prototype.php:43 single-prototype.php:167
-msgid "Hardware"
-msgstr ""
-
-#: single-prototype.php:49 single-prototype.php:55 single-prototype.php:175
-msgid "Experience"
-msgstr ""
-
-#: single-prototype.php:61 single-prototype.php:183
-msgid "FAQ"
-msgstr ""
-
-#: single-prototype.php:159
-msgid "Objectives"
-msgstr ""
-
 #. Theme Name of the plugin/theme
 msgid "Museomix"
 msgstr ""
 
-#. Theme URI of the plugin/theme
-msgid "http://www.museomix.org"
-msgstr ""
-
 #. Description of the plugin/theme
 msgid "Museomix Child Theme"
+msgstr ""
+
+#. Theme URI of the plugin/theme
+msgid "http://www.museomix.org"
 msgstr ""
 
 #. Author of the plugin/theme
