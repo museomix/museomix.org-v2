@@ -55,7 +55,7 @@
         "\\bfound_rows\\(\\)"
     ],
     "objectcache.configuration_overloaded": false,
-    "objectcache.enabled": "1",
+    "objectcache.enabled": "0",
     "objectcache.debug": "0",
     "objectcache.enabled_for_wp_admin": true,
     "objectcache.fallback_transients": true,
@@ -452,7 +452,7 @@
         "{plugins_dir}\/wp-fb-autoconnect\/facebook-platform\/channel.html"
     ],
     "cdn.reject.ssl": false,
-    "cdnfsd.enabled": false,
+    "cdnfsd.enabled": "0",
     "cdnfsd.engine": "",
     "cdnfsd.debug": false,
     "varnish.configuration_overloaded": false,
