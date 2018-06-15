@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 4.9.x - Development - Administration - Network Admin package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-11-14 17:24:57+0000\n"
+"PO-Revision-Date: 2018-05-17 09:07:27+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,7 +20,7 @@ msgstr "A constante %s não pode ser definida durante a criação de uma rede."
 msgid "You are about to delete the following sites:"
 msgstr "Você está prestes a excluir os seguintes sites:"
 
-#: wp-admin/network/site-new.php:250
+#: wp-admin/network/site-new.php:252
 msgid "The username and a link to set the password will be mailed to this email address."
 msgstr "O nome de usuário e um link para criação de senha serão enviados para este endereço de e-mail."
 
@@ -94,12 +94,6 @@ msgstr "Sem permissão para adicionar sites nesta rede."
 msgid "Sorry, you are not allowed to manage themes for this site."
 msgstr "Sem permissão para gerenciar temas deste site."
 
-#. translators: 1: wp-config.php 2: location of wp-config file, 3: translated
-#. version of "That's all, stop editing! Happy blogging."
-#: wp-admin/includes/network.php:428
-msgid "Add the following to your %1$s file in %2$s <strong>above</strong> the line reading %3$s:"
-msgstr "Adicione o seguinte código ao seu %1$s arquivo em %2$s <strong>abaixo</strong> da linha: %3$s:"
-
 #. translators: This string should only be translated if wp-config-sample.php
 #. is localized. You can check the localized release package or
 #. https://i18n.svn.wordpress.org/<locale code>/branches/<wp
@@ -115,6 +109,12 @@ msgstr "E-mail do primeiro comentário"
 #: wp-admin/network/settings.php:308
 msgid "The email address of the first comment author on a new site."
 msgstr "O endereço de e-mail do autor do primeiro comentário de um novo site."
+
+#. translators: 1: wp-config.php 2: location of wp-config file, 3: translated
+#. version of "That's all, stop editing! Happy blogging."
+#: wp-admin/includes/network.php:428
+msgid "Add the following to your %1$s file in %2$s <strong>above</strong> the line reading %3$s:"
+msgstr "Adicione o seguinte código ao seu arquivo %1$s em %2$s <strong>acima</strong> da linha: %3$s:"
 
 #. translators: 1: theme name, 2: theme author
 #: wp-admin/network/themes.php:138
@@ -543,7 +543,7 @@ msgstr "Sim, exclua esses temas."
 msgid "Delete Themes"
 msgstr "Excluir temas"
 
-#: wp-admin/network/settings.php:418
+#: wp-admin/network/settings.php:420
 msgid "Enable menus"
 msgstr "Ativar menus"
 
@@ -739,11 +739,6 @@ msgstr "Digite o nome de usuário de um usuário existente."
 msgid "Site info updated."
 msgstr "Informações do site atualizadas."
 
-#: wp-admin/network/site-info.php:23 wp-admin/network/site-settings.php:22
-#: wp-admin/network/site-themes.php:43 wp-admin/network/site-users.php:38
-msgid "Invalid site ID."
-msgstr "ID do site inválido."
-
 #. translators: %s: site name
 #: wp-admin/network/site-info.php:117 wp-admin/network/site-settings.php:70
 #: wp-admin/network/site-themes.php:153 wp-admin/network/site-users.php:196
@@ -840,6 +835,11 @@ msgstr "Sem permissão para excluir o site %s."
 msgid "Allow site administrators to add new users to their site via the \"Users &rarr; Add New\" page"
 msgstr "Permite que os administradores do site adicionem novos usuários aos seus sites através da página \"Usuários &rarr; Adicionar Novo\"."
 
+#: wp-admin/network/site-info.php:23 wp-admin/network/site-settings.php:22
+#: wp-admin/network/site-themes.php:43 wp-admin/network/site-users.php:38
+msgid "Invalid site ID."
+msgstr "ID inválido de site."
+
 #: wp-admin/includes/network.php:117 wp-admin/includes/network.php:189
 #: wp-admin/includes/network.php:238 wp-admin/includes/network.php:279
 #: wp-admin/includes/network.php:289 wp-admin/includes/network.php:382
@@ -896,6 +896,10 @@ msgstr "Nome da rede"
 msgid "The Network creation panel is not for WordPress MU networks."
 msgstr "O Painel de criação da rede não é para redes de WordPress MU."
 
+#: wp-admin/network.php:64
+msgid "The choice of subdirectory sites is disabled if this setup is more than a month old because of permalink problems with &#8220;/blog/&#8221; from the main site. This disabling will be addressed in a future version."
+msgstr "A escolha de sites em subdiretórios fica desativada se a instalação tiver mais de um mês, isso porque acontecem problemas com links permanentes do blog principal. Esta incapacidade será corrigida em uma versão futura."
+
 #: wp-admin/network.php:61
 msgid "The next screen for Network Setup will give you individually-generated lines of code to add to your wp-config.php and .htaccess files. Make sure the settings of your FTP client make files starting with a dot visible, so that you can find .htaccess; you may have to create this file if it really is not there. Make backup copies of those two files."
 msgstr "A próxima tela de configuração de rede, vai lhe dar as linhas de código, individualmente geradas, para adicionar ao seu wp-config.php e arquivos .htaccess. Verifique se as configurações do seu cliente de FTP mostram arquivos que começam com ponto, para que você encontre o .htaccess; você pode ter que criar este arquivo se ele realmente não estiver lá. Faça cópias de segurança dos dois arquivos."
@@ -903,10 +907,6 @@ msgstr "A próxima tela de configuração de rede, vai lhe dar as linhas de cód
 #: wp-admin/network.php:63
 msgid "Once you add this code and refresh your browser, multisite should be enabled. This screen, now in the Network Admin navigation menu, will keep an archive of the added code. You can toggle between Network Admin and Site Admin by clicking on the Network Admin or an individual site name under the My Sites dropdown in the Toolbar."
 msgstr "Após adicionar estes códigos e atualizar seu navegador, o multisite será ativado. Esta tela, agora no menu Administrador da Rede, manterá um arquivo dos códigos adicionados. Você pode alternar entre Administrador da Rede e Administrador de Site clicando em Administrador da Rede ou em cada site listado no menu suspenso Meus Sites, na Barra de Ferramentas."
-
-#: wp-admin/network.php:64
-msgid "The choice of subdirectory sites is disabled if this setup is more than a month old because of permalink problems with &#8220;/blog/&#8221; from the main site. This disabling will be addressed in a future version."
-msgstr "A escolha de sites em subdiretórios fica desativada se a instalação tiver mais de um mês, isso porque acontecem problemas com links permanentes do blog principal. Esta incapacidade será corrigida em uma versão futura."
 
 #: wp-admin/includes/network.php:394
 msgid "Enabling the Network"
@@ -1219,7 +1219,7 @@ msgstr "Contas de sites e de usuários podem ser cadastradas."
 msgid "User accounts may be registered"
 msgstr "Contas de usuários podem ser cadastradas."
 
-#: wp-admin/network/settings.php:396
+#: wp-admin/network/settings.php:398
 msgid "Enable administration menus"
 msgstr "Ativar menus de administração"
 
@@ -1320,7 +1320,7 @@ msgstr "Permitir novos registros de usuários"
 msgid "Add New Users"
 msgstr "Adicionar novos usuários"
 
-#: wp-admin/network/site-new.php:262
+#: wp-admin/network/site-new.php:264
 msgid "Add Site"
 msgstr "Adicionar site"
 
@@ -1348,11 +1348,11 @@ msgstr "Registros limitados por e-mail"
 msgid "Duplicated username or email address."
 msgstr "Nome de usuário ou endereço de e-mail duplicados."
 
-#: wp-admin/network/site-new.php:250
+#: wp-admin/network/site-new.php:252
 msgid "A new user will be created if the above email address is not in the database."
 msgstr "Um novo usuário será criado se o endereço de e-mail acima não estiver no banco de dados."
 
-#: wp-admin/network/site-new.php:246
+#: wp-admin/network/site-new.php:248
 msgid "Admin Email"
 msgstr "E-mail do admin"
 

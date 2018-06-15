@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - W3 Total Cache - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2016-03-31 14:37:41+0000\n"
+"PO-Revision-Date: 2018-05-14 17:22:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,7 +21,7 @@ msgstr "Frederick Townes"
 
 #. Description of the plugin/theme
 msgid "The highest rated and most complete WordPress performance plugin. Dramatically improve the speed and user experience of your site. Add browser, page, object and database caching as well as minify and content delivery network (CDN) to WordPress."
-msgstr "L'extension de performance la mieux notée et la plus complète de WordPress. Améliore considérablement la vitesse et l'expérience utilisateur de votre site. Ajout de la mise en cache de navigateur, de page, d'objet et de base de données ainsi que de la minification de (CDN) pour WordPress. Traduit par <a href=\"http://www.wptrads.com\">Wp Trads</a>."
+msgstr "L'extension de performance la mieux notée et la plus complète de WordPress. Améliore considérablement la vitesse et l'expérience utilisateur de votre site. Ajout de la mise en cache de navigateur, de page, d'objet et de base de données ainsi que de la minification de (CDN) pour WordPress."
 
 #. Plugin URI of the plugin/theme
 msgid "http://www.w3-edge.com/wordpress-plugins/w3-total-cache/"

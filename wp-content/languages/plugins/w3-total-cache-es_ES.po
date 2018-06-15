@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - W3 Total Cache - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2018-01-02 15:46:26+0000\n"
+"PO-Revision-Date: 2018-05-01 07:27:37+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1130,6 +1130,10 @@ msgstr "Los archivos y directorios requeridos han sido creados automáticamente"
 #: lib/W3/Plugin/TotalCacheAdmin.php:537
 msgid "Extension has been successfully activated."
 msgstr "La extensión ha sido activada con éxito."
+
+#: lib/W3/Plugin/TotalCacheAdmin.php:536
+msgid "Pull Zone was automatically created."
+msgstr "La Pull Zone ha sido creada automáticamente."
 
 #: lib/W3/Plugin/TotalCacheAdmin.php:535
 msgid "Edge mode has been disabled."
