@@ -1,0 +1,24 @@
+{
+    "key": "group_5af1c38fc4741",
+    "title": "Infos EDITION",
+    "fields": false,
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "edition"
+            }
+        ]
+    ],
+    "menu_order": 2,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": [],
+    "active": 1,
+    "description": "",
+    "old_ID": 51,
+    "modified": 1525793679
+}
