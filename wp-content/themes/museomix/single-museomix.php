@@ -15,13 +15,15 @@ $playgrounds = get_field('playground');
 $partners = get_field('sponsor');
 $resume = get_field('resume');
 $gallery = get_field('galerie');
-$local_coordinators = get_field('coordinator_local');
-$co_organizers = get_field('co-organisateurs');
-if ($co_organizers || $local_coordinators):
-	$team = array_merge($co_organizers,$local_coordinators);
-else:
-	$team = false;
-endif;
+$team = [];
+foreach(['coordinator_local', 'co-organisateurs'] as $organisateur) {
+	if (get_field($organisateur)) {
+		if ($team === false) {
+			$team = [];
+		}
+		$team = array_merge($team, get_field($organisateur));
+	}
+}
 
 if ($playgrounds):
 	$items[]= array(
@@ -235,7 +237,7 @@ add_subitems_to_menu(__('Location menu','museomix'),0,  $items);
   <?php
   $community_news = $community_museums = false;
 
-  if ($playgrounds || $community_museums || $museum_prototypes ||  $partners):
+  if ($playgrounds || $community_museums || $museum_prototypes ||  $partners || $team):
   ?>
   	<div class="et_pb_section et_section_regular sep_section" id="playgrounds">
 			<?php if ($playgrounds): ?>
