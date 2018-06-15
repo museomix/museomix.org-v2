@@ -1163,3 +1163,115 @@ where post_type = 'attachment' and ID IN (select post_id FROM wp_postmeta where 
 [28-Dec-2017 09:23:09 UTC] Post ID = 18157
 [28-Dec-2017 09:23:09 UTC] Post ID = 18160
 [28-Dec-2017 09:23:09 UTC] Post ID = 17365
+[09-Jan-2018 15:27:27 UTC] Post ID = 18049
+[09-Jan-2018 15:27:27 UTC] Post ID = 17601
+[09-Jan-2018 15:27:27 UTC] Post ID = 17456
+[09-Jan-2018 15:27:46 UTC] Post ID = 18286
+[09-Jan-2018 15:27:47 UTC] Post ID = 18286
+[09-Jan-2018 15:27:47 UTC] Post ID = 18286
+[09-Jan-2018 15:27:47 UTC] Post ID = 18286
+[09-Jan-2018 15:27:48 UTC] Post ID = 18287
+[09-Jan-2018 15:27:48 UTC] Post ID = 18287
+[09-Jan-2018 15:27:48 UTC] Post ID = 18287
+[09-Jan-2018 15:27:48 UTC] Post ID = 18286
+[09-Jan-2018 15:27:48 UTC] Post ID = 18286
+[09-Jan-2018 15:27:48 UTC] Post ID = 18287
+[09-Jan-2018 15:27:48 UTC] Post ID = 18286
+[09-Jan-2018 15:27:49 UTC] Post ID = 18287
+[09-Jan-2018 15:27:49 UTC] Post ID = 18287
+[09-Jan-2018 15:27:49 UTC] Post ID = 18287
+[09-Jan-2018 16:02:06 UTC] Erreur de la base de données WordPress Lost connection to MySQL server during query pour la requête 
+			SELECT
+				s.id,
+				st.status,
+				s.domain_name_context_md5 AS ctx ,
+				st.value AS translated,
+				st.mo_string AS mo_string,
+				s.value AS original,
+				s.gettext_context
+			FROM wp_yqvsbp_icl_strings s
+			LEFT JOIN wp_yqvsbp_icl_string_translations st
+				ON s.id=st.string_id
+					AND st.language='fr'
+					AND s.language!='fr'
+			WHERE s.context = 'default'
+			 LIMIT 1000 OFFSET 5000 faite par edit_post, wp_update_post, wp_insert_post, wp_set_post_terms, wp_set_object_terms, do_action('set_object_terms'), WP_Hook->do_action, WP_Hook->apply_filters, WPML_Terms_Translations::set_object_terms_action, WPML_Term_Actions->added_term_relationships, W3TC\DbCache_Wpdb->query, W3TC\DbCache_WpdbInjection_QueryCaching->query, W3TC\_CallUnderlying->query, W3TC\DbCache_Wpdb->query, W3TC\DbCache_WpdbInjection->query, W3TC\DbCache_Wpdb->default_query
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:27:33 UTC] Post ID = 18293
+[09-Jan-2018 16:28:05 UTC] Post ID = 18049
+[09-Jan-2018 16:28:20 UTC] Post ID = 18049
+[09-Jan-2018 16:28:48 UTC] Post ID = 18293
+[09-Jan-2018 16:29:35 UTC] Post ID = 18293
+[09-Jan-2018 16:30:22 UTC] Post ID = 18293
+[09-Jan-2018 16:31:14 UTC] Post ID = 18293
+[09-Jan-2018 16:31:15 UTC] Post ID = 18293
+[09-Jan-2018 16:32:10 UTC] Post ID = 18293
+[09-Jan-2018 16:32:11 UTC] Post ID = 18293
+[09-Jan-2018 16:32:15 UTC] Post ID = 18049
+[09-Jan-2018 16:33:05 UTC] Post ID = 18293
+[09-Jan-2018 16:33:56 UTC] Post ID = 18293
+[09-Jan-2018 16:33:56 UTC] Post ID = 18293
+[09-Jan-2018 16:34:47 UTC] Post ID = 18293
+[09-Jan-2018 16:35:39 UTC] Post ID = 18293
+[09-Jan-2018 16:35:40 UTC] Post ID = 18293
+[09-Jan-2018 16:36:26 UTC] Post ID = 18293
+[09-Jan-2018 16:37:12 UTC] Post ID = 18293
+[09-Jan-2018 16:38:15 UTC] Post ID = 18293
+[09-Jan-2018 16:38:17 UTC] Post ID = 18293
+[09-Jan-2018 16:38:19 UTC] Post ID = 18294
+[09-Jan-2018 16:39:04 UTC] Post ID = 18294
+[09-Jan-2018 16:39:04 UTC] Post ID = 18294
+[09-Jan-2018 16:39:04 UTC] Post ID = 18293
+[09-Jan-2018 16:39:05 UTC] Post ID = 18294
+[09-Jan-2018 16:39:05 UTC] Post ID = 18293
+[09-Jan-2018 16:41:28 UTC] Post ID = 18293
+[09-Jan-2018 16:41:29 UTC] Post ID = 18293
+[09-Jan-2018 16:41:29 UTC] Post ID = 18293
+[09-Jan-2018 16:41:29 UTC] Post ID = 18293
+[09-Jan-2018 16:41:30 UTC] Post ID = 18294
+[09-Jan-2018 16:41:30 UTC] Post ID = 18294
+[09-Jan-2018 16:41:30 UTC] Post ID = 18294
+[09-Jan-2018 16:42:17 UTC] Post ID = 18295
+[09-Jan-2018 16:42:17 UTC] Post ID = 18293
+[09-Jan-2018 16:42:17 UTC] Post ID = 18295
+[09-Jan-2018 16:42:17 UTC] Post ID = 18295
+[09-Jan-2018 16:42:17 UTC] Post ID = 18295
+[09-Jan-2018 16:42:18 UTC] Post ID = 18295
+[09-Jan-2018 16:42:18 UTC] Post ID = 18295
+[09-Jan-2018 16:42:18 UTC] Post ID = 18295
+[09-Jan-2018 16:42:18 UTC] Post ID = 13947
+[09-Jan-2018 16:42:19 UTC] Post ID = 18049
+[09-Jan-2018 16:42:19 UTC] Post ID = 17601
+[09-Jan-2018 16:42:19 UTC] Post ID = 13797
+[09-Jan-2018 16:42:19 UTC] Post ID = 17456
+[09-Jan-2018 16:42:19 UTC] Post ID = 14247
+[09-Jan-2018 16:43:04 UTC] Post ID = 18293
+[09-Jan-2018 16:44:13 UTC] Post ID = 18293
+[09-Jan-2018 16:44:13 UTC] Post ID = 18293
+[09-Jan-2018 16:45:19 UTC] Post ID = 18293
+[10-Jan-2018 08:30:48 UTC] Post ID = 13947
+[10-Jan-2018 08:30:48 UTC] Post ID = 18049
+[10-Jan-2018 08:30:48 UTC] Post ID = 17601
+[10-Jan-2018 08:30:48 UTC] Post ID = 13797
+[10-Jan-2018 08:30:48 UTC] Post ID = 17456
+[10-Jan-2018 08:30:48 UTC] Post ID = 14247
+[11-Jan-2018 08:53:16 UTC] Post ID = 13947
+[11-Jan-2018 08:53:16 UTC] Post ID = 18049
+[11-Jan-2018 08:53:16 UTC] Post ID = 17601
+[11-Jan-2018 08:53:16 UTC] Post ID = 13797
+[11-Jan-2018 08:53:16 UTC] Post ID = 17456
+[11-Jan-2018 08:53:16 UTC] Post ID = 14247
+[06-Feb-2018 15:57:05 UTC] Post ID = 17397
+[06-Feb-2018 15:57:05 UTC] Post ID = 18049
+[06-Feb-2018 15:57:05 UTC] Post ID = 18049
+[06-Feb-2018 15:57:26 UTC] Post ID = 17397
+[06-Feb-2018 15:57:26 UTC] Post ID = 18049
+[06-Feb-2018 15:57:26 UTC] Post ID = 18049
+[06-Feb-2018 15:57:40 UTC] Post ID = 17397
+[06-Feb-2018 15:57:40 UTC] Post ID = 18049
+[06-Feb-2018 15:57:40 UTC] Post ID = 18049

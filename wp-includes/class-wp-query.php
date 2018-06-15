@@ -3032,7 +3032,15 @@ class WP_Query {
 			 */
 			$this->found_posts = $wpdb->get_var( apply_filters_ref_array( 'found_posts_query', array( 'SELECT FOUND_ROWS()', &$this ) ) );
 		} else {
-			$this->found_posts = count( $this->posts );
+			if ( is_array( $this->posts ) ) {
+				$this->found_posts = count( $this->posts );
+			} else {
+				if ( null === $this->posts ) {  
+					$this->found_posts = 0;
+				} else {
+					$this->found_posts = 1;
+				}
+			}
 		}
 
 		/**
@@ -3724,9 +3732,6 @@ class WP_Query {
 		$page_obj = $this->get_queried_object();
 
 		$page = array_map( 'strval', (array) $page );
-		if (!isset($page_obj->ID)) {
-			error_log(print_r($page, true));
-		}
 
 		if ( in_array( (string) $page_obj->ID, $page ) ) {
 			return true;
