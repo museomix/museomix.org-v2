@@ -1,7 +1,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.92
+Version: 3.0.96
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -1938,11 +1938,6 @@ body.single .et_audio_content {
 
 /* Required by Theme Check */
 /* Password Protected Post */
-.et_password_protected_form {
-	min-height: 550px;
-	min-height: 68vh;
-}
-
 .et_password_protected_form p input {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -6485,6 +6480,7 @@ p.et_pb_gallery_caption {
 .et_pb_with_border .et_pb_testimonial_portrait,
 .et_pb_with_border .et_pb_image_wrap,
 .et_pb_with_border .et_pb_newsletter_form input,
+.et_pb_with_focus_border .et_pb_newsletter_form input:focus,
 .et_pb_with_border .et_pb_contact_form input,
 .et_pb_with_border .et_pb_contact_form textarea,
 .et_pb_with_border .et_pb_contact_form select,
@@ -6506,6 +6502,12 @@ p.et_pb_gallery_caption {
 	border-width: 0;
 	border-style: solid;
 	border-color: #333;
+}
+
+body.iphone .et_pb_contact_form input,
+body.iphone .et_pb_contact_form textarea,
+body.iphone .et_pb_contact_form select {
+	-webkit-appearance: initial;
 }
 
 /* Image Module */
@@ -7183,6 +7185,20 @@ p.et_pb_gallery_caption {
 	position: relative;
 }
 
+.post-password-required .et_pb_section,
+.post-password-required .et_pb_row {
+	width: 100%;
+	padding: 0;
+}
+
+.post-password-required .et_password_protected_form {
+	min-height: initial;
+}
+
+.post-password-required .et_password_protected_form h1 {
+	display: none;
+}
+
 /* Blog Module Inner Modules */
 .et_pb_posts.et_pb_module article .et_pb_row {
 	width: 100%;
@@ -7223,9 +7239,19 @@ p.et_pb_gallery_caption {
 	max-width: 100%;
 }
 
+.rtl .et_pb_blog_grid .column {
+	float: right;
+	margin-right: 0 !important;
+}
+
 .et_pb_blog_grid .column.size-1of3:nth-child(3n),
 .et_pb_blog_grid .column.size-1of2:nth-child(2n) {
 	margin-right: 0 !important;
+}
+
+.rtl .et_pb_blog_grid .column.size-1of3:nth-child(3n),
+.rtl .et_pb_blog_grid .column.size-1of2:nth-child(2n) {
+	margin-left: 0 !important;
 }
 
 .et_pb_blog_grid .et_pb_post {
@@ -7233,12 +7259,6 @@ p.et_pb_gallery_caption {
 	border: 1px solid #d8d8d8;
 	background-color: #fff;
 	word-wrap: break-word;
-}
-
-.et_pb_blog_grid_dropshadow .et_pb_post {
-	-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-	-moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .et_pb_blog_grid .et_pb_image_container {
@@ -7300,8 +7320,9 @@ p.et_pb_gallery_caption {
 }
 
 /* Video Format Overlay */
-.et_pb_post .et_main_video_container {
+.et_pb_post > .et_main_video_container {
 	position: relative;
+	margin-bottom: 30px;
 }
 
 .et_pb_post .et_pb_video_overlay .et_pb_video_play {
@@ -7784,6 +7805,10 @@ p.et_pb_gallery_caption {
 	padding: 40px;
 }
 
+.et_pb_button_module_wrapper.et_pb_button_alignment_left {
+	text-align: left;
+}
+
 .et_pb_button_module_wrapper.et_pb_button_alignment_right {
 	text-align: right;
 }
@@ -7827,6 +7852,8 @@ p.et_pb_gallery_caption {
 	font-size: 14px;
 	font-size: 16px;
 	font-weight: 400;
+
+	-webkit-appearance: none;
 }
 
 .et_pb_newsletter_form p .et_pb_signup_error {
@@ -8208,6 +8235,8 @@ h1.et_pb_contact_main_title {
 	color: #999;
 	background-color: #eee;
 	font-size: 14px;
+
+	-webkit-appearance: none;
 }
 
 .et_pb_contact p textarea {
@@ -8847,6 +8876,11 @@ h1.et_pb_contact_main_title {
 	max-width: 320px;
 	margin-right: 30px;
 	line-height: 0 !important;
+}
+
+.et_pb_column .et_pb_team_member_image.et-svg {
+	width: 320px;
+	max-width: 100%;
 }
 
 .et_pb_team_member_description {
@@ -9877,8 +9911,8 @@ a.et_pb_more_button:after,
 	display: list-item;
 }
 
-.et_pb_post .et_pb_slider {
-	margin-bottom: 0;
+.et_pb_post > .et_pb_slider {
+	margin-bottom: 30px;
 }
 
 .et_pb_slider .et_pb_container {
@@ -10207,10 +10241,12 @@ a.et_pb_more_button:after,
 
 .et_pb_slides .et_pb_container {
 	display: table;
+	table-layout: fixed;
 }
 
 .et_pb_slides .et_pb_slider_container_inner {
 	display: table-cell;
+	width: 100%;
 	vertical-align: middle;
 }
 
@@ -10631,6 +10667,7 @@ body.iphone .et_pb_section_video_bg video::-webkit-media-controls-start-playback
 }
 
 .et_pb_row_inner {
+	position: relative;
 	width: 100%;
 }
 
@@ -11840,6 +11877,8 @@ article.et_pb_has_overlay {
 	width: 100%;
 	padding-right: 80px;
 	background: transparent;
+
+	-webkit-appearance: none;
 }
 
 .et_pb_search .et_pb_searchform {
@@ -13438,6 +13477,11 @@ span.comment_date {
 		margin-right: 5.5%;
 	}
 
+	.rtl.et_pb_gutters3 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3,
+	.rtl .et_pb_gutters3.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 {
+		margin-left: 5.5%;
+	}
+
 	.et_pb_gutters3 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post,
 	.et_pb_gutters3.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
 		margin-bottom: 18.54%;
@@ -13449,6 +13493,11 @@ span.comment_date {
 		margin-right: 7.47%;
 	}
 
+	.rtl.et_pb_gutters3 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2,
+	.rtl .et_pb_gutters3.et_pb_row .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 {
+		margin-left: 7.47%;
+	}
+
 	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post,
 	.et_pb_gutters3.et_pb_row .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
 		margin-bottom: 14.94%;
@@ -13458,6 +13507,11 @@ span.comment_date {
 	.et_pb_gutters3.et_pb_row .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 {
 		width: 45.758%;
 		margin-right: 8.483%;
+	}
+
+	.rtl.et_pb_gutters3 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2,
+	.rtl .et_pb_gutters3.et_pb_row .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 {
+		margin-left: 8.483%;
 	}
 
 	.et_pb_gutters3 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post,

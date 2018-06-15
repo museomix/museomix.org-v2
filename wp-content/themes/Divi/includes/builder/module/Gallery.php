@@ -465,6 +465,12 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		return $attachments;
 	}
 
+	public function get_pagination_alignment() {
+		$text_orientation = isset( $this->shortcode_atts['pagination_text_align'] ) ? $this->shortcode_atts['pagination_text_align'] : '';
+
+		return et_pb_get_alignment( $text_orientation );
+	}
+
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$module_id              = $this->shortcode_atts['module_id'];
 		$module_class           = $this->shortcode_atts['module_class'];
@@ -481,7 +487,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		$auto                   = $this->shortcode_atts['auto'];
 		$auto_speed             = $this->shortcode_atts['auto_speed'];
 		$orientation            = $this->shortcode_atts['orientation'];
-		$pagination_text_align  = $this->shortcode_atts['pagination_text_align'];
+		$pagination_text_align  = $this->get_pagination_alignment();
 		$header_level           = $this->shortcode_atts['title_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );

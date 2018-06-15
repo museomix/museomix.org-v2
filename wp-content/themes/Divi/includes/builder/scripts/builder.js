@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.92';
+window.et_builder_version = '3.0.96';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -1200,7 +1200,7 @@ window.et_builder_product_name = 'Divi';
 					this.$el.addClass( 'et_pb_global_temp' );
 				}
 
-				// Split Testing related class
+				// AB Testing related class
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 					if ( ET_PageBuilder_AB_Testing.is_subject( this.model ) ) {
 						this.$el.addClass( 'et_pb_ab_subject' );
@@ -1254,7 +1254,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -1440,7 +1440,7 @@ window.et_builder_product_name = 'Divi';
 				// Add attribute to shortcode
 				this.options.model.attributes.et_pb_collapsed = 'off';
 
-				// Carousel effect for split testing subject
+				// Carousel effect for AB Testing subject
 				if ( ET_PageBuilder_AB_Testing.is_active() && this.model.get( 'et_pb_ab_subject' ) === 'on' ) {
 					ET_PageBuilder_AB_Testing.subject_carousel( this.model.get( 'cid' ) );
 				}
@@ -1557,7 +1557,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -1602,10 +1602,10 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing adjustment
+				// AB Testing adjustment
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
-					// Disable sortable of Split testing item for user with no ab_testing permission
+					// Disable sortable of AB Testing item for user with no ab_testing permission
 					if ( ! ET_PageBuilder_AB_Testing.is_user_has_permission( this.model.get( 'cid' ), 'section' ) ) {
 						return;
 					}
@@ -1624,7 +1624,7 @@ window.et_builder_product_name = 'Divi';
 							return;
 						}
 
-						// Split Testing adjustment
+						// AB Testing adjustment
 						if ( ET_PageBuilder_AB_Testing.is_active() ) {
 							// Check for permission user first
 							if ( ! ET_PageBuilder_AB_Testing.is_user_has_permission( $( ui.item ).children('.et-pb-row-content').attr( 'data-cid' ), 'row' ) ) {
@@ -1836,7 +1836,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -1910,7 +1910,7 @@ window.et_builder_product_name = 'Divi';
 					ET_PageBuilder_Events.trigger( 'et-module:removed' );
 				}
 
-				// Run Split Testing updater
+				// Run AB Testing updater
 				ET_PageBuilder_AB_Testing.update();
 			},
 
@@ -2033,7 +2033,7 @@ window.et_builder_product_name = 'Divi';
 					this.$el.addClass( 'et_pb_global_temp' );
 				}
 
-				// Split Testing related class
+				// AB Testing related class
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 					if ( ET_PageBuilder_AB_Testing.is_subject( this.model ) ) {
 						this.$el.addClass( 'et_pb_ab_subject' );
@@ -2083,7 +2083,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -2173,7 +2173,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -2210,7 +2210,7 @@ window.et_builder_product_name = 'Divi';
 				// Add attribute to shortcode
 				this.options.model.attributes.et_pb_collapsed = 'off';
 
-				// Carousel effect for split testing subject
+				// Carousel effect for AB Testing subject
 				if ( ET_PageBuilder_AB_Testing.is_active() && this.model.get( 'et_pb_ab_subject' ) === 'on' ) {
 					ET_PageBuilder_AB_Testing.subject_carousel( this.model.get( 'cid' ) );
 				}
@@ -2317,7 +2317,7 @@ window.et_builder_product_name = 'Divi';
 					global_module_cid = et_pb_get_global_parent_cid( this );
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -2361,7 +2361,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -2412,7 +2412,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -2481,7 +2481,7 @@ window.et_builder_product_name = 'Divi';
 					et_pb_update_global_template( global_module_cid );
 				}
 
-				// Run Split Testing updater
+				// Run AB Testing updater
 				ET_PageBuilder_AB_Testing.update();
 			},
 
@@ -2676,6 +2676,15 @@ window.et_builder_product_name = 'Divi';
 				}
 
 				$( 'body' ).addClass( 'et_pb_stop_scroll' );
+
+				// Hide "Save & Add To Library" button if current module has/is goal/subject.
+				// Divi Library should never saved module which has AB Testing attribute
+				if ( this.isABTestingModule() ) {
+					var $settings_container = $( view.render().el ).closest( '.et_pb_modal_settings_container' );
+
+					$settings_container.addClass( 'has_ab_testing_module' );
+					$settings_container.find( '.et-pb-modal-save-template' ).remove();
+				}
 
 				return this;
 			},
@@ -2977,7 +2986,7 @@ window.et_builder_product_name = 'Divi';
 				// Delete migrated attributes to avoid unwanted value re-assignment
 				// Their values were migrated to new attributes at this point
 				if ( name_changes &&  ! _.isUndefined( name_changes[shortcode_name] ) ) {
-					_.forEach( name_changes[shortcode_name], function( new_name, old_name ) {						
+					_.forEach( name_changes[shortcode_name], function( new_name, old_name ) {
 						unsetAttrs.push( 'et_pb_' + old_name );
 					});
 				}
@@ -3087,10 +3096,16 @@ window.et_builder_product_name = 'Divi';
 				unsetAttrs.map(this.model.unset.bind(this.model));
 			},
 
+			isABTestingModule: function() {
+				var model = this.model;
+
+				return ET_PageBuilder_AB_Testing.is_active() && (ET_PageBuilder_AB_Testing.is_subject(model) || ET_PageBuilder_AB_Testing.has_subject(model) || ET_PageBuilder_AB_Testing.is_goal(model) || ET_PageBuilder_AB_Testing.has_goal(model));
+			},
+
 			saveTemplate : function( event ) {
 				var module_width = -1 !== this.model.get( 'module_type' ).indexOf( 'fullwidth' ) ? 'fullwidth' : 'regular',
 					columns_layout = typeof this.model.get( 'columns_layout' ) !== 'undefined' ? this.model.get( 'columns_layout' ) : '0',
-					is_disabled = 'not-allowed' === $( event.target ).css( 'cursor' );
+					is_disabled = 'not-allowed' === $( event.target ).css( 'cursor' ) || this.isABTestingModule();
 				event.preventDefault();
 
 				if ( is_disabled ) {
@@ -3182,10 +3197,10 @@ window.et_builder_product_name = 'Divi';
 					this.model.set( 'et_pb_parent_locked', 'on', { silent : true } );
 				}
 
-				// Split Testing adjustment
+				// AB Testing adjustment
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
-					// Disable sortable of Split testing item for user with no ab_testing permission
+					// Disable sortable of AB Testing item for user with no ab_testing permission
 					if ( ! ET_PageBuilder_AB_Testing.is_user_has_permission( this.model.get( 'cid' ), 'column' ) ) {
 						return this;
 					}
@@ -3245,7 +3260,7 @@ window.et_builder_product_name = 'Divi';
 							return;
 						}
 
-						// Split Testing adjustment :: module as subject / goal
+						// AB Testing adjustment :: module as subject / goal
 						if ( ET_PageBuilder_AB_Testing.is_active() ) {
 							var is_row_inner = $( ui.item ).hasClass( 'et_pb_row' ),
 								cid = is_row_inner ? $( ui.item ).children( '.et-pb-row-content' ).attr( 'data-cid' ) : $( ui.item ).attr( 'data-cid' );
@@ -3440,7 +3455,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -4578,7 +4593,8 @@ window.et_builder_product_name = 'Divi';
 				// Replace double quotes with ^^ in temporary shortcodes
 				content = content.replace( /%22/g, '^^' );
 
-				this.$content_textarea.html( content );
+				// escape content to avoid scrupts execution in settings modal
+				this.$content_textarea.html(_.escape(content));
 
 				if ( ! this.$sortable_options.find( 'li' ).length )
 					this.$add_sortable_item.addClass( 'et-pb-add-sortable-initial' );
@@ -5332,8 +5348,17 @@ window.et_builder_product_name = 'Divi';
 						}
 					} else {
 						if ( '' !== this_model_defaults && typeof this_model_defaults[id] !== 'undefined' && this_model_defaults[id] === setting_value ) {
-							this_view.model.unset( id );
-							return true;
+							// Do not remove yes/no button value when it is equal to default because default value can be opposite value derrived
+							// from parent module. Yes/no input has no capability of setting value to default value on view render (on BB and VB).
+							// Furthermore, the default value has to be removed because it will be used as reference on ET_PageBuilder_App.generateModuleShortcode()
+							// which will be triggered by 'et-advanced-module:updated' event at the end of this method
+							if ($this_el.hasClass('yes_no_button')) {
+								delete this_model_defaults[id];
+								this_view.model.set('module_defaults', this_model_defaults);
+							} else {
+								this_view.model.unset( id );
+								return true;
+							}
 						}
 					}
 
@@ -5419,8 +5444,9 @@ window.et_builder_product_name = 'Divi';
 					setTimeout( function() {
 						if ( typeof window.switchEditors !== 'undefined' )
 							window.switchEditors.go( 'et_pb_content_new', et_get_editor_mode() );
-
-						et_pb_set_content( 'et_pb_content_new', content );
+						
+						// unescape content which was escaped previously
+						et_pb_set_content('et_pb_content_new', _.unescape(content));
 
 						window.wpActiveEditor = 'et_pb_content_new';
 					}, 300 );
@@ -5533,7 +5559,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -5614,7 +5640,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -5680,7 +5706,7 @@ window.et_builder_product_name = 'Divi';
 					return;
 				}
 
-				// Split Testing-related action
+				// AB Testing-related action
 				if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 					// Check for user permission and module status
@@ -5721,7 +5747,7 @@ window.et_builder_product_name = 'Divi';
 					et_pb_update_global_template( global_module_cid );
 				}
 
-				// Run Split Testing updater
+				// Run AB Testing updater
 				ET_PageBuilder_AB_Testing.update();
 			},
 
@@ -6035,7 +6061,7 @@ window.et_builder_product_name = 'Divi';
 				// Close right click options UI
 				this.closeAllRightClickOptions();
 
-				// Turn on Split Testing state
+				// Turn on AB Testing state
 				ET_PageBuilder_AB_Testing.toggle_status( true );
 
 				// Disable publish button
@@ -6046,10 +6072,10 @@ window.et_builder_product_name = 'Divi';
 				// Check DB existence
 				ET_PageBuilder_AB_Testing.check_create_db();
 
-				// Turn on Split testing subject selection mode
+				// Turn on AB Testing subject selection mode
 				ET_PageBuilder_App.is_selecting_ab_testing_subject = true;
 
-				// Adding nescesarry class for Split testing subject selection mode's UI
+				// Adding nescesarry class for AB Testing subject selection mode's UI
 				$( '#et_pb_layout' ).addClass( 'et_pb_select_ab_testing_subject' );
 			},
 
@@ -6057,10 +6083,10 @@ window.et_builder_product_name = 'Divi';
 				// Close right click options UI
 				this.closeAllRightClickOptions();
 
-				// Set split test to off
+				// Set AB Testing to off
 				ET_PageBuilder_AB_Testing.toggle_status( false );
 
-				// Turn off Split testing subject selection mode
+				// Turn off AB Testing subject selection mode
 				ET_PageBuilder_App.is_selecting_ab_testing_subject = false;
 
 				// Check against "on to off" or "off to off" state
@@ -6098,7 +6124,7 @@ window.et_builder_product_name = 'Divi';
 				// Close right click options UI
 				this.closeAllRightClickOptions();
 
-				if ( ET_PageBuilder_AB_Testing.is_active() && ( ET_PageBuilder_AB_Testing.is_split_test_item( model ) || type === 'app' ) ) {
+				if ( ET_PageBuilder_AB_Testing.is_active() && ( ET_PageBuilder_AB_Testing.is_ab_testing_item( model ) || type === 'app' ) ) {
 					ET_PageBuilder_AB_Testing.alert( 'cannot_save_' + type + '_layout_has_ab_testing' );
 					return;
 				}
@@ -6380,7 +6406,7 @@ window.et_builder_product_name = 'Divi';
 					history_verb = 'expanded';
 				}
 
-				// Carousel effect for split testing subject
+				// Carousel effect for AB Testing subject
 				if ( ET_PageBuilder_AB_Testing.is_active() && this.model.get( 'et_pb_ab_subject' ) === 'on' ) {
 					ET_PageBuilder_AB_Testing.subject_carousel( cid );
 				}
@@ -6457,7 +6483,7 @@ window.et_builder_product_name = 'Divi';
 				clipboard_content = ET_PB_Clipboard.get( clipboard_type );
 				clipboard_content = JSON.parse( clipboard_content );
 
-				// If current clipboard content is Split testing subject, assign new subject ID
+				// If current clipboard content is AB Testing subject, assign new subject ID
 				if ( ! _.isUndefined( clipboard_content.et_pb_ab_subject ) || 'on' === clipboard_content.et_pb_ab_subject ) {
 					clipboard_content.et_pb_ab_subject_id = ET_PageBuilder_AB_Testing.get_subject_id();
 				}
@@ -6469,7 +6495,7 @@ window.et_builder_product_name = 'Divi';
 				// Paste views recursively
 				this.setPasteViews( clipboard_content, parent, 'main_parent' );
 
-				// Carousel effect for split testing subject
+				// Carousel effect for AB Testing subject
 				if ( ET_PageBuilder_AB_Testing.is_active() && ( clipboard_content.type === 'row' || clipboard_content.type === 'row_inner' || clipboard_content.type === 'section' ) && clipboard_content.et_pb_ab_subject === 'on' ) {
 					ET_PageBuilder_AB_Testing.subject_carousel( clipboard_content.cid );
 				}
@@ -6612,7 +6638,7 @@ window.et_builder_product_name = 'Divi';
 					delete view.et_pb_template_type;
 				}
 
-				// If current view is Split testing subject, assign new subject ID
+				// If current view is AB Testing subject, assign new subject ID
 				if ( ! _.isUndefined( view.et_pb_ab_subject ) || 'on' === view.et_pb_ab_subject ) {
 					view.et_pb_ab_subject_id = ET_PageBuilder_AB_Testing.get_subject_id();
 				}
@@ -6677,7 +6703,7 @@ window.et_builder_product_name = 'Divi';
 								 ! ET_PageBuilder_Layout.is_global( this.options.model ) &&
 								 ! ET_PageBuilder_Layout.is_global_children( this.options.model ) &&
 								 this.options.model.attributes.et_pb_locked !== "on" &&
-								 ! ( ET_PageBuilder_AB_Testing.is_active() && ( ET_PageBuilder_AB_Testing.is_split_test_item( this.options.model ) || type === 'app' ) ) &&
+								 ! ( ET_PageBuilder_AB_Testing.is_active() && ( ET_PageBuilder_AB_Testing.is_ab_testing_item( this.options.model ) || type === 'app' ) ) &&
 								 et_pb_options.is_divi_library !== "1" ) {
 								has_option = true;
 							}
@@ -7020,7 +7046,7 @@ window.et_builder_product_name = 'Divi';
 
 					ET_PageBuilder_App.createLayoutFromContent( et_prepare_template_content( shortcode ), '', '', { is_reinit : 'reinit' } );
 
-					// Auto turn on Split Testing if the history has Split testing data
+					// Auto turn on AB Testing if the history has AB Testing data
 					if ( ET_PageBuilder_AB_Testing.is_active_based_on_models() ) {
 						ET_PageBuilder_AB_Testing.toggle_status( true );
 
@@ -7366,7 +7392,7 @@ window.et_builder_product_name = 'Divi';
 			viewABStats : function( event ) {
 				event.preventDefault();
 
-				// View Split Testing stats is disabled on Divi Library
+				// View AB Testing stats is disabled on Divi Library
 				if ( et_pb_options.is_divi_library === "1" ) {
 					return;
 				}
@@ -8394,7 +8420,7 @@ window.et_builder_product_name = 'Divi';
 							return;
 						}
 
-						// Split Testing adjustment :: section as/has subject/goal
+						// AB Testing adjustment :: section as/has subject/goal
 						if ( ET_PageBuilder_AB_Testing.is_active() ) {
 							var section_cid = $( ui.item ).children( '.et-pb-section-content' ).attr( 'data-cid' );
 
@@ -10206,7 +10232,7 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			get_shortcode_tracking_status : function() {
-				return $( '#et_pb_enable_shortcode_tracking' ).length && '' !== $( '#et_pb_enable_shortcode_tracking' ).val() ? $( '#et_pb_enable_shortcode_tracking' ).val() : 'off';
+				return $( '#_et_pb_enable_shortcode_tracking' ).length && '' !== $( '#_et_pb_enable_shortcode_tracking' ).val() ? $( '#_et_pb_enable_shortcode_tracking' ).val() : 'off';
 			},
 
 			is_active_based_on_models : function () {
@@ -10366,7 +10392,7 @@ window.et_builder_product_name = 'Divi';
 					status = is_subject || is_subject_children || has_subject || is_goal || is_goal_children || has_goal;
 				}
 
-				// User with no ab_testing permisson cannot modify Split testing-related item
+				// User with no ab_testing permisson cannot modify AB Testing-related item
 				if ( ! has_permission && status ) {
 					return false;
 				}
@@ -10374,7 +10400,7 @@ window.et_builder_product_name = 'Divi';
 				return true;
 			},
 
-			is_split_test_item : function( model ) {
+			is_ab_testing_item : function( model ) {
 				if (
 					this.is_subject( model ) ||
 					this.is_subject_children( model ) ||
@@ -10672,8 +10698,13 @@ window.et_builder_product_name = 'Divi';
 
 			set : function ( view, event ) {
 				if ( this.is_selecting_subject() ) {
+					// Prevent global children to be selected as subject
+					if ( ! _.isUndefined( view.model.get( 'et_pb_global_parent' ) ) ) {
+						ET_PageBuilder_AB_Testing.alert( 'cannot_select_global_children_as_subject' );
+						return;
+					}
 
-					// Disguiese all global-item related attributes into while being used as Split test
+					// Disguiese all global-item related attributes into while being used as AB Testing
 					if ( ET_PageBuilder_Layout.is_global( view.model ) || ET_PageBuilder_Layout.is_global_children( view.model ) ) {
 						ET_PageBuilder_Layout.removeGlobalAttributes( view, true );
 					}
@@ -10687,6 +10718,12 @@ window.et_builder_product_name = 'Divi';
 
 					return;
 				} else if ( this.is_selecting_goal() ) {
+					// Prevent global children to be selected as goal
+					if ( ! _.isUndefined( view.model.get( 'et_pb_global_parent' ) ) ) {
+						ET_PageBuilder_AB_Testing.alert( 'cannot_select_global_children_as_goal' );
+						return;
+					}
+
 					// Prevent row / section of selected subject to be set as subject
 					if ( this.has_subject( view.model ) ) {
 						this.alert( 'cannot_select_subject_parent_as_goal' );
@@ -10696,8 +10733,8 @@ window.et_builder_product_name = 'Divi';
 					// Mark as doing combination. This force disables enable_history
 					ET_PageBuilder_App.is_doing_combination = true;
 
-					// Disguise all global-item related attributes while being used as Split test goal
-					// global item behaviour removes Split testing goal attributes when its setting modal
+					// Disguise all global-item related attributes while being used as AB Testing goal
+					// global item behaviour removes AB Testing goal attributes when its setting modal
 					// saves modified configuration
 					if ( ET_PageBuilder_Layout.is_global( view.model ) || ET_PageBuilder_Layout.is_global_children( view.model ) ) {
 						ET_PageBuilder_Layout.removeGlobalAttributes( view, true );
@@ -10736,7 +10773,7 @@ window.et_builder_product_name = 'Divi';
 
 						ET_PageBuilder_AB_Testing.alert( 'configure_ab_testing_alternative' );
 
-						// Update Split Testing Status
+						// Update AB Testing Status
 						this.update();
 					}
 
@@ -10768,7 +10805,7 @@ window.et_builder_product_name = 'Divi';
 						// Mark as doing combination. This force disables enable_history
 						ET_PageBuilder_App.is_doing_combination = true;
 
-						// Turn off Split testing's winner selecting mode
+						// Turn off AB Testing's winner selecting mode
 						ET_PageBuilder_App.is_selecting_ab_testing_winner = false;
 
 						// Loop subjects
@@ -10789,7 +10826,7 @@ window.et_builder_product_name = 'Divi';
 							}
 						});
 
-						// Remove Split testing related data
+						// Remove AB Testing related data
 						view.model.unset( 'et_pb_ab_subject' );
 						view.model.unset( 'et_pb_ab_subject_id' );
 
@@ -10806,7 +10843,7 @@ window.et_builder_product_name = 'Divi';
 							return;
 						}
 
-						// Turn off Split testing sequence
+						// Turn off AB Testing sequence
 						this.turn_off_ab_testing_sequence();
 
 						return;
@@ -10836,7 +10873,7 @@ window.et_builder_product_name = 'Divi';
 					$( '#publish' ).removeClass( 'disabled' );
 				}, 650 );
 
-				// Remove nescesarry class for Split testing winner selection mode's UI
+				// Remove nescesarry class for AB Testing winner selection mode's UI
 				$( '#et_pb_layout' ).removeClass( 'et_pb_select_ab_testing_winner' );
 
 				// Hide view stats icon
@@ -11402,7 +11439,7 @@ window.et_builder_product_name = 'Divi';
 						});
 					})
 
-					// Refresh split test
+					// Refresh AB Testing
 					$prompt_modal.on( 'click', '.et-pb-ab-refresh-stats', function() {
 						ET_PageBuilder_Events.trigger( 'et-pb-loading:started' );
 
@@ -11438,7 +11475,7 @@ window.et_builder_product_name = 'Divi';
 
 			draw_graphs : function( analysis, data, line_chart, pie_chart, $line_chart, $pie_chart, $ab_testing_table, $ab_testing_table_thead, $ab_testing_table_tbody, $ab_testing_table_tfoot, thead_template, tbody_row_template, tfoot_template, skip_subject_filtering  ) {
 				var line_chart_data = {
-						labels: $.merge( [""], data.dates ),
+						labels: data.dates,
 						datasets: []
 					},
 					pie_chart_data = [],
@@ -11474,7 +11511,7 @@ window.et_builder_product_name = 'Divi';
 						strokeColor: data['subjects_totals'][ subject_key ]['color'],
 						pointColor: data['subjects_totals'][ subject_key ]['color'],
 						pointStrokeColor: "#fff",
-						data: $.merge( [ null ], _.values( data['subjects_analysis'][ subject_key ][ analysis ] ) )
+						data: _.values( data['subjects_analysis'][ subject_key ][ analysis ] )
 					});
 
 					// Generate pie chart data
@@ -11673,7 +11710,7 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			delete_post_meta : function(){
-				// Update all Split testing related hidden post meta data so it will be removed when the page is updated
+				// Update all AB Testing related hidden post meta data so it will be removed when the page is updated
 				this.toggle_status( false );
 				$( '#et_pb_ab_subjects' ).val( '' );
 
@@ -11821,7 +11858,7 @@ window.et_builder_product_name = 'Divi';
 
 			ET_PageBuilder_Events.trigger( 'et-deactivate-builder' );
 
-			// If Split testing is active, remove all Split testing related post meta
+			// If AB Testing is active, remove all AB Testing related post meta
 			if ( ET_PageBuilder_AB_Testing.is_active() ) {
 				ET_PageBuilder_AB_Testing.delete_post_meta();
 			}
@@ -11934,8 +11971,7 @@ window.et_builder_product_name = 'Divi';
 						type                  = $field_list.attr( 'data-type' ),
 						autoload              = $field_list.attr( 'data-autoload' ),
 						custom_id             = {
-							et_pb_enable_ab_testing: 'et_pb_use_ab_testing',
-							et_pb_ab_refresh_interval: 'et_pb_ab_stats_refresh_interval'
+							et_pb_enable_ab_testing: 'et_pb_use_ab_testing'
 						},
 						$saving_input         = typeof custom_id[ id ] !== 'undefined' ? $( '#' + custom_id[ id ] ) : $( '#_' + id ),
 						saved_value           = $saving_input.val();
@@ -12391,10 +12427,10 @@ window.et_builder_product_name = 'Divi';
 
 					case 'open_settings' :
 						var $enable_ab_testing_select = $modal.find( '#et_pb_enable_ab_testing' ),
-							refresh_ab_stats_interval_value = $modal.find( '#et_pb_ab_refresh_interval' ).val(),
+							refresh_ab_stats_interval_value = $modal.find( '#et_pb_ab_stats_refresh_interval' ).val(),
 							enable_ab_testing_select_value = $enable_ab_testing_select.val() === 'on' ? true : false,
 							shortcode_tracking_value = $modal.find( '#et_pb_enable_shortcode_tracking' ).val(),
-							$refresh_ab_stats_interval_meta = $( '#et_pb_ab_stats_refresh_interval' ),
+							$refresh_ab_stats_interval_meta = $( '#_et_pb_ab_stats_refresh_interval' ),
 							$shortcode_tracking_value_meta = $( '#et_pb_enable_shortcode_tracking' );
 
 							// Passes settings data to hidden inputs
@@ -12445,7 +12481,7 @@ window.et_builder_product_name = 'Divi';
 								}
 							});
 
-							// Update Split testing status meta data
+							// Update AB Testing status meta data
 							ET_PageBuilder_AB_Testing.toggle_status( enable_ab_testing_select_value );
 
 							// Update Refresh stats interval meta data
@@ -12468,15 +12504,15 @@ window.et_builder_product_name = 'Divi';
 									// Prompt select subject modal box
 									ET_PageBuilder_AB_Testing.alert_yes_no( 'select_ab_testing_subject' );
 
-									// Turn on Split testing subject selection mode
+									// Turn on AB Testing subject selection mode
 									ET_PageBuilder_App.is_selecting_ab_testing_subject = true;
 
-									// Adding nescesarry class for Split testing subject selection mode's UI
+									// Adding nescesarry class for AB Testing subject selection mode's UI
 									$( '#et_pb_layout' ).addClass( 'et_pb_select_ab_testing_subject' );
 								}
 
 							} else {
-								// Turn off Split testing subject selection mode
+								// Turn off AB Testing subject selection mode
 								ET_PageBuilder_App.is_selecting_ab_testing_subject = false;
 
 								// Check against "on to off" or "off to off" state
@@ -12505,10 +12541,10 @@ window.et_builder_product_name = 'Divi';
 						ET_PageBuilder_App.disable_publish = true;
 						$( '#publish' ).addClass( 'disabled' );
 
-						// Turn on Split Testing selecting winner mode
+						// Turn on AB Testing selecting winner mode
 						ET_PageBuilder_App.is_selecting_ab_testing_winner = true;
 
-						// Adding nescesarry class for Split testing winner selection mode's UI
+						// Adding nescesarry class for AB Testing winner selection mode's UI
 						$( '#et_pb_layout' ).addClass( 'et_pb_select_ab_testing_winner' );
 
 						break;
@@ -12517,7 +12553,7 @@ window.et_builder_product_name = 'Divi';
 						// Remove Temporary global attributes
 						ET_PageBuilder_Layout.removeTemporaryGlobalAttributes( template_settings.view );
 
-						// Turn off Split testing sequence
+						// Turn off AB Testing sequence
 						ET_PageBuilder_AB_Testing.turn_off_ab_testing_sequence();
 
 						break;
@@ -12529,10 +12565,10 @@ window.et_builder_product_name = 'Divi';
 						break;
 
 					case 'view_ab_stats' :
-						// Set split test to off
+						// Set AB Testing to off
 						ET_PageBuilder_AB_Testing.toggle_status( false );
 
-						// Turn off Split testing subject selection mode
+						// Turn off AB Testing subject selection mode
 						ET_PageBuilder_App.is_selecting_ab_testing_subject = false;
 
 						// Check against "on to off" or "off to off" state
@@ -12619,7 +12655,7 @@ window.et_builder_product_name = 'Divi';
 						// Revive global attributes
 						ET_PageBuilder_Layout.removeTemporaryGlobalAttributes( template_settings.view, true );
 
-						// Turn off Split testing sequence
+						// Turn off AB Testing sequence
 						ET_PageBuilder_AB_Testing.turn_off_ab_testing_sequence();
 
 						break;
@@ -12634,10 +12670,10 @@ window.et_builder_product_name = 'Divi';
 						ET_PageBuilder_App.disable_publish = false;
 						$( '#publish' ).removeClass( 'disabled' );
 
-						// Turn off Split testing subject selection mode
+						// Turn off AB Testing subject selection mode
 						ET_PageBuilder_App.is_selecting_ab_testing_subject = false;
 
-						// Adding nescesarry class for Split testing subject selection mode's UI
+						// Adding nescesarry class for AB Testing subject selection mode's UI
 						$( '#et_pb_layout' ).removeClass( 'et_pb_select_ab_testing_subject' );
 
 						delete ET_PageBuilder_App.ab_last_visible_alert;
@@ -12658,6 +12694,10 @@ window.et_builder_product_name = 'Divi';
 						if ( ! _.isUndefined( ET_PageBuilder_App.ab_last_visible_alert ) ) {
 							delete ET_PageBuilder_App.ab_last_visible_alert;
 						}
+						break;
+					case 'turn_off_ab_testing' :
+						// Return meta value input to "on"
+						ET_PageBuilder_AB_Testing.toggle_status(true);
 						break;
 				}
 
@@ -15035,31 +15075,39 @@ window.et_builder_product_name = 'Divi';
 
 			if ( $et_affect_fields.length ) {
 				$et_affect_fields.change( function() {
-					var $this_field         = $(this), // this field value affects another field visibility
-						new_field_value     = $this_field.val(),
-						new_field_value_number = parseInt( new_field_value ),
-						data_affects_obj    = _.map( $this_field.data( 'affects' ).split(', '), function( affect ) {
+					var $this_field         = $(this); // this field value affects another field visibility
+					var new_field_value     = $this_field.val();
+					var new_field_value_number = parseInt( new_field_value );
+					var data_affects_obj    = _.map( $this_field.data( 'affects' ).split(', '), function( affect ) {
 							var is_selector = ( 'image' !== affect ) && $( affect ).length;
 
 							return is_selector ? affect : '#et_pb_' + affect;
-						} ),
-						data_affects         = data_affects_obj.join(', '),
-						$affected_fields     = $container.find( data_affects ),
-						this_field_tab_index = $this_field.closest( '.et-pb-options-tab' ).index();
+						} );
+					var data_affects         = data_affects_obj.join(', ');
+					var $affected_fields     = $container.find( data_affects );
+					var this_field_tab_index = $this_field.closest( '.et-pb-options-tab' ).index();
+					var process_filed_visibility = function(field, hide) {
+						//Make sure that there is sent a bool value
+						hide = true === hide;
 
-					$affected_fields.each( function() {
-						var $affected_field          = $(this),
-							$affected_container      = $affected_field.closest( '.et-pb-option' ),
-							is_text_trigger          = 'text' === $this_field.attr( 'type' ) && typeof show_if_not === 'undefined' && typeof show_if === 'undefined', // need to know if trigger is text field
-							show_if                  = $affected_container.data( 'depends_show_if' ) || 'on',
-							show_if_not              = is_text_trigger ? '' : $affected_container.data( 'depends_show_if_not' ),
-							show                     = show_if === new_field_value || ( typeof show_if_not !== 'undefined' && ! _.contains( show_if_not.split(','), new_field_value ) ),
-							affected_field_tab_index = $affected_field.closest( '.et-pb-options-tab' ).index(),
-							$dependant_fields        = $affected_container.find( '.et-pb-affects' ), // affected field might affect some other fields as well
-							is_use_background_color_gradient = $this_field.closest( '.et_pb_background-template--use_color_gradient' ).length;
+						var $affected_field          = $(field);
+						var $affected_container      = $affected_field.closest( '.et-pb-option' );
+						var is_text_trigger          = 'text' === $this_field.attr( 'type' ) && typeof show_if_not === 'undefined' && typeof show_if === 'undefined'; // need to know if trigger is text field
+						var show_if                  = $affected_container.data( 'depends_show_if' ) || 'on';
+						var show_if_not              = is_text_trigger ? '' : $affected_container.data( 'depends_show_if_not' );
+						var show                     = !hide && (show_if === new_field_value || ( typeof show_if_not !== 'undefined' && ! _.contains( show_if_not.split(','), new_field_value ) ));
+						var affected_field_tab_index = $affected_field.closest( '.et-pb-options-tab' ).index();
+						var $dependant_fields        = $affected_container.find( '.et-pb-affects' ); // affected field might affect some other fields as well
+						var is_use_background_color_gradient = $this_field.closest( '.et_pb_background-template--use_color_gradient' ).length;
 
 						// make sure hidden text fields do not break the visibility of option
-						if ( is_text_trigger && ! $this_field.is( ':visible' ) ) {
+						if (
+							$affected_field.hasClass('et_pb_field_processed')
+							||
+							is_text_trigger
+							&&
+							! $this_field.is( ':visible' )
+						) {
 							return;
 						}
 
@@ -15081,19 +15129,19 @@ window.et_builder_product_name = 'Divi';
 
 						// if the affected field affects other fields, find out if we need to hide/show them
 						if ( $dependant_fields.length ) {
-								var data_inner_affects_obj = _.map( $dependant_fields.data( 'affects' ).split(', '), function( affect ) {
-									var is_selector = ( 'image' !== affect ) && $( affect ).length;
+							var data_inner_affects_obj = _.map( $dependant_fields.data( 'affects' ).split(', '), function( affect ) {
+								var is_selector = ( 'image' !== affect ) && $( affect ).length;
 
-									return is_selector ? affect : '#et_pb_' + affect;
-								} );
-								var data_inner_affects = data_inner_affects_obj.join(', ');
-								var $inner_affected_elements = $( data_inner_affects );
+								return is_selector ? affect : '#et_pb_' + affect;
+							} );
+							var data_inner_affects = data_inner_affects_obj.join(', ');
+							var $inner_affected_elements = $( data_inner_affects );
 
-							if ( ! $affected_container.is( ':visible' ) ) {
+							if ( ! show ) {
 								// if the main affected field is hidden, hide all fields it affects
 
 								$inner_affected_elements.each( function() {
-									$(this).closest( '.et-pb-option' ).hide();
+									process_filed_visibility(this, true);
 									et_pb_hide_empty_toggles( $(this) );
 								} );
 							} else {
@@ -15102,7 +15150,15 @@ window.et_builder_product_name = 'Divi';
 								$affected_field.trigger( 'change' );
 							}
 						}
-					} );
+
+						$affected_field.addClass('et_pb_field_processed');
+					};
+
+					$affected_fields
+						.each(function () {
+							process_filed_visibility(this);
+						})
+						.removeClass('et_pb_field_processed');
 
 					// don't make conditional logic row sortable as that is not needed and causes it to not work properly
 					$('.et_options_list:not(.et_conditional_logic)').each(function() {
@@ -16666,7 +16722,7 @@ window.et_builder_product_name = 'Divi';
 
 					ET_PageBuilder_App.createLayoutFromContent( et_prepare_template_content( shortcode ), '', '', { is_reinit : 'reinit' } );
 
-					// Auto turn on Split Testing if the history has Split testing data
+					// Auto turn on AB Testing if the history has AB Testing data
 					if ( ET_PageBuilder_AB_Testing.is_active_based_on_models() ) {
 						ET_PageBuilder_AB_Testing.toggle_status( true );
 
@@ -17077,7 +17133,7 @@ window.et_builder_product_name = 'Divi';
 			}
 			// autop shouldn't be applied if editor is in text mode
 			var et_global_autop = 'html' === et_get_editor_mode() ? 'skip' : 'apply';
-			
+
 			$.ajax( {
 				type: "POST",
 				url: et_pb_options.ajaxurl,
@@ -17770,7 +17826,7 @@ window.et_builder_product_name = 'Divi';
 								return;
 							}
 
-							// Split Testing-related action
+							// AB Testing-related action
 							if ( ET_PageBuilder_AB_Testing.is_active() ) {
 
 								// Check for user permission and module status

@@ -152,8 +152,6 @@
 					else
 						$et_slider_controls	= $et_slider.find( settings.controls );
 
-					et_maybe_set_controls_color( $et_slide.eq(0) );
-
 					$et_slider_controls.on( 'click.et_pb_simple_slider', function () {
 						if ( $et_slider.et_animation_running )	return false;
 
@@ -162,6 +160,8 @@
 						return false;
 					} );
 				}
+
+				et_maybe_set_controls_color( $et_slide.eq(0) );
 
 				if ( settings.use_carousel && et_slides_number > 1 ) {
 					for ( var i = 1; i <= et_slides_number; i++ ) {
@@ -1161,7 +1161,7 @@
 				});
 			}
 
-			// init split testing if enabled
+			// init AB Testing if enabled
 			if ( et_pb_custom.is_ab_testing_active ) {
 				et_pb_init_ab_test();
 			}
@@ -1307,7 +1307,8 @@
 							opener: function(element) {
 								return element.find('img');
 							}
-						}
+						},
+						autoFocusLast: false
 					} );
 				} );
 				// prevent attaching of any further actions on click
@@ -1330,7 +1331,8 @@
 							opener: function(element) {
 								return element.find('img');
 							}
-						}
+						},
+						autoFocusLast: false
 					} );
 				}
 
@@ -2526,7 +2528,7 @@
 
 			if ( $et_pb_circle_counter.length || is_frontend_builder || $( '.et_pb_ajax_pagination_container' ).length > 0 ) {
 				window.et_pb_circle_counter_init = function($the_counter, animate) {
-					if ( 0 === $the_counter.width() ) {
+					if ( $the_counter.width() <= 0 ) {
 						return;
 					}
 
@@ -2782,9 +2784,6 @@
 							var unchecked     = false;
 							var default_value;
 
-							// Escape double quotes in label
-							this_label = this_label.replace(/"/g, "&quot;");
-
 							// radio field properties adjustment
 							if ( 'radio' === field_type ) {
 								if ( 0 !== $this_wrapper.find( 'input[type="radio"]').length ) {
@@ -2840,6 +2839,9 @@
 									unchecked = true;
 								}
 							}
+
+							// Escape double quotes in label
+							this_label = this_label.replace(/"/g, "&quot;");
 
 							// Store the labels of the conditionally hidden fields so that they can be
 							// removed later if a custom message pattern is enabled
@@ -4122,6 +4124,12 @@
 				var $et_pb_ab_goal = $( '.et_pb_ab_goal' ),
 					et_ab_subject_id = et_pb_get_subject_id();
 
+				// Disable AB Testing tracking on VB
+				// AB Testing should not record anything on AB Testing
+				if ( is_frontend_builder ) {
+					return;
+				}
+
 				$.each( et_pb_ab_logged_status, function( key, value ) {
 					var cookie_subject = 'click_goal' === key || 'con_short' === key ? '' : et_ab_subject_id;
 
@@ -4225,7 +4233,7 @@
 				var $subject = $( '.et_pb_ab_subject' );
 
 				// In case no subject found
-				if ( $subject.length <= 0 ) {
+				if ( $subject.length <= 0 || $('html').is('.et_fb_preview_active--wireframe_preview') ) {
 					return false;
 				}
 
@@ -5214,7 +5222,7 @@
 		});
 
 		// get the subject id for current visitor and display it
-		// this ajax request performed only if split testing is enabled and cache plugin active
+		// this ajax request performed only if AB Testing is enabled and cache plugin active
 		$.ajax( {
 			type: "POST",
 			url: et_pb_custom.ajaxurl,

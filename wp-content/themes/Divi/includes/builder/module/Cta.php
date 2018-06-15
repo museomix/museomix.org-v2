@@ -235,13 +235,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 	}
 
 	function get_max_width_additional_css() {
-		$text_orientation = isset( $this->shortcode_atts['text_orientation'] ) ? $this->shortcode_atts['text_orientation'] : '';
-
-		if ( is_rtl() && 'left' === $text_orientation ) {
-			$text_orientation = 'right';
-		}
-
-		$additional_css = 'center' === $text_orientation ? '; margin: 0 auto;' : '';
+		$additional_css = 'center' === $this->get_text_orientation() ? '; margin: 0 auto;' : '';
 
 		return $additional_css;
 	}
@@ -317,7 +311,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 		$selector = sprintf( '.%1$s .et_pb_button', self::get_module_order_class( $function_name ) );
 
-		if ( isset( $this->shortcode_atts['custom_button'] ) && $this->shortcode_atts['custom_button'] == 'on' ) {
+		if ( isset( $this->shortcode_atts['custom_button'] ) && 'on' === $this->shortcode_atts['custom_button'] ) {
 			self::set_style( $function_name, array(
 				'selector'    => $selector,
 				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )

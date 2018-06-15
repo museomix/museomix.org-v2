@@ -510,23 +510,45 @@
 						return;
 					}
 
-					$this.instance( '.et-core-progress' )
-						.removeClass( 'et-core-progress-striped' )
-						.find( '.et-core-progress-bar' ).width( '100%' )
-						.text( '100%' )
-						.delay( 1000 ).queue( function() {
+					// Timestamp when AJAX response is received
+					var ajax_returned_timestamp = new Date().getTime();
 
+					// Animate Progresss Bar
+					var animateCoreProgressBar = function( DOMHighResTimeStamp ) {
+						// Check has been performed for 3s and progress bar DOM still can't be found, consider it fail to avoid infinite loop
+						var current_timestamp = new Date().getTime();
+						if ((current_timestamp - ajax_returned_timestamp) > 3000) {
 							$this.enableActions();
+							etCore.modalContent( '<div class="et-core-loader et-core-loader-fail"></div>', false, 3000, '#' + $this.instance( '.ui-tabs-panel:visible' ).attr( 'id' ) );
+							return;
+						}
 
-							if ( 'undefined' === typeof response.data || ( 'undefined' !== typeof response.data && ! response.data.timestamp ) ) {
-								etCore.modalContent( '<div class="et-core-loader et-core-loader-fail"></div>', false, 3000, '#' + $this.instance( '.ui-tabs-panel:visible' ).attr( 'id' ) );
-								return;
-							}
+						// Check if core progress DOM exists
+						if ($this.instance( '.et-core-progress' ).length ) {
+							$this.instance( '.et-core-progress' )
+								.removeClass( 'et-core-progress-striped' )
+								.find( '.et-core-progress-bar' ).width( '100%' )
+								.text( '100%' )
+								.delay( 1000 )
+								.queue( function() {
 
-							$( this ).dequeue();
+									$this.enableActions();
 
-							callback( response );
-						} );
+									if ( 'undefined' === typeof response.data || ( 'undefined' !== typeof response.data && ! response.data.timestamp ) ) {
+										etCore.modalContent( '<div class="et-core-loader et-core-loader-fail"></div>', false, 3000, '#' + $this.instance( '.ui-tabs-panel:visible' ).attr( 'id' ) );
+										return;
+									}
+
+									$( this ).dequeue();
+
+									callback( response );
+								} );
+						} else {
+							// Recheck on the next animation frame
+							window.requestAnimationFrame(animateCoreProgressBar);
+						}
+					}
+					animateCoreProgressBar();
 				}
 			};
 

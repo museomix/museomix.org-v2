@@ -1329,23 +1329,23 @@ function et_pb_autosave_builder_settings( $post_id, $builder_settings ) {
 	// Builder settings autosave
 	if ( !empty( $builder_settings ) ) {
 
-		// Pseudo activate split test for VB draft/builder-sync interface
+		// Pseudo activate AB Testing for VB draft/builder-sync interface
 		if ( isset( $builder_settings['et_pb_use_ab_testing'] ) ) {
-			// Save autosave/draft split test status
+			// Save autosave/draft AB Testing status
 			update_post_meta(
 				$post_id,
 				'_et_pb_use_ab_testing_draft',
 				sanitize_text_field( $builder_settings['et_pb_use_ab_testing'] )
 			);
 
-			// Format split test data, since BB has UI and actual input IDs. FB uses BB's UI ID
+			// Format AB Testing data, since BB has UI and actual input IDs. FB uses BB's UI ID
 			$builder_settings['et_pb_enable_ab_testing'] = $builder_settings['et_pb_use_ab_testing'];
 
 			// Unset BB's actual input data
 			unset( $builder_settings['et_pb_use_ab_testing'] );
 		}
 
-		// Pseudo save split test subjects for VB draft/builder-sync interface
+		// Pseudo save AB Testing subjects for VB draft/builder-sync interface
 		if ( isset( $builder_settings['et_pb_ab_subjects'] ) ) {
 			// Save autosave/draft subjects
 			update_post_meta(
@@ -1536,6 +1536,7 @@ function et_fb_get_nonces() {
 		'moduleEmailOptinAddAccount'    => wp_create_nonce( 'et_builder_email_add_account_nonce' ),
 		'moduleEmailOptinRemoveAccount' => wp_create_nonce( 'et_builder_email_remove_account_nonce' ),
 		'uploadFontNonce'               => wp_create_nonce( 'et_fb_upload_font_nonce' ),
+		'abTestingReport'               => wp_create_nonce( 'ab_testing_builder_nonce' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );
@@ -1909,6 +1910,17 @@ if ( ! function_exists( 'et_is_builder_plugin_active' ) ):
 function et_is_builder_plugin_active() {
 	return (bool) defined( 'ET_BUILDER_PLUGIN_ACTIVE' );
 }
+endif;
+
+if ( ! function_exists( 'et_is_shortcodes_plugin_active' ) ):
+	/**
+	 * Is ET Shortcodes plugin active?
+	 *
+	 * @return bool  True - if the plugin is active
+	 */
+	function et_is_shortcodes_plugin_active() {
+		return (bool) defined( 'ET_SHORTCODES_PLUGIN_VERSION' );
+	}
 endif;
 
 /**
@@ -2645,6 +2657,10 @@ add_action( 'created_term', 'et_pb_force_regenerate_templates' );
 add_action( 'edited_term', 'et_pb_force_regenerate_templates' );
 add_action( 'delete_term', 'et_pb_force_regenerate_templates' );
 
+//@Todo we should remove this hook after BB is retired
+//purge BB microtemplates cache after Theme Customizer changes
+add_action( 'customize_save_after', 'et_pb_force_regenerate_templates' );
+
 function et_pb_ab_get_current_ab_module_id( $test_id, $subject_index = false ) {
 	$all_subjects = false !== ( $all_subjects_raw = get_post_meta( $test_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array();
 
@@ -2729,7 +2745,7 @@ function et_pb_ab_increment_current_ab_module_id( $test_id, $user_unique_id ) {
 }
 
 /**
- * Add the record into Split testing log table
+ * Add the record into AB Testing log table
  *
  * @return void
  */

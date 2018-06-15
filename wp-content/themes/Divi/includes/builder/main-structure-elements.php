@@ -219,6 +219,12 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			'inner_shadow'           => array( 'off' ),
 			'parallax'               => array( 'off' ),
 			'parallax_method'        => array( 'on' ),
+			'parallax_1'             => array( 'off' ),
+			'parallax_method_1'      => array( 'on' ),
+			'parallax_2'             => array( 'off' ),
+			'parallax_method_2'      => array( 'on' ),
+			'parallax_3'             => array( 'off' ),
+			'parallax_method_3'      => array( 'on' ),
 			'padding_mobile'         => array( '' ),
 			'make_fullwidth'         => array( 'off' ),
 			'use_custom_width'       => array( 'off' ),
@@ -1155,7 +1161,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				array( $parallax_2, $parallax_method_2 ),
 				array( $parallax_3, $parallax_method_3 ),
 			);
-
+			
 			if ( 'on' === $make_fullwidth && 'off' === $use_custom_width ) {
 				$module_class .= ' et_pb_specialty_fullwidth';
 			}
@@ -1233,7 +1239,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				%9$s
 					%1$s
 				%10$s
-			</div> <!-- .et_pb_section -->',
+			</div>%15$s <!-- .et_pb_section -->',
 			do_shortcode( et_pb_fix_shortcodes( $content ) ),
 			$background_video,
 			( '' !== $background_video ? ' et_pb_section_video et_pb_preload' : '' ),
@@ -1257,7 +1263,8 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			),
 			( 'on' === $specialty ? ' et_section_specialty' : ' et_section_regular' ),
 			( $is_transparent_background ? ' et_section_transparent' : '' ),
-			$this->get_module_data_attributes()
+			$this->get_module_data_attributes(),
+			$this->_keep_box_shadow_compatibility( $function_name )
 		);
 
 		if ( 'on' === $specialty ) {
@@ -1274,22 +1281,50 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 	}
 
 	public function process_box_shadow( $function_name ) {
+		parent::process_box_shadow( $function_name );
+
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
+		 */
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 		$style = $boxShadow->get_value( $this->shortcode_atts );
 
-		if ( empty( $style ) || $style === 'none' ) {
-			return;
+		if ( ! empty( $style ) && 'none' !== $style && false === strpos( $style, 'inset' ) ) {
+			// Make section z-index higher if it has outer box shadow #4762
+			self::set_style( $function_name, array(
+				'selector'    => '%%order_class%%',
+				'declaration' => 'z-index: 10'
+			) );
+		}
+	}
+
+	private function _keep_box_shadow_compatibility( $function_name ) {
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $box_shadow
+		 */
+		$box_shadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$utils      = ET_Core_Data_Utils::instance();
+		$atts       = $this->shortcode_atts;
+		$style      = $box_shadow->get_value( $atts );
+
+		if (
+			! empty( $style )
+			&&
+			! is_admin()
+			&&
+			version_compare( $utils->array_get( $atts, '_builder_version', '3.0.93' ), '3.0.94', 'lt' )
+			&&
+			! $box_shadow->is_inset( $box_shadow->get_value( $atts ) )
+		) {
+			$class = '.' . self::get_module_order_class( $function_name );
+
+			return sprintf(
+				'<style type="text/css">%1$s</style>',
+				sprintf( '%1$s { z-index: 11; %2$s }', esc_html( $class ), esc_html( $style ) )
+			);
 		}
 
-		if ( strpos( $style, 'inset' ) === false ) {
-			self::set_style( $function_name, $boxShadow->get_style(
-				sprintf( '.%1$s', self::get_module_order_class( $function_name ) ),
-				$this->shortcode_atts,
-				array( 'always_overlay' => true )
-			) );
-		} else {
-			parent::process_box_shadow( $function_name );
-		}
+		return '';
 	}
 }
 new ET_Builder_Section;
@@ -4035,6 +4070,9 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			$module_class .= ' et_pb_gutters' . $gutter_width;
 		}
 
+		$parallax_image = $this->get_parallax_image_background();
+		$background_video = $this->video_background();
+
 		// reset the global column settings to make sure they are not affected by internal content
 		$et_pb_all_column_settings_inner = $et_pb_all_column_settings_backup;
 
@@ -4042,13 +4080,19 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$module_class .= $this->generate_css_filters( $function_name );
 
 		$output = sprintf(
-			'<div%4$s class="%2$s">
+			'<div%4$s class="%2$s%7$s%8$s">
 				%1$s
+				%5$s
+				%6$s
 			</div> <!-- .%3$s -->',
 			$inner_content,
 			esc_attr( $module_class ),
 			esc_html( $function_name ),
-			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' )
+			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
+			$parallax_image,
+			$background_video,
+			( '' !== $background_video ? ' et_pb_section_video et_pb_preload' : '' ),
+			( '' !== $parallax_image ? ' et_pb_section_parallax' : '' )
 		);
 
 		return $output;

@@ -38,6 +38,7 @@ class ET_Builder_Module_Settings_Migration_BorderOptions extends ET_Builder_Modu
 		parent::__construct();
 
 		self::$_bb_excluded_name_changes[] = 'use_border_color';
+		self::$_bb_excluded_name_changes[] = 'use_focus_border_color';
 	}
 
 	public function _get_border_style_default( $module_slug, $field_name ) {

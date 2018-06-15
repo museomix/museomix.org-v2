@@ -861,7 +861,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		if ( '' !== $text_border_radius ) {
 			$border_radius_value = et_builder_process_range_value( $text_border_radius );
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_slider_with_text_overlay h2.et_pb_slide_title',
+				'selector'    => '%%order_class%%.et_pb_slider_with_text_overlay h2.et_pb_slide_title, %%order_class%%.et_pb_slider_with_text_overlay .et_pb_slide_title',
 				'declaration' => sprintf(
 					'-webkit-border-top-left-radius: %1$s;
 					-webkit-border-top-right-radius: %1$s;
@@ -1031,10 +1031,13 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 	public function process_box_shadow( $function_name ) {
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 		$selector  = '.' . self::get_module_order_class( $function_name );
-		self::set_style( $function_name, array(
-			'selector'    => $selector . ' .et_pb_button',
-			'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )
-		) );
+
+		if ( isset( $this->shortcode_atts['custom_button'] ) && 'on' === $this->shortcode_atts['custom_button'] ) {
+			self::set_style( $function_name, array(
+				'selector'    => $selector . ' .et_pb_button',
+				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )
+			) );
+		}
 
 		self::set_style( $function_name, $boxShadow->get_style( $selector, $this->shortcode_atts ) );
 	}

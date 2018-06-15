@@ -252,7 +252,9 @@ if ( ! function_exists( 'et_update_option' ) ) {
 		} else if ( et_options_stored_in_one_row() ) {
 			$et_theme_options_name = 'et_' . $shortname;
 
-			if ( ! isset( $et_theme_options ) ) $et_theme_options = get_option( $et_theme_options_name );
+			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
+				$et_theme_options = get_option( $et_theme_options_name );
+			}
 			$et_theme_options[$option_name] = $new_value;
 
 			$option_name = $et_theme_options_name;
@@ -291,7 +293,17 @@ if ( ! function_exists( 'truncate_post' ) ) {
 
 		if ( '' == $post ) global $post;
 
-		$post_excerpt = '';
+		if ( post_password_required( $post ) ) {
+			$post_excerpt = get_the_password_form();
+
+			if ( $echo ) {
+				echo $post_excerpt;
+				return;
+			}
+
+			return $post_excerpt;
+		}
+
 		$post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
 		if ( 'on' == et_get_option( $shortname . '_use_excerpt' ) && '' != $post_excerpt ) {

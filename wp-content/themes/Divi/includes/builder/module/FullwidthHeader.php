@@ -219,7 +219,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 			),
 			'title' => array(
 				'label'    => esc_html__( 'Title', 'et_builder' ),
-				'selector' => '.header-content h1,.header-content .et_pb_module_header',
+				'selector' => '%%order_class%% .header-content h1,%%order_class%% .header-content .et_pb_module_header',
 			),
 			'subtitle' => array(
 				'label'    => esc_html__( 'Subtitle', 'et_builder' ),
@@ -473,7 +473,6 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'toggle_slug'     => 'width',
 				'mobile_options'  => true,
 				'validate_unit'   => true,
-				'depends_show_if' => 'off',
 				'default'         => '100%',
 				'allow_empty'     => true,
 				'range_settings'  => array(
@@ -553,7 +552,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		$title                        = $this->shortcode_atts['title'];
 		$subhead                      = $this->shortcode_atts['subhead'];
 		$background_layout            = $this->shortcode_atts['background_layout'];
-		$text_orientation             = $this->shortcode_atts['text_orientation'];
+		$text_orientation             = $this->get_text_orientation();
 		$button_one_text              = $this->shortcode_atts['button_one_text'];
 		$button_one_url               = $this->shortcode_atts['button_one_url'];
 		$button_one_rel               = $this->shortcode_atts['button_one_rel'];
@@ -587,10 +586,6 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		$content_max_width_tablet      = $this->shortcode_atts['content_max_width_tablet'];
 		$content_max_width_phone       = $this->shortcode_atts['content_max_width_phone'];
 		$content_max_width_last_edited = $this->shortcode_atts['content_max_width_last_edited'];
-
-		if ( is_rtl() && 'left' === $text_orientation ) {
-			$text_orientation = 'right';
-		}
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 

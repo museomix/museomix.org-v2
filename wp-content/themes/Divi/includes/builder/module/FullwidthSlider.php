@@ -404,10 +404,13 @@ class ET_Builder_Module_Fullwidth_Slider extends ET_Builder_Module {
 	public function process_box_shadow( $function_name ) {
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 		$selector  = '.' . self::get_module_order_class( $function_name );
-		self::set_style( $function_name, array(
-			'selector'    => $selector . ' .et_pb_button',
-			'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )
-		) );
+
+		if ( isset( $this->shortcode_atts['custom_button'] ) && 'on' === $this->shortcode_atts['custom_button'] ) {
+			self::set_style( $function_name, array(
+				'selector'    => $selector . ' .et_pb_button',
+				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )
+			) );
+		}
 
 		self::set_style( $function_name, $boxShadow->get_style( $selector, $this->shortcode_atts ) );
 	}

@@ -305,6 +305,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		$custom_icon                 = $this->shortcode_atts['button_icon'];
 		$header_level                = $this->shortcode_atts['header_level'];
 		$content                     = $this->shortcode_content;
+		$use_focus_border_color      = $this->shortcode_atts['use_focus_border_color'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -446,8 +447,8 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		}
 
 		$output = sprintf(
-			'<div%6$s class="et_pb_newsletter et_pb_login clearfix%4$s%7$s%8$s%9$s%11$s"%5$s>
-				%12$s
+			'<div%6$s class="et_pb_newsletter et_pb_login clearfix%4$s%7$s%8$s%9$s%11$s%12$s"%5$s>
+				%13$s
 				%10$s
 				<div class="et_pb_newsletter_description">
 					%1$s
@@ -468,8 +469,9 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			is_customize_preview() || is_et_pb_preview() ? ' et_pb_in_customizer' : '',
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
-			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
-			$parallax_image_background
+			( '' !== $parallax_image_background ? ' et_pb_section_parallax' : '' ), // #11
+			( 'on' === $use_focus_border_color ? ' et_pb_with_focus_border' : '' ), // #12
+			$parallax_image_background // #13
 		);
 
 		return $output;
@@ -479,7 +481,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 		$selector  = sprintf( '.%1$s .et_pb_button', self::get_module_order_class( $function_name ) );
 
-		if ( isset( $this->shortcode_atts['custom_button'] ) && $this->shortcode_atts['custom_button'] == 'on' ) {
+		if ( isset( $this->shortcode_atts['custom_button'] ) && 'on' === $this->shortcode_atts['custom_button'] ) {
 			self::set_style( $function_name, array(
 				'selector'    => $selector,
 				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'suffix' => '_button' ) )
@@ -588,9 +590,14 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 	function process_advanced_border_options( $function_name ) {
 		parent::process_advanced_border_options( $function_name );
 
-		$suffixes = array('fields', 'fields_focus');
+		$suffixes = array( 'fields' );
 
-		foreach ($suffixes as $suffix) {
+		$use_focus_border_color = $this->shortcode_atts['use_focus_border_color'] === 'on' ? true : false;
+		if ( $use_focus_border_color ) {
+			$suffixes[] = 'fields_focus';
+		}
+
+		foreach ( $suffixes as $suffix ) {
 			/**
 			 * @var ET_Builder_Module_Field_Border $border_field
 			 */

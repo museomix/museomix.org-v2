@@ -451,12 +451,13 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 			) );
 		}
 
-		if ( '' !== $mobile_menu_bg_color ) {
+		if ( '' !== $mobile_menu_bg_color || '' !== $background_color ) {
+			$et_menu_bg_color_mobile = '' !== $mobile_menu_bg_color ? $mobile_menu_bg_color : $background_color;
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%%.et_pb_fullwidth_menu .et_mobile_menu, %%order_class%%.et_pb_fullwidth_menu .et_mobile_menu ul',
 				'declaration' => sprintf(
 					'background-color: %1$s !important;',
-					esc_html( $mobile_menu_bg_color )
+					esc_html( $et_menu_bg_color_mobile )
 				),
 			) );
 		}

@@ -566,7 +566,9 @@ class ET_Builder_Element {
 			$this->ab_tests_processed[ $test_id ] = true;
 		}
 
-		if ( false === $saved_module_id ) {
+		// Only log a stat if this is opened on actual frontend
+		if ( false === $saved_module_id && ! is_admin() && ! et_fb_enabled() ) {
+
 			// log the view_page event right away
 			et_pb_add_stats_record( array(
 					'test_id'     => $test_id,
@@ -1203,14 +1205,10 @@ class ET_Builder_Element {
 			$content = array_key_exists( 'content_new', $this->whitelisted_fields ) || 'et_pb_code' === $function_name_processed || 'et_pb_fullwidth_code' === $function_name_processed ? $processed_content : et_fb_process_shortcode( $processed_content, $address, $global_parent, $global_parent_type );
 		}
 
-		if ( is_array( $content ) ) {
-			$prepared_content = $content;
-		} else {
-			if ( $this->fb_support && count( preg_split('/\r\n*\n/', trim( $content ), -1, PREG_SPLIT_NO_EMPTY ) ) > 1 ) {
-				$prepared_content = wpautop( $content );
-			} else {
-				$prepared_content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
-			}
+		$prepared_content = $content;
+
+		if ( ! is_array( $content ) && ! ( $this->fb_support && count( preg_split('/\r\n*\n/', trim( $content ), -1, PREG_SPLIT_NO_EMPTY ) ) > 1 ) ) {
+			$prepared_content = html_entity_decode($content, ENT_COMPAT, 'UTF-8');
 		}
 
 		if ( empty( $attrs ) ) {
@@ -4645,6 +4643,10 @@ class ET_Builder_Element {
 		$need_mobile_options = isset( $field['mobile_options'] ) && $field['mobile_options'] ? true : false;
 		$only_options = isset( $field['only_options'] ) ? $field['only_options'] : false;
 		$is_child = isset( $this->type ) && 'child' === $this->type;
+		// Make sure 'type' is always set to prevent PHP notices
+		if ( empty( $field['type'] ) ) {
+			$field['type'] = 'no-type';
+		}
 
 		if ( $need_mobile_options ) {
 			$mobile_settings_tabs = et_pb_generate_mobile_options_tabs();
@@ -6012,6 +6014,9 @@ class ET_Builder_Element {
 		$fields['disabled'] = 'off';
 		$fields['disabled_on'] = '';
 		$fields['global_module'] = '';
+		$fields['temp_global_module'] = '';
+		$fields['global_parent'] = '';
+		$fields['temp_global_parent'] = '';
 		$fields['saved_tabs'] = '';
 		$fields['ab_subject'] = '';
 		$fields['ab_subject_id'] = '';
@@ -6176,11 +6181,7 @@ class ET_Builder_Element {
 	function get_text_orientation() {
 		$text_orientation = isset( $this->shortcode_atts['text_orientation'] ) ? $this->shortcode_atts['text_orientation'] : '';
 
-		if ( is_rtl() && 'left' === $text_orientation ) {
-			$text_orientation = 'right';
-		}
-
-		return $text_orientation;
+		return et_pb_get_alignment( $text_orientation );
 	}
 
 	function get_text_orientation_classname( $print_default = false ) {
@@ -6433,7 +6434,7 @@ class ET_Builder_Element {
 			if ( isset( $font_options[ $text_align_option_name ] ) && '' !== $font_options[ $text_align_option_name ] ) {
 
 				$important = in_array( 'text-align', $important_options ) || $use_global_important ? ' !important' : '';
-				$text_align = $font_options[ $text_align_option_name ] === 'justified' ? 'justify' : $font_options[ $text_align_option_name ];
+				$text_align = et_pb_get_alignment( $font_options[ $text_align_option_name ] );
 
 				if ( isset( $option_settings['css']['text_align'] ) ) {
 					self::set_style( $function_name, array(
@@ -6765,16 +6766,12 @@ class ET_Builder_Element {
 		if ( isset( $text_options['css'] ) && is_array( $text_options['css'] ) ) {
 			$text_css                 = $text_options['css'];
 			$text_orientation_default = isset( $this->fields_unprocessed['text_orientation']['default'] ) ? $this->fields_unprocessed['text_orientation']['default'] : '';
-			$text_orientation         = $this->shortcode_atts['text_orientation'] !== $text_orientation_default ? $this->shortcode_atts['text_orientation'] : '';
+			$text_orientation         = $this->get_text_orientation() !== $text_orientation_default ? $this->get_text_orientation() : '';
 
 			// Normally, text orientation attr adds et_pb_text_align_* class name to its module wrapper
 			// In some cases, it needs to target particular children inside the module. Thus, only prints
 			// styling if selector is given
 			if ( isset( $text_css['text_orientation'] ) && '' !== $text_orientation ) {
-				if ( 'justified' === $text_orientation ) {
-					$text_orientation = 'justify';
-				}
-
 				self::set_style( $function_name, array(
 					'selector'    => $text_css['text_orientation'],
 					'declaration' => sprintf( 'text-align: %1$s;', esc_attr( $text_orientation ) ),
@@ -8871,8 +8868,11 @@ class ET_Builder_Element {
 			return;
 		}
 
-		// Sanitize `$selectors` and convert to array
-		$selectors_prepared = is_array($selectors) ? $selectors : explode( ',', esc_attr( $selectors ) );
+		// If `$selectors` is a string, convert to an array before we continue
+		$selectors_prepared = $selectors;
+		if ( ! is_array( $selectors ) ) {
+			$selectors_prepared = explode( ',', et_intentionally_unescaped( $selectors, 'fixed_string' ) );
+		}
 
 		// If we don't have a target selector, get out now
 		if ( ! $selectors_prepared ) {

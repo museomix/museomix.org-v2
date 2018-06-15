@@ -93,6 +93,10 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 						'title'    => esc_html__( 'Animation', 'et_builder' ),
 						'priority' => 90,
 					),
+					'attributes' => array(
+						'title'    => esc_html__( 'Attributes', 'et_builder' ),
+						'priority' => 95,
+					),
 				),
 			),
 		);
@@ -324,7 +328,8 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define the HTML ALT text for your image here.', 'et_builder' ),
 				'depends_show_if' => 'off',
-				'toggle_slug'     => 'image',
+				'tab_slug'        => 'custom_css',
+				'toggle_slug'     => 'attributes',
 			),
 			'icon_placement' => array(
 				'label'             => esc_html__( 'Image/Icon Placement', 'et_builder' ),
@@ -562,13 +567,24 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		}
 
 		if ( '' !== $image_max_width_tablet || '' !== $image_max_width_phone || '' !== $image_max_width || $is_image_svg ) {
+
+			$is_size_px = false;
+
+			// If size is given in px, we want to override parent width
+			if (
+				false !== strpos( $image_max_width, 'px' ) ||
+				false !== strpos( $image_max_width_tablet, 'px' ) ||
+				false !== strpos( $image_max_width_phone, 'px' )
+			) {
+				$is_size_px = true;
+			}
 			// SVG image overwrite. SVG image needs its value to be explicit
 			if ( '' === $image_max_width && $is_image_svg ) {
 				$image_max_width = '100%';
 			}
 
-			$image_max_width_selector = '%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap';
-			$image_max_width_property = $is_image_svg ? 'width' : 'max-width';
+			$image_max_width_selector = $icon_placement === 'top' && $is_image_svg ? '%%order_class%% .et_pb_main_blurb_image' : '%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap';
+			$image_max_width_property = ( $is_image_svg || $is_size_px ) ? 'width' : 'max-width';
 
 			$image_max_width_responsive_active = et_pb_get_responsive_status( $image_max_width_last_edited );
 

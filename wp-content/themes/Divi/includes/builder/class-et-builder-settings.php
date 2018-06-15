@@ -56,12 +56,11 @@ class ET_Builder_Settings {
 				'class'       => 'et-pb-visible',
 				'affects'     => array(
 					'et_pb_ab_bounce_rate_limit',
-					'et_pb_ab_refresh_interval',
+					'et_pb_ab_stats_refresh_interval',
 					'et_pb_enable_shortcode_tracking',
 				),
-				'hide_on_fb'  => true,
 				'tab_slug'    => 'content',
-				'toggle_slug' => 'split_testing',
+				'toggle_slug' => 'ab_testing',
 			),
 			'et_pb_ab_bounce_rate_limit'      => array(
 				'type'            => 'range',
@@ -79,13 +78,12 @@ class ET_Builder_Settings {
 				'depends_to'      => array(
 					'et_pb_enable_ab_testing',
 				),
-				'hide_on_fb'      => true,
 				'tab_slug'        => 'content',
-				'toggle_slug'     => 'split_testing',
+				'toggle_slug'     => 'ab_testing',
 			),
-			'et_pb_ab_refresh_interval'       => array(
+			'et_pb_ab_stats_refresh_interval' => array(
 				'type'            => 'select',
-				'id'              => 'et_pb_ab_refresh_interval',
+				'id'              => 'et_pb_ab_stats_refresh_interval',
 				'label'           => esc_html__( 'Stats refresh interval', 'et_builder' ),
 				'autoload'        => false,
 				'depends_show_if' => 'on',
@@ -96,9 +94,8 @@ class ET_Builder_Settings {
 				'depends_to'      => array(
 					'et_pb_enable_ab_testing',
 				),
-				'hide_on_fb'      => true,
 				'tab_slug'        => 'content',
-				'toggle_slug'     => 'split_testing',
+				'toggle_slug'     => 'ab_testing',
 			),
 			'et_pb_enable_shortcode_tracking' => array(
 				'type'            => 'yes_no_button',
@@ -115,9 +112,8 @@ class ET_Builder_Settings {
 				'depends_to'      => array(
 					'et_pb_enable_ab_testing',
 				),
-				'hide_on_fb'      => true,
 				'tab_slug'        => 'content',
-				'toggle_slug'     => 'split_testing',
+				'toggle_slug'     => 'ab_testing',
 			),
 			'et_pb_ab_current_shortcode'      => array(
 				'type'            => 'textarea',
@@ -129,15 +125,14 @@ class ET_Builder_Settings {
 				'depends_to'      => array(
 					'et_pb_enable_shortcode_tracking',
 				),
-				'hide_on_fb'      => true,
 				'tab_slug'        => 'content',
-				'toggle_slug'     => 'split_testing',
+				'toggle_slug'     => 'ab_testing',
 			),
 			'et_pb_ab_subjects'               => array(
 				'id'          => 'et_pb_ab_subjects',
 				'type'        => 'hidden',
 				'tab_slug'    => 'content',
-				'toggle_slug' => 'split_testing',
+				'toggle_slug' => 'ab_testing',
 				'autoload'    => false,
 			),
 		);
@@ -379,7 +374,7 @@ class ET_Builder_Settings {
 		$values = array(
 			'et_pb_enable_ab_testing'             => et_is_ab_testing_active() ? 'on' : 'off',
 			'et_pb_ab_bounce_rate_limit'          => $et_pb_ab_bounce_rate_limit,
-			'et_pb_ab_refresh_interval'           => et_pb_ab_get_refresh_interval( $post_id ),
+			'et_pb_ab_stats_refresh_interval'     => et_pb_ab_get_refresh_interval( $post_id ),
 			'et_pb_ab_subjects'                   => et_pb_ab_get_subjects( $post_id ),
 			'et_pb_enable_shortcode_tracking'     => get_post_meta( $post_id, '_et_pb_enable_shortcode_tracking', true ),
 			'et_pb_ab_current_shortcode'          => '[et_pb_split_track id="' . $post_id . '" /]',
@@ -765,7 +760,7 @@ class ET_Builder_Settings {
 			'performance'   => esc_html__( 'Performance', 'et_builder' ),
 			'product_tour'  => esc_html__( 'Product Tour', 'et_builder' ),
 			'spacing'       => esc_html__( 'Spacing', 'et_builder' ),
-			'split_testing' => esc_html__( 'Split Testing', 'et_builder' ),
+			'ab_testing'    => esc_html__( 'Split Testing', 'et_builder' ),
 			'text'          => esc_html__( 'Text', 'et_builder' ),
 		);
 

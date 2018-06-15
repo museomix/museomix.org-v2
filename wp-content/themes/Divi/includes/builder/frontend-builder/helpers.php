@@ -131,6 +131,12 @@ function et_fb_backend_helpers() {
 	}
 
 	$fb_modules_array = apply_filters( 'et_fb_modules_array', ET_Builder_Element::get_modules_array( $post_type, true, true ) );
+	$modules_row_overlapping_add_new = apply_filters( 'et_fb_modules_row_overlapping_add_new', array(
+		'et_pb_counters',
+		'et_pb_post_nav',
+		'et_pb_search',
+		'et_pb_social_media_follow',
+	) );
 
 	$helpers = array(
 		'debug'                        => true,
@@ -166,6 +172,7 @@ function et_fb_backend_helpers() {
 		'modulesWithChildren'          => ET_Builder_Element::get_shortcodes_with_children( $post_type ),
 		'modulesShowOnCancelDropClassname' => apply_filters( 'et_fb_modules_show_on_cancel_drop_classname', array( 'et_pb_gallery', 'et_pb_filterable_portfolio') ),
 		'modulesFeaturedImageBackground' => ET_Builder_Element::get_featured_image_background_modules( $post_type ),
+		'modulesRowOverlappingAddNew'  => $modules_row_overlapping_add_new,
 		'structureModules'             => ET_Builder_Element::get_structure_modules(),
 		'et_builder_css_media_queries' => ET_Builder_Element::get_media_quries( 'for_js' ),
 		'builderOptions'               => et_builder_options(),
@@ -224,7 +231,7 @@ function et_fb_backend_helpers() {
 		'columnLayouts'                => et_builder_get_columns(),
 		'pageSettingsFields'           => ET_Builder_Settings::get_fields(),
 		'pageSettingsValues'           => ET_Builder_Settings::get_values(),
-		'splitTestSubjects'            => false !== ( $all_subjects_raw = get_post_meta( $post_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array(),
+		'abTestingSubjects'            => false !== ( $all_subjects_raw = get_post_meta( $post_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array(),
 		'defaults'                     => array(
 			'contactFormInputs'        => array(),
 			'backgroundOptions'        => array(
@@ -301,6 +308,7 @@ function et_fb_backend_helpers() {
 						'off' => esc_html__( 'CSS', 'et_builder' ),
 						'on'  => esc_html__( 'True Parallax', 'et_builder' ),
 					),
+					'default'         => 'on',
 					'depends_show_if' => 'on',
 					'depends_to'      => array(
 						'parallax_%s',
@@ -704,6 +712,7 @@ function et_fb_backend_helpers() {
 			),
 		),
 		'acceptableCSSStringValues'    => et_builder_get_acceptable_css_string_values( 'all' ),
+		'abTesting' => et_builder_ab_options( $post->ID ),
 	);
 
 	// Internationalization.
@@ -855,12 +864,16 @@ function et_fb_backend_helpers() {
 			'disable'         => esc_html__( 'Disable', 'et_builder' ),
 			'enable'          => esc_html__( 'Enable', 'et_builder' ),
 			'save'            => esc_html__( 'Save to Library', 'et_builder' ),
+			'startABTesting'  => esc_html__( 'Split Test', 'et_builder' ),
+			'endABTesting'    => esc_html__( 'End Split Test', 'et_builder' ),
 			'moduleType'      => array(
 				'module'      => esc_html__( 'Module', 'et_builder' ),
 				'row'         => esc_html__( 'Row', 'et_builder' ),
 				'section'     => esc_html__( 'Section', 'et_builder' ),
 			),
 			'disableGlobal'   => esc_html__( 'Disable Global', 'et_builder' ),
+			'collapse'        => esc_html__( 'Collapse', 'et_builder' ),
+			'expand'          => esc_html__( 'Expand', 'et_builder' ),
 		),
 		'tooltips'            => array(
 			'insertModule'     => esc_html__( 'Insert Module', 'et_builder' ),
@@ -913,6 +926,10 @@ function et_fb_backend_helpers() {
 			'saveText'              => esc_html__( 'Save to Library', 'et_builder' ),
 			'allCategoriesText'     => esc_html__( 'All Categories', 'et_builder' ),
 		),
+		'alertModal' => array(
+			'buttonCancelLabel'  => esc_html__( 'Cancel', 'et_builder' ),
+			'buttonProceedLabel' => esc_html__( 'Proceed', 'et_builder' ),
+		),
 		'modals' => array(
 			'defaultTitle'   => esc_html__( 'Modal Title', 'et_builder' ),
 			'tabItemTitles'  => array(
@@ -955,6 +972,27 @@ function et_fb_backend_helpers() {
 			),
 			'shortcuts' => et_builder_get_shortcuts('fb'),
 		),
+		'abTesting' => array_merge( et_builder_ab_labels(), array(
+			'reportTitle'      => esc_html__( 'Split Testing Statistics', 'et_builder' ),
+			'reportTabNavs' => array(
+				'clicks'          => esc_html__( 'Clicks', 'et_builder' ),
+				'reads'           => esc_html__( 'Reads', 'et_builder' ),
+				'bounces'         => esc_html__( 'Bounces', 'et_builder' ),
+				'engagements'     => esc_html__( 'Goal Engagement', 'et_builder' ),
+				'conversions'     => esc_html__( 'Conversions', 'et_builder' ),
+				'shortcode_conversions' => esc_html__( 'Shortcode Conversions', 'et_builder' ),
+			),
+			'reportFilterTime' => array(
+				'day'   => esc_html__( 'Last 24 Hours', 'et_builder' ),
+				'week'  => esc_html__( 'Last 7 Days', 'et_builder' ),
+				'month' => esc_html__( 'Last Month', 'et_builder' ),
+				'all'   => esc_html__( 'All Time', 'et_builder' ),
+			),
+			'reportTotal'          => esc_html__( 'Total', 'et_builder' ),
+			'reportSummaryTitle'   => esc_html__( 'Summary & Data', 'et_builder' ),
+			'reportRefreshTooltip' => esc_html__( 'Refresh Split Test Data', 'et_builder' ),
+			'reportEndTestButton'  => esc_html__( 'End Split Test & Pick Winner', 'et_builder' ),
+		) ),
 		'fonts' => array(
 			'fontWeight'     => esc_html__( 'Font Weight', 'et_builder' ),
 			'fontStyle'      => esc_html__( 'Font Style', 'et_builder' ),
@@ -1012,6 +1050,9 @@ function et_fb_backend_helpers() {
 					'2' => esc_html__( 'Fullscreen', 'et_builder' ),
 					'3' => esc_html__( 'Fixed Left Sidebar', 'et_builder' ),
 					'4' => esc_html__( 'Fixed Right Sidebar', 'et_builder' ),
+					'5' => esc_html__( 'Fixed Bottom Panel', 'et_builder' ),
+					// TODO, disabled until further notice (Issue #3930 & #5859)
+					// '6' => esc_html__( 'Fixed Top Panel', 'et_builder' ),
 				),
 				'builder_animation_toggle' => array(
 					'on'   => esc_html__( 'On', 'et_builder' ),

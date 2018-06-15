@@ -207,7 +207,7 @@ body.rtl button.et-core-button {
 	background: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,1) 20%,rgba(255,255,255,0.7) 100%);
 	background: radial-gradient(ellipse at center, rgba(255,255,255,1) 20%,rgba(255,255,255,0.7) 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=1 );
-	z-index: 100000;
+	z-index: 1000000;
 	-moz-transition: opacity .5s .2s;
 	-webkit-transition: opacity .5s .2s;
 	transition: opacity .5s .2s;
@@ -435,6 +435,11 @@ body.rtl button.et-core-button {
 }
 .et-core-modal-two-buttons .et-core-modal-action:last-child {
 	right: 0;
+}
+
+.rtl .et-core-modal-two-buttons .et-core-modal-action:last-child {
+	right: auto;
+	left: 0;
 }
 
 .et-core-modal-temp-content h3,

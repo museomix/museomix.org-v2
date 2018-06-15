@@ -290,9 +290,12 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 													<?php if ( in_array( $value['type'], array( 'text', 'password' ) ) ) { ?>
 
 														<?php
-															$et_input_value = '';
 															$et_input_value = ( '' != et_get_option( $value['id'], '', '', false, $is_new_global_setting, $global_setting_main_name, $global_setting_sub_name ) ) ? et_get_option( $value['id'], '', '', false, $is_new_global_setting, $global_setting_main_name, $global_setting_sub_name ) : $value['std'];
 															$et_input_value = stripslashes( $et_input_value );
+
+															if( 'password' === $value['type'] && !empty( $et_input_value ) ) {
+																$et_input_value = _et_epanel_password_mask();
+															}
 														?>
 
 														<input name="<?php echo esc_attr( $value['id'] ); ?>" id="<?php echo esc_attr( $value['id'] ); ?>" type="<?php echo esc_attr( $value['type'] ); ?>" value="<?php echo esc_attr( $et_input_value ); ?>" />
@@ -629,6 +632,10 @@ function et_epanel_save_callback() {
 	die();
 }
 
+function _et_epanel_password_mask() {
+		return '************';
+}
+
 if ( ! function_exists( 'epanel_save_data' ) ) {
 
 	function epanel_save_data( $source ){
@@ -667,6 +674,11 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 
 						if ( isset( $_POST[ $value['id'] ] ) ) {
 							if ( in_array( $value['type'], array( 'text', 'textlimit', 'password' ) ) ) {
+
+								if( 'password' === $value['type'] && _et_epanel_password_mask() === $_POST[$et_option_name] ) {
+									// The password was not modified so no need to update it
+									continue;
+								}
 
 								if ( isset( $value['validation_type'] ) ) {
 									// saves the value as integer

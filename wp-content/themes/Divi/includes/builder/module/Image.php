@@ -300,6 +300,12 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		return $fields;
 	}
 
+	public function get_alignment() {
+		$alignment = isset( $this->shortcode_atts['align'] ) ? $this->shortcode_atts['align'] : '';
+
+		return et_pb_get_alignment( $alignment );
+	}
+
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$module_id               = $this->shortcode_atts['module_id'];
 		$module_class            = $this->shortcode_atts['module_class'];
@@ -310,7 +316,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$url_new_window          = $this->shortcode_atts['url_new_window'];
 		$show_in_lightbox        = $this->shortcode_atts['show_in_lightbox'];
 		$show_bottom_space       = $this->shortcode_atts['show_bottom_space'];
-		$align                   = $this->shortcode_atts['align'];
+		$align                   = $this->get_alignment();
 		$force_fullwidth         = $this->shortcode_atts['force_fullwidth'];
 		$always_center_on_mobile = $this->shortcode_atts['always_center_on_mobile'];
 		$overlay_icon_color      = $this->shortcode_atts['overlay_icon_color'];

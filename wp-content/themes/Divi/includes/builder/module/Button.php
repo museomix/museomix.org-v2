@@ -163,6 +163,12 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		// Text Shadow settings are already included its Custom Style, no need to add them to Text toggle too.
 	}
 
+	public function get_button_alignment() {
+		$text_orientation = isset( $this->shortcode_atts['button_alignment'] ) ? $this->shortcode_atts['button_alignment'] : '';
+
+		return et_pb_get_alignment( $text_orientation );
+	}
+
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$module_id         = $this->shortcode_atts['module_id'];
 		$module_class      = $this->shortcode_atts['module_class'];
@@ -173,13 +179,13 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		$url_new_window    = $this->shortcode_atts['url_new_window'];
 		$custom_icon       = $this->shortcode_atts['button_icon'];
 		$button_custom     = $this->shortcode_atts['custom_button'];
-		$button_alignment  = $this->shortcode_atts['button_alignment'];
+		$button_alignment  = $this->get_button_alignment();
 
 		// Nothing to output if neither Button Text nor Button URL defined
 		$button_url = trim( $button_url );
 
 		if ( '' === $button_text && '' === $button_url ) {
-			return;
+			return '';
 		}
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
@@ -200,7 +206,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
 			$this->get_rel_attributes( $button_rel ),
-			'right' === $button_alignment || 'center' === $button_alignment ? sprintf( ' et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) ) : ''
+			sprintf( ' et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) )
 		);
 
 		return $output;
