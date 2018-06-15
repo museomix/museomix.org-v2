@@ -398,15 +398,15 @@
             fuzzy = stats.f,
             empty = stats.u,
             // Translators: Shows total string count at top of editor
-            stext = sprintf( t._n('1 string','%s strings',total), total ),
+            stext = sprintf( t._n('1 string','%s strings',total ), total.format(0) ),
             extra = [];
         if( locale ){
             // Translators: Shows percentage translated at top of editor
             stext = sprintf( t._('%s%% translated'), stats.p.replace('%','') ) +', '+ stext;
             // Translators: Shows number of fuzzy strings at top of editor
-            fuzzy && extra.push( sprintf( t._('%s fuzzy'), fuzzy ) );
+            fuzzy && extra.push( sprintf( t._('%s fuzzy'), fuzzy.format(0) ) );
             // Translators: Shows number of untranslated strings at top of editor
-            empty && extra.push( sprintf( t._('%s untranslated'), empty ) );
+            empty && extra.push( sprintf( t._('%s untranslated'), empty.format(0) ) );
             if( extra.length ){
                 stext += ' ('+extra.join(', ')+')';
             }
@@ -537,8 +537,14 @@
     // ready to render editor
     editor.load( messages );
     
+    // locale should be cast to full object once set in editor
+    if( locale = editor.targetLocale ){
+        locale.isRTL() && $(innerDiv).addClass('trg-rtl');
+    }
     // enable template mode when no target locale 
-    editor.targetLocale || editor.unlock();
+    else {
+        editor.unlock();
+    }
 
     // ok, editor ready
     updateStatus();

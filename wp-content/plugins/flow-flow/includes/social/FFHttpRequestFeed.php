@@ -10,8 +10,6 @@ if ( ! defined( 'WPINC' ) ) die;
  * @copyright 2014-2016 Looks Awesome
  */
 abstract class FFHttpRequestFeed extends FFBaseFeed{
-    private static $USER_AGENT = "Firefox (WindowsXP) - Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6";
-
 	private $header = false;
 	protected $url;
 
@@ -26,12 +24,13 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 		$result = array();
 		$data = $this->getFeedData( $this->getUrl(), 200, $this->header );
 		if ( sizeof( $data['errors'] ) > 0 ) {
+			$message = $this->filterErrorMessage($data['errors']);
 			$this->errors[] = array(
 				'type'    => $this->getType(),
-				'message' => $this->filterErrorMessage($data['errors']),
+				'message' => $message,
 				'url' => $this->getUrl()
 			);
-			throw new \Exception();
+			throw new \Exception($message);
 		}
 		foreach ( $this->items( $data['response'] ) as $item ) {
 			$item = $this->prepareItem($item);
@@ -39,18 +38,20 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 				$post                   = $this->prepare( $item );
 				$post->id               = (string) $this->getId( $item );
 				$post->type             = $this->getType();
-				$post->header           = (string) $this->getHeader( $item );
-				$post->nickname         = '';
-				$post->screenname       = (string) $this->getScreenName( $item );
-				$post->userpic          = $this->getProfileImage( $item );
-				$post->system_timestamp = $this->getSystemDate( $item );
-				$post->text             = (string) $this->getContent( $item );
-				$post->userlink         = (string) $this->getUserlink( $item );
-				$post->permalink        = (string) $this->getPermalink( $item );
-				if ( $this->showImage( $item ) ) {
-					$post->img   = $this->getImage( $item );
-					$post->media = $this->getMedia( $item );
-					$post->carousel = $this->getCarousel( $item );
+				if ($this->isNewPost($item)) {
+					$post->header           = (string) $this->getHeader( $item );
+					$post->nickname         = '';
+					$post->screenname       = (string) $this->getScreenName( $item );
+					$post->userpic          = $this->getProfileImage( $item );
+					$post->system_timestamp = $this->getSystemDate( $item );
+					$post->text             = (string) $this->getContent( $item );
+					$post->userlink         = (string) $this->getUserlink( $item );
+					$post->permalink        = (string) $this->getPermalink( $item );
+					if ( $this->showImage( $item ) ) {
+						$post->img   = $this->getImage( $item );
+						$post->media = $this->getMedia( $item );
+						$post->carousel = $this->getCarousel( $item );
+					}
 				}
 				$post->additional       = $this->getAdditionalInfo( $item );
 				$post->comments 		= $this->getComments( $item );
@@ -84,7 +85,7 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 
 	/**
 	 * @param $item
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	protected function prepareItem($item){
 		return $item;
@@ -92,7 +93,7 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 
     /**
      * @param $item
-     * @return stdClass
+     * @return \stdClass
      */
     protected function prepare($item){
         $post = new \stdClass();
@@ -112,7 +113,7 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
      * @param \stdClass $post
      * @param $item
      *
-     * @return stdClass
+     * @return \stdClass
      */
     protected function customize($post, $item){
         return $post;
@@ -132,7 +133,15 @@ abstract class FFHttpRequestFeed extends FFBaseFeed{
 	protected function isSuitableOriginalPost( $post ) {
 		return true;
 	}
-	
+
+	/**
+	 * @param $post
+	 * @return bool
+	 */
+	protected function isNewPost( $post ) {
+		return true;
+	}
+
 	protected function getCarousel( $item ){
 		return array();
 	}

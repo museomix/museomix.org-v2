@@ -1,111 +1,111 @@
 /* MEOW BOX (SETTINGS BOX) */
 
 .meow-box {
-  box-sizing: border-box;
-  border: 1px solid #e5e5e5;
-  box-shadow: 2px 2px 1px rgba(0,0,0,.02);
-  background: #fff;
-  color: #444;
-  margin-bottom: 15px;
-  font-size: 13px !important;
-  border-top-right-radius: 8px;
+	box-sizing: border-box;
+	border: 1px solid #e5e5e5;
+	box-shadow: 2px 2px 1px rgba(0,0,0,.02);
+	background: #fff;
+	color: #444;
+	margin-bottom: 15px;
+	font-size: 13px !important;
+	border-top-right-radius: 8px;
 }
 
 .meow-box input, .meow-box th, .meow-box label, .meow-box select {
-  font-size: 13px !important;
+	font-size: 13px !important;
 }
 
 .meow-box small {
-  font-size: 12px !important;
+	font-size: 12px !important;
 }
 
 .meow-box h3 {
-  font-size: 13px;
-  padding: 4px 12px;
-  margin: 0;
-  background: #3c3c3c;
-  color: #ffffff;
-  text-transform: uppercase;
-  border-top-right-radius: 8px;
-  /*border-bottom: 1px solid #eee;*/
+	font-size: 13px;
+	padding: 4px 12px;
+	margin: 0;
+	background: #3c3c3c;
+	color: #ffffff;
+	text-transform: uppercase;
+	border-top-right-radius: 8px;
+	/*border-bottom: 1px solid #eee;*/
 }
 
 .meow-box h3 .dashicons {
-  position: relative;
-  top: 0px;
-  margin-right: 5px;
+	position: relative;
+	top: 0px;
+	margin-right: 5px;
 }
 
 .meow-box .pro_info {
-  padding: 5px;
-  margin: 10px -10px 5px -10px;
-  font-size: 11px;
-  line-height: 13px;
+	padding: 5px;
+	margin: 10px -10px 5px -10px;
+	font-size: 11px;
+	line-height: 13px;
 }
 
 .meow-box .pro_info.enabled {
-  background: #4482d2;
-  border-left: 5px solid #4482d2;
-  color: white;
+	background: #4482d2;
+	border-left: 5px solid #4482d2;
+	color: white;
 }
 
 .meow-box .pro_info.disabled {
-  background: #96555b;
-  border-left: 5px solid #632329;
-  color: white;
+	background: #96555b;
+	border-left: 5px solid #632329;
+	color: white;
 }
 
 .meow-box .pro_info.disabled a {
-  background: #96555b;
-  color: red;
-  text-decoration: none;
+	background: #96555b;
+	color: red;
+	text-decoration: none;
 }
 
 .meow-box .inside {
-  margin: 10px;
+	margin: 10px;
 }
 
 .meow-box th {
-  padding: 10px 10px 10px 0px;
-  width: 22%;
+	padding: 10px 10px 10px 0px;
+	width: 22%;
 }
 
 .meow-box td {
-  padding: 10px 10px;
+	padding: 10px 10px;
 }
 
 .meow-box p.submit {
-  text-align: right;
-  margin: 10px -10px -10px -10px;
-  padding: 7px 10px 10px 0px !important;
-  border-top: 1px solid #eee !important;
-  max-width: inherit;
-  background: rgba(125, 125, 125, 0.04);
-  border-radius: 0px;
+	text-align: right;
+	margin: 10px -10px -10px -10px;
+	padding: 7px 10px 10px 0px !important;
+	border-top: 1px solid #eee !important;
+	max-width: inherit;
+	background: rgba(125, 125, 125, 0.04);
+	border-radius: 0px;
 }
 
 .meow-box [type="text"], .meow-box select {
-  width: 100%;
+	width: 100%;
 }
 
 /* CONTROLS INSIDE A COLUMN (LABEL ON THE LEFT, VALUE ON THE RIGHT) */
 .meow-box td [type="text"], .meow-box td [type="checkbox"], .meow-box td select {
-  margin-top: -3px;
+	margin-top: -3px;
 }
 
 .meow-header-ad {
-  float: right;
+	float: right;
 }
 
 /* BUTTONS  */
 
 .meow-button-xs {
-  font-size: 10px !important;
-  height: 20px !important;
-  line-height: 18px !important;
-  position: relative !important;
-  top: 1px !important;
-  text-align: center !important
+	font-size: 10px !important;
+	height: 20px !important;
+	line-height: 18px !important;
+	position: relative !important;
+	top: 1px !important;
+	text-align: center !important
 }
 
 /* MODAL */
@@ -191,106 +191,106 @@
 }
 
 .meow-sized-images:after {
-  clear: both;
-  content:""; display:table;
+	clear: both;
+	content:""; display:table;
 }
 
 .meow-sized-images + span {
-  position: relative;
-  top: -12px;
+	position: relative;
+	top: -12px;
 }
 
 /*  MEOW COLORS  */
 
 .meow-bk-blue {
 	background: #3C82C7 !important;
-  color: white;
+	color: white;
 }
 
 .meow-bk-orange {
 	background: #f1900e !important;
-  color: white;
+	color: white;
 }
 
 .meow-bk-red {
 	background: #c53a47 !important;
-  color: white;
+	color: white;
 }
 
 .meow-bk-gray {
 	background: gray !important;
-  color: white;
+	color: white;
 }
 
 .meow-bk-green {
 	background: #2b9463 !important;
-  color: white;
+	color: white;
 }
 
 .meow-bk-black {
-  background: #3c3c3c !important;
-  color: white;
+	background: #3c3c3c !important;
+	color: white;
 }
 
 .meow-bk-purple {
-  background: #984c96 !important;
-  color: white;
+	background: #984c96 !important;
+	color: white;
 }
 
 /*  DASHBOARD  */
 
 .meow-dashboard .meow-box li {
-  border-bottom: 1px solid #eee;
-  padding: 0px 10px 10px 10px;
+	border-bottom: 1px solid #eee;
+	padding: 0px 10px 10px 10px;
 }
 
 .meow-dashboard  .meow-box li:last-child {
-  border: none;
-  padding-bottom: 0px;
+	border: none;
+	padding-bottom: 0px;
 }
 
 .meow-button-xs .dashicons {
-  font-size: 18px !important;
+	font-size: 18px !important;
 }
 
 .meow-button-xs.updating-message:before {
-  margin-top: 0px !important;
+	margin-top: 0px !important;
 }
 
 .meow-button-xs.updating-message * {
-  display: none;
+	display: none;
 }
 
 #phpinfo {
-  font-size: 11px;
+	font-size: 11px;
 }
 
 #phpinfo .e {
-  padding: 5px;
-  background: lightgray;
+	padding: 5px;
+	background: lightgray;
 }
 
 #phpinfo .h th {
-  padding: 5px;
-  color: white;
-  background: gray;
-  text-align: left;
-  font-size: 14px !important;
+	padding: 5px;
+	color: white;
+	background: gray;
+	text-align: left;
+	font-size: 14px !important;
 }
 
 #phpinfo h1 {
-  padding: 10px 0px;
-  font-weight: bold;
+	padding: 10px 0px;
+	font-weight: bold;
 }
 
 #phpinfo h2 {
-  padding: 10px 0px;
-  font-weight: bold;
-  font-size: 20px;
+	padding: 10px 0px;
+	font-weight: bold;
+	font-size: 20px;
 }
 
 #error_log {
-  font-size: 12px;
+	font-size: 12px;
 }
 
 /*  ROWS AND COLUMNS  */
@@ -314,9 +314,9 @@
 .meow-span_1_of_2 { width: 49.2%; }
 
 @media only screen and (max-width: 480px) {
-  .meow-col { margin: 0 0 0px 0;}
-  .meow-span_3_of_3, .meow-span_2_of_3, .meow-span_1_of_3 { width: 100%; }
-  .meow-span_2_of_2, .meow-span_1_of_2 { width: 100%; }
-  .meow-header-ad { display: none !important; }
-  .meow-box [type="text"] { width: 100% !important; }
+	.meow-col { margin: 0 0 0px 0;}
+	.meow-span_3_of_3, .meow-span_2_of_3, .meow-span_1_of_3 { width: 100%; }
+	.meow-span_2_of_2, .meow-span_1_of_2 { width: 100%; }
+	.meow-header-ad { display: none !important; }
+	.meow-box [type="text"] { width: 100% !important; }
 }

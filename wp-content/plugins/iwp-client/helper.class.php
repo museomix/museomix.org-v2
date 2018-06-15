@@ -99,7 +99,7 @@ class IWP_MMB_Helper
 		if (version_compare($wp_version, '3.2.2', '<=')){
 			return get_userdatabylogin( $user_info );
 		} else {
-			return get_user_by( $info, $user_info );
+			return iwp_mmb_get_user_by( $info, $user_info );
 		}
 	}
 	
@@ -190,25 +190,23 @@ class IWP_MMB_Helper
 	}
     function iwp_mmb_get_transient($option_name)
     {
-        if (trim($option_name) == '') {
-            return FALSE;
-        }
-        if($this->iwp_mmb_multisite)
-			return $this->iwp_mmb_get_sitemeta_transient($option_name);
-			
         global $wp_version;
-		
-        $transient = array();
-		
-        if (version_compare($wp_version, '2.7.9', '<=')) {
-			return get_option($option_name);
-        } else if (version_compare($wp_version, '2.9.9', '<=')) {
-			$transient = get_option('_transient_' . $option_name);
-			return apply_filters("transient_".$option_name, $transient);
-        } else {
-			$transient = get_option('_site_transient_' . $option_name);
-			return apply_filters("site_transient_".$option_name, $transient);
+
+        if (trim($option_name) == '') {
+            return false;
         }
+
+        if (version_compare($wp_version, '3.4', '>')) {
+            return get_site_transient($option_name);
+        }
+
+        if (!empty($this->iwp_mmb_multisite)) {
+            return $this->iwp_mmb_get_sitemeta_transient($option_name);
+        }
+
+        $transient = get_option('_site_transient_'.$option_name);
+
+        return apply_filters("site_transient_".$option_name, $transient);
     }
     
     function iwp_mmb_delete_transient($option_name)
@@ -426,12 +424,12 @@ class IWP_MMB_Helper
         if ($username) {
 			if( !function_exists('username_exists') )
 				include_once(ABSPATH . WPINC . '/registration.php');
-				
-            //include_once(ABSPATH . 'wp-includes/pluggable.php');
+			// if( !function_exists('get_user_by') )	
+   //              include_once(ABSPATH . 'wp-includes/pluggable.php');
             
-            if (username_exists($username) == null) {
-                return false;
-            }
+            // if (username_exists($username) == null) {
+            //     return false;
+            // }
 			
             $user = (array) $this->iwp_mmb_get_user_info( $username );
 			if ((isset($user[$wpdb->base_prefix . 'user_level']) && $user[$wpdb->base_prefix . 'user_level'] == 10) || isset($user[$wpdb->base_prefix . 'capabilities']['administrator']) || 
@@ -487,6 +485,36 @@ class IWP_MMB_Helper
 		else
 			return true;
 	}
+
+
+    function define_ftp_constants($params){
+
+        if (!$this->is_server_writable()) {
+            $ftp_details = unserialize($params['account_info']);
+            if (empty($ftp_details)) {
+                return true;
+            }
+            if (!defined('FS_METHOD')) {
+                define( 'FS_METHOD', 'ftpext' );
+            }
+            if (!defined('FTP_BASE')) {
+                define( 'FTP_BASE', $ftp_details['remoteFolder'] );
+            }
+            if (!defined('FTP_USER')) {
+                define( 'FTP_USER', $ftp_details['hostUserName'] );
+            }
+            if (!defined('FTP_PASS')) {
+                define( 'FTP_PASS', $ftp_details['hostPassword'] );
+            }
+            if (!defined('FTP_HOST')) {
+                define( 'FTP_HOST', $ftp_details['hostName'] );
+            }
+            if (!defined('FTP_SSL')) {
+                define( 'FTP_SSL', $ftp_details['hostSSL'] );
+            }
+        }
+        return true;
+    }
 	
 	function iwp_mmb_download_url($url, $file_name)
 	{

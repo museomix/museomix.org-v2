@@ -90,7 +90,7 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 	 */
 	public function get_supported_features() {
 		// This options format is handled via only accessing options via $this->get_options()
-		return array('multi_options', 'config_templates');
+		return array('multi_options', 'config_templates', 'multi_storage');
 	}
 
 	/**
@@ -108,6 +108,19 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 			'region' => ''
 		);
 	}
+
+	/**
+	 * Get the pre middlesection configuration template
+	 *
+	 * @return String - the template
+	 */
+	public function get_pre_configuration_middlesection_template() {
+		
+		?>
+		<p><?php _e('Get your access credentials from your OpenStack Swift provider, and then pick a container name to use for storage. This container will be created for you if it does not already exist.', 'updraftplus');?> <a href="<?php echo apply_filters("updraftplus_com_link", "https://updraftplus.com/faqs/there-appear-to-be-lots-of-extra-files-in-my-rackspace-cloud-files-container/");?>"><?php _e('Also, you should read this important FAQ.', 'updraftplus'); ?></a></p>
+
+		<?php
+	}
 	
 	/**
 	 * This outputs the html to the settings page for the Openstack settings.
@@ -118,12 +131,6 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 		ob_start();
 		$classes = $this->get_css_classes();
 		?>
-		<tr class="<?php echo $classes; ?>">
-		<th></th>
-			<td>
-				<p><?php _e('Get your access credentials from your OpenStack Swift provider, and then pick a container name to use for storage. This container will be created for you if it does not already exist.', 'updraftplus');?> <a href="<?php echo apply_filters("updraftplus_com_link", "https://updraftplus.com/faqs/there-appear-to-be-lots-of-extra-files-in-my-rackspace-cloud-files-container/");?>"><?php _e('Also, you should read this important FAQ.', 'updraftplus'); ?></a></p>
-			</td>
-		</tr>
 
 		<tr class="<?php echo $classes; ?>">
 			<th><?php echo ucfirst(__('authentication URI', 'updraftplus'));?>:</th>
@@ -190,13 +197,13 @@ class UpdraftPlus_BackupModule_openstack extends UpdraftPlus_BackupModule_openst
 		}
 
 		$opts = array(
-			'user' => stripslashes($posted_settings['user']),
-			'password' => stripslashes($posted_settings['password']),
-			'authurl' => stripslashes($posted_settings['authurl']),
-			'tenant' => stripslashes($posted_settings['tenant']),
-			'region' => (!empty($posted_settings['region'])) ? $posted_settings['region'] : '',
+			'user' => $posted_settings['user'],
+			'password' => $posted_settings['password'],
+			'authurl' => $posted_settings['authurl'],
+			'tenant' => $posted_settings['tenant'],
+			'region' => empty($posted_settings['region']) ? '' : $posted_settings['region'],
 		);
 
-		$this->credentials_test_go($opts, stripslashes($posted_settings['path']), $posted_settings['useservercerts'], $posted_settings['disableverify']);
+		$this->credentials_test_go($opts, $posted_settings['path'], $posted_settings['useservercerts'], $posted_settings['disableverify']);
 	}
 }

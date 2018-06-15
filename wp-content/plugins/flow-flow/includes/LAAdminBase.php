@@ -144,7 +144,7 @@ abstract class LAAdminBase {
 	
 	protected function addActionLinks(){
 		$links['settings'] = '<a href="' . admin_url('admin.php?page=' . $this->getPluginSlug()) . '-admin' . '">' . 'Settings' . '</a>';
-		$links['docs'] = '<a target="_blank" href="' . $this->context['faq_url'] . '">' . 'Documentation' . '</a>';
+		$links['docs'] = '<a target="_blank" href="' . $this->context['faq_url'] . '">' . 'Docs' . '</a>';
 		return $links;
 	}
 	

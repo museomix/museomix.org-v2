@@ -1,18 +1,17 @@
 === Duplicator - WordPress Migration Plugin ===
 Contributors: corylamleorg, bobriley
-Donate link: www.lifeinthegrid.com/partner
 Tags: migration, backup, restore, move, migrate, duplicate, transfer, clone, automate, copy site
 Requires at least: 4.0
 Tested up to: 4.9
 Requires PHP: 5.2.17
-Stable tag: 1.2.30
+Stable tag: 1.2.40
 License: GPLv2
 
 WordPress migration and backups are much easier with Duplicator! Clone, backup, move and transfer an entire site from one location to another. 
 
 == Description ==
 
-> Duplicator gives WordPress users the ability to migrate, copy, move or clone a site from one location to another and also serves as a simple backup utility. Duplicator handles both serialized and base64 serialized string replacement.  Standard WordPress migration and WordPress backups are easily handled by this plugin as are **zero downtime migrations**.
+> With over **10 million downloads** Duplicator successfully gives WordPress users the ability to migrate, copy, move or clone a site from one location to another and also serves as a simple backup utility. Duplicator handles serialized and base64 serialized replacements.  Standard WordPress migration and WordPress backups are easily handled by this plugin as are **zero downtime migrations**.
 
 For complete details visit [snapcreek.com](https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wp_org&utm_content=desc_details&utm_campaign=duplicator_free).  
 
@@ -24,6 +23,7 @@ Duplicator enables you to:
 
 * Move, migrate or clone a WordPress site between domains or hosts with **zero downtime**
 * Pull down a live site to localhost for development
+* Transfer a WordPress site from one host to another
 * Manually backup a WordPress site or parts of a site
 * Duplicate a live site to a staging area or vice versa
 * Bundle up an entire WordPress site for easy reuse or distribution
@@ -39,7 +39,7 @@ Duplicator lets you make your own pre-configured sites to eliminate rework.  Ins
 Duplicator Pro takes Duplicator to the next level with features you'll really appreciate, such as:
 
 * Scheduled backups
-* Cloud Storage to Dropbox, Google Drive, Amazon S3 and FTP
+* Cloud Storage to Dropbox, Google Drive, Microsoft OneDrive, Amazon S3 and FTP/SFTP
 * Multi-threaded to support larger web sites &amp; databases
 * Migrate an entire multisite WordPress network in one shot
 * Install a multisite subsite as a new standalone website

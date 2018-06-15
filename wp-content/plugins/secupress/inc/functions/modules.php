@@ -13,217 +13,220 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 function secupress_get_modules() {
 	$should_be_pro = ! secupress_is_pro();
 
-	$modules = array(
-		'users-login'     => array(
+	$modules = [
+		'welcome'         => [
+			'title'       => __( 'Dashboard', 'secupress' ),
+			'icon'        => 'cogs',
+			'dashicon'    => 'admin-home',
+			'summaries'   => [
+				'small'   => __( 'License, Import & Export', 'secupress' ),
+				'normal'  => __( 'nothing', 'secupress' ),
+			],
+			'with_form'      => false,
+			'with_reset_box' => false,
+			'submodules'     => [
+							'module-secupress_display_apikey_options'     => ! defined( 'SECUPRESS_HIDE_API_KEY' ) || SECUPRESS_HIDE_API_KEY ? __( 'Licence Information', 'secupress' ) : '',
+							'module-secupress_display_whitelabel_options' => ! secupress_is_pro() || ( secupress_is_pro() && defined( 'WP_SWL' ) && WP_SWL ) ? ( ! secupress_is_pro() ? '*' : '' ) . __( 'White Label', 'secupress' ) : '',
+							'module-import_export'                        => '*' . __( 'Settings Import & Export', 'secupress' ),
+						]
+		],
+		'users-login'     => [
 			'title'       => __( 'Users &amp; Login', 'secupress' ),
 			'icon'        => 'user-login',
-			'summaries'   => array(
-				'small'  => __( 'Protect your users', 'secupress' ),
-				'normal' => __( 'The best and easiest way to make sure that users\' data will be protected, and their accounts not compromised.', 'secupress' ),
-			),
-			'description' => array(
-				__( 'The best and easiest way to make sure that users\' data will be protected, and their accounts not compromised.', 'secupress' ),
-			),
-			'counts' => array(
-				'free_options' => 6,
-				'pro_options'  => 5,
-			),
-		),
-		'plugins-themes'  => array(
+			'dashicon'    => 'groups',
+			'summaries'   => [
+				'small'   => __( 'Protect your users', 'secupress' ),
+				'normal'  => __( 'The best and easiest way to make sure that users\' data will be protected, and their accounts not compromised.', 'secupress' ),
+			],
+			'submodules'  => [
+							'login-protection_type_limitloginattempts' => __( 'Limit Login Attempts', 'secupress' ),
+							'login-protection_type_bannonexistsuser'   => __( 'Ban Non Existing Users', 'secupress' ),
+							'login-protection_sessions_control'        => '*' . __( 'Session Control', 'secupress' ),
+							'double-auth_type'                         => '*' . __( '2FA PasswordLess', 'secupress' ),
+							'captcha_activate'                         => __( 'Captcha', 'secupress' ),
+							'password-policy_password_expiration'      => '*' . __( 'Password Lifespan', 'secupress' ),
+							'password-policy_strong_passwords'         => '*' . __( 'Strong Password', 'secupress' ),
+							'password-policy_ask-old-password'         => __( 'Ask Old Password', 'secupress' ),
+							'blacklist-logins_activated'               => __( 'Forbidden Usernames', 'secupress' ),
+							'blacklist-logins_stop-user-enumeration'   => __( 'Stop User Enumeration', 'secupress' ),
+							'move-login_activated'                     => __( 'Move Login Page', 'secupress' ),
+						]
+		],
+		'plugins-themes'  => [
 			'title'       => __( 'Plugins &amp; Themes', 'secupress' ),
 			'icon'        => 'themes-plugins',
-			'summaries'   => array(
-				'small'  => __( 'Check your plugins &amp; themes', 'secupress' ),
-				'normal' => __( 'Detect themes and plugins known as vulnerable to avoid hackings. Also, manage installation and activation rights on them.', 'secupress' ),
-			),
-			'description' => array(
-				__( 'Detect themes and plugins known as vulnerable to avoid hackings. Also, manage installation and activation rights on them.', 'secupress' ),
-			),
-			'counts' => array(
-				'free_options' => 3,
-				'pro_options'  => 7,
-			),
-		),
-		'wordpress-core'  => array(
+			'dashicon'    => 'admin-plugins',
+			'summaries'   => [
+				'small'   => __( 'Check your plugins &amp; themes', 'secupress' ),
+				'normal'  => __( 'Detect themes and plugins known as vulnerable to avoid hackings. Also, manage installation and activation rights on them.', 'secupress' ),
+			],
+			'submodules'  => [
+							'uploads_activate'           => __( 'Disallow .zip uploads', 'secupress' ),
+							'plugins_installation'       => __( 'Plugins Installation', 'secupress' ),
+							'plugins_activation'         => '*' . __( 'Plugins Activation', 'secupress' ),
+							'plugins_deactivation'       => '*' . __( 'Plugins Deactivation', 'secupress' ),
+							'plugins_deletion'           => '*' . __( 'Plugins Deletion', 'secupress' ),
+							'plugins_detect_bad_plugins' => '*' . __( 'Detect Bad Plugins', 'secupress' ),
+							'themes_installation'        => __( 'Themes Installation', 'secupress' ),
+							'themes_activation'          => '*' . __( 'Themes Switch', 'secupress' ),
+							'themes_deletion'            => '*' . __( 'Themes Deletion', 'secupress' ),
+							'themes_detect_bad_themes'   => '*' . __( 'Detect Bad Themes', 'secupress' ),
+						]
+		],
+		'wordpress-core'  => [
 			'title'       => __( 'WordPress Core', 'secupress' ),
 			'icon'        => 'core',
-			'summaries'   => array(
-				'small'  => __( 'Core Tweaking', 'secupress' ),
-				'normal' => __( 'WordPress can be tweaked in so many ways. But are you using the right ones? Let\'s see!', 'secupress' ),
-			),
-			'description' => array(
-				__( 'WordPress can be tweaked in so many ways. But are you using the right ones? Let\'s see!', 'secupress' ),
-			),
-			'counts' => array(
-				'free_options' => 5,
-				'pro_options'  => 0,
-			),
-		),
-		'sensitive-data'  => array(
+			'dashicon'    => 'wordpress',
+			'summaries'   => [
+				'small'   => __( 'Core Tweaking', 'secupress' ),
+				'normal'  => __( 'WordPress can be tweaked in so many ways. But are you using the right ones? Let\'s see!', 'secupress' ),
+			],
+			'submodules'  => [
+							'auto-update_minor'                     => __( 'Minor Updates', 'secupress' ),
+							'auto-update_major'                     => __( 'Major Updates', 'secupress' ),
+							'wp-config_disallow_file_edit'          => __( 'Disallow File Edit', 'secupress' ),
+							'wp-config_disallow_unfiltered_uploads' => __( 'Disallow Unfiltered Uploads', 'secupress' ),
+						]
+		],
+		'sensitive-data'  => [
 			'title'       => __( 'Sensitive Data', 'secupress' ),
 			'icon'        => 'sensitive-data',
-			'summaries'   => array(
-				'small'  => __( 'Keep your data safe', 'secupress' ),
-				'normal' => __( 'Preserve your data and avoid losing your content in case of attack.', 'secupress' ),
-			),
-			'description' => array(
-				__( 'Preserve your data and avoid losing your content in case of attack.', 'secupress' ),
-			),
-			'counts' => array(
-				'free_options' => 10,
-				'pro_options'  => 3,
-			),
-		),
-		'firewall'     => array(
+			'dashicon'    => 'lock',
+			'summaries'   => [
+				'small'   => __( 'Keep your data safe', 'secupress' ),
+				'normal'  => __( 'Preserve your data and avoid losing your content in case of attack.', 'secupress' ),
+			],
+			'submodules'  => [
+							'wp-endpoints_xmlrpc_block-all'     => __( 'XML-RPC Management', 'secupress' ),
+							'content-protect_hotlink'           => '*' . __( 'Anti Hotlink', 'secupress' ),
+							'content-protect_directory-listing' => __( 'Directory Listing', 'secupress' ),
+							'content-protect_php-disclosure'    => __( 'PHP Disclosure', 'secupress' ),
+							'content-protect_php-version'       => __( 'PHP Version Disclosure', 'secupress' ),
+							'content-protect_wp-version'        => __( 'PHP WP Disclosure', 'secupress' ),
+							'content-protect_bad-url-access'    => __( 'Bad URL Access', 'secupress' ),
+							'content-protect_readmes'           => __( 'Protect Readme Files', 'secupress' ),
+							'page-protect_profile'              => '*' . __( 'Protect Profile Page', 'secupress' ),
+							'page-protect_settings'             => '*' . sprintf( __( 'Protect %s Pages', 'secupress' ), SECUPRESS_PLUGIN_NAME ),
+						]
+		],
+		'firewall'        => [
 			'title'       => __( 'Firewall', 'secupress' ),
 			'icon'        => 'firewall',
-			'summaries'   => array(
-				'small'  => __( 'Block bad requests', 'secupress' ),
-				'normal' => __( 'Malicious requests are common, unfortunatly. All malicious incoming requests will be checked and quietly blocked.', 'secupress' ),
-			),
-			'description' => array(
-				__( 'Malicious requests are common, unfortunatly. All malicious incoming requests will be checked and quietly blocked.', 'secupress' ),
-			),
-			'counts' => array(
-				'free_options' => 4,
-				'pro_options'  => 2,
-			),
-		),
-		'file-system'     => array(
-			'title'       => __( 'Malware Scan', 'secupress' ),
-			'icon'        => 'file-system',
-			'summaries'   => array(
-				'small'  => __( 'Permissions &amp; Antivirus', 'secupress' ),
-				'normal' => __( 'Check file permissions, run monitoring and antivirus on your installation to verify file integrity.', 'secupress' ),
-			),
-			'with_form'   => false,
-			'description' => array(
-				__( 'Check file permissions, run monitoring and antivirus on your installation to verify file integrity.', 'secupress' ),
-			),
-			'mark_as_pro' => $should_be_pro,
-			'counts' => array(
-				'free_options' => 1,
-				'pro_options'  => 2,
-			),
-		),
-		'backups'         => array(
-			'title'       => __( 'Backups', 'secupress' ),
-			'icon'        => 'backups',
-			'summaries'   => array(
-				'small'  => __( 'Never lose anything', 'secupress' ),
-				'normal' => __( 'Reduce the risks of losing your content in an attack by backing up your database and files.', 'secupress' ),
-			),
-			'with_form'   => false,
-			'description' => array(
-				__( 'Reduce the risks of losing your content in an attack by backing up your database and files.', 'secupress' ),
-				sprintf( __( 'Don\'t forget to <a href="%s">schedule backups</a> as soon as possible.', 'secupress' ), esc_url( secupress_admin_url( 'modules', 'schedules' ) ) ),
-			),
-			'mark_as_pro' => $should_be_pro,
-			'counts' => array(
-				'free_options' => 0,
-				'pro_options'  => 4,
-			),
-		),
-		'antispam'        => array(
+			'dashicon'    => 'shield',
+			'summaries'   => [
+				'small'   => __( 'Block bad requests', 'secupress' ),
+				'normal'  => __( 'Malicious requests are common, unfortunatly. All malicious incoming requests will be checked and quietly blocked.', 'secupress' ),
+			],
+			'submodules'  => [
+							'bbq-headers_user-agents-header'     => __( 'Block Bad User Agents', 'secupress' ),
+							'bbq-headers_request-methods-header' => __( 'Block Bad Request Methods', 'secupress' ),
+							'bbq-headers_fake-google-bots'       => __( 'Block Fake SEO Bots', 'secupress' ),
+							'bbq-url-content_bad-contents'       => __( 'Block Bad Content', 'secupress' ),
+							'bbq-url-content_bad-sqli-scan'      => __( 'Block SQLi Scan Attempts', 'secupress' ),
+							'bbq-url-content_ban-404-php'        => __( 'Block 404 requests on PHP files', 'secupress' ),
+							'bruteforce_activated'               => '*' . __( 'Front Anti Brute-Force', 'secupress' ),
+							'geoip-system_type_-1'               => '*' . __( 'GeoIP Management', 'secupress' ),
+						]
+		],
+		'antispam'        => [
 			'title'       => __( 'Anti Spam', 'secupress' ),
 			'icon'        => 'antispam',
-			'summaries'   => array(
-				'small'  => __( 'Get rid of bad bots', 'secupress' ),
-				'normal' => __( 'Traffic done by bot represents about 60% of the internet. Spams are done by these bots. Don\'t let them do that!', 'secupress' ),
-			),
-			'description' => array(
-				__( 'Comments are great for your website, but bot traffic represents about 60 % of the internet. Spams are done by these bots, and they just want to add their content into your website. Don\'t let them do that!', 'secupress' ),
-				sprintf( __( 'Do not forget to visit the <a href="%s">Settings &rsaquo; Discussion</a> area to add words to the blacklist and other usual settings regarding comments.', 'secupress' ), esc_url( admin_url( 'options-discussion.php' ) ) ),
-				__( 'By default, identity theft is blocked, so if someone tries to comment using your email/name, the comment will be blocked.', 'secupress' ),
-				__( 'Also by default, bad IPs are blocked, as are the author name, email and website url of known as spammer.', 'secupress' ),
-			),
-			'mark_as_pro' => $should_be_pro,
-			'counts' => array(
-				'free_options' => 0,
-				'pro_options'  => 7,
-			),
-		),
-		'alerts'          => array(
-			'title'       => __( 'Alerts', 'secupress' ),
-			'icon'        => 'information',
-			'summaries'   => array(
-				'small'  => __( 'React quickly in case of attack', 'secupress' ),
-				'normal' => __( 'Being alerted of some important events will help you to react quickly in case of possible attacks.', 'secupress' ),
-			),
-			'description' => array(
-				__( 'Being alerted of some important events will help you to react quickly in case of possible attacks.', 'secupress' ),
-			),
-			'mark_as_pro' => $should_be_pro,
-			'counts' => array(
-				'free_options' => 0,
-				'pro_options'  => 3,
-			),
-		),
-		'schedules'       => array(
-			'title'       => __( 'Schedules', 'secupress' ),
-			'icon'        => 'schedule',
-			'summaries'   => array(
-				'small'  => __( 'Automate all your tasks', 'secupress' ),
-				'normal' => sprintf( __( 'Let %s scan your website when you are away by using recurent scans.', 'secupress' ), SECUPRESS_PLUGIN_NAME ),
-			),
-			'description' => array(
-				sprintf( __( 'Let %s scan your website when you are away by using recurent scans.', 'secupress' ), SECUPRESS_PLUGIN_NAME ),
-			),
-			'mark_as_pro' => $should_be_pro,
-			'counts' => array(
-				'free_options' => 0,
-				'pro_options'  => 4,
-			),
-		),
-		'logs'            => array(
+			'dashicon'    => 'email-alt',
+			'summaries'   => [
+				'small'   => __( 'Get rid of bad bots', 'secupress' ),
+				'normal'  => __( 'Traffic done by bot represents about 60% of the internet. Spams are done by these bots. Don\'t let them do that!', 'secupress' ),
+			],
+			'submodules'  => [
+							'antispam_antispam_fightspam'       => __( 'Anti Spam Rules', 'secupress' ),
+							'antispam_mark-as_spam'             => __( 'Mark Spam As', 'secupress' ),
+							'antispam_block-shortcodes'         => __( 'Block Shortcodes', 'secupress' ),
+							'antispam_better-blacklist-comment' => __( 'Better Comments Blacklist', 'secupress' ),
+							'antispam_forbid-pings-trackbacks'  => __( 'Forbid Pingbacks & Trackbacks', 'secupress' ),
+						]
+		],
+		'logs'            => [
 			'title'       => _x( 'Logs', 'post type general name', 'secupress' ),
 			'icon'        => 'logs',
-			'summaries'   => array(
-				'small'  => __( 'Monitor everything', 'secupress' ),
-				'normal' => __( 'Keep an eye on what happened on your website at any time. Also, control banned IPs from our modules here.', 'secupress' ),
-			),
-			'with_form'   => false,
-			'description' => array(
-				__( 'Keep an eye on what happened on your website at any time. Also, control banned IPs from our modules here.', 'secupress' ),
-			),
-			'counts' => array(
-				'free_options' => 4,
-				'pro_options'  => 0,
-			),
-		),
-	);
-
-	if ( class_exists( 'WooCommerce' ) || class_exists( 'SitePress' ) ) {
-		++$modules['sensitive-data']['counts']['free_options'];
-	}
-
-	if ( function_exists( 'secupress_is_white_label' ) && ! secupress_is_white_label() ) {
-		$modules['services'] = array(
-			'title'       => __( 'Services', 'secupress' ),
+			'dashicon'    => 'welcome-write-blog',
+			'summaries'   => [
+				'small'   => __( 'Monitor everything', 'secupress' ),
+				'normal'  => __( 'Keep an eye on what happened on your website at any time. Also, control banned IPs from our modules here.', 'secupress' ),
+			],
+			'with_form'      => false,
+			'with_reset_box' => false,
+			'submodules'     => [
+							'secupress-banned-ips-list'  => __( 'Banned IPs', 'secupress' ),
+							'banned-ips_whitelist'       => __( 'IP Whitelist', 'secupress' ),
+							'logs_action-logs-activated' => __( 'Action Logs Activation', 'secupress' ),
+							'logs_404-logs-activated'    => __( '404 Logs Activation', 'secupress' ),
+						]
+		],
+		'file-system'     => [
+			'title'       => __( 'Malware Scan', 'secupress' ),
+			'icon'        => 'file-system',
+			'dashicon'    => 'portfolio',
+			'summaries'   => [
+				'small'   => __( 'Permissions &amp; Antivirus', 'secupress' ),
+				'normal'  => __( 'Check file permissions, run monitoring and antivirus on your installation to verify file integrity.', 'secupress' ),
+			],
+			'with_form'      => false,
+			'with_reset_box' => false,
+			'mark_as_pro'    => $should_be_pro,
+			'submodules'     => [
+							'secupress-settings-module_file-system--file-scanner' => __( 'File Scanner', 'secupress' ),
+							'bad-file-extensions_activated'                       => __( 'Bad File Extensions', 'secupress' ),
+						]
+		],
+		'backups'         => [
+			'title'       => __( 'Backups', 'secupress' ),
+			'icon'        => 'backups',
+			'dashicon'    => 'media-archive',
+			'summaries'   => [
+				'small'   => __( 'Never lose anything', 'secupress' ),
+				'normal'  => __( 'Reduce the risks of losing your content in an attack by backing up your database and files.', 'secupress' ),
+			],
+			'with_form'      => false,
+			'with_reset_box' => false,
+			'mark_as_pro'    => $should_be_pro,
+			'submodules'     => [
+							'backups-storage_location_local'                    => __( 'Backup Storage', 'secupress' ),
+							'secupress-settings-module_backups--backup-history' => __( 'Backup History', 'secupress' ),
+							'secupress-settings-module_backups--backup-db'      => __( 'Database Backup', 'secupress' ),
+							'secupress-settings-module_backups--backup-file'    => __( 'Files Backup', 'secupress' ),
+						]
+		],
+		'alerts'          => [
+			'title'       => __( 'Alerts', 'secupress' ),
 			'icon'        => 'services',
-			'summaries'   => array(
-				'small'  => __( 'Post Hack & Pro Configuration', 'secupress' ),
-				'normal' => sprintf( __( 'Let us configure %s on your site and benefit from our expertise. Get help from our experts. This page contains our services designed to help you with the plugin.', 'secupress' ), SECUPRESS_PLUGIN_NAME ),
-			),
-			'description' => array(
-				sprintf( __( 'Let us configure %s on your site and benefit from our expertise. Get help from our experts. This page contains our services designed to help you with the plugin.', 'secupress' ), SECUPRESS_PLUGIN_NAME ),
-			),
-		);
-
-		if ( $should_be_pro ) {
-			$modules['get-pro'] = array(
-				'title'       => __( 'Get Pro', 'secupress' ),
-				'icon'        => 'secupress',
-				'summaries'   => array(
-					'small'  => __( 'Do more with the Pro version', 'secupress' ),
-					'normal' => __( 'Access more modules and options to automate the security of your website.', 'secupress' ),
-				),
-				'description' => array(
-					__( 'Access more modules and options to automate the security of your website.', 'secupress' ),
-				),
-			);
-		}
-	}
+			'dashicon'    => 'megaphone',
+			'summaries'   => [
+				'small'   => __( 'React quickly in case of attack', 'secupress' ),
+				'normal'  => __( 'Being alerted of some important events will help you to react quickly in case of possible attacks.', 'secupress' ),
+			],
+			'mark_as_pro' => $should_be_pro,
+			'submodules'  => [
+							'module-notifications'          => __( 'Types of Notification', 'secupress' ),
+							'event-alerts_activated'    => __( 'Events Alerts', 'secupress' ),
+							'daily-reporting_activated' => __( 'Daily Reports', 'secupress' ),
+						]
+		],
+		'schedules'       => [
+			'title'       => __( 'Schedules', 'secupress' ),
+			'icon'        => 'schedule',
+			'dashicon'    => 'calendar-alt',
+			'summaries'   => [
+				'small'   => __( 'Automate all your tasks', 'secupress' ),
+				'normal'  => sprintf( __( 'Let %s scan your website when you are away by using recurent scans.', 'secupress' ), SECUPRESS_PLUGIN_NAME ),
+			],
+			'mark_as_pro'    => $should_be_pro,
+			'with_reset_box' => false,
+			'submodules'     => [
+							'module-backups'          => __( 'Backups', 'secupress' ),
+							'module-scanners'         => __( 'Scanners', 'secupress' ),
+							'module-files-monitoring' => __( 'File Monitoring', 'secupress' ),
+						]
+		],
+	];
 
 	return $modules;
 }
@@ -589,12 +592,14 @@ function secupress_remove_module_rules_or_notice( $marker, $module_name ) {
 		$message  = sprintf( __( '%s:', 'secupress' ), $module_name ) . ' ';
 		$message .= sprintf(
 			/** Translators: 1 and 2 are small parts of code, 3 is a file name. */
-			__( 'Your server runs <strong>Ngnix</strong>. You have to edit the configuration file manually. Please remove all rules between %1$s and %2$s from the %3$s file.', 'secupress' ),
+			__( 'Your server runs <strong>Nginx</strong>. You have to edit the configuration file manually. Please remove all rules between %1$s and %2$s from the %3$s file.', 'secupress' ),
 			"<code># BEGIN SecuPress $marker</code>",
 			'<code># END SecuPress</code>',
 			'<code>nginx.conf</code>'
 		);
-		secupress_add_settings_error( 'general', 'nginx_manual_edit', $message, 'error' );
+		if ( apply_filters( 'secupress.nginx.notice', true ) ) {
+			secupress_add_settings_error( 'general', 'nginx_manual_edit', $message, 'error' );
+		}
 		return false;
 	}
 
@@ -697,17 +702,19 @@ function secupress_add_module_rules_or_notice( $args ) {
 		$message  = sprintf( __( '%s:', 'secupress' ), $title ) . ' ';
 		$message .= sprintf(
 			/** Translators: 1 is a file name, 2 is some code */
-			__( 'Your server runs <strong>Ngnix</strong>. You have to edit the configuration file manually. Please add the following code to your %1$s file: %2$s', 'secupress' ),
+			__( 'Your server runs <strong>Nginx</strong>. You have to edit the configuration file manually. Please add the following code to your %1$s file: %2$s', 'secupress' ),
 			'<code>nginx.conf</code>',
 			"<pre>$rules</pre>"
 		);
-		secupress_add_settings_error( 'general', 'nginx_manual_edit', $message, 'error' );
+		if ( apply_filters( 'secupress.nginx.notice', true ) ) {
+			secupress_add_settings_error( 'general', 'nginx_manual_edit', $message, 'error' );
+		}
 		return false;
 	}
 
 	// Server not supported.
 	$message  = sprintf( __( '%s:', 'secupress' ), $title ) . ' ';
-	$message .= __( 'It seems your server does not use <strong>Apache</strong>, <strong>Ngnix</strong>, nor <strong>IIS7</strong>. This module won\'t work.', 'secupress' );
+	$message .= __( 'It seems your server does not use <strong>Apache</strong>, <strong>Nginx</strong>, nor <strong>IIS7</strong>. This module won\'t work.', 'secupress' );
 	secupress_add_settings_error( 'general', 'unknown_os', $message, 'error' );
 	return false;
 }
@@ -919,4 +926,16 @@ function secupress_get_submodule_file_path( $module, $submodule ) {
 	}
 
 	return false;
+}
+
+
+/**
+ * Get user-agents forbidden by default.
+ *
+ * @since 1.0
+ *
+ * @return (string) A comma-separated list.
+ */
+function secupress_firewall_bbq_headers_user_agents_list_default() {
+	return 'Gecko/2009032609 Firefox, ADSARobot, ah-ha, almaden, aktuelles, Anarchie, amzn_assoc, ASPSeek, ASSORT, ATHENS, Atomz, attach, autoemailspider, BackWeb, Bandit, BatchFTP, bdfetch, big.brother, BlackWidow, bmclient, Boston Project, BravoBrian SpiderEngine MarcoPolo, Bot mailto:craftbot@yahoo.com, Buddy, Bullseye, bumblebee, capture, CherryPicker, ChinaClaw, CICC, clipping, Collector, Copier, Crescent, Crescent Internet ToolPak, Custo, cyberalert, DA$, Deweb, diagem, Digger, Digimarc, DIIbot, DISCo, DISCo Pump, DISCoFinder, Download Demon, Download Wonder, Downloader, Drip, DSurf15a, DTS.Agent, EasyDL, eCatch, ecollector, efp@gmx.net, Email Extractor, EirGrabber, EmailCollector, EmailSiphon, EmailWolf, Express WebPictures, ExtractorPro, EyeNetIE, FavOrg, fastlwspider, Favorites Sweeper, FEZhead, FileHound, FlashGet WebWasher, FlickBot, fluffy, FrontPage, GalaxyBot, Generic, Getleft, GetRight, GetSmart, GetWeb!, GetWebPage, gigabaz, Girafabot, Go!Zilla, Go!Zilla, Go-Ahead-Got-It, GornKer, gotit, Grabber, GrabNet, Grafula, Green Research, grub-client, Harvest, hhjhj@yahoo, hloader, HMView, HomePageSearch, http generic, HTTrack, httpdown, httrack, ia_archiver, IBM_Planetwide, Image Stripper, Image Sucker, imagefetch, IncyWincy, Indy*Library, Indy Library, informant, Ingelin, InterGET, Internet Ninja, InternetLinkagent, Internet Ninja, InternetSeer.com, Iria, Irvine, JBH*agent, JetCar, JOC, JOC Web Spider, JustView, KWebGet, Lachesis, larbin, LeechFTP, LexiBot, lftp, libwww, likse, Link*Sleuth, LINKS ARoMATIZED, LinkWalker, LWP, lwp-trivial, Mag-Net, Magnet, Mac Finder, Mag-Net, Mass Downloader, MCspider, Memo, Microsoft.URL, MIDown tool, Mirror, Missigua Locator, Mister PiX, MMMtoCrawl/UrlDispatcherLLL, ^Mozilla$, Mozilla.*Indy, Mozilla.*NEWT, Mozilla*MSIECrawler, MS FrontPage*, MSFrontPage, MSIECrawler, MSProxy, multithreaddb, nationaldirectory, Navroad, NearSite, NetAnts, NetCarta, NetMechanic, netprospector, NetResearchServer, NetSpider, Net Vampire, NetZIP, NetZip Downloader, NetZippy, NEWT, NICErsPRO, Ninja, NPBot, Octopus, Offline Explorer, Offline Navigator, OpaL, Openfind, OpenTextSiteCrawler, PageGrabber, Papa Foto, PackRat, pavuk, pcBrowser, PersonaPilot, PingALink, Pockey, psbot, PSurf, puf, Pump, PushSite, QRVA, RealDownload, Reaper, Recorder, ReGet, replacer, RepoMonkey, Robozilla, Rover, RPT-HTTPClient, Rsync, Scooter, SearchExpress, searchhippo, searchterms.it, Second Street Research, Seeker, Shai, Siphon, sitecheck, sitecheck.internetseer.com, SiteSnagger, SlySearch, SmartDownload, snagger, Snake, SpaceBison, Spegla, SpiderBot, sproose, SqWorm, Stripper, Sucker, SuperBot, SuperHTTP, Surfbot, SurfWalker, Szukacz, tAkeOut, tarspider, Teleport Pro, Templeton, TrueRobot, TV33_Mercator, UIowaCrawler, UtilMind, URLSpiderPro, URL_Spider_Pro, Vacuum, vagabondo, vayala, visibilitygap, VoidEYE, vspider, Web Downloader, w3mir, Web Data Extractor, Web Image Collector, Web Sucker, Wweb, WebAuto, WebBandit, web.by.mail, Webclipping, webcollage, webcollector, WebCopier, webcraft@bea, webdevil, webdownloader, Webdup, WebEMailExtrac, WebFetch, WebGo IS, WebHook, Webinator, WebLeacher, WEBMASTERS, WebMiner, WebMirror, webmole, WebReaper, WebSauger, Website, Website eXtractor, Website Quester, WebSnake, Webster, WebStripper, websucker, webvac, webwalk, webweasel, WebWhacker, WebZIP, Whacker, whizbang, WhosTalking, Widow, WISEbot, WWWOFFLE, x-Tractor, ^Xaldon WebSpider, WUMPUS, Xenu, XGET, Zeus.*Webster, Zeus';
 }

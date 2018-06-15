@@ -3,11 +3,11 @@
  * Generic exception that we know has come from the Loco plugin
  */
 class Loco_error_Exception extends Exception implements JsonSerializable {
-    
+
     const LEVEL_ERROR   = 0;
     const LEVEL_WARNING = 1;
     const LEVEL_DEBUG   = 2;
-    const LEVEL_INFO    = 3;
+    const LEVEL_NOLOG   = 3;
 
 
     /**
@@ -21,6 +21,12 @@ class Loco_error_Exception extends Exception implements JsonSerializable {
      * @var int
      */
     private $_line;
+
+    /**
+     * Links to help docs etc.. to show along side error message
+     * @var array
+     */
+    private $links = array();
 
 
     /**
@@ -103,7 +109,26 @@ class Loco_error_Exception extends Exception implements JsonSerializable {
             //'file' => str_replace( ABSPATH, '', $this->getFile() ),
             //'line' => $this->getLine(),
         );
-    }    
+    }
+
+
+    /**
+     * Push navigation links into error. Use for help pages etc..
+     * @return Loco_error_Exception
+     */
+    public function addLink( $href, $text ){
+        $this->links[] = sprintf('<a href="%s">%s</a>', esc_url($href), esc_html($text) );
+        return $this;
+    }
+
+
+    /**
+     * @return array
+     */
+     public function getLinks(){
+         return $this->links;
+     }
+
 
 
     /**
@@ -114,7 +139,10 @@ class Loco_error_Exception extends Exception implements JsonSerializable {
         if( $e instanceof Loco_error_Exception ){
             return $e;
         }
-        return new Loco_error_Exception( $e->getMessage(), $e->getCode(), $e );
+        $me = new Loco_error_Exception( $e->getMessage(), $e->getCode(), $e );
+        $me->_file = $e->getFile();
+        $me->_line = $e->getLine();
+        return $me;
     }    
     
 }

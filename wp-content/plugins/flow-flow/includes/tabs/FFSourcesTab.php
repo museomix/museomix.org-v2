@@ -1,5 +1,6 @@
 <?php namespace flow\tabs;
 
+use flow\settings\FFSettingsUtils;
 use la\core\tabs\LATab;
 
 if ( ! defined( 'WPINC' ) ) die;
@@ -79,7 +80,7 @@ class FFSourcesTab implements LATab {
 									}
 								}
 								if (isset($feed['timeline-type'])) $settingArr['timeline-type'] = $feed['timeline-type'];
-								if (isset($feed['mod']) && $feed['mod'] !== 'nope') $settingArr['mod'] = $feed['mod'];
+								if (isset($feed['mod']) && $feed['mod'] !== FFSettingsUtils::NOPE) $settingArr['mod'] = $feed['mod'];
 
 								foreach ($settingArr  as $key => $value ) {
 									if (!empty($value)) {
@@ -110,7 +111,7 @@ class FFSourcesTab implements LATab {
 								// it will be done via JS
 								// $status = (isset($feed['status']) && $feed['status'] == 1) ? 'cache-status-ok' : 'cache-status-error';
 								//$last_update = $feed['last_update'] == 0 ? '' : FFFeedUtils::classicStyleDate($feed['last_update']);
-								$enabled = isset($feed['enabled']) ? ($feed['enabled'] === 'yep'? true : false) : true;
+								$enabled = FFSettingsUtils::YepNope2ClassicStyleSafe($feed, 'enabled', true);
 
 								$fc = $feed['cache_lifetime'];
 								if ($fc == 5) {
@@ -141,7 +142,7 @@ class FFSourcesTab implements LATab {
 							}
 
 							if (empty($context['sources'])) {
-								echo '<tr class="empty-row"><td class="empty-cell" colspan="7">Please add at least one feed</td></tr>';
+								echo '<tr class="empty-row"><td class="empty-cell" colspan="6">Please add at least one feed</td></tr>';
 							}
 
 							?>

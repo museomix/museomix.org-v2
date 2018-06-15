@@ -1248,8 +1248,6 @@ else {
             }
 
             this.updatePause();
-
-            console.log('paginate')
         },
 
         updateItems : function(page) {

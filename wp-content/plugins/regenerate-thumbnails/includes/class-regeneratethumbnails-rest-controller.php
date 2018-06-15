@@ -29,7 +29,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	public function register_routes() {
 		register_rest_route( $this->namespace, '/regenerate/(?P<id>[\d]+)', array(
 			array(
-				'methods'             => WP_REST_Server::EDITABLE,
+				'methods'             => WP_REST_Server::ALLMETHODS,
 				'callback'            => array( $this, 'regenerate_item' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
 				'args'                => array(
@@ -61,7 +61,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 						'validate_callback' => array( $this, 'is_array' ),
 					),
 					'update_usages_in_posts_posts_per_loop' => array(
-						'description'       => __( "Posts to process per loop. This is control memory usage and you likely don't need to adjust this.", 'regenerate-thumbnails' ),
+						'description'       => __( "Posts to process per loop. This is to control memory usage and you likely don't need to adjust this.", 'regenerate-thumbnails' ),
 						'type'              => 'integer',
 						'default'           => 10,
 						'sanitize_callback' => 'absint',
@@ -196,7 +196,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			) );
 
 			// If wp_update_post() failed for any posts, return that error.
-			foreach ( $posts_updated as $post_updated_id => $post_updated_result ) {
+			foreach ( $posts_updated as $post_updated_result ) {
 				if ( is_wp_error( $post_updated_result ) ) {
 					return $post_updated_result;
 				}
@@ -242,12 +242,12 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 		$per_page = $request->get_param( 'per_page' );
 
 		$featured_image_ids = $wpdb->get_results( $wpdb->prepare(
-			"SELECT meta_value as id FROM $wpdb->postmeta WHERE meta_key = '_thumbnail_id' ORDER BY post_id LIMIT %d OFFSET %d",
+			"SELECT SQL_CALC_FOUND_ROWS meta_value AS id FROM {$wpdb->postmeta} WHERE meta_key = '_thumbnail_id' GROUP BY meta_value ORDER BY MIN(meta_id) LIMIT %d OFFSET %d",
 			$per_page,
 			( $per_page * $page ) - $per_page
 		) );
 
-		$total     = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->postmeta WHERE meta_key = '_thumbnail_id'" );
+		$total     = $wpdb->get_var( "SELECT FOUND_ROWS()" );
 		$max_pages = ceil( $total / $per_page );
 
 		if ( $page > $max_pages && $total > 0 ) {

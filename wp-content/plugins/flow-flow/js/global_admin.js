@@ -266,7 +266,7 @@
     function tryToAddNotification (id) {
       var found;
       var $item;
-      
+      var str;
 
       seen = cookieJSON.seen.toString().split('+');
 
@@ -276,7 +276,9 @@
       found = _.find(seen, function (num) {return num === id.toString()});
       if (!found) {
         $item = $('#toplevel_page_flow-flow');
-        $item.find('.wp-menu-name').append('<span class="update-plugins count-1"><span class="plugin-count">1</span></span>')
+        str = '<span class="update-plugins count-1"><span class="plugin-count">1</span></span>';
+        $item.find('.wp-menu-name').append(str);
+        $item.find('.wp-submenu li:eq(2)').prepend(str)
       }
 
     }

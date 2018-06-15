@@ -1,9 +1,10 @@
 === Plugin Name ===
 Contributors: timwhitlock
-Tags: translation, translators, localization, localisation, l10n, i18n, Gettext, PO, MO, productivity, multilingual
+Tags: translation, translators, localization, localisation, l10n, i18n, Gettext, PO, MO, productivity, multilingual, internationalization
 Requires at least: 4.1
-Tested up to: 4.9.1
-Stable tag: 2.0.17
+Requires PHP: 5.2.4
+Tested up to: 4.9.6
+Stable tag: 2.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +26,7 @@ Features include:
 * Support for PO features including comments, references and plural forms
 * PO source view with clickable source code references
 * Protected language directory for saving custom translations
-* Configurable PO file backups
+* Configurable PO file backups with diff and restore capability
 * Built-in WordPress locale codes
 
 
@@ -46,7 +47,7 @@ Translators: To translate a theme into your language, follow these steps:
 
 1. Create the protected languages directory at `wp-content/languages/loco/themes`
 2. Ensure this directory writeable by the web server
-3. Find the theme in the list at *Loco Translate > Themes*
+3. Find your theme in the list at *Loco Translate > Themes*
 4. Click `+ New language` and follow the on-screen prompts.
 
 
@@ -67,13 +68,16 @@ More information on using the plugin is [available here](https://localise.biz/wo
 
 = How do I use it? = 
 
-Try our [beginner's guide](https://localise.biz/wordpress/plugin/beginners), or the more [technical overview](https://localise.biz/wordpress/plugin/overview) if you’re familiar with WordPress localization.
+Try our [Guides and Tutorials](https://localise.biz/wordpress/plugin#guides) and be sure to check the [Most asked questions](https://localise.biz/wordpress/plugin/faqs) if you have a problem.
 
 = How do I get help? =
 
 Please see [getting help with Loco Translate](https://localise.biz/wordpress/plugin/support) and note that personal support by email is not available for this plugin. 
 Help is provided via the [plugin support forum](https://wordpress.org/support/plugin/loco-translate) only.
 
+= Is it GDPR compliant? =
+
+Sure thing. See the [plugin privacy notice](https://localise.biz/wordpress/plugin/privacy).
 
 
 == Screenshots ==
@@ -81,10 +85,59 @@ Help is provided via the [plugin support forum](https://wordpress.org/support/pl
 1. Translating strings in the browser with the Loco PO Editor
 2. Showing translation progress for theme language files
 3. PO source view with text filter and clickable file references
+4. Restore tab showing PO diff view with revert function
+5. Showing access to translations by installed language
 
 
 
 == Changelog ==
+
+= 2.1.4 =
+* Bumped WP compatibility to 4.9.6
+* Hooked in privacy policy suggestion
+
+= 2.1.3 =
+* Added loco_locale_name filter and updated locale data
+* Fixed editor column sorting to update as values change
+* Supporting RTL text in editor preview rows
+* Minor refactor of debug mode routing check 
+* Minor PO parser improvements
+* Bumped WP compatibility to 4.9.5
+
+= 2.1.2 =
+* Fixed undeclared property in admin hook
+* Fixed incompatibility with older WordPress
+* Fixed incorrect millisecond reporting in footer
+* Removed locale progress column for en_US locale
+* Tweaks to debugging and error logging
+
+= 2.1.1 =
+* Setting `Project-Id-Version` on new POT files
+* Added source view to quick links in file tables
+* Supporting only WordPress style locale codes
+* Editor screen tolerates missing PO headers
+* Ajax debugging improvements for issue reporting
+* Added loco_parse_locale action callback
+
+= 2.1.0 =
+* Add `fs_protect` setting to avoid overwriting system files
+* Fixed bug in connect dialogue where errors not redisplayed
+* Minor improvements to inline notices
+* Removed downgrade notice under version tab
+* Fixed extraction bug where file header confused with comment
+* Resolved some inconsistencies between PHP and JS utilities
+* Added Restore tab with diff display
+* Added `loco_settings` hook
+* Prevented editor from changing PO document order
+* Added default string sorting to extracted strings
+* Added "Languages" section for grouping files by locale
+* Fixed bug where translations loaded before user profile language set
+* Added loco_locale_plurals filter for customising plural rules
+* Allowing PO files to enforce their own Plural-Forms rules
+* Added `loco_allow_remote` filter for debugging remote problems
+* Updated plural forms from Unicode CLDR
+* PHP extractor avoids repeated comments
+* Bumped WP compatibility to 4.9.4
 
 = 2.0.17 =
 * Unofficial languages showing in “Installed” dropdown
@@ -207,24 +260,28 @@ Help is provided via the [plugin support forum](https://wordpress.org/support/pl
 
 == Upgrade Notice ==
 
-= 2.0.17 =
+= 2.1.4 =
 * Various bug fixes and improvements
 
 
 == More info ==
 
-* [About the plugin](https://localise.biz/wordpress/plugin/beginners)
-* [Beginner's guide to translating a theme](https://localise.biz/wordpress/plugin/beginners)
-* [Technical overview](https://localise.biz/wordpress/plugin/overview)
+* [About the plugin](https://localise.biz/wordpress/plugin)
+* [User manual](https://localise.biz/wordpress/plugin/manual)
+* [Beginner's guide](https://localise.biz/wordpress/plugin/beginners)
+* [Customizing translations](https://localise.biz/wordpress/plugin/custom-translations)
+* [Translating child themes](https://localise.biz/wordpress/plugin/child-themes)
 * [Getting help](https://localise.biz/wordpress/plugin/support)
 
 == Coming soon ==
 
 These features are on our todo list. There's no particular timeframe for any of them and they're in no particular order:
 
-* Integration with Google and Bing for automatic translation
-* Integration with Loco API for collaborative translation
-* Screens showing installed bundles per language
+* Integration with automatic translation services
+* Integration with Loco API for cloud storage and collaboration
+* Global search for finding strings across all bundles
+* Advanced Merge/Sync screen to replace the basic in-editor sync
+* Starred/Favourited bundles for quicker dashboard access
 
 
 == Keyboard shortcuts ==

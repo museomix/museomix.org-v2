@@ -21,6 +21,7 @@ final class AC_TableScreen {
 		add_action( 'admin_init', array( $this, 'load_list_screen_doing_quick_edit' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 		add_action( 'admin_footer', array( $this, 'admin_footer_scripts' ) );
+		add_action( 'admin_head', array( $this, 'admin_head_scripts' ) );
 		add_filter( 'admin_body_class', array( $this, 'admin_class' ) );
 		add_filter( 'list_table_primary_column', array( $this, 'set_primary_column' ), 20 );
 		add_action( 'wp_ajax_ac_get_column_value', array( $this, 'ajax_get_column_value' ) );
@@ -157,9 +158,11 @@ final class AC_TableScreen {
 	 * @param $term
 	 */
 	public function add_taxonomy_hidden_quick_edit_markup( $actions, $term ) {
-		$list_table = $this->get_current_list_screen()->get_list_table();
+		$list_screen = $this->get_current_list_screen();
 
-		echo sprintf( '<div class="hidden">%s</div>', $list_table->column_name( $term ) );
+		if ( $list_screen instanceof ACP_ListScreen_Taxonomy ) {
+			echo sprintf( '<div class="hidden">%s</div>', $list_screen->get_list_table()->column_name( $term ) );
+		}
 
 		return $actions;
 	}
@@ -196,12 +199,12 @@ final class AC_TableScreen {
 		$list_screen = $this->current_list_screen;
 
 		// Tooltip
-		wp_register_script( 'jquery-qtip2', AC()->get_plugin_url() . "external/qtip2/jquery.qtip" . AC()->minified() . ".js", array( 'jquery' ), AC()->get_version() );
-		wp_enqueue_style( 'jquery-qtip2', AC()->get_plugin_url() . "external/qtip2/jquery.qtip" . AC()->minified() . ".css", array(), AC()->get_version() );
+		wp_register_script( 'jquery-qtip2', AC()->get_plugin_url() . "external/qtip2/jquery.qtip.min.js", array( 'jquery' ), AC()->get_version() );
+		wp_enqueue_style( 'jquery-qtip2', AC()->get_plugin_url() . "external/qtip2/jquery.qtip.min.css", array(), AC()->get_version() );
 
 		// Main
-		wp_enqueue_script( 'ac-table', AC()->get_plugin_url() . "assets/js/table" . AC()->minified() . ".js", array( 'jquery', 'jquery-qtip2' ), AC()->get_version() );
-		wp_enqueue_style( 'ac-table', AC()->get_plugin_url() . "assets/css/table" . AC()->minified() . ".css", array(), AC()->get_version() );
+		wp_enqueue_script( 'ac-table', AC()->get_plugin_url() . "assets/js/table.js", array( 'jquery', 'jquery-qtip2' ), AC()->get_version() );
+		wp_enqueue_style( 'ac-table', AC()->get_plugin_url() . "assets/css/table.css", array(), AC()->get_version() );
 
 		wp_localize_script( 'ac-table', 'AC', array(
 				'list_screen'  => $list_screen->get_key(),
@@ -210,6 +213,7 @@ final class AC_TableScreen {
 				'ajax_nonce'   => wp_create_nonce( 'ac-ajax' ),
 				'table_id'     => $list_screen->get_table_attr_id(),
 				'edit_link'    => $this->get_edit_link( $list_screen ),
+				'screen'       => $this->get_current_screen_id(),
 				'i18n'         => array(
 					'edit_columns' => esc_html( __( 'Edit columns', 'codepress-admin-columns' ) ),
 				),
@@ -225,6 +229,19 @@ final class AC_TableScreen {
 		foreach ( $list_screen->get_columns() as $column ) {
 			$column->scripts();
 		}
+	}
+
+	/**
+	 * @return false|string
+	 */
+	private function get_current_screen_id() {
+		$screen = get_current_screen();
+
+		if ( ! $screen ) {
+			return false;
+		}
+
+		return $screen->id;
 	}
 
 	/**
@@ -249,31 +266,36 @@ final class AC_TableScreen {
 	 * Applies the width setting to the table headers
 	 */
 	private function display_width_styles() {
-		if ( $this->current_list_screen->get_settings() ) {
-
-			// CSS: columns width
-			$css_column_width = false;
-
-			foreach ( $this->current_list_screen->get_columns() as $column ) {
-
-				/* @var AC_Settings_Column_Width $setting */
-				$setting = $column->get_setting( 'width' );
-
-				if ( $width = $setting->get_display_width() ) {
-					$css_column_width .= ".ac-" . $this->current_list_screen->get_key() . " .wrap table th.column-" . $column->get_name() . " { width: " . $width . " !important; }";
-					$css_column_width .= "body.acp-overflow-table.ac-" . $this->current_list_screen->get_key() . " .wrap th.column-" . $column->get_name() . " { min-width: " . $width . " !important; }";
-				}
-			}
-
-			if ( $css_column_width ) : ?>
-				<style>
-					@media screen and (min-width: 783px) {
-					<?php echo $css_column_width; ?>
-					}
-				</style>
-				<?php
-			endif;
+		if ( ! $this->current_list_screen || ! $this->current_list_screen->get_settings() ) {
+			return;
 		}
+
+		// CSS: columns width
+		$css_column_width = false;
+
+		foreach ( $this->current_list_screen->get_columns() as $column ) {
+			/* @var AC_Settings_Column_Width $setting */
+			$setting = $column->get_setting( 'width' );
+
+			if ( $width = $setting->get_display_width() ) {
+				$css_column_width .= ".ac-" . esc_attr( $this->current_list_screen->get_key() ) . " .wrap table th.column-" . esc_attr( $column->get_name() ) . " { width: " . $width . " !important; }";
+				$css_column_width .= "body.acp-overflow-table.ac-" . esc_attr( $this->current_list_screen->get_key() ) . " .wrap th.column-" . esc_attr( $column->get_name() ) . " { min-width: " . $width . " !important; }";
+			}
+		}
+
+		if ( ! $css_column_width ) {
+			return;
+		}
+
+		?>
+
+		<style>
+			@media screen and (min-width: 783px) {
+			<?php echo $css_column_width; ?>
+			}
+		</style>
+
+		<?php
 	}
 
 	/**
@@ -297,11 +319,11 @@ final class AC_TableScreen {
 	}
 
 	/**
-	 * Admin CSS for Column width and Settings Icon
+	 * Admin header scripts
 	 *
-	 * @since 1.4.0
+	 * @since 3.1.4
 	 */
-	public function admin_footer_scripts() {
+	public function admin_head_scripts() {
 		if ( ! $this->current_list_screen ) {
 			return;
 		}
@@ -310,9 +332,32 @@ final class AC_TableScreen {
 
 		/**
 		 * Add header scripts that only apply to column screens.
+		 *
+		 * @since 3.1.4
+		 *
+		 * @param AC_ListScreen
+		 * @param AC_TableScreen
+		 */
+		do_action( 'ac/admin_head', $this->current_list_screen, $this );
+	}
+
+	/**
+	 * Admin footer scripts
+	 *
+	 * @since 1.4.0
+	 */
+	public function admin_footer_scripts() {
+		if ( ! $this->current_list_screen ) {
+			return;
+		}
+
+		/**
+		 * Add footer scripts that only apply to column screens.
+		 *
 		 * @since 2.3.5
 		 *
-		 * @param object CPAC Main Class
+		 * @param AC_ListScreen
+		 * @param AC_TableScreen
 		 */
 		do_action( 'ac/admin_footer', $this->current_list_screen, $this );
 	}
@@ -320,11 +365,19 @@ final class AC_TableScreen {
 	/**
 	 * Load current list screen
 	 *
-	 * @param WP_Screen $current_screen
+	 * @param WP_Screen $wp_screen
 	 */
-	public function load_list_screen( $current_screen ) {
-		if ( $list_screen = AC()->get_list_screen_by_wpscreen( $current_screen ) ) {
-			$this->set_current_list_screen( $list_screen );
+	public function load_list_screen( $wp_screen ) {
+		if ( ! $wp_screen instanceof WP_Screen ) {
+			return;
+		}
+
+		foreach ( AC()->get_list_screens() as $list_screen ) {
+			if ( $list_screen->is_current_screen( $wp_screen ) ) {
+
+				$this->set_current_list_screen( $list_screen );
+				break;
+			}
 		}
 	}
 

@@ -136,10 +136,8 @@ class Loco_admin_init_InitPotController extends Loco_admin_bundle_BaseController
         ) ) );
 
         // File system connect required if location not writable
-        if( ! $pot->creatable() ){
-            $path = $pot->getRelativePath($content_dir);
-            $this->prepareFsConnect('create', $path );
-        }
+        $relpath = $pot->getRelativePath($content_dir);
+        $this->prepareFsConnect('create', $relpath );
         
         $this->enqueueScript('potinit');
         return $this->view( 'admin/init/init-pot' );

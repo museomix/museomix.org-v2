@@ -1,27 +1,27 @@
 === Media File Renamer ===
 Contributors: TigrouMeow
-Tags: rename, file, media, management, image, renamer, wpml, wp-retina-2x
-Requires at least: 4.2
-Tested up to: 4.8
-Stable tag: 3.7.2
+Tags: rename, file, files, media, manager, image, renamer, wpml, optimization, seo, retina, gutenberg
+Requires at least: 4.6
+Tested up to: 4.9.6
+Stable tag: 4.2.1
 
 Automatically rename files depending on Media titles dynamically + update links. Pro version has many more options. Check the description :)
 
 == Description ==
 
-The Media File Renamer is a WordPress plugin that physically renames media files nicely for a cleaner system and for a better SEO. Please read this description.
+The Media File Auto Renamer is a WordPress plugin that physically renames media files nicely for a cleaner system and for a better SEO. Please read this description.
 
 **IMPORTANT**. This is originally an *automatic* renamer based on the Media title. This plugin features were all meant to be automatic depending on the title of the Media. Manual Rename (and a few more features) were added two years later, in a Pro version. I add complex features based on requests usually in the Pro to be able to maintain the quality of the plugin and its support.
 
 **HOW IT WORKS**. The plugin automatically renames your media filenames depending on their titles. When files are renamed, the references to it are also updated (posts, pages, custom types and their metadata). A new column in the Media Manager will display to you the new ideal filename and a button will allow you to rename it straight away. You can lock and unlock the renaming automatic process through little icons. There is also a little dashboard called File Renamer in Media that will help you rename all your files at once. Advanced users can change the way the files are renamed by using the plugin's filters (check the FAQ). There is also a LOCK option on every image to avoid the filename to be modified any further.
 
-**PRO VERSION**. The [Pro Version](http://meowapps.com/media-file-renamer/) gives a few more features like manual renaming, renaming depending on the post the media is attached to or the content of the alternative text (ALT), logging of SQL queries and a few more options. A good process is to actually let the plugin do the renaming automatically (like in the free version) and to do manual renaming for the files that require fine tuning.
+**PRO VERSION**. The [Pro Version](https://meowapps.com/media-file-renamer/) gives a few more features like manual renaming, renaming depending on the post the media is attached to or the content of the alternative text (ALT), logging of SQL queries and a few more options. A good process is to actually let the plugin do the renaming automatically (like in the free version) and to do manual renaming for the files that require fine tuning.
 
 **BE CAREFUL**. File renaming is a dangerous process. Before renaming everything automatically, try to rename a few files first and check if all the references to those files have been properly updated on your website. WordPress has so many themes and plugins that this renaming process can't unfortunately cover all the cases, especially if other plugins are using unconventional ways. If references aren't updated properly, please write a nice post (not an angry one) in the support threads :) I will try my best to cover more and more special cases. In any case, always make a **backup** of your database and files before using a plugin that alter your install. For backup, you can use such a plugin as [UpdraftPlus](https://updraftplus.com/?afref=460). Also, it your website seems broken after a few renames, try to **clear your cache**. The cached HTML will indeed not be linked to the new filenames.
 
 **FOR DEVELOPER**. The plugin can be tweaked and reference updates enhanced for your themes/plugins. Have a look [here](https://wordpress.org/plugins/media-file-renamer/faq/).
 
-**JUST TO MAKE SURE**. This plugin will not allow you to change the filename manually in its standard version. The [Pro Version](http://meowapps.com/media-file-renamer/) is required. If you are about to *write an angry review* because this feature is not available, please *mention that you read the whole description*.
+**JUST TO MAKE SURE**. This plugin will not allow you to change the filename manually in its standard version. The [Pro Version](https://meowapps.com/media-file-renamer/) is required. If you are about to *write an angry review* because this feature is not available, please *mention that you read the whole description*.
 
 This plugin works perfectly with WP Retina 2x, WPML and many more. Is has been tested in Windows, Linux, BSD and OSX systems.
 
@@ -33,62 +33,9 @@ Languages: English, French.
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Try it with one file first! :)
 
-== Upgrade Notice ==
-
-Simply replace `media-file-renamer.php` by the new one.
-
 == Frequently Asked Questions ==
 
-Check the FAQ on the official website, here: http://meowapps.com/media-file-renamer/faq/. The following is to enhance the plugin for your own install and is aim to advanced users and developers. If you want to quickly try to use the following filters and actions, please have a look a the file called mfrh_custom.php in the plugin, uncomment some code and hack it :)
-
-**Change the way the files are renamed**
-
-If you are willing to customize the way the file are renamed, please use the mfrh_new_filename filter. The $new is the new filename proposed by the plugin, $old is the previous one and $post contains the information about the current attachment.
-
-`
-add_filter( 'mfrh_new_filename', 'my_filter_filename', 10, 3 );
-
-function my_filter_filename( $new, $old, $post ) {
-  return "renamed-" . $new;
-}
-`
-
-The mfrh_replace_rules filter is a bit simpler and allows you to customize specific characters or bit of strings, like with the example below.
-
-`
-add_filter( 'mfrh_replace_rules', 'replace_s_by_z', 10, 1 );
-
-function replace_s_by_z( $rules ) {
-  $rules['s'] = 'z';
-  return $rules;
-}
-`
-
-**Update References**
-
-You can also update the references to the files or URLs which are renamed/modified by using the following filters. If you themes or another plugins are storing those references by yourself, then this is a chance to achieve this :)
-
-The $post is an array containing information about the media (as it is like a post), and you can use the $original_image_url and $new_image_url to do the required renaming:
-
-`
-add_action( 'mfrh_url_renamed', 'my_url_renamed', 10, 3 );
-
-function my_url_renamed( $post, $orig_image_url, $new_image_url ) {
-  return "renamed-" . $new;
-}
-`
-
-This is the same as above but it is about the physical filepath on your filesystem:
-
-`
-add_action( 'mfrh_media_renamed', 'my_media_renamed', 10, 3 );
-
-function my_media_renamed( $post, $old_filepath, $new_filepath ) {
-  return "renamed-" . $new;
-}
-`
-
-You are welcome to create plugins using Media File Renamer using special rules for renaming. Please tell me you so if you make one and I will list those plugins here.
+Check the FAQ on the official website, [here](https://meowapps.com/media-file-renamer/faq/).
 
 == Screenshots ==
 
@@ -99,6 +46,30 @@ You are welcome to create plugins using Media File Renamer using special rules f
 5. Options for the automatic renaming (there are more options than just this).
 
 == Changelog ==
+
+= 4.2.1 =
+* Add: All the actions in the Media Library are now asynchronous. No more page reload!
+* Update: Many changes and little enhancements in the code, for speed, security and code-tidyness.
+* Note: If you like it, please review the plugin here: https://wordpress.org/support/plugin/media-file-renamer/reviews/?rate=5#new-post. It's important for us :) Thank you!
+
+= 4.0.4 =
+* Fix: Renaming using filters (work in progress).
+* Fix: Insensitive-case match was giving the wrong file in some cases (webp for instance).
+
+= 4.0.2 =
+* Fix: PDF thumbnails support.
+* Update: Code improvement, faster SQL queries.
+
+= 4.0.1 =
+* Fix: Issue with the tolowercase feature.
+* Fix: Extension issue with mfrh_new_filename filter.
+* Add: Filter to rewrite Alt Text.
+
+= 4.0.0 =
+* Update: Huge code cleaning and major refactorization. The core was also rewritten.
+* Add: Compatibility with Beaver Builder.
+* Fix: Avoid looking for too much perfection (which is dangerous) when using numbered files.
+* Fix: Works fine now with image sizes in the meta which has the... same size.
 
 = 3.7.2 =
 * Update: Now uploading Media into Post rename the filename accordingly.
@@ -319,7 +290,3 @@ You are welcome to create plugins using Media File Renamer using special rules f
 
 = 0.1 =
 * First release.
-
-== Wishlist ==
-
-Do you have suggestions? Feel free to contact me at <a href='http://www.totorotimes.com'>Totoro Times</a>.

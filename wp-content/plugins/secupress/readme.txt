@@ -1,9 +1,10 @@
 === SecuPress Free — WordPress Security ===
 Contributors: SecuPress, juliobox, GregLone
 Tags: wordpress security, secure, security plugin, security, malware
-Requires at least: 3.7
-Tested up to: 4.8.2
-Stable tag: 1.3.2
+Requires at least: 4.0
+Tested up to: 5.0-alpha
+Requires PHP: 5.4
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,12 +12,14 @@ Protect your WordPress with SecuPress, analyze and ensure the safety of your web
 
 == Description ==
 
+= Edit May, 23rd: SecuPress is GDPR compliant ! =
+
 = YOU MADE IT, WE KEEP IT SAFE! =
 
-Protect your WordPress with malware scans; block bots & suspicious IPs. Get a complete [WordPress security toolkit](https://secupress.me/home/) for free or as a pro plugin.
+Protect your WordPress with malware scans; block bots & suspicious IPs. Get a complete [WordPress security toolkit](https://secupress.me/) for free or as a pro plugin.
 
-**What’s the difference between free and pro version?**  
-If you are proactive, our free WordPress security plugin is a great choice! No time to activate weekly scans? Then [SecuPress pro](https://secupress.me/details/) is the way to go. Our plugin takes care of everything with automated tasks.
+**What’s the difference between free and pro version?**
+If you are proactive, our free WordPress security plugin is a great choice! No time to activate weekly scans? Then [SecuPress pro](https://secupress.me/) is the way to go. Our plugin takes care of everything with automated tasks.
 
 = Here are some of our most popular features: =
 
@@ -36,17 +39,17 @@ If you are proactive, our free WordPress security plugin is a great choice! No t
 
 You can check out [Frequently Asked Questions](https://secupress.me/faq/) or get in touch with our [support](https://secupress.me/support/). Want to know all about SecuPress? You can read our documentation here: [docs.secupress.me](https://docs.secupress.me).
 
-**How will you know it works?**  
+**How will you know it works?**
 Well, we have a dedicated security scanner that will give you a clear security grade and report for your website. This way, you’ll know exactly what to fix.
 
 = WordPress Features =
 
-**Security Audit**  
+**Security Audit**
 SecuPress is the only plugin with a full scanner able to fix the issues for you. And when it requires a decision from you, it will ask you before proceeding. With this feature, you can check 35 security points in 5 minutes and let us take care of the rest.
 
 Once done, you get a security grade that gives you a clear idea of what your security level is. You can export this analysis in PDF format to share with others (clients or colleagues) (1).
 
-**Users & Login**  
+**Users & Login**
 This feature is the easiest way to make sure your users’ data is protected and to keep their accounts from being compromised. With this feature you can limit the number of bad login attempts, ban non-existing usernames login attempts and set a non-login time slot. SecuPress also makes sure you can avoid double logins and control your sessions.
 
 SecuPress also adds a [2FA](https://secupress.me/blog/two-factor-authentication/) (Two Factor Authentication) because it’s almost a mandatory feature when it comes to WordPress security!
@@ -59,15 +62,15 @@ The plugin also gives you greater user and password control as you can set:
 
 Tired of bots finding your WordPress login page? Finally, don't let bots find your login page, just move it with the famous Move Login plugin, now included in SecuPress.
 
-**Plugins and Themes**  
+**Plugins and Themes**
 SecuPress helps you detect themes and plugins that are vulnerable or that have been tampered with to include malicious code. If you install one of these, your security module will send out an email alert and give you a warning in WordPress.
 
 SecuPress takes security further by limiting plugin activation, deactivation, installation and removal in your production (live) website. Plugin and theme uploads via .zip files will be on lockdown as well to block off this easy hacking route.
 
-**WordPress Core**  
+**WordPress Core**
 SecuPress reinforces the WordPress Core to keep it safe. The security plugin optimizes what’s under the hood to secure the config file by setting the proper parameters.
 
-**Sensitive Data**  
+**Sensitive Data**
 SecuPress secures content in many ways:
 
 * The plugin secures WordPress Endpoints and APIs by blocking bad requests for XML-RPC or REST API.
@@ -76,48 +79,48 @@ SecuPress secures content in many ways:
 * The plugin packs 7 anti-disclose security modules to make sure no precious information is available to hackers in your PHP or WordPress itself.
 * Profile and SecuPress settings pages are password protected to keep sensitive information away from prying eyes.
 
-**Firewall**  
+**Firewall**
 
-* SecuPress is the most efficient WordPress bouncer you’ll ever see!
+* SecuPress is one of the most efficient WordPress bouncer you’ll ever see!
 * The plugin blocks malicious incoming requests.
 * It blocks bad User Agents (no bad crawlers allowed).
 * Bad requests methods also get the boot in a single click.
-* URLs are kept in check: no bad URL contents or URLs that are too long allowed.
+* URLs are kept in check: no bad URL contents.
 * SQL injection scanners are kept out as well.
 * Brute force attempts are stopped in their tracks.
 * GeoIP Blocking by country gives you more control over your traffic.
 
-**Malware Scan**  
+**Malware Scan**
 SecuPress has a unique malware scan developed by our security experts. It hunts down bad files and provides you with an easy step-by-step report that lets you take action. It looks into:
 
 * Bad files in your FTP.
 * Your uploads folder for dangerous files.
 * Potential phishing attempts via `index.php` loads.
 
-**Backups**  
+**Backups**
 We know firsthand how painful it is to pick up the pieces after an attack damages your WordPress. SecuPress preserves your data to help you avoid lost content or settings if your website comes under attack. The plugin backs up your database and files and lets you download them to guarantee you peace of mind.
 
-**Anti Spam**  
+**Anti Spam**
 Did you know that 60% of the traffic on the Internet is generated by bots? Most of them happen to be spam bots. We developed our own anti-spam system that works quietly in the background. Just activate it and enjoy a spam free experience.
 
-**Alerts**  
+**Alerts**
 Alerts are an essential tool when your website is under attack. When something important happens on your website, SecuPress will send you an alert via email. We’re working on alerts via SMS, Slack & Twitter as well.
 
 You also receive a daily report that provides a debrief of the attempted attack and all the activities blocked by SecuPress.
 
-**Scheduled Security Tasks**  
+**Scheduled Security Tasks**
 SecuPress can run 3 separate scheduled tasks for you. It’s like having a security patrol on your WordPress.
 
-**Scheduled Scanner:** SecuPress scans your website to detect any issues. After the scan is complete, you get a report in your inbox outlining any actions you have to take to protect your website.  
-**Scheduled Backup:** our team knows that everyone at one time or another forgets to back things up. We made it an automatic task to help ensure you always can recover from an attack with your content safe.  
+**Scheduled Scanner:** SecuPress scans your website to detect any issues. After the scan is complete, you get a report in your inbox outlining any actions you have to take to protect your website.
+**Scheduled Backup:** our team knows that everyone at one time or another forgets to back things up. We made it an automatic task to help ensure you always can recover from an attack with your content safe.
 **Scheduled Malware Scan:** this security feature scans your website at regular intervals to hunt down any malware that may have gotten into your WordPress.
 
-**Logs**  
+**Logs**
 SecuPress will keep a log of important security activities and 404 pages triggered by users, bots or even Chuck Norris. This lets you keep an eye on what’s going on in your WordPress at any time. You can also control banned IPs from this option.
 
 *(1) Available in the [Pro Version](https://secupress.me/features/).*
 
-*(SecuPress est une extension de sécurité WordPress)*
+*(SecuPress est une extension de sécurité WordPress française)*
 
 == Installation ==
 
@@ -156,7 +159,7 @@ Yes, SecuPress is compatible with all WordPress caching plugins. If you encounte
 
 Yes, SecuPress is compatible with all multilingual WordPress plugins. If you have an issue, please get in touch with us and let us know!
 
-= Is SecuPress compatible with all server engines like Apache, Ngnix, IIS7? =
+= Is SecuPress compatible with all server engines like Apache, Nginx, IIS7? =
 
 Yes, SecuPress is compatible with all server engines. If you encounter an issue, do not hesitate to contact our support team.
 
@@ -178,6 +181,100 @@ The answer is no. SecuPress is not compatible with another security plugin. Just
 
 == Changelog ==
 
+= 1.4.4 =
+
+* 23 may 2018
+
+* GDPR Compliance!
+* New Dashboard: The first module page is now a dashboard, you can see your licence info here now.
+* New: You can now reset the SecuPress settings or just module per module.
+* Improvement#628: GeoIP Database has been updated with new IPs
+* Improvement#630: Force strong password is now available on reset form too.
+* Fix#614: Exported settings file doesn't contains the whitelabeled name, this will prevent the impossibility to import this file on another website whitout the same whitelabel name.
+* Fix#617: Warning:  shell_exec() has been disabled for security reasons in /secupress-pro/core/functions/ip.php on line 229
+* Fix#620: PHP Fatal error:  Uncaught Error: Call to undefined function secupress_global_settings_activate_pro_license() in /secupress-pro/core/core.php:227
+* Fix#622: Warning: count(): Parameter must be an array or an object that implements Countable in /secupress/functions/common.php on line 1288
+* Fix#625: Remove "Wget" from bad User Agents
+* Fix#626: Facebook share post parser was blocked by block fake bot module
+* Fix#627: GooglePageSpeed too
+* Fix#628: GeoIP will not block anymore an unknow IP address (country not found)
+
+= 1.4.3 =
+
+* 9 may 2018
+
+* New#605: New feature added in Sessions Control module: Send a reset link to users
+* Improvement#599: UI was not full width
+* Improvement#600: Checkboxes in step 2 seems enabled
+* Improvement#602: Compat with HostPAPA.ca
+* Improvement#609: Remove the notices "These options are disabled…"
+* Improvement: Remove every check about WP being under 4.0
+* Fix#597: Fatal error when updating using folder overwrite (FTP for example)
+* Fix#598: GooglePageSpeed is blocked by Fake SEO Bots module
+* Fix#601: 404 on PHP should block but not ban
+* Fix#606: regex of fake bots' user agents was too large
+* Fix#607: Alerts were always sent every 15mn, even with a higher number
+* Fix#608: Fix "Warning: set_time_limit() has been disabled for security reasons"
+
+= 1.4.2 =
+
+* 23 april 2018
+
+* Improvement#587: Remove SecuPress main logo on whitelabel (there is still some, wait!)
+* Improvement#589: API Key is hidden behind ••••• chars.
+* Improvement#592: Add a Facebook link when grade is A to share the result.
+* Fix#587: CSS missing when whitelabel is on.
+* Fix#588: Move Login died when it should not.
+* Fix#591: Block Fake Bots should not block real bots, right?
+* Fix#595: Fatal error when blocking User Enumeration on REST API
+* Fix#596: Security Fix: The new moved login page could be guessed because of a redirect due to a lack of "die()", there is no more whitelist condition now. Thanks to Aymen Borgi.
+
+= 1.4.1 =
+
+* 18 april 2018
+* Improvement#583: Better PHP Version detection and warning (php 7 is now the best recommanded one)
+* Improvement: Easy Login scan will now detect correctly 15 2FA plugins, not only our PasswordLess module.
+* Fix#581: You can now correctly disconnect if you're using Move Login Page.
+* Fix#582: You can now correctly save the malware scan option page.
+* Fix#586: Possible 503 error : "The server is temporarily unable to service your request due to maintenance downtime or capacity problems. Please try again later."
+
+= 1.4 =
+
+* 11 april 2018
+* New: PHP required version is now 5.4 (and will grow at each major version)
+* New: WordPress required version is now 4.0 (and will grow at each major version)
+* New#490: Block User Enumeration Feature
+* New#551: Ban 404 on .php Files Feature
+* New#544: API Key is hidden by default, you can also hide the full block using the new constant `SECUPRESS_HIDE_API_KEY` (will be set to true if `SECUPRESS_API_EMAIL` and `SECUPRESS_API_KEY` are set)
+* New#557: New constants `SECUPRESS_API_EMAIL` and `SECUPRESS_API_KEY` to overridde data from settings
+* New#558: New filter `secupress.pre_scan.$class` to shortcut any scanner
+* New#564: Block Fake SEO Bots Feature
+* New#562: New filter `secupress.get_email` to change the email when sending
+* New#567: New filter `secupress.nginx.notice` to prevent Nginx notices to pop
+* New#572: New filter `secupress.settings.load_plugin.$plugin` to prevent a full block of settings to be displayed
+* New#572: New filter `secupress.settings.field.$args['name']` to hide an option from a setting block
+* New#576: New scan 404 on .php files
+* New: Pro version is now required to auto-fix issues on step 2 in the scanner
+* Improvement#242: When Pro is active, you'll see a small yellow Ezio (the eagle) logo on each pro feature, so you know what is a pro feature.
+* Improvement#401: Remove outdated scanners and features : REST API Blocking, Non Login Time Slot, DirectoryIndex, no need that now.
+* Improvement#480: Change the way we display the anti sqli scanner code, more lorem, more ipsum, less random
+* Improvement#541: Change the way we load Move Login to prevent any "404 management" plugin to generate conflict
+* Improvement#550: Move Login will now let the priority to "WPS Hide Login" and "SF Move Login"
+* Improvement#553: Move Login will now redirect into the dashboard if the user is logged in
+* Improvement#563: Do not log banned IPs
+* Improvement#569: Let the possibility to go to step2 without launching a new scan
+* Improvement#570: Revamp of the "Get Pro" page (use an external link instead haha)
+* Improvement#571: Remove the hardcoded ads, add more help instead + you can still disable the full bar using the filter `secupress.no_sidebar` or just future ads with `secupress.no_sideads`
+* Improvement#573: Add a 3rdparty.php file to have a better detection of 2FA plugins installed, and better compat with hosts like WPServeur and O2Switch
+* Fix#470: Some messages could be in 2 different languages in the scan results
+* Fix#533: Move Login was not acting correctly when subfoldered
+* Fix#543: ManageWP couldn't always correctly access the plugins list, now it's ok
+* Fix#545: Move Login new page was disclosed by wp-signup.php page
+* Fix#559: Notice: Undefined index: move-login_login-access in /secupress/modules/users-login/callbacks.php on line 246
+* Fix#565: GEOIp was not blocking all countries correctly
+* Fix#566: Anti Bruteforce Front was not blocking all requests correctly
+* Fix#568: Remove the Captcha hidden field, too much false negatives
+
 = 1.3.3 =
 * 04 september 2017
 * Fix#522: zxcvbn lib contained a not fixed bug, I did.
@@ -195,7 +292,7 @@ The answer is no. SecuPress is not compatible with another security plugin. Just
 
 * 02 august 2017
 * Improvement #512: Remove the recovery email notice, you won't need to fill this anymore
-* Improvement #507: Lighter Move Login module with less options, no .htaccess/web.config/ngnix.conf modifications but more decisions and less bugs instead of endless bugs.
+* Improvement #507: Lighter Move Login module with less options, no .htaccess/web.config/nginx.conf modifications but more decisions and less bugs instead of endless bugs.
 * Improvement #506: Remove the scan and fix for empty user agent (not efficient enough in 2017, too much false positive)
 * Improvement #505: Remove the scan and fix for too long URLs (not efficient enough in 2017, too much false positive)
 * Improvement #488: New bad user agent (Gecko/2009032609 Firefox), thanks to Fabrice from wpformation.com
@@ -320,9 +417,9 @@ The answer is no. SecuPress is not compatible with another security plugin. Just
 * 07 november 2016
 * Improvement #258: Remove the blog_id and website URL in the new salt keys to avoid having to log in on each website on a multisite, was just annoying.
 * Improvement #259: Better hook usage to allow any cache plugin (like WP Rocket of course) to ignore login page.
-* Improvement #195: Better Move Login rules on Ngnix. And better rules in general for all modules.
+* Improvement #195: Better Move Login rules on Nginx. And better rules in general for all modules.
 * Fix #262: Some firewall sub-modules are not working in front-end, the functions were not in the right file :|
-* Fix #252: X-Powered by header was not hidden on Ngnix. Ngnix my friend…
+* Fix #252: X-Powered by header was not hidden on Nginx.
 * Fix #250: WPML still appeared as a "bad plugin removed from repo", well, the whitelist filter was not used.
 
 = 1.1.2 =
@@ -423,6 +520,30 @@ The answer is no. SecuPress is not compatible with another security plugin. Just
 * Initial release \o/
 
 == Upgrade Notice ==
+
+= 1.4.3 =
+
+* 9 may 2018
+* PHP required version is now 5.4
+* WordPress required version is now 4.0
+
+= 1.4.2 =
+
+* 23 april 2018
+* PHP required version is now 5.4
+* WordPress required version is now 4.0
+
+= 1.4.1 =
+
+* 18 april 2018
+* PHP required version is now 5.4
+* WordPress required version is now 4.0
+
+= 1.4 =
+
+* 11 april 2018
+* PHP required version is now 5.4
+* WordPress required version is now 4.0
 
 = 1.3.1 =
 

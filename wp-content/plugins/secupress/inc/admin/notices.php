@@ -19,9 +19,9 @@ function secupress_http_block_external_notice() {
 
 	if ( $is_accessible || ! defined( 'WP_HTTP_BLOCK_EXTERNAL' ) || ( isset( $current_screen )
 		&& 'toplevel_page_' . SECUPRESS_PLUGIN_SLUG . '_scanners' !== $current_screen->base
-		&& 'secupress_page_' . SECUPRESS_PLUGIN_SLUG . '_modules' !== $current_screen->base
-		&& 'secupress_page_' . SECUPRESS_PLUGIN_SLUG . '_settings' !== $current_screen->base
-		&& 'secupress_page_' . SECUPRESS_PLUGIN_SLUG . '_logs' !== $current_screen->base )
+		&& SECUPRESS_PLUGIN_SLUG . '_page_' . SECUPRESS_PLUGIN_SLUG . '_modules' !== $current_screen->base
+		&& SECUPRESS_PLUGIN_SLUG . '_page_' . SECUPRESS_PLUGIN_SLUG . '_settings' !== $current_screen->base
+		&& SECUPRESS_PLUGIN_SLUG . '_page_' . SECUPRESS_PLUGIN_SLUG . '_logs' !== $current_screen->base )
 		|| SecuPress_Admin_Notices::is_dismissed( 'http-block-external' )
 		) {
 		return;
@@ -275,7 +275,7 @@ function secupress_warning_no_oneclick_scan_yet() {
 	$screen_id = get_current_screen();
 	$screen_id = $screen_id && ! empty( $screen_id->id ) ? $screen_id->id : false;
 
-	if ( ! ( 'secupress_page_' . SECUPRESS_PLUGIN_SLUG . '_settings' === $screen_id || ( 'plugins' === $screen_id && ! is_multisite() ) || 'plugins-network' === $screen_id ) ) {
+	if ( ! ( SECUPRESS_PLUGIN_SLUG . '_page_' . SECUPRESS_PLUGIN_SLUG . '_settings' === $screen_id || ( 'plugins' === $screen_id && ! is_multisite() ) || 'plugins-network' === $screen_id ) ) {
 		return;
 	}
 
@@ -322,50 +322,41 @@ function secupress_warning_no_oneclick_scan_yet() {
 }
 
 
-add_action( 'in_plugin_update_message-' . plugin_basename( SECUPRESS_FILE ), 'secupress_updates_message' );
+add_action( 'in_plugin_update_message-' . plugin_basename( SECUPRESS_FILE ), 'secupress_updates_message', 10, 2 );
 /**
  * Display a message below our plugins to display the next update information if needed
  *
  * @since 1.1.1
  * @author Julio Potier
  *
- * @param (array) $plugin_data Contains the plugin data from EDD or repository.
+ * @param (array) $plugin_data Contains the old plugin data from EDD or repository.
+ * @param (array) $new_plugin_data Contains the new plugin data from EDD or repository.
  */
-function secupress_updates_message( $plugin_data ) {
+function secupress_updates_message( $plugin_data, $new_plugin_data ) {
 	// Get next version.
-	if ( isset( $plugin_data['version'] ) ) {
-		// SecuPress Free (repo).
-		$remote_version = $plugin_data['version'];
-	} elseif ( isset( $plugin_data['new_version'] ) ) {
-		// SecuPress Pro (EDD).
-		$remote_version = $plugin_data['new_version'];
+	if ( isset( $new_plugin_data->new_version ) ) {
+		$remote_version = $new_plugin_data->new_version;
 	}
 
 	if ( ! isset( $remote_version ) ) {
 		return;
 	}
 
-	$body = get_option( 'secupress_updates_message' );
-	$slug = $plugin_data['slug'] . '-' . $remote_version;
+	$body = get_transient( 'secupress_updates_message' );
 
-	if ( ! isset( $body[ $slug ] ) ) {
+	if ( ! isset( $body[ $remote_version ] ) ) {
+		$url = 'https://plugins.svn.wordpress.org/secupress/trunk/readme.txt';
+		$response = wp_remote_get( $url );
 
-		$urls = array(
-			'secupress'     => 'https://plugins.svn.wordpress.org/secupress/trunk/readme.txt',
-			'secupress-pro' => SECUPRESS_WEB_MAIN . 'api/plugin/readme-pro.php',
-		);
-		$response = wp_remote_get( $urls[ $plugin_data['slug'] ] );
-
-		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			return;
 		}
 
 		$body = wp_remote_retrieve_body( $response );
 
-		update_option( 'secupress_updates_message' , array( $slug => $body ) );
-
+		set_transient( 'secupress_updates_message' , array( $remote_version => $body ) );
 	} else {
-		$body = $body[ $slug ];
+		$body = $body[ $remote_version ];
 	}
 
 	// Find the Notes for this version.
@@ -386,23 +377,4 @@ function secupress_updates_message( $plugin_data ) {
 		echo '</ul>';
 		echo '</div>';
 	}
-}
-
-
-add_action( 'admin_bar_menu', 'secupress_remove_all_notices_on_get_pro_page', SECUPRESS_INT_MAX );
-/**
- * Remove all admin notices from the "Get Pro" screen.
- *
- * @since 1.2.5
- */
-function secupress_remove_all_notices_on_get_pro_page() {
-	global $current_screen;
-
-	if ( empty( $current_screen->id ) || 'secupress_page_secupress_modules' !== $current_screen->id || empty( $_GET['module'] ) || 'get-pro' !== $_GET['module'] ) {
-		return;
-	}
-
-	$action = is_network_admin() ? 'network_admin_notices' : 'admin_notices';
-	remove_all_actions( $action );
-	remove_all_actions( 'all_admin_notices' );
 }

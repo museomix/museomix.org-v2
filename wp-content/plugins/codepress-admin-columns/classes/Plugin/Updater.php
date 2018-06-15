@@ -36,24 +36,39 @@ class AC_Plugin_Updater {
 	 */
 	public function __construct( AC_Plugin $plugin ) {
 		$this->plugin = $plugin;
-		$this->apply_updates = 'true' === filter_input( INPUT_GET, 'ac_do_update' );
+		// TODO: https://github.com/codepress/admin-columns-issues/issues/982
+		//$this->apply_updates = 'true' === filter_input( INPUT_GET, 'ac_do_update' );
+		$this->apply_updates = true;
 	}
 
 	public function add_update( AC_Plugin_Update $update ) {
 		$this->updates[ $update->get_version() ] = $update;
 	}
 
-	public function parse_updates() {
+	/**
+	 * Checks conditions like user permissions
+	 *
+	 */
+	public function check_update_conditions() {
+		if ( ! AC()->user_can_manage_admin_columns() ) {
+			return false;
+		}
 
-		// Network wide updating is not allowed
+		// Network wide updating is not supported yet
 		if ( is_network_admin() ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public function parse_updates() {
+		if ( ! $this->check_update_conditions() ) {
 			return;
 		}
 
-		$plugin = $this->plugin;
-
-		if ( $plugin->is_fresh_install() ) {
-			$plugin->update_stored_version( $plugin->get_version() );
+		if ( $this->plugin->is_new_install() ) {
+			$this->plugin->update_stored_version();
 
 			return;
 		}
@@ -70,16 +85,29 @@ class AC_Plugin_Updater {
 				}
 
 				$update->apply_update();
-				$plugin->update_stored_version( $update->get_version() );
+				$this->plugin->update_stored_version( $update->get_version() );
 			}
 		}
 
-		if ( $this->apply_updates ) {
-			$plugin->update_stored_version( $plugin->get_version() );
+		if ( ! $this->apply_updates ) {
+			return;
 		}
+
+		$this->plugin->update_stored_version();
+		// TODO: https://github.com/codepress/admin-columns-issues/issues/982
+		//$this->show_completed_notice();
 	}
 
-	public function show_update_notice() {
+	protected function show_completed_notice() {
+		$message = sprintf( '<strong>%s</strong> &ndash; %s',
+			esc_html__( 'Admin Columns', 'codepress-admin-columns' ),
+			esc_html__( 'Your database is up to date. You are awesome.', 'codepress-admin-columns' )
+		);
+
+		AC()->notice( $message );
+	}
+
+	protected function show_update_notice() {
 		$url = add_query_arg( array( 'ac_do_update' => 'true' ), AC()->admin()->get_settings_url() );
 
 		$message = sprintf( '<strong>%s</strong> &ndash; %s <a href="%s" class="button ac-update-now">%s</a>',

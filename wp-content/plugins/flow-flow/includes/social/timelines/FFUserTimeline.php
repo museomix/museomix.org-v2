@@ -22,7 +22,7 @@ class FFUserTimeline implements FFTimeline{
 
 	public function init($twitter, $feed){
 		$this->count = $twitter->getCount();
-		$this->screenName = $feed->content;
+		$this->screenName = FFSettingsUtils::preparePrefixContent($feed->content, '@');
 		$this->exclude_replies = (string)FFSettingsUtils::notYepNope2ClassicStyle($feed->replies);
 		$this->include_rts = (string)FFSettingsUtils::YepNope2ClassicStyle($feed->retweets);
 	}

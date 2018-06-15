@@ -1,4 +1,5 @@
 <?php namespace flow\db;
+use flow\settings\FFSettingsUtils;
 use flow\social\FFFeedUtils;
 
 if ( ! defined( 'WPINC' ) ) die;
@@ -184,7 +185,7 @@ class FFDB {
 					}
 				}
 
-				$source['enabled'] = $source['system_enabled'] == 1 ? ($source['enabled'] == 1 ? 'yep' : 'nope') : 'nope';
+				$source['enabled'] = $source['system_enabled'] == 1 ? ($source['enabled'] == 1 ? FFSettingsUtils::YEP : FFSettingsUtils::NOPE) : FFSettingsUtils::NOPE;
 				$offset = get_option('gmt_offset', 0);
 				$date = $source['last_update'] + $offset * 3600;
 				$source['last_update'] = $source['last_update'] == 0 ? 'N/A' : FFFeedUtils::classicStyleDate($date);
@@ -223,7 +224,7 @@ class FFDB {
 						}
 					}
 				}
-				if (empty($source['errors']) && $source['status'] === '0') {
+				if ((empty($source['errors']) || is_string($source['errors'])) && $source['status'] === '0') {
 					$source['errors'] = array( array( 'type' => $source['type'], 'message' => 'Feed cache has not been built. Try to manually rebuild cache using three dots menu on the right.' ) );
 				}
 			}
@@ -373,5 +374,10 @@ class FFDB {
 			return new \Exception();
 		}
 		return true;
+	}
+
+	public static function saveFeed($cache_table_name, $feed_id, $values){
+		$sql = FFDB::conn()->parse('UPDATE ?n SET ?u WHERE `feed_id` = ?s', $cache_table_name, $values, $feed_id);
+		return FFDB::conn()->query($sql);
 	}
 }

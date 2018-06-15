@@ -70,7 +70,12 @@ class IWP_MMB_Installer extends IWP_MMB_Core
             return array(
                 'error' => '<p>No files received. Internal error.</p>', 'error_code' => 'no_files_receive_internal_error'
             );
-			
+		
+        if (!$this->define_ftp_constants($params)) {
+            return array(
+                'error' => 'FTP constant define failed', 'error_code' => 'ftp constant define failed'
+            );
+        }	
         if (!$this->is_server_writable()) {
             return array(
                 'error' => 'Failed, please add FTP details', 'error_code' => 'failed_please_add_ftp_install_remote_file'
@@ -104,6 +109,31 @@ class IWP_MMB_Installer extends IWP_MMB_Core
                 'hook_extra' => array()
             ));
         }
+
+        // if (defined('WP_ADMIN') && WP_ADMIN) {
+        //     global $wp_current_filter;
+        //     $wp_current_filter[] = 'load-update-core.php';
+
+        //     if (function_exists('wp_clean_update_cache')) {
+        //         /** @handled function */
+        //         wp_clean_update_cache();
+        //     }
+
+        //     /** @handled function */
+        //     wp_update_plugins();
+
+        //     array_pop($wp_current_filter);
+
+        //     /** @handled function */
+        //     set_current_screen();
+        //     do_action('load-update-core.php');
+
+        //     /** @handled function */
+        //     wp_version_check();
+
+        //     /** @handled function */
+        //     wp_version_check(array(), true);
+        // }
 				
         if ($activate) {
             if ($type == 'plugins') {
@@ -168,7 +198,11 @@ class IWP_MMB_Installer extends IWP_MMB_Core
             return array(
                 'error' => 'No upgrades passed.', 'error_code' => 'no_upgrades_passed'
             );
-         
+        if (!$this->define_ftp_constants($params)) {
+            return array(
+                'error' => 'FTP constant define failed', 'error_code' => 'ftp constant define failed'
+            );
+        } 
         if (!$this->is_server_writable()) {
             return array(
                 'error' => 'Failed, please add FTP details', 'error_code' => 'failed_please_add_ftp_do_upgrade'
@@ -208,6 +242,7 @@ class IWP_MMB_Installer extends IWP_MMB_Core
         }
         if (!empty($upgrade_plugins)) {
             $plugin_files = $plugin_details = $premium_plugin_details = array();
+            $this->IWP_ithemes_updater_compatiblity();
             foreach ($upgrade_plugins as $plugin) {
                 $file_path = $plugin['file'];
                 $plugin_name = $plugin['name'];
@@ -222,6 +257,7 @@ class IWP_MMB_Installer extends IWP_MMB_Core
             if (!empty($plugin_files)) {
                 $upgrades['plugins'] = $this->upgrade_plugins($plugin_files,$plugin_details,$userid);
             }
+            $this->IWP_ithemes_updater_compatiblity();
         }
         
         if (!empty($upgrade_themes)) {
@@ -815,28 +851,20 @@ class IWP_MMB_Installer extends IWP_MMB_Core
             $current = $this->iwp_mmb_get_transient('update_themes');
             if (!empty($current->response)) {
                 foreach ((array) $all_themes as $theme_template => $theme_data) {
-
-                    if (isset($theme_data->{'Parent Theme'}) && !empty($theme_data->{'Parent Theme'})) {
-                        continue;
-                    }
-
-                    if (isset($theme_data->Name) && in_array($theme_data->Name, $filter)) {
-                        continue;
-                    }
-
-                    if (method_exists($theme_data,'parent') && !$theme_data->parent()) {
-                        foreach ($current->response as $current_themes => $theme) {
-                            if ($theme_data->Template == $current_themes) {
-                                if (strlen($theme_data->Name) > 0 && strlen($theme_data->Version) > 0) {
-
-                                    $current->response[$current_themes]['name']        = $theme_data->Name;
-                                    $current->response[$current_themes]['old_version'] = $theme_data->Version;
-                                    $current->response[$current_themes]['theme_tmp']   = $theme_data->Template;
-                                    $upgrade_themes[]                                  = $current->response[$current_themes];
-
-                                }
-                            }
+                    foreach ($current->response as $current_themes => $theme) {
+                        if ($theme_data->Stylesheet !== $current_themes) {
+                            continue;
                         }
+
+                        if (strlen($theme_data->Name) === 0 || strlen($theme_data->Version) === 0) {
+                            continue;
+                        }
+
+                        $current->response[$current_themes]['name']        = $theme_data->Name;
+                        $current->response[$current_themes]['old_version'] = $theme_data->Version;
+                        $current->response[$current_themes]['theme_tmp']   = $theme_data->Stylesheet;
+
+                        $upgrade_themes[] = $current->response[$current_themes];
                     }
                 }
             }
@@ -994,7 +1022,7 @@ class IWP_MMB_Installer extends IWP_MMB_Core
 	                
 	            }
 	            
-	            if ($search) {
+	            if (!empty($search)) {
 	                foreach ($themes['active'] as $k => $theme) {
 	                    if (!stristr($theme['name'], $search)) {
 	                        unset($themes['active'][$k]);
@@ -1063,6 +1091,11 @@ class IWP_MMB_Installer extends IWP_MMB_Core
     {
         extract($args);
         $return = array();
+        if (!$this->define_ftp_constants($args)) {
+            return array(
+                'error' => 'FTP constant define failed', 'error_code' => 'ftp constant define failed'
+            );
+        }
         if ($type == 'plugins') {
             $return['plugins'] = $this->edit_plugins($args);
         } elseif ($type == 'themes') {
@@ -1143,6 +1176,27 @@ class IWP_MMB_Installer extends IWP_MMB_Core
         
         return $return;
         
+    }
+
+    function IWP_ithemes_updater_compatiblity()
+    {
+        // Check for the iThemes updater class
+        if (empty($GLOBALS['ithemes_updater_path']) ||
+            !file_exists($GLOBALS['ithemes_updater_path'].'/settings.php')
+        ) {
+            return;
+        }
+
+        // Include iThemes updater
+        require_once $GLOBALS['ithemes_updater_path'].'/settings.php';
+
+        // Check if the updater is instantiated
+        if (empty($GLOBALS['ithemes-updater-settings'])) {
+            return;
+        }
+
+        // Update the download link
+        $GLOBALS['ithemes-updater-settings']->flush('forced');
     }
 }
 ?>

@@ -6,30 +6,46 @@ loco_require_lib('compiled/gettext.php');
  * Wrapper for array forms of parsed PO data
  */
 class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
-        
     
+    
+    /**
+     * Normalize file extension to internal type
+     * @return string "po", "pot" or "mo"
+     */
+    private static function ext( Loco_fs_File $file ){
+        $ext = rtrim( strtolower( $file->extension() ), '~' );
+        if( 'po' === $ext || 'pot' === $ext || 'mo' === $ext ){
+            return $ext;
+        }
+        // translators: Error thrown when attemping to parse a file that is not PO, POT or MO
+        throw new Loco_error_Exception( sprintf( __('%s is not a Gettext file'), $file->basename() ) );
+    }
+
+
+
     /**
      * @return Loco_gettext_Data
      */
     public static function load( Loco_fs_File $file ){
-        
-        $type = strtoupper( $file->extension() );
-        
-        // parse PO
-        if( 'PO' === $type || 'POT' === $type ){
-            $po = self::fromSource( $file->getContents() );
+        if( 'mo' === self::ext($file) ){
+            return self::fromBinary( $file->getContents() );
         }
-        // parse MO
-        else if( 'MO' === $type ){
-            $po = self::fromBinary( $file->getContents() );
+        return self::fromSource( $file->getContents() );
+    }
+
+
+
+    /**
+     * Like load but just pulls header, saving a full parse. PO only
+     * @return Loco_gettext_Data
+     */
+    public static function head( Loco_fs_File $file ){
+        if( 'mo' === self::ext($file) ){
+            throw new InvalidArgumentException('PO only');
         }
-        // else file type not parsable. not currently sniffing file header - use the right file extension.
-        else {
-            // translators: Error thrown when attemping to parse a file that is not PO, POT or MO
-            throw new Loco_error_Exception( sprintf( __('%s is not a Gettext file'), $file->basename() ) );
-        }
-        
-        return $po;
+        return new Loco_gettext_Data( array(
+            array( 'source' => '', 'target' => LocoPoHeaders::snip( $file->getContents() ) )
+        ) );
     }
 
 
@@ -83,13 +99,14 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
 
     /**
      * Get final UTF-8 string for writing to file
+     * @param bool whether to sort output, generally only for extracting strings
      * @return string
      */
-    public function msgcat(){
+    public function msgcat( $sort = false ){
         // set maximum line width, zero or >= 15
         $this->wrap( Loco_data_Settings::get()->po_width );
-        // concat by casting to string
-        $po = (string) $this;
+        // concat with default text sorting if specified
+        $po = $this->render( $sort ? array( 'LocoPoIterator', 'compare' ) : null );
         // Prepend byte order mark only if configured
         if( Loco_data_Settings::get()->po_utf8_bom ){
             $po = "\xEF\xBB\xBF".$po;
@@ -107,7 +124,9 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
         // exporting headers non-scalar so js doesn't have to parse them
         try {
             $headers = $this->getHeaders();
-            $po[0]['target'] = $headers->getArrayCopy();
+            if( count($headers) && '' === $po[0]['source'] ){
+                $po[0]['target'] = $headers->getArrayCopy();
+            }
         }
         // suppress header errors when serializing
         // @codeCoverageIgnoreStart
@@ -151,7 +170,6 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
             'Report-Msgid-Bugs-To' => '',
             'POT-Creation-Date' => $date,
         );
-        // Project-Id-Version permitted to 
         // headers that must always override when localizing
         $required = array (
             'PO-Revision-Date' => $date,

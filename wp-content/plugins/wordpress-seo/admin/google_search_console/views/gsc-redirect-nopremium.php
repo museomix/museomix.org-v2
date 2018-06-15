@@ -1,12 +1,19 @@
 <?php
 /**
- * @package WPSEO\Admin|Google_Search_Console
+ * WPSEO plugin file.
  *
  * This is the view for the modal box that appears when premium isn't loaded.
+ *
+ * @package WPSEO\Admin\Google_Search_Console
  */
 
-/* Translators: %s: expands to Yoast SEO Premium */
-echo '<h1 class="wpseo-redirect-url-title">', sprintf( __( 'Creating redirects is a %s feature', 'wordpress-seo' ), 'Yoast SEO Premium' ), '</h1>';
+echo '<h1 class="wpseo-redirect-url-title">';
+printf(
+	/* Translators: %s: expands to Yoast SEO Premium */
+	esc_html__( 'Creating redirects is a %s feature', 'wordpress-seo' ),
+	'Yoast SEO Premium'
+);
+echo '</h1>';
 echo '<p>';
 printf(
 	/* Translators: %1$s: expands to 'Yoast SEO Premium', %2$s: links to Yoast SEO Premium plugin page. */

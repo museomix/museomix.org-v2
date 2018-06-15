@@ -121,11 +121,6 @@ class Dropbox_Curl extends Dropbox_ConsumerAbstract
             $options[CURLOPT_FILE] = $this->outFile;
             $options[CURLOPT_BINARYTRANSFER] = true;
             $options[CURLOPT_FAILONERROR] = true;
-            /*
-                Not sure if this is used, keeping it here for backwards compatibility at the moment.
-                With API v2 the headers are set in the $request they are set above if they are set.
-             */
-            if (isset($additional['headers'])) $options[CURLOPT_HTTPHEADER] = $additional['headers'];
             $this->outFile = null;
         }  elseif ($method == 'POST' && $this->outFile) { // POST
             $options[CURLOPT_POST] = true;

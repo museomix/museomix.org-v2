@@ -83,7 +83,7 @@ class UpdraftPlus_Semaphore {
 	 * Increment the semaphore.
 	 *
 	 * @param  array $filters
-	 * @return Social_Semaphore
+	 * @return Updraft_Semaphore
 	 */
 	public function increment(array $filters = array()) {
 		global $wpdb;

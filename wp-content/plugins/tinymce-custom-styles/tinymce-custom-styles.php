@@ -1,12 +1,14 @@
 <?php
 /*
-Plugin Name: TinyMCE Custom Styles
-Plugin URI: https://timreeves.de/
-Description: Add custom editor stylesheets to TinyMCE and Theme, and configure the TinyMCE styles dropdown to match.
-Author: Tim Reeves (original author David Stöckl)
-Version: 1.0.4
-Author URI: https://timreeves.de/
-License: GPLv3
+ * Plugin Name: TinyMCE Custom Styles
+ * Plugin URI: https://timreeves.de/
+ * Description: Add custom editor stylesheets to TinyMCE and Theme, and configure the TinyMCE styles dropdown to match.
+ * Version: 1.0.9
+ * Author: Tim Reeves (original author David Stöckl)
+ * Author URI: https://timreeves.de/
+ * License: GPLv3
+ * Text Domain: tinymce-custom-styles
+ * Domain Path: /languages
  *
  * Note: This Plugins is GPLv3 licensed. This Plugin is released without any warranty.
  *

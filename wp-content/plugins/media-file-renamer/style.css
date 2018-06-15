@@ -1,0 +1,94 @@
+/**
+ * The common styles for Media File Renamer
+ */
+
+/**
+ * Rename column in Media Library
+ */
+.mfrh_column {
+	position: relative;
+}
+.mfrh_column.busy a {
+	cursor: default;
+	pointer-events: none;
+}
+
+/* Buttons */
+.mfrh_column .button {
+	display: inline-block;
+}
+.mfrh_column .button-primary,
+.mfrh_column .button-primary .dashicons {
+	line-height: 26px;
+}
+.mfrh_column .button-primary {
+	width: 50px;
+	padding-left: 0;
+	padding-right: 0;
+	text-align: center;
+}
+.mfrh_column .button-primary.updating-message:before {
+	margin: 3px 0 0 0;
+}
+.mfrh_column .button-primary.updating-message .label {
+	display: none;
+}
+.mfrh_column .button.rename {
+	display: none;
+}
+
+/* Icons */
+.mfrh_column .icons-wrap {
+	display: inline-block;
+}
+.mfrh_column .icons-wrap .dashicons {
+	display: inline-block;
+}
+.mfrh_column.busy .icons-wrap a.dashicons {
+	opacity: 0.5;
+}
+.mfrh_column .icons-wrap .dashicons + .dashicons {
+	margin-left: -2px; /* Shrinks the gaps between icons */
+}
+.mfrh_column .icons-wrap .dashicons-lock,
+.mfrh_column .icons-wrap .dashicons-unlock {
+	font-size: 20px;
+}
+.mfrh_column .icons-wrap .dashicons-lock {
+	color: #36b15c;
+}
+.mfrh_column .icons-wrap .dashicons-yes {
+	font-size: 24px;
+	color: #36b15c;
+}
+.mfrh_column .icons-wrap .dashicons-undo {
+	font-size: 15px;
+	vertical-align: -4px;
+	color: #de4817;
+}
+
+/* Text Fields */
+.mfrh_column input[type="text"] {
+	display: inline-block;
+	position: relative;
+	width: calc(100% - 128px);
+	height: 28px;
+	font-size: 11px;
+}
+.mfrh_column input[name="recommended-filename"] {
+	display: none;
+	background-color: white;
+	color: #0073aa;
+}
+.mfrh_column input[name="filename"].hidden {
+	display: none;
+}
+.mfrh_column input[name="filename"].hidden ~ input[name="recommended-filename"] {
+	display: inline-block;
+}
+.mfrh_column input[name="filename"].changed ~ .button.rename {
+	display: inline-block;
+}
+.mfrh_column input[name="filename"].changed ~ .button.auto-rename {
+	display: none;
+}

@@ -115,7 +115,7 @@ class WPML_ST_MO_Component_Details {
 		if ( 'plugin' === $type ) {
 			return is_plugin_active( $id );
 		} else {
-			return get_template_directory() === get_theme_root() . '/' . $id;
+			return get_stylesheet_directory() === get_theme_root() . '/' . $id;
 		}
 	}
 

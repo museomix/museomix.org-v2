@@ -72,7 +72,7 @@ class FlowFlow extends LABase{
         $plugins_url = plugins_url();
 		$js_opts = array(
             'streams' => new \stdClass(),
-            'open_in_new' => $opts['general-settings-open-links-in-new-window'],
+            'open_in_new' => isset($opts['general-settings-open-links-in-new-window']) ? $opts['general-settings-open-links-in-new-window'] : 'yep',
 			'filter_all' => __('All', 'flow-flow'),
 			'filter_search' => __('Search', 'flow-flow'),
 			'expand_text' => __('Expand', 'flow-flow'),
@@ -82,7 +82,7 @@ class FlowFlow extends LABase{
             'following' => __('Following', 'flow-flow'),
             'posts' => __('Posts', 'flow-flow'),
 			'show_more' => __('Show more', 'flow-flow'),
-			'date_style' => $opts['general-settings-date-format'],
+			'date_style' => isset($opts['general-settings-date-format']) ? $opts['general-settings-date-format'] : 'agoStyleDate',
 			'dates' => array(
 				'Yesterday' => __('Yesterday', 'flow-flow'),
 				's' => __('s', 'flow-flow'),
@@ -98,7 +98,7 @@ class FlowFlow extends LABase{
 			),
 			'lightbox_navigate' => __('Navigate with arrow keys', 'flow-flow'),
 			'server_time' => time(),
-			'forceHTTPS' => $opts['general-settings-https'],
+			'forceHTTPS' => isset($opts['general-settings-https']) ? $opts['general-settings-https'] : 'nope',
             'isAdmin' => function_exists('current_user_can') && current_user_can( 'manage_options' ),
             'ajaxurl' => $this->context['ajax_url'],
             'isLog' => isset($_REQUEST['fflog']) && $_REQUEST['fflog'] == 1,

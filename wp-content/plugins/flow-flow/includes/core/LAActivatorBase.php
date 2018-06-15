@@ -101,8 +101,9 @@ abstract class LAActivatorBase{
 		$this->afterPluginLoad();
 	}
 	
-	public final function getCronIntervals(){
-		return $this->cron_intervals;
+	public final function getCronIntervals($schedules){
+		$schedules += $this->cron_intervals;
+		return $schedules;
 	}
 	
 	protected function beforePluginLoad(){

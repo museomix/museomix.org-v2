@@ -10,7 +10,6 @@ $is_plugin_active = array();
 $values           = array(
 	'limitloginattempts' => __( 'Limit the number of bad login attempts', 'secupress' ),
 	'bannonexistsuser'   => __( 'Ban login attempts on non-existing usernames', 'secupress' ),
-	'nonlogintimeslot'   => __( 'Set a non-login time slot', 'secupress' ),
 );
 
 foreach ( $values as $_plugin => $label ) {
@@ -61,55 +60,18 @@ $this->add_field( array(
 	),
 ) );
 
-
-$field_name = $this->get_field_name( 'nonlogintimeslot' );
-// Server hour.
-$utc          = new DateTimeZone( 'UTC' );
-$new_tz       = ini_get( 'date.timezone' );
-$new_tz       = $new_tz ? new DateTimeZone( $new_tz ) : $utc;
-$date         = new DateTime( '', $utc );
-$date->setTimezone( $new_tz );
-$server_hour  = $date->format( 'H \h i \m\i\n' );
-
-$this->add_field( array(
-	'title'        => __( 'Non-Login time slot settings', 'secupress' ),
-	'depends'      => $main_field_name . '_nonlogintimeslot',
-	'label_for'    => $field_name . '_from_hour',
-	'name'         => $field_name,
-	'type'         => 'non_login_time_slot',
-	'label'        => __( 'Everyday:', 'secupress' ),
-	'fieldset'     => 'yes',
-	'label_screen' => __( 'Choose your time slot', 'secupress' ),
-	'helpers'      => array(
-		array(
-			'type'        => 'help',
-			'description' => sprintf( __( 'Current server time: %s.', 'secupress' ), '<strong>' . $server_hour . '</strong>' ),
-		),
-		array(
-			'type'        => 'description',
-			'description' => __( 'Select the range of time you need to disallow logins.', 'secupress' ),
-		),
-	),
-) );
-
-
 $this->add_field( array(
 	'title'             => __( 'Session Control', 'secupress' ),
-	'description'       => __( 'Disconnect any user in one click, or even every logged in user (except you) at the same time in one click.', 'secupress' ),
+	'description'       => __( 'Disconnect or Reset Password of any user in one click.', 'secupress' ),
 	'label_for'         => $this->get_field_name( 'sessions_control' ),
 	'plugin_activation' => true,
 	'type'              => 'checkbox',
-	'disabled'          => ! secupress_wp_version_is( '4.0' ) ? true : null,
 	'value'             => (int) secupress_is_submodule_active( 'users-login', 'sessions-control' ),
 	'label'             => __( 'Yes, control user sessions', 'secupress' ),
 	'helpers'           => array(
 		array(
 			'type'        => 'description',
 			'description' => sprintf( __( 'You will find action links on every user\'s row in the <a href="%s">user listing administration page</a>.', 'secupress' ), esc_url( admin_url( 'users.php' ) ) ),
-		),
-		array(
-			'type'        => 'warning',
-			'description' => secupress_wp_version_is( '4.0' ) ? '' : __( 'This module requires WordPress 4.0 minimum, please update now!', 'secupress' ),
 		),
 	),
 ) );

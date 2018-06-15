@@ -3,7 +3,7 @@ use flow\cache\LAFacebookCacheManager;
 use flow\db\FFDB;
 use flow\db\LADBManager;
 use la\core\social\LAFeedWithComments;
-use Stripe\Object;
+//use Stripe\Object;
 
 if ( ! defined( 'WPINC' ) ) die;
 if ( ! defined('FF_FACEBOOK_RATE_LIMIT')) define('FF_FACEBOOK_RATE_LIMIT', 200);
@@ -51,9 +51,14 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 				foreach ($item->comments->data as $comment){
 					$obj = new \stdClass();
 					$obj->id = $comment->id;
-					$obj->from = $comment->from;
+
+					// todo check API in future, 'from' field was deprecated since Feb 2018
+					// $obj->from = isset($comment->from) ? $comment->from : 'Facebook user';
+					$obj->from = isset($comment->from) ? $comment->from : '';
+
 					$obj->text = $comment->message;
 					$obj->created_time = $this->getSystemDate($comment);
+
 					$result[] = $obj;
 				}
 			}
@@ -65,6 +70,7 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 		$accessToken = $facebookCache->getAccessToken();
 		$api = FFFacebook::API_VERSION;
 		$url = "https://graph.facebook.com/{$api}/{$objectId}/comments?total_count={$this->getCount()}&access_token={$accessToken}";
+
 		$request = $this->getFeedData($url);
 		$json = json_decode($request['response']);
 		
@@ -93,7 +99,7 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 				foreach ($data as $item){
 					$obj = new \stdClass();
 					$obj->id = $item->id;
-					$obj->from = $item->from;
+					$obj->from = isset($item->from) ? $item->from : '';
 					$obj->text = $item->message;
 					$obj->created_time = $this->getSystemDate($item);
 					$result[] = $obj;
@@ -101,8 +107,8 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 				return $result;
 			}else{
 				$this->errors[] = array(
-						'type' => 'instagram',
-						'message' => 'User not found',
+						'type' => 'facebook',
+						'message' => 'Comments issue',
 						'url' => $url
 				);
 				throw new \Exception();
@@ -128,7 +134,7 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
                 case 'page_timeline':
                     $userId = (string)$feed->content;
 	                $this->url        = "https://graph.facebook.com/{$api}/{$userId}/posts?{$fields}&limit={$this->getCount()}&{$locale}";
-	                $this->hideStatus = false;
+					$this->hideStatus = false;
                     break;
 	            case 'album':
 					$albumId = (string)$feed->content;
@@ -233,10 +239,6 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
     }
 
 	protected function isSuitableOriginalPost( $post ) {
-		if (!array_key_exists($this->getId($post), $this->new_post_ids)) {
-			return false;
-		}
-
 		if (isset($post->type)){
 			if ($post->type == 'status' && ($this->hideStatus || !isset($post->message))) return false;
 			if ($post->type == 'photo' && isset($post->status_type) && $post->status_type == 'tagged_in_photo') return false;
@@ -253,6 +255,9 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 		return true;
 	}
 
+	protected function isNewPost( $post ) {
+		return array_key_exists($this->getId($post), $this->new_post_ids);
+	}
 
 	protected function prepare( $item ) {
 		$this->image = null;
@@ -354,7 +359,7 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 						return true;
 					}
 				}
-				//depricated
+				//deprecated
 			    $data = $this->getFeedData($this->getUrlWithToken( "https://graph.facebook.com/{$api}/{$item->object_id}?fields=embed_html,source" ));
 			    $data = json_decode($data['response']);
 			    preg_match("/\<iframe.+width\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\>/", $data->embed_html, $matches);
@@ -683,6 +688,7 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 	private function getUrlWithToken($url){
 		$this->request_count++;
 		$token = $this->accessToken;
+
 		return $url . "&access_token={$token}";
 	}
 	

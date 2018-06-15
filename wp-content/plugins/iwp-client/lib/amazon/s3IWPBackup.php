@@ -123,13 +123,23 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 		   
 		if($s3_retrace_count<=3){
 			try{
-				$s3 = S3Client::factory(array(
-					'key' => trim($as3_access_key),
-					'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
-					'region' => $as3_bucket_region,
-					'signature' => 'v4',
-					'ssl.certificate_authority' => false
-				));
+		
+				if (empty($as3_bucket_region)) {
+					$s3 = S3Client::factory(array(
+						'key' => trim($as3_access_key),
+						'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+						'region' => $as3_bucket_region,
+						'ssl.certificate_authority' => false
+					));
+				}else{
+					$s3 = S3Client::factory(array(
+						'key' => trim($as3_access_key),
+						'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+						'region' => $as3_bucket_region,
+						'signature' => 'v4',
+						'ssl.certificate_authority' => false
+					));
+				}
 				
 				$objects = $s3->getIterator('ListObjects', array(
 				'Bucket' => $as3_bucket,
@@ -416,13 +426,22 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 		extract($args);
 		$temp = '';
 		try{
-		$s3 = S3Client::factory(array(
-			'key' => trim($as3_access_key),
-			'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
-			'region' => $as3_bucket_region,
-			'signature' => 'v4',
-			'ssl.certificate_authority' => false
-		));
+		if (empty($as3_bucket_region)) {
+			$s3 = S3Client::factory(array(
+				'key' => trim($as3_access_key),
+				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+				'region' => $as3_bucket_region,
+				'ssl.certificate_authority' => false
+			));
+		}else{
+			$s3 = S3Client::factory(array(
+				'key' => trim($as3_access_key),
+				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+				'region' => $as3_bucket_region,
+				'signature' => 'v4',
+				'ssl.certificate_authority' => false
+			));
+		}
 			if ($as3_site_folder == true)
 			{
 				if(!empty($as3_directory))
@@ -487,13 +506,22 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 			}
 		}
         try{
-			$s3 = S3Client::factory(array(
-				'key' => trim($as3_access_key),
-				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
-				'region' => $as3_bucket_region,
-				'signature' => 'v4',
-				'ssl.certificate_authority' => false
-			));
+			if (empty($as3_bucket_region)) {
+				$s3 = S3Client::factory(array(
+					'key' => trim($as3_access_key),
+					'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+					'region' => $as3_bucket_region,
+					'ssl.certificate_authority' => false
+				));
+			}else{
+				$s3 = S3Client::factory(array(
+					'key' => trim($as3_access_key),
+					'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+					'region' => $as3_bucket_region,
+					'signature' => 'v4',
+					'ssl.certificate_authority' => false
+				));
+			}
 			foreach($backup_file as $single_backup_file)
 			{
 				if(empty($as3_directory))
@@ -523,7 +551,7 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
       }
     }
 	
-	function postUploadS3Verification($backup_file, $destFile, $type = "", $as3_bucket = "", $as3_access_key = "", $as3_secure_key = "", $as3_bucket_region = "", $size1, $size2){
+	function postUploadS3Verification($backup_file, $destFile, $type = "", $as3_bucket = "", $as3_access_key = "", $as3_secure_key = "", $as3_bucket_region = "", $size1, $size2, $return_size = false){
 		$s3 = S3Client::factory(array(
 			'key'=>$as3_access_key,
 			'secret'=>trim(str_replace(' ', '+', $as3_secure_key)),
@@ -541,6 +569,9 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 
 			$s3_file_metadata = $result->toArray();
 			$s3_file_size = $s3_file_metadata['ContentLength'];
+			if ($return_size == true) {
+				return $s3_file_size;
+			}
 			echo "S3 fileszie during verification - ".$s3_file_size.PHP_EOL."size 1 - ".$size1.PHP_EOL."size 2 - ".$size2.PHP_EOL;
 
 			if((($s3_file_size >= $size1 && $s3_file_size <= $actual_file_size) || ($s3_file_size <= $size2 && $s3_file_size >= $actual_file_size) || ($s3_file_size == $actual_file_size)) && ($s3_file_size != 0)){
@@ -590,13 +621,22 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
 				$as3_file =  $as3_directory . '/' . basename($backup_file);
 			}
             try{
-				$s3 = S3Client::factory(array(
-					'key' => trim($as3_access_key),
-					'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
-					'region' => $as3_bucket_region,
-					'signature' => 'v4',
-					'ssl.certificate_authority' => false
-				));
+				if (empty($as3_bucket_region)) {
+					$s3 = S3Client::factory(array(
+						'key' => trim($as3_access_key),
+						'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+						'region' => $as3_bucket_region,
+						'ssl.certificate_authority' => false
+					));
+				}else{
+					$s3 = S3Client::factory(array(
+						'key' => trim($as3_access_key),
+						'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+						'region' => $as3_bucket_region,
+						'signature' => 'v4',
+						'ssl.certificate_authority' => false
+					));
+				}
 				
 				$objects = $s3->getIterator('ListObjects', array(
 					'Bucket' => $as3_bucket,
@@ -736,13 +776,22 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
 			}
 		}
         try{
-             $s3 = S3Client::factory(array(
-			   'key' => trim($as3_access_key),
-				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
-				'region' => $as3_bucket_region,
-				'signature' => 'v4',
-				'ssl.certificate_authority' => false
-			));
+            if (empty($as3_bucket_region)) {
+            	$s3 = S3Client::factory(array(
+            		'key' => trim($as3_access_key),
+            		'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+            		'region' => $as3_bucket_region,
+            		'ssl.certificate_authority' => false
+            	));
+            }else{
+            	$s3 = S3Client::factory(array(
+            		'key' => trim($as3_access_key),
+            		'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+            		'region' => $as3_bucket_region,
+            		'signature' => 'v4',
+            		'ssl.certificate_authority' => false
+            	));
+            }
 			foreach($backup_file as $single_backup_file)
 			{
 				if(empty($as3_directory))

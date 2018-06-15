@@ -243,12 +243,14 @@ class IWP_MMB_Stats extends IWP_MMB_Core
     function get_backups($stats, $options = array())
     {
         $stats['iwp_backups']      = $this->get_backup_instance()->get_backup_stats();       
+        $stats['iwp_new_backups']  = $this->get_new_backup_instance()->get_backup_stats();       
         return $stats;
     }
     
     function get_backup_req($stats = array(), $options = array())
     {
         $stats['iwp_backups']      = $this->get_backup_instance()->get_backup_stats();
+        $stats['iwp_new_backups']  = $this->get_new_backup_instance()->get_backup_stats();
         $stats['iwp_next_backups'] = $this->get_backup_instance()->get_next_schedules();
         $stats['iwp_backup_req']   = $this->get_backup_instance()->check_backup_compat();
         
@@ -258,6 +260,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
     function get_updates($stats, $options = array())
     {
         $upgrades = false;
+        /* No need to fetch this any more 
         $premium = array();
         if (isset($options['premium']) && $options['premium']) {
             $premium_updates = array();
@@ -270,10 +273,10 @@ class IWP_MMB_Stats extends IWP_MMB_Core
                 $stats['premium_updates'] = $upgrades;
                 $upgrades                 = false;
             }
-        }
+        }*/
         if (isset($options['themes']) && $options['themes']) {
             $this->get_installer_instance();
-            $upgrades = $this->installer_instance->get_upgradable_themes( $premium );
+            $upgrades = $this->installer_instance->get_upgradable_themes();
             if (!empty($upgrades)) {
                 $stats['upgradable_themes'] = $upgrades;
                 $upgrades                   = false;
@@ -282,7 +285,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
         
         if (isset($options['plugins']) && $options['plugins']) {
             $this->get_installer_instance();
-            $upgrades = $this->installer_instance->get_upgradable_plugins( $premium );
+            $upgrades = $this->installer_instance->get_upgradable_plugins();
             if (!empty($upgrades)) {
                 $stats['upgradable_plugins'] = $upgrades;
                 $upgrades                    = false;
@@ -303,7 +306,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
 	function get_errors($stats, $options = array())
     {
 		$period = isset($options['days']) ? (int) $options['days'] * 86400 : 86400;
-		$maxerrors = isset($options['max']) ? (int) $options['max'] : 20;
+		$maxerrors = isset($options['max']) ? (int) $options['max'] : 100;
         $errors = array();
         if (isset($options['get']) && $options['get'] == true) {
             if (function_exists('ini_get')) {
@@ -355,7 +358,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
     }
     
 	function get_plugins_status($stats=array(), $options = array()){
-        $installedPlugins = get_plugins( $plugin_folder );
+        $installedPlugins = get_plugins();
         $activePlugins = get_option( 'active_plugins' );
         
         foreach ($installedPlugins as $installed=>$pluginDetails) {
@@ -430,8 +433,9 @@ class IWP_MMB_Stats extends IWP_MMB_Core
 		
 		//For WPE
 		$use_cookie = 0;
-		if(@getenv('IS_WPE'))
-		$use_cookie=1;		
+		if(defined('WPE_APIKEY')){
+            $stats['wpe-auth']          = md5('wpe_auth_salty_dog|'.WPE_APIKEY);
+        }
 		
         $stats['client_version']        = IWP_MMB_CLIENT_VERSION;
         $stats['client_new_version']    = $r->new_version;
@@ -468,7 +472,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
 		$update_check = array();
         $num          = extract($params);
         if ($refresh == 'transient') {
-            $update_check = apply_filters('mwp_premium_update_check', $update_check);
+           // $update_check = apply_filters('mwp_premium_update_check', $update_check);
             if (!empty($update_check)) {
                 foreach ($update_check as $update) {
                     if (is_array($update['callback'])) {

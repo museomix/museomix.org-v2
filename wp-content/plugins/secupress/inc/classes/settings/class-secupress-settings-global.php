@@ -60,7 +60,11 @@ class SecuPress_Settings_Global extends SecuPress_Settings {
 	 * @author Grégory Viguier
 	 */
 	public function print_page() {
-		$setting_modules = array( 'api-key', 'settings-manager' );
+
+		$setting_modules = array( 'settings-manager' );
+		if ( ! secupress_is_white_label() && ( ! defined( 'SECUPRESS_HIDE_API_KEY' ) || ! SECUPRESS_HIDE_API_KEY ) ) {
+			$setting_modules = array( 'api-key', 'settings-manager' );
+		}
 
 		/**
 		 * Filter the modules of the global settings.
@@ -70,10 +74,11 @@ class SecuPress_Settings_Global extends SecuPress_Settings {
 		 * @param (array) $setting_modules The modules.
 		 */
 		$setting_modules = apply_filters( 'secupress.global_settings.modules', $setting_modules );
+		$secupress_has_sideads = apply_filters( 'secupress.no_sidebar', true ) && apply_filters( 'secupress.no_sideads', true );
 		?>
 		<div class="wrap">
 
-			<div class="secupress-setting-wrapper<?php echo ( ! secupress_is_pro() ? ' secupress-has-sideads' : '' ) ?>">
+			<div class="secupress-setting-wrapper<?php echo ( $secupress_has_sideads ? ' secupress-has-sideads' : '' ) ?>">
 
 				<div class="secupress-setting-content">
 					<?php
@@ -128,92 +133,6 @@ class SecuPress_Settings_Global extends SecuPress_Settings {
 		echo '<input type="hidden" id="' . $module . '-nonce" name="_wpnonce" value="' . wp_create_nonce( $module ) . '" />';
 		wp_referer_field();
 		echo '</form>';
-	}
-
-
-	/** Specific fields ========================================================================= */
-
-	/**
-	 * Outputs the form used by the importers to accept the data to be imported.
-	 *
-	 * @since 1.0
-	 * @author Julio Potier
-	 */
-	protected function import_upload_form() {
-		/** This filter is documented in wp-admin/includes/template.php */
-		$bytes      = apply_filters( 'import_upload_size_limit', wp_max_upload_size() );
-		$size       = size_format( $bytes );
-		$upload_dir = wp_upload_dir();
-		$disabled   = secupress_is_pro() ? '' : ' disabled="disabled"';
-
-		if ( ! empty( $upload_dir['error'] ) ) {
-			?>
-			<div class="error">
-				<p><?php _e( 'Before you can upload your import file, you will need to fix the following error:', 'secupress' ); ?></p>
-				<p><strong><?php echo $upload_dir['error']; ?></strong></p>
-			</div><?php
-			echo secupress_is_pro() ? '' : static::get_pro_version_string( '<p class="description secupress-get-pro-version">%s</p>' );
-			return;
-		}
-
-		$name        = 'upload';
-		$type        = 'help';
-		$description = __( 'Choose a file from your computer:', 'secupress' ) . ' (' . sprintf( __( 'Maximum size: %s', 'secupress' ), $size ) . ')';
-		/** This filter is documented in inc/classes/settings/class-secupress-settings.php */
-		$description = apply_filters( 'secupress.settings.help', $description, $name, $type );
-		?>
-		<p>
-			<input type="file" id="upload" name="import" size="25"<?php echo $disabled; ?>/><br/>
-			<label for="upload"><?php echo $description; ?></label>
-			<input type="hidden" name="max_file_size" value="<?php echo $bytes; ?>" />
-		</p>
-
-		<p class="submit">
-			<button type="submit"<?php echo $disabled; ?> class="secupress-button" id="import">
-				<span class="icon">
-					<i class="secupress-icon-upload" aria-hidden="true"></i>
-				</span>
-				<span class="text">
-					<?php _e( 'Upload file and import settings', 'secupress' ); ?>
-				</span>
-			</button>
-		</p>
-		<?php
-		echo secupress_is_pro() ? '' : static::get_pro_version_string( '<p class="description secupress-get-pro-version">%s</p>' );
-	}
-
-
-	/**
-	 * Outputs the export button.
-	 *
-	 * @since 1.0
-	 * @author Julio Potier
-	 */
-	protected function export_form() {
-		?>
-		<p class="submit">
-			<?php if ( secupress_is_pro() ) : ?>
-				<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=secupress_export' ), 'secupress_export' ) ); ?>" id="export" class="secupress-button">
-					<span class="icon" aria-hidden="true">
-						<i class="secupress-icon-download"></i>
-					</span>
-					<span class="text">
-						<?php _e( 'Download settings', 'secupress' ); ?>
-					</span>
-				</a>
-			<?php else : ?>
-				<button type="button" class="secupress-button" disabled="disabled">
-					<span class="icon" aria-hidden="true">
-						<i class="secupress-icon-download"></i>
-					</span>
-					<span class="text">
-						<?php _e( 'Download settings', 'secupress' ); ?>
-					</span>
-				</button>
-			<?php endif; ?>
-		</p>
-		<?php
-		echo secupress_is_pro() ? '' : static::get_pro_version_string( '<p class="description secupress-get-pro-version">%s</p>' );
 	}
 
 

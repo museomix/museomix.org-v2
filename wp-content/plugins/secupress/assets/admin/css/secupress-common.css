@@ -263,6 +263,10 @@
 	text-align: center;
 	color: rgba(255, 255, 255, 0.25);
 }
+.secupress-pro-icon {
+	-webkit-filter: drop-shadow( 0px 0px 10px #F19B12);
+	filter: drop-shadow( 0px 0px 10px #F19B12);
+}
 
 /* Buttons container */
 .secupress-actions-line {
@@ -538,6 +542,20 @@ button.secupress-activated .secupress-toggle-button.hidden {
 	transform: scale(1);
 }
 
+.secupress-item-all.disabled {
+	background: rgba(0,0,0,0.02);
+}
+
+.secupress-item-all.disabled * {
+    opacity: 0.75;
+}
+
+.secupress-item-all.disabled .secupress-checkbox:not(:checked) + .label-text:before {
+    border-color: #999 !important;
+    background: rgba( 0, 0, 0, 0.2 );
+    cursor: not-allowed;
+}
+
 /* Specific for radios */
 .secupress-radio:not(:checked) + label:before,
 .secupress-radio:checked + label:before,
@@ -566,6 +584,8 @@ button.secupress-activated .secupress-toggle-button.hidden {
  * === Other Form items
  */
 [class^="secupress-"] input[type="text"],
+[class^="secupress-"] input[type="url"],
+[class^="secupress-"] input[type="number"],
 [class^="secupress-"] input[type="email"],
 [class^="secupress-"] input[type="password"],
 [class^="secupress-"] input[type="number"],
@@ -899,6 +919,7 @@ body[class*="secupress"] .sweet-overlay {
 .secupress-lb-name {
 	padding: 0 20px;
 	text-align: left;
+	font-family: 'Oswald';
 }
 .secupress-header-mini .secupress-lb-name {
 	padding: 0 30px 0 5px;
@@ -926,6 +947,10 @@ body[class*="secupress"] .sweet-overlay {
 }
 .secupress-header-mini .secupress-lb-logo img {
 	width: 78px;
+}
+.secupress-lb-logo span.dashicons.dashicons-shield-alt {
+    font-size: 40px;
+    line-height: 0.5em;
 }
 .secupress-header-mini .secupress-col-logo {
 	-webkit-flex-basis: 190px;
@@ -974,7 +999,7 @@ body[class*="secupress"] .sweet-overlay {
 	font-size: 11px;
 }
 .secupress-setting-row {
-	padding: 20px;
+	padding: 10px;
 }
 .secupress-setting-row + .secupress-setting-row {
 	margin-top: 20px;
@@ -1049,8 +1074,7 @@ label.secupress-setting-row-title {
 
 .secupress-wrapper {
 	max-width: 100%;
-	width: 1078px; /* 1240 */
-	padding-top: 20px;
+	padding-top: 10px;
 	overflow: hidden;
 }
 
@@ -1058,7 +1082,6 @@ label.secupress-setting-row-title {
 .secupress-wrapper.secupress-has-sideads,
 .secupress-setting-wrapper.secupress-has-sideads {
 	display: flex;
-	width: 1360px;
 }
 
 /* Ads sidebar */
@@ -1079,7 +1102,7 @@ label.secupress-setting-row-title {
 	position: relative;
 	text-align: center;
 	overflow: hidden;
-	padding: 22px 15px; 
+	padding: 22px 15px;
 }
 .secupress-pro-ad > * {
 	position: relative;
@@ -1119,9 +1142,12 @@ label.secupress-setting-row-title {
 	font-size: 2em;
 	vertical-align: -5px;
 }
-.secupress-ad-content {
+.secupress-ad-content-padded {
 	padding: 20px 25px 18px;
+}
+.secupress-ad-content {
 	background: #FFF;
+	line-height: 0;
 }
 .secupress-ad-content > :first-child {
 	margin-top: 0;
@@ -1165,7 +1191,7 @@ label.secupress-setting-row-title {
 	letter-spacing: 0.1em;
 	text-shadow: 0 0 3px rgba(0,0,0,.15);
 }
-.secupress-product-ads {
+.secupress-product-ads-padded {
 	padding: 25px 25px 10px;
 }
 .secupress-product-ads p {

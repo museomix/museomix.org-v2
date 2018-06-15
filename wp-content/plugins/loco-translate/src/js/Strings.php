@@ -10,6 +10,9 @@ class Loco_js_Strings extends Loco_hooks_TranslateBuffer {
      */ 
     public function compile(){
 
+        // When text filtering reduces to an empty view
+        __("Nothing matches the text filter",'loco-translate');
+
         // Where %s is the name of the POT template file. Message appears after sync
         __("Merged from %s",'loco-translate');
 
@@ -43,17 +46,14 @@ class Loco_js_Strings extends Loco_hooks_TranslateBuffer {
         // Shows number of untranslated strings at top of editor
         __("%s untranslated",'loco-translate');
 
-        // When text filtering reduces to an empty view
-        __("Nothing matches the text filter",'loco-translate');
-
-        //
-        __("Provide the following text when reporting a problem",'loco-translate');
+        // Generic error when external process broke an Ajax request
+        __("Server returned invalid data",'loco-translate');
 
         //
         __("Check console output for debugging information",'loco-translate');
 
         //
-        __("Server returned invalid data",'loco-translate');
+        __("Provide the following text when reporting a problem",'loco-translate');
 
         //
         __("Unknown error",'loco-translate');

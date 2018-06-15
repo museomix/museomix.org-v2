@@ -3,12 +3,25 @@
  * Represents a WordPress locale
  */
 class Loco_Locale implements JsonSerializable {
-    
+
     /**
+     * Language subtags
      * @var array
      */
     private $tag;
-    
+
+    /**
+     * Cached composite tag 
+     * @var string
+     */
+    private $_tag;
+
+    /**
+     * Cached icon css class
+     * @var string
+     */
+    private $icon;
+
     /**
      * Name in English
      * @var string
@@ -27,23 +40,33 @@ class Loco_Locale implements JsonSerializable {
      */
     private $plurals;
 
-    
+    /**
+     * Validity cache
+     * @var bool
+     */
+    private $valid;
+
     /**
      * @return Loco_Locale
      */
     public static function parse( $tag ){
         $locale = new Loco_Locale('');
         try {
-            $locale->setSubtags( loco_parse_locale($tag) );
+            $locale->setSubtags( loco_parse_wp_locale($tag) );
         }
         catch( Exception $e ){
             // isValid should return false
         }
+        do_action( 'loco_parse_locale', $locale, $tag );
         return $locale;
     }
-    
 
 
+
+    /**
+     * Construct from subtags NOT from composite tag. See self::parse
+     * Note that this skips normalization and validation steps
+     */
     public function __construct( $lang = '', $region = '', $variant = '' ){
         $this->tag = compact('lang','region','variant');
     }
@@ -52,19 +75,31 @@ class Loco_Locale implements JsonSerializable {
 
     /**
      * @internal
-     * Allow read-only access to subtags
+     * Allow read access to subtags
      */
     public function __get( $t ){
         return isset($this->tag[$t]) ? $this->tag[$t] : '';
     }
 
 
+    /**
+     * @internal
+     * Allow write access to subtags
+     */
+    public function __set( $t, $s ){
+        if( isset($this->tag[$t]) ){
+            $this->tag[$t] = $s;
+            $this->setSubtags( $this->tag );
+        }
+    }
+
 
     /**
-     * Set subtags as produced from loco_parse_locale
+     * Set subtags as produced from loco_parse_wp_locale
      * @return Loco_Locale
      */
     public function setSubtags( array $tag ){
+        $this->valid = false;
         $default = array( 'lang' => '', 'region' => '', 'variant' => '' );
         // disallow setting of unsupported tags
         if( $bad = array_diff_key($tag, $default) ){
@@ -83,33 +118,78 @@ class Loco_Locale implements JsonSerializable {
         if( is_array($tag['variant']) ){
             $tag['variant'] = implode('_',$tag['variant']);
         }
+        // normalize case
+        $tag['lang'] = strtolower($tag['lang']);
+        $tag['region'] = strtoupper($tag['region']);
+        $tag['variant'] = strtolower($tag['variant']);
+        // set subtags and invalidate cache of language tag
         $this->tag = $tag;
+        $this->_tag = null;
+        $this->icon = null;
+        $this->valid = true;
 
         return $this;
-    }     
+    }
+
+
+    /**
+     * @return Loco_Locale
+     */
+    public function normalize(){
+       try {
+           $this->setSubtags( $this->tag );
+       }
+       catch( Loco_error_LocaleException $e ){
+           $this->_tag = '';
+           $this->icon = null;
+           $this->name = 'Invalid locale';
+           $this->_name = null;
+       }
+       return $this;
+    }
 
 
     /**
      * @return string
      */    
     public function __toString(){
-        return implode('_',array_filter($this->tag));
+        $str = $this->_tag;
+        if( is_null($str) ){
+            $str = implode('_',array_filter($this->tag));
+            $this->_tag = $str;
+        }
+        return $str;
     }
 
 
     /**
-     * @return string
+     * Get stored name in current display language.
+     * Note that no dynamic translation of English name is performed, but can be altered with loco_parse_locale filter
+     * @return string | null
      */    
     public function getName(){
-        return (string) $this->name;
+        if( $name = $this->name ){
+            // use canonincal native name only when current language matches
+            // deliberately not matching whole tag such that fr_CA would show native name of fr_FR
+            if( $_name = $this->getNativeName() ){
+                $locale = self::parse( function_exists('get_user_locale') ? get_user_locale() : get_locale() );
+                if( $this->lang === $locale->lang ){
+                    $name = $_name;
+                }
+            }
+            return $name;
+        }
     }
 
 
     /**
-     * @return string
+     * Get canonical native name as defined by WordPress
+     * @return string | null
      */    
     public function getNativeName(){
-        return (string) $this->_name;
+        if( $name = $this->_name ){
+            return $name;
+        }
     }
 
 
@@ -117,25 +197,44 @@ class Loco_Locale implements JsonSerializable {
      * @return string
      */    
     public function getIcon(){
-        $tag = array();
-        if( ! $this->tag['lang'] ){
-            $tag[] = 'lang lang-zxx';
-        }
-        foreach( $this->tag as $class => $code ){
-            if( $code ){
-                $tag[] = $class.' '.$class.'-'.$code;
+        $icon = $this->icon;
+        if( is_null($icon) ){
+            $tag = array();
+            if( ! $this->tag['lang'] ){
+                $tag[] = 'lang lang-zxx';
             }
+            foreach( $this->tag as $class => $code ){
+                if( $code ){
+                    $tag[] = $class.' '.$class.'-'.$code;
+                }
+            }
+            $icon = strtolower( implode(' ',$tag) );
+            $this->icon = $icon;
         }
-        return strtolower( implode(' ',$tag) );
+        return $icon;
     }
 
 
     /**
      * @return Loco_Locale
-     */    
+     */
+    public function setIcon( $css ){
+        if( $css ){
+            $this->icon = (string) $css;
+        }
+        else {
+            $this->icon = null;
+        }
+        return $this;
+    }
+
+
+    /**
+     * @return Loco_Locale
+     */
     public function setName( $english_name, $native_name = '' ){
-        $this->name = $english_name;
-        $this->_name = $native_name;
+        $this->name = apply_filters('loco_locale_name', $english_name, $native_name );
+        $this->_name = (string) $native_name;
         return $this;
     }
 
@@ -144,18 +243,10 @@ class Loco_Locale implements JsonSerializable {
      * Test whether locale is valid
      */    
     public function isValid(){
-        return (bool) $this->tag['lang']; // && 'zxx' !== $this->tag['lang'];
-    }
-
-
-    /**
-     * @return Loco_Locale
-     */
-    public function normalize(){
-        $this->tag['lang'] = strtolower($this->tag['lang']);
-        $this->tag['region'] = strtoupper($this->tag['region']);
-        $this->tag['variant'] = strtolower($this->tag['variant']);
-        return $this;
+        if( is_null($this->valid) ){
+            $this->normalize();
+        }
+        return $this->valid;
     }
 
 
@@ -164,13 +255,13 @@ class Loco_Locale implements JsonSerializable {
      * @return string English name currently set
      */    
     public function fetchName( Loco_api_WordPressTranslations $api ){
-        $tag = $this->normalize()->__toString();
-        if( $raw = $api->getLocaleData($tag) ){
-            $this->setName( $raw['english_name'], $raw['native_name'] );
+        $tag = (string) $this;
+        // pull from WordPress translations API if network allowed
+        if( $locale = $api->getLocale($tag) ){
+            $this->setName( $locale->getName(), $locale->getNativeName() );
         }
-        return $this->name;
+        return $this->getName();
     }
-
 
 
     /**
@@ -202,9 +293,9 @@ class Loco_Locale implements JsonSerializable {
             }
         }
         else {
-            $this->name = __('Invalid locale','loco-translate');
+            $this->setName( __('Invalid locale','loco-translate') );
         }
-        return $this->name;
+        return $this->getName();
     }
 
 
@@ -213,16 +304,18 @@ class Loco_Locale implements JsonSerializable {
      * @return string
      */
     public function ensureName( Loco_api_WordPressTranslations $api ){
-        $name = $this->name;
+        $name = $this->getName();
         if( ! $name ){
             $name = $this->fetchName($api);
+            // failing that, build own own name from components
             if( ! $name ){
                 $name = $this->buildName();
+                // last resort, use tag as name
                 if( ! $name ){
                     $name = (string) $this;
+                    $this->setName( $name );
                 }
             }
-            $this->setName( $name );
         }
         return $name;
     }
@@ -233,7 +326,7 @@ class Loco_Locale implements JsonSerializable {
      */
     public function jsonSerialize(){
         $a = $this->tag;
-        $a['label'] = $this->name;
+        $a['label'] = $this->getName();
         // plural data expected by editor
         $p = $this->getPluralData();
         $a['pluraleq'] = $p[0];
@@ -244,46 +337,71 @@ class Loco_Locale implements JsonSerializable {
     }
 
 
-
     /**
-     * Get raw plural data
+     * Get plural data with translated forms
      * @internal
-     * @return array
+     * @return array [ (string) equation, (array) forms ]
      */
     public function getPluralData(){
         $cache = $this->plurals;
-        if( ! $this->plurals ){
-            $db = Loco_data_CompiledData::get('plurals');
+        if( ! $cache ){
             $lc = $this->lang;
+            $db = Loco_data_CompiledData::get('plurals');
             $id = isset($db[$lc]) ? $db[$lc] : 0;
-            $cache = $db[''][$id];
-            // Translators: Plural category for languages that have no plurals
-            if( '0' === $cache[0] ){
-                $cache[1] = array( _x('All forms','Plural category','loco-translate') );
-            }
-            // else translate all implemented plural forms
-            // for meaning of categories, see http://cldr.unicode.org/index/cldr-spec/plural-rules
-            else {
-                $forms = array(
-                    // Translators: Plural category for singular quantity
-                    'one' => _x('One','Plural category','loco-translate'),
-                    // Translators: Plural category used in some multi-plural languages
-                    'two' => _x('Two','Plural category','loco-translate'),
-                    // Translators: Plural category used in some multi-plural languages
-                    'few' => _x('Few','Plural category','loco-translate'),
-                    // Translators: Plural category used in some multi-plural languages
-                    'many' => _x('Many','Plural category','loco-translate'),
-                    // Translators: General plural category not covered by other forms
-                    'other' => _x('Other','Plural category','loco-translate'),
-                );
-                foreach( $cache[1] as $k => $v ){
-                    $cache[1][$k] = $forms[$v];
-                }
-            }
-            $this->plurals = $cache;
+            $cache = $this->setPlurals( $db[''][$id] );
         }
         return $cache;
     }
+
+
+    /**
+     * @return int
+     */
+    public function getPluralCount(){
+        $raw = $this->getPluralData();
+        return count( $raw[1] );
+    }
+
+
+
+    /**
+     * @return array
+     */
+    private function setPlurals( array $raw ){
+        $raw = apply_filters( 'loco_locale_plurals', $raw, $this );
+        // handle languages with no plural forms, where n is always 0
+        if( ! isset($raw[1][1]) ){
+            // Translators: Plural category for languages that have no plurals
+            $raw[1] = array( _x('All forms','Plural category','loco-translate') );
+            $raw[0] = '0';
+        }
+        // else translate all implemented plural forms
+        // for meaning of categories, see http://cldr.unicode.org/index/cldr-spec/plural-rules
+        else {
+            $forms = array(
+                // Translators: Plural category for zero quantity
+                'zero' => _x('Zero','Plural category','loco-translate'),
+                // Translators: Plural category for singular quantity
+                'one' => _x('One','Plural category','loco-translate'),
+                // Translators: Plural category used in some multi-plural languages
+                'two' => _x('Two','Plural category','loco-translate'),
+                // Translators: Plural category used in some multi-plural languages
+                'few' => _x('Few','Plural category','loco-translate'),
+                // Translators: Plural category used in some multi-plural languages
+                'many' => _x('Many','Plural category','loco-translate'),
+                // Translators: General plural category not covered by other forms
+                'other' => _x('Other','Plural category','loco-translate'),
+            );
+            foreach( $raw[1] as $k => $v ){
+                if( isset($forms[$v]) ){
+                    $raw[1][$k] = $forms[$v];
+                }
+            }
+        }
+        $this->plurals = $raw;
+        return $raw;
+    }
+
 
 
     /**
@@ -294,6 +412,39 @@ class Loco_Locale implements JsonSerializable {
         list( $equation, $forms ) = $this->getPluralData();
         return sprintf('nplurals=%u; plural=%s;', count($forms), $equation );
     }
+
+
+
+    /**
+     * Apply PO style Plural-Forms header.
+     * @param string e.g. "nplurals=2; plural=n != 1;"
+     * @return Loco_Locale
+     */
+    public function setPluralFormsHeader( $str ){
+        if( ! preg_match('/^nplurals=(\\d);\s*plural=([ +\\-\\/*%!=<>|&?:()n0-9]+);?$/', $str, $match ) ){
+            throw new InvalidArgumentException('Invalid Plural-Forms header, '.json_encode($str) );
+        }
+        $cache = $this->getPluralData();
+        $exprn = $match[2];
+        // always alter if equation differs
+        if( $cache[0] !== $exprn ){
+            $this->plurals[0] = $exprn;
+            // alter number of forms if changed
+            $nplurals = max( 1, (int) $match[1] );
+            if( $nplurals !== count($cache[1]) ){
+                // named forms must also change, but Plural-Forms cannot contain this information
+                // as a cheat, we'll assume first form always "one" and last always "other"
+                for( $i = 1; $i < $nplurals; $i++ ){
+                    $name = 1 === $i ? 'one' : sprintf('Plural %u',$i);
+                    $forms[] = $name;
+                }
+                $forms[] = 'other';
+                $this->setPlurals( array($exprn,$forms) );
+            }
+        }
+        return $this;
+    }
+
 
 
     /**
@@ -308,7 +459,7 @@ class Loco_Locale implements JsonSerializable {
 
 
 // Depends on compiled library
-if( ! function_exists('loco_parse_locale') ){
+if( ! function_exists('loco_parse_wp_locale') ){
     loco_include('lib/compiled/locales.php');
 }
 

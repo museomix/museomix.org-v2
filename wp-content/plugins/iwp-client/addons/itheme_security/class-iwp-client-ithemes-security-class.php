@@ -14,12 +14,16 @@ final class IWP_MMB_IThemes_Security extends IWP_MMB_Core {
                 self::checkIThemesModules();
     }
 
-    function getLogCounts(){
-        $from = date('Y-m-d h:i:s', strtotime('yesterday'));
-        $to = date('Y-m-d H:i:s', time());
-        $return['file_change'] = self::getFileChangeHistory($from, $to);
-        $return['four_oh_four'] = self::getFourOhFourHistory($from, $to);
-        $return['brute_force'] = self::getBruteForceHistory($from, $to);
+    function getLogCounts($from = false, $to = false ){
+         if (!$from && !$to) {
+            $from = strtotime('yesterday');
+            $to = time();
+        }
+        $from = date('Y-m-d h:i:s', $from);
+        $to = date('Y-m-d H:i:s', $to);
+        $return['itheme_file_change'] = self::getFileChangeHistory($from, $to);
+        $return['itheme_four_oh_four'] = self::getFourOhFourHistory($from, $to);
+        $return['itheme_brute_force'] = self::getBruteForceHistory($from, $to);
         return $return;
     }
 
@@ -141,7 +145,7 @@ final class IWP_MMB_IThemes_Security extends IWP_MMB_Core {
             $and = '';
         } else {
 
-            $module_sql = "`log_type` = '" . esc_sql($module) . "'";
+            $module_sql = "`module` = '" . esc_sql($module) . "' AND code != 'scan'";
             $and = ' AND ';
         }
 
@@ -158,7 +162,7 @@ final class IWP_MMB_IThemes_Security extends IWP_MMB_Core {
             $order_statement = ' ORDER BY `' . esc_sql($order) . '`';
         } else {
 
-            $order_statement = ' ORDER BY `log_id`';
+            $order_statement = ' ORDER BY `id`';
         }
 
         if ($limit !== null) {
@@ -189,14 +193,14 @@ final class IWP_MMB_IThemes_Security extends IWP_MMB_Core {
         $range_search = '';
         if (isset($datefrom) || isset($dateto)) {
             if (isset($datefrom)) {
-                $range_search .= $and . "`log_date_gmt`>='" . esc_sql($datefrom) . "'";
+                $range_search .= $and . "`init_timestamp`>='" . esc_sql($datefrom) . "'";
             }
             if (isset($dateto)) {
-                $range_search .= $and . "`log_date_gmt`<='" . esc_sql($dateto) . "'";
+                $range_search .= $and . "`init_timestamp`<='" . esc_sql($dateto) . "'";
             }
         }
 
-        $items = $wpdb->get_results("SELECT * FROM `" . $wpdb->base_prefix . "itsec_log`" . $where . $module_sql . $param_search . $range_search . $order_statement . $order_direction . $result_limit . ";", ARRAY_A);
+        $items = $wpdb->get_results("SELECT * FROM `" . $wpdb->base_prefix . "itsec_logs`" . $where . $module_sql . $param_search . $range_search . $order_statement . $order_direction . $result_limit . ";", ARRAY_A);
         return $items;
     }
 

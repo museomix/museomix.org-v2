@@ -26,7 +26,6 @@ $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : '0';
 	<div class="ff-stream" data-plugin="flow_flow" id="ff-stream-<?php echo $id;?>"><span class="ff-loader"><span class="ff-square" ></span><span class="ff-square"></span><span class="ff-square ff-last"></span><span class="ff-square ff-clear"></span><span class="ff-square"></span><span class="ff-square ff-last"></span><span class="ff-square ff-clear"></span><span class="ff-square"></span><span class="ff-square ff-last"></span></span></div>
 
 	<script type="text/javascript">
-
 		(function ( $ ) {
 			"use strict";
 			var hash = '<?php echo $hash; ?>';

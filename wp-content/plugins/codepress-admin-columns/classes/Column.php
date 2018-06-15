@@ -50,11 +50,6 @@ class AC_Column {
 	protected $list_screen;
 
 	/**
-	 * @var AC_Container
-	 */
-	private $services;
-
-	/**
 	 * The options managed by the settings
 	 *
 	 * @var array
@@ -122,20 +117,6 @@ class AC_Column {
 	}
 
 	/**
-	 * Container to inject and get services for this column
-	 *
-	 * @since 3.0.5
-	 * @return AC_Container
-	 */
-	public function services() {
-		if ( null === $this->services ) {
-			$this->services = new AC_Container();
-		}
-
-		return $this->services;
-	}
-
-	/**
 	 * Get the type of the column.
 	 *
 	 * @since 2.4.9
@@ -155,7 +136,7 @@ class AC_Column {
 	 * @return $this
 	 */
 	public function set_label( $label ) {
-		$this->label = (string) $label;
+		$this->label = $label;
 
 		return $this;
 	}
@@ -416,7 +397,7 @@ class AC_Column {
 	 *
 	 * @param int $id
 	 *
-	 * @return int|string
+	 * @return string
 	 */
 	public function get_value( $id ) {
 		$value = $this->get_formatted_value( $this->get_raw_value( $id ), $id );

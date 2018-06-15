@@ -78,65 +78,62 @@ function secupress_require_class_async() {
 function secupress_get_scanners() {
 	$tests = array(
 		'users-login' => array(
-			'Admin_User',
-			'Easy_Login',
-			'Subscription',
-			'Passwords_Strength',
-			'Bad_Usernames',
-			'Login_Errors_Disclose',
+			0 => 'Admin_User',
+			1 => 'Easy_Login',
+			2 => 'Subscription',
+			3 => 'Passwords_Strength',
+			4 => 'Bad_Usernames',
+			5 => 'Login_Errors_Disclose',
 		),
 		'plugins-themes' => array(
-			'Plugins_Update',
-			'Themes_Update',
-			'Bad_Old_Plugins',
-			'Bad_Vuln_Plugins',
-			'Inactive_Plugins_Themes',
+			0 => 'Plugins_Update',
+			1 => 'Themes_Update',
+			2 => 'Bad_Old_Plugins',
+			3 => 'Bad_Vuln_Plugins',
+			4 => 'Inactive_Plugins_Themes',
 		),
 		'wordpress-core' => array(
-			'Core_Update',
-			'Auto_Update',
-			'Bad_Old_Files',
-			'Bad_Config_Files',
-			'WP_Config',
-			'DB_Prefix',
-			'Salt_Keys',
+			0 => 'Core_Update',
+			1 => 'Auto_Update',
+			2 => 'Bad_Old_Files',
+			3 => 'Bad_Config_Files',
+			4 => 'WP_Config',
+			5 => 'DB_Prefix',
+			6 => 'Salt_Keys',
 		),
 		'sensitive-data' => array(
-			'Discloses',
-			'Readme_Discloses',
-			'PHP_Disclosure',
+			0 => 'Discloses',
+			1 => 'Readme_Discloses',
+			2 => 'PHP_Disclosure',
 		),
 		'file-system' => array(
-			'Chmods',
-			'Directory_Listing',
-			'Bad_File_Extensions',
-			'DirectoryIndex',
+			0 => 'Chmods',
+			1 => 'Directory_Listing',
+			2 => 'Bad_File_Extensions',
 		),
 		'firewall' => array(
-			'Shellshock',
-			'Bad_User_Agent',
-			'SQLi',
-			'Anti_Scanner',
-			'Anti_Front_Brute_Force',
-			'Bad_Request_Methods',
-			'Bad_Url_Access',
-			'PhpVersion',
+			0 => 'Shellshock',
+			1 => 'Bad_User_Agent',
+			2 => 'SQLi',
+			3 => 'Anti_Scanner',
+			4 => 'Anti_Front_Brute_Force',
+			5 => 'Bad_Request_Methods',
+			6 => 'Bad_Url_Access',
+			7 => 'PhpVersion',
+			8 => 'Php_404',
 		),
 	);
 
-	if ( ! secupress_users_can_register() ) {
-		$tests['users-login'][] = 'Non_Login_Time_Slot';
-	}
-
+	// 3rd party.
 	if ( class_exists( 'SitePress' ) ) {
-		$tests['sensitive-data'][] = 'Wpml_Discloses';
+		$tests['sensitive-data'][3] = 'Wpml_Discloses';
 	}
 
 	if ( class_exists( 'WooCommerce' ) ) {
-		$tests['sensitive-data'][] = 'Woocommerce_Discloses';
+		$tests['sensitive-data'][4] = 'Woocommerce_Discloses';
 	}
 
-	return $tests;
+	return apply_filters( 'secupress.scanner.tests', $tests );
 }
 
 
@@ -342,7 +339,6 @@ function secupress_die( $message = '', $title = '', $args = array() ) {
 	$message         = '<h1>' . SECUPRESS_PLUGIN_NAME . '</h1>' . $message;
 	$url             = secupress_get_current_url( 'raw' );
 	$force_die       = ! empty( $args['force_die'] );
-	$whitelisted     = secupress_ip_is_whitelisted();
 	$is_scan_request = secupress_is_scan_request(); // Used to bypass the whitelist for scans.
 
 	/**
@@ -353,10 +349,9 @@ function secupress_die( $message = '', $title = '', $args = array() ) {
 	 * @param (string) $message         The message displayed.
 	 * @param (string) $url             The current URL.
 	 * @param (array)  $args            Facultative arguments.
-	 * @param (bool)   $whitelisted     Is the current user IP whitelisted or not.
 	 * @param (bool)   $is_scan_request Tell if the request comes from one of our scans.
 	 */
-	$message = apply_filters( 'secupress.die.message', $message, $url, $args, $whitelisted, $is_scan_request );
+	$message = apply_filters( 'secupress.die.message', $message, $url, $args, $is_scan_request );
 
 	/**
 	 * Fires right before `wp_die()`.
@@ -366,12 +361,11 @@ function secupress_die( $message = '', $title = '', $args = array() ) {
 	 * @param (string) $message         The message displayed.
 	 * @param (string) $url             The current URL.
 	 * @param (array)  $args            Facultative arguments.
-	 * @param (bool)   $whitelisted Is the current user IP whitelisted or not.
 	 * @param (bool)   $is_scan_request Tell if the request comes from one of our scans.
 	 */
-	do_action( 'secupress.before.die', $message, $url, $args, $whitelisted, $is_scan_request );
+	do_action( 'secupress.before.die', $message, $url, $args, $is_scan_request );
 
-	if ( $force_die || ! $whitelisted || $is_scan_request ) {
+	if ( $force_die || $is_scan_request ) {
 		// Die.
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			// Tell cache plugins not to cache our error message.
@@ -442,20 +436,19 @@ function secupress_block( $module, $args = array( 'code' => 403 ) ) {
 	do_action( 'secupress.block', $module, $ip, $args, $block_id );
 
 	$title   = $args['code'] . ' ' . get_status_header_desc( $args['code'] );
-	$content = '<h4>' . $title . '</h4>';
-
+	$content = '<h2>' . $title . '</h2>';
 	if ( ! $args['content'] ) {
 		$content .= '<p>' . __( 'You are not allowed to access the requested page.', 'secupress' ) . '</p>';
 	} else {
 		$content .= '<p>' . $args['content'] . '</p>';
 	}
 
-	$content  = '<h4>' . __( 'Logged Details:', 'secupress' ) . '</h4><p>';
+	$content .= '<h3>' . __( 'Logged Details:', 'secupress' ) . '</h3><p>';
 	$content .= sprintf( __( 'Your IP: %s', 'secupress' ), $ip ) . '<br>';
 	$content .= sprintf( __( 'Time: %s', 'secupress' ), date_i18n( __( 'F j, Y g:i a', 'secupress' ) ) ) . '<br>';
 	$content .= sprintf( __( 'Block ID: %s', 'secupress' ), $block_id ) . '</p>';
 
-	secupress_die( $content, $title, array( 'response' => $args['code'] ) );
+	secupress_die( $content, $title, array( 'response' => $args['code'], 'force_die' => true ) );
 }
 
 
@@ -480,6 +473,7 @@ function secupress_is_scan_request() {
 /**
  * Create a URL to easily access to our pages.
  *
+ * @since 1.4.4 'get-pro' $page is now returning the external URL
  * @since 1.0
  *
  * @param (string) $page   The last word of the secupress page slug.
@@ -488,9 +482,8 @@ function secupress_is_scan_request() {
  * @return (string) The URL.
  */
 function secupress_admin_url( $page, $module = '' ) {
-	if ( 'get_pro' === $page ) {
-		$page   = 'modules';
-		$module = 'get-pro';
+	if ( 'get-pro' === $page ) {
+		return SECUPRESS_WEB_MAIN . __( 'pricing', 'secupress' );
 	}
 
 	$module = $module ? '&module=' . $module : '';
@@ -617,6 +610,17 @@ function secupress_is_white_label() {
  * @return (string) The HTML tag.
  */
 function secupress_get_logo( $atts = array() ) {
+	if ( secupress_is_white_label() ) {
+		/**
+		 * If white label is activated, no SecuPress logo is retrieve, let the filter do the job.
+		 *
+		 * @since 1.4.2
+		 *
+		 * @param (string) Should return a <img> or dashicon span tag.
+		 * @param (array) $atts Attributes, contains logo size.
+		 */
+		return apply_filters( 'secupress.white_label.logo', '<span class="dashicons dashicons-shield-alt"></span>', $atts );
+	}
 	$base_url = SECUPRESS_ADMIN_IMAGES_URL . 'logo';
 
 	$atts = array_merge( array(
@@ -701,7 +705,14 @@ function secupress_get_email( $from_header = false ) {
 		$sitename = substr( $sitename, 4 );
 	}
 
-	$email = 'noreply@' . $sitename;
+	/**
+	 * Give the possibility to replace the "from" email address
+	 *
+	 * @since 1.4
+	 *
+	 * @param (string) noreply@sitename by default@
+	 */
+	$email = apply_filters( 'secupress.get_email', 'noreply@' . $sitename );
 
 	return $from_header ? 'from: ' . SECUPRESS_PLUGIN_NAME . ' <' . $email . '>' : $email;
 }
@@ -1059,12 +1070,9 @@ function secupress_feature_is_pro( $feature ) {
 		'schedules-file-monitoring_scheduled'    => 1,
 		'notification-types_types'               => 1,
 		'alerts_activated'                       => 1,
-		'antispam_antispam'                      => 1,
 		'backups-storage_location'               => 1,
 		'event-alerts_activated'                 => 1,
 		'daily-reporting_activated'              => 1,
-		// Field values.
-		'login-protection_type|nonlogintimeslot' => 1,
 	);
 
 	return isset( $features[ $feature ] );

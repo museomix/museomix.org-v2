@@ -3,20 +3,32 @@
  * Handles various file locations
  */
 class Loco_fs_Locations extends ArrayObject {
-    
+
+    /**
+     * Singleton of WordPress root directory
+     * @var Loco_fs_Locations
+     */    
+    private static $roots;
+
+    /**
+     * Singleton of wp-content directory
+     * @var Loco_fs_Locations
+     */    
+    private static $conts;
+
     /**
      * Singleton of global languages directories
      * @var Loco_fs_Locations
      */    
     private static $langs;
-    
+
 
     /**
      * Singleton of registered theme paths
      * @var Loco_fs_Locations
      */    
     private static $theme;
-    
+
 
     /**
      * Singleton of registered plugin locations
@@ -26,14 +38,42 @@ class Loco_fs_Locations extends ArrayObject {
 
 
     /**
-     * Clear static caches.
+     * Clear static caches
      */
     public static function clear(){
+        self::$roots = null;
+        self::$conts = null;
         self::$langs = null;
         self::$theme = null;
         self::$plugin = null;
     }
 
+
+    /**
+     * @return Loco_fs_Locations 
+     */
+    public static function getRoot(){
+        if( ! self::$roots ){
+            self::$roots = new Loco_fs_Locations( array(
+                loco_constant('ABSPATH'),
+            ) );
+        }
+        return self::$roots;
+    }
+
+
+    /**
+     * @return Loco_fs_Locations 
+     */
+    public static function getContent(){
+        if( ! self::$conts ){
+            self::$conts = new Loco_fs_Locations( array(
+                loco_constant('WP_CONTENT_DIR'),  // <- defined WP_CONTENT_DIR
+                rtrim(ABSPATH,'/').'/wp-content', // <- default /wp-content
+            ) );
+        }
+        return self::$conts;
+    }
 
 
     /**
@@ -47,7 +87,6 @@ class Loco_fs_Locations extends ArrayObject {
         }
         return self::$langs;
     }
-
 
 
     /**
@@ -65,7 +104,6 @@ class Loco_fs_Locations extends ArrayObject {
     }
 
 
-
     /**
      * @return Loco_fs_Locations 
      */
@@ -79,42 +117,64 @@ class Loco_fs_Locations extends ArrayObject {
     }
 
 
-
-
-    
     /**
      * @internal
      */
     public function __construct( array $paths ){
-        $cache = array();
-        foreach( $paths as $i => $path ){
-            // path should be normalized absolute path and be compared only with others of the same
-            $path = Loco_fs_File::abs($path);
-            if( ! $path ){
-                throw new InvalidArgumentException('Location must be absolute path');
-            }
-            // path must have trailing slash, otherwise "/plugins/foobar" would match "/plugins/foo/"
-            $path = trailingslashit($path);
-            $cache[$path] = strlen($path);
+        parent::__construct( array() );
+        foreach( $paths as $path ){
+            $this->add( $path );
         }
-        parent::__construct( $cache );
     }
-    
-    
+
+
+    /**
+     * @param string normalized absolute path
+     * @return Loco_fs_Locations
+     */ 
+    public function add( $path ){
+        $path = Loco_fs_File::abs($path);
+        if( ! $path ){
+            throw new InvalidArgumentException('Location must be absolute path');
+        }
+        // path must have trailing slash, otherwise "/plugins/foobar" would match "/plugins/foo/"
+        $path = trailingslashit($path);
+        $this[$path] = strlen($path);
+        return $this;
+    }
+
+
     /**
      * Check if a given path begins with any of the registered ones
      * @param string absolute path
      * @return bool whether path matched
      */    
     public function check( $path ){
-        $path = Loco_fs_File::abs($path);
+        $path = Loco_fs_File::abs($path).'/';
         foreach( $this as $prefix => $length ){
-            if( substr($path,0,$length) === $prefix ){
+            if( $prefix === $path || substr($path,0,$length) === $prefix ){
                 return true;
             }
         }
         return false;
     }
     
+    
+    /**
+     * Match location and return the relative subpath.
+     * Note that exact match is returned as "." indicating self
+     * @return string | null
+     */
+    public function rel( $path ){
+        $path = Loco_fs_File::abs($path).'/';
+        foreach( $this as $prefix => $length ){
+            if( $prefix === $path ){
+                return '.';
+            }
+            if( substr($path,0,$length) === $prefix ){
+                return rtrim( substr($path,$length), "/" );
+            }
+        }
+    }
     
 }

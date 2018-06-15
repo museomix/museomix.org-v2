@@ -2,9 +2,9 @@
 Contributors: mateuszgbiorczyk
 Donate link: https://www.paypal.me/mateuszgbiorczyk/
 Tags: acf, acf search, advanced custom fields, better search, search
-Requires at least: 3.6.0
-Tested up to: 4.8.0
-Stable tag: 2.1.0
+Requires at least: 4.7.0
+Tested up to: 4.9.5
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,11 +38,15 @@ It works for WP_Query class.
 
 = Do I need to add some arguments to my function to activate advanced search? =
 
-On search page everythings works automatically. For custom WP_Query loop also if you add [Search Parameter](https://codex.wordpress.org/Class_Reference/WP_Query#Search_Parameter).
+Everythings works automatically. For custom WP_Query loop and get_posts() function also if you add [Search Parameter](https://codex.wordpress.org/Class_Reference/WP_Query#Search_Parameter).
+
+= Whether the plugin works in the admin panel? =
+
+Yes. The plugin works same as for the search page.
 
 = In what fields does the plugin search? =
 
-Our plugin supports the following fields: Text, Text Area, Number, Email, Url, Wysiwyg Editor, Select, Checkbox and Radio Button. All these fields may be located in both the Repeater or Flexible Content field.
+Our plugin supports the following fields: Text, Text Area, Number, Email, Url, File, Wysiwyg Editor, Select, Checkbox and Radio Button. All these fields may be located in both the Repeater or Flexible Content field.
 
 = How does searching for whole phrases? =
 
@@ -57,6 +61,28 @@ All versions of Advanced Custom Fields PRO. ACF below version 5 has a different 
 1. Screenshot of the options panel
 
 == Changelog ==
+
+= 3.0.1 =
+* Withdrawal of support for old WordPress versions
+* Minor fixes
+
+= 3.0.0 =
+* Search in admin panel
+* Support for get_posts() function
+* Support for internationalization
+* Changes in plugin structure
+
+= 2.2.0 =
+* Cleaning database after removing plugin
+
+= 2.1.3 =
+* Compatibility fix for Polylang plugin
+
+= 2.1.2 =
+* Support for File type field
+
+= 2.1.1 =
+* Modification of admin notice
 
 = 2.1.0 =
 * Faster search using lite mode

@@ -83,11 +83,15 @@ class FFGeneralSettings {
 	public function roles(){
 		$roles = array();
 		foreach ( $this->options as $key => $value ) {
-			if (strpos($key, 'mod-role-') === 0 && $value == 'yep'){
+			if (strpos($key, 'mod-role-') === 0 && $value == FFSettingsUtils::YEP){
 				$roles[] = str_replace('mod-role-', '', $key);
 			}
 		}
 		if (empty($roles)) return array('administrator');
 		return $roles;
+	}
+
+	public function enabledEmailNotification() {
+		return FFSettingsUtils::YepNope2ClassicStyleSafe($this->options, 'general-notifications', false);
 	}
 }

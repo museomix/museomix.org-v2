@@ -72,7 +72,7 @@ abstract class FFBaseFeed implements FFFeed{
 	 *
 	 * @return void
 	 */
-    public final function init($context, $options, $feed){
+    public function init($context, $options, $feed){
 		$this->context = $context;
 		$this->options = $options;
 		$this->errors = array();
@@ -123,6 +123,10 @@ abstract class FFBaseFeed implements FFFeed{
 		catch (\Exception $e){
 			error_log($e->getMessage());
 			error_log($e->getTraceAsString());
+			$this->errors[] = array(
+				'type'    => $this->getType(),
+				'message' => $e->getMessage()
+			);
 		}
 		$this->criticalError = true;
 		return $result;

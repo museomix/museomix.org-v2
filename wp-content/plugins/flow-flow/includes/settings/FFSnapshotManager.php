@@ -28,7 +28,8 @@ class FFSnapshotManager {
 	public function __construct($context) {
 		$this->context = $context;
 		$dbm = $context['db_manager'];
-		
+
+		// secured endpoints
 		add_action('wp_ajax_create_backup',  array( $this, 'processAjaxRequest'));
 		add_action('wp_ajax_restore_backup', array( $this, 'processAjaxRequest'));
 		add_action('wp_ajax_delete_backup',  array( $this, 'processAjaxRequest'));
@@ -54,6 +55,13 @@ class FFSnapshotManager {
 
 	public function processAjaxRequest() {
 		$result = array();
+
+        if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( 'not_allowed' );
+            }
+        }
+
 		if (isset($_REQUEST['action'])){
 			/** @var FFDBManager $db */
 			$dbm = $this->context['db_manager'];

@@ -13,7 +13,7 @@ $link_scan			= "{$package->StoreURL}{$package->NameHash}_scan.json";
 
 $debug_on	     = DUP_Settings::Get('package_debug');
 $mysqldump_on	 = DUP_Settings::Get('package_mysqldump') && DUP_DB::getMySqlDumpPath();
-$mysqlcompat_on  = isset($Package->Database->Compatible) && strlen($Package->Database->Compatible);
+$mysqlcompat_on  = isset($package->Database->Compatible) && strlen($package->Database->Compatible);
 $mysqlcompat_on  = ($mysqldump_on && $mysqlcompat_on) ? true : false;
 $dbbuild_mode    = ($mysqldump_on) ? 'mysqldump' : 'PHP';
 ?>
@@ -185,14 +185,15 @@ STORAGE -->
 						<div class="dup-store-pro"> 
 							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/amazon-64.png" /> 
 							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/dropbox-64.png" /> 
-							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/google_drive_64px.png" /> 
-							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/ftp-64.png" /> 
-							<?php echo sprintf(__('%1$s, %2$s, %3$s, %4$s and more storage options available in', 'duplicator'), 'Amazon', 'Dropbox', 'Google Drive', 'FTP'); ?>
+							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/google_drive_64px.png" />                            
+							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/ftp-64.png" />
+                            <img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/onedrive-48px.png" />
+							<?php echo sprintf(__('%1$s, %2$s, %3$s, %4$s, %5$s and more storage options available in', 'duplicator'), 'Amazon', 'Dropbox', 'Google Drive', 'FTP', 'OneDrive'); ?>
                             <a href="https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wordpress_plugin&utm_content=free_storage_detail&utm_campaign=duplicator_pro" target="_blank"><?php _e('Duplicator Pro', 'duplicator');?></a> 
 							 <i class="fa fa-lightbulb-o" 
 								data-tooltip-title="<?php _e('Additional Storage:', 'duplicator'); ?>" 
 								data-tooltip="<?php _e('Duplicator Pro allows you to create a package and then store it at a custom location on this server or to a cloud '
-										. 'based location such as Google Drive, Amazon, Dropbox or FTP.', 'duplicator'); ?>">
+										. 'based location such as Google Drive, Amazon, Dropbox, OneDrive or FTP.', 'duplicator'); ?>">
 							 </i>
                         </div>                            
 					</td>

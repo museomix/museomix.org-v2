@@ -80,6 +80,7 @@ class FlowFlowAdmin extends LAAdminBase{
 	}
 	
 	protected function enqueueAdminScriptsAlways($plugin_directory){
+		wp_enqueue_script($this->getPluginSlug() . '-global-admin-script', $plugin_directory . 'js/global_admin.js', array('jquery', 'backbone', 'underscore'), $this->context['version']);
 	}
 	
 	protected function enqueueAdminStylesOnlyAtPluginPage($plugin_directory){
@@ -96,13 +97,13 @@ class FlowFlowAdmin extends LAAdminBase{
 	}
 	
 	protected function enqueueAdminScriptsOnlyAtPluginPage($plugin_directory){
-		wp_enqueue_script($this->getPluginSlug() . '-global-admin-script', $plugin_directory . 'js/global_admin.js', array('jquery', 'backbone', 'underscore'), $this->context['version']);
-		
+
 		wp_enqueue_script($this->getPluginSlug() . '-streams-script', $plugin_directory . 'js/streams.js', array('jquery'), $this->context['version']);
 		wp_enqueue_script($this->getPluginSlug() . '-admin-script', $plugin_directory . 'js/admin.js', array('jquery', 'backbone', 'underscore'), $this->context['version']);
 		wp_localize_script($this->getPluginSlug() . '-admin-script', 'WP_FF_admin', array());
 		wp_localize_script($this->getPluginSlug() . '-admin-script', 'isWordpress', (string)FF_USE_WP);
 		wp_localize_script($this->getPluginSlug() . '-admin-script', '_ajaxurl', (string)$this->context['ajax_url']);
+		wp_localize_script($this->getPluginSlug() . '-admin-script', '_nonce', wp_create_nonce('flow_flow_nonce'));
 		wp_enqueue_script($this->getPluginSlug() . '-zeroclipboard', $plugin_directory . 'js/zeroclipboard/ZeroClipboard.min.js', array('jquery'), $this->context['version']);
 		wp_enqueue_script($this->getPluginSlug() . '-tinycolor', $plugin_directory . 'js/tinycolor.js', array('jquery'), $this->context['version']);
 		wp_enqueue_script($this->getPluginSlug() . '-colorpickersliders', $plugin_directory . 'js/jquery.colorpickersliders.js', array('jquery'), $this->context['version']);

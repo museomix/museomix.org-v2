@@ -172,11 +172,6 @@ abstract class LABase {
 					$this->process4feeds(array($stream), false, true);
 				}
 			}
-			if (isset($_REQUEST['post_id'])){
-				$post_id = $_REQUEST['post_id'];
-				$feed_id = $_REQUEST['feed_id4post'];
-				$this->process4comments($post_id, $feed_id);
-			}
 		}
 	}
 	
@@ -194,7 +189,7 @@ abstract class LABase {
 	
 	public final function refreshCache($streamId = null, $force = false, $withDisabled = false) {
 		if ($this->prepareProcess(true)) {
-			$enabled = $withDisabled ? FFDB::conn()->parse('`cach`.system_enabled = 0') : FFDB::conn()->parse('`cach`.enabled = 1');
+			$enabled = $withDisabled ? FFDB::conn()->parse('`cach`.system_enabled = 0') : FFDB::conn()->parse('`cach`.enabled = 1 AND `cach`.system_enabled = 1');
 			if (empty($streamId))
 				$sql = FFDB::conn()->parse('SELECT `cach`.`feed_id` FROM ?n `cach` WHERE ?p AND (`cach`.last_update + `cach`.cache_lifetime * 60) < UNIX_TIMESTAMP() ORDER BY `cach`.last_update', $this->db->cache_table_name, $enabled);
 				else
@@ -204,16 +199,26 @@ abstract class LABase {
 						if (false !== ($feeds = FFDB::conn()->getCol($sql))){
 							$useIpv4 = $this->getGeneralSettings()->useIPv4();
 							$use = $this->getGeneralSettings()->useCurlFollowLocation();
-							for ( $i = 0; $i < 8; $i ++ ) {
-								if (isset($feeds[$i])){
+							
+							if (sizeof($feeds) < 4){
+								for ( $i = 0; $i < sizeof($feeds); $i ++ ) {
 									$feed_id = $feeds[$i];
-									if (FF_USE_DIRECT_WP_CRON){
-										$_REQUEST['feed_id'] = $feed_id;
-										$this->processAjaxRequestBackground();
-									}
-									else {
-										//$_COOKIE['XDEBUG_SESSION'] = 'PHPSTORM';
-										FFFeedUtils::getFeedData($this->getLoadCacheUrl($feed_id, $force), 1, false, false, $use, $useIpv4);
+									$_REQUEST['feed_id'] = $feed_id;
+									$this->processAjaxRequestBackground();
+								}
+							}
+							else {
+								for ( $i = 0; $i < 8; $i ++ ) {
+									if (isset($feeds[$i])){
+										$feed_id = $feeds[$i];
+										if (FF_USE_DIRECT_WP_CRON){
+											$_REQUEST['feed_id'] = $feed_id;
+											$this->processAjaxRequestBackground();
+										}
+										else {
+											//$_COOKIE['XDEBUG_SESSION'] = 'PHPSTORM';
+											FFFeedUtils::getFeedData($this->getLoadCacheUrl($feed_id, $force), 1, false, false, $use, $useIpv4);
+										}
 									}
 								}
 							}
@@ -229,7 +234,17 @@ abstract class LABase {
 	public final function refreshCache4Disabled() {
 		$this->refreshCache(null, false, true);
 	}
-	
+
+	public final function emailNotification() {
+		/** @var \flow\db\LADBManager $dbm */
+		$dbm = $this->context['db_manager'];
+		/** @var FFGeneralSettings $settings */
+		$settings = $dbm->getGeneralSettings();
+		if ($settings->enabledEmailNotification()){
+			$dbm->email_notification();
+		}
+	}
+
 	public function renderShortCode($attr, $text = null) {
 		if (isset($attr['id'])){
 			if ($this->prepareProcess()) {
@@ -237,7 +252,7 @@ abstract class LABase {
 				$stream = (object)$this->db->getStream($attr['id']);
 				if (isset($stream)) {
 					$stream->preview = (isset($attr['preview']) && $attr['preview']);
-					$stream->gallery = $stream->preview ? 'nope' : isset($stream->gallery) ? $stream->gallery : 'nope';
+					$stream->gallery = $stream->preview ? FFSettingsUtils::NOPE : isset($stream->gallery) ? $stream->gallery : FFSettingsUtils::NOPE;
 					return $this->renderStream($stream, $this->getPublicContext($stream, $this->context));
 				}
 			} else {
@@ -258,7 +273,7 @@ abstract class LABase {
 	 *
 	 * @return array
 	 */
-	public function buildResponse($result, $all, $context, $errors, $oldHash, $page, $status, $stream){
+	public function buildResponse ($result, $all, $context, $errors, $oldHash, $page, $status, $stream) {
 		$streamId = (int) $stream->getId();
 		$countOfPages = isset($_REQUEST['countOfPages']) ? $_REQUEST['countOfPages'] : 0;
 		$result = array('id' => $streamId, 'items' => $all, 'errors' => $errors,
@@ -266,17 +281,20 @@ abstract class LABase {
 		return $result;
 	}
 	
-	public function loadCarousel(){
+	public function loadCommentsAndCarousel(){
 		$result = array();
-		try {
-			if (isset($_REQUEST['post_id']) && isset($_REQUEST['feed_id'])){
-				$feed_id = $_REQUEST['feed_id'];
-				$post_id = $_REQUEST['post_id'];
-				$result = $this->db->getCarousel($feed_id, $post_id);
-			}
-		} catch (\Exception $e) {
-		}
-		die(json_encode($result));
+
+        $post_id = $_REQUEST['post_id'];
+        $feed_id = $_REQUEST['feed_id4post'];
+
+        if ($this->prepareProcess(true)) {
+            $this->db->dataInit(true);
+
+            $result['comments'] = $this->process4comments($post_id, $feed_id);
+            $result['carousel'] = $this->db->getCarousel($feed_id, $post_id);
+
+            wp_send_json($result);
+        }
 	}
 	
 	/**
@@ -335,6 +353,9 @@ abstract class LABase {
 			ob_start();
 			$css_version = isset($stream->last_changes) ? $stream->last_changes : '1.0';
 			$url = content_url() . '/resources/' . $context['slug'] . '/css/stream-id' . $stream->id . '.css';
+			if (!is_main_site()){
+				$url = content_url() . '/resources/' . $context['slug'] . '/css/stream-id' . $stream->id . '-'. get_current_blog_id() . '.css';
+			}
 			echo "<link rel='stylesheet' id='ff-dynamic-css" . $stream->id . "' type='text/css' href='{$url}?ver={$css_version}'/>";
 			
 			include($context['root']  . 'views/public.php');
@@ -426,7 +447,7 @@ abstract class LABase {
 				}
 			}
 		}
-		wp_send_json($comments);
+		return $comments;
 	}
 	
 	private function createFeedInstances($feeds) {

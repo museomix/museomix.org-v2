@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Admin Columns
-Version: 3.0.5
+Version: 3.1.10
 Description: Customize columns on the administration screens for post(types), pages, media, comments, links and users with an easy to use drag-and-drop interface.
 Author: AdminColumns.com
 Author URI: https://www.admincolumns.com
@@ -35,6 +35,7 @@ if ( ! is_admin() ) {
 }
 
 require_once 'classes/Autoloader.php';
+require_once 'classes/Addon.php';
 require_once 'classes/Plugin.php';
 require_once 'api.php';
 
@@ -92,7 +93,7 @@ class CPAC extends AC_Plugin {
 	private $api;
 
 	/**
-	 * @var AC_Addons
+	 * @var AC_Admin_Addons
 	 */
 	private $addons;
 
@@ -121,7 +122,7 @@ class CPAC extends AC_Plugin {
 		define( 'CPAC_URL', $this->get_plugin_url() );
 		define( 'CPAC_DIR', $this->get_plugin_dir() );
 
-		$this->autoloader()->register_prefix( 'AC_', $this->get_plugin_dir() . 'classes/' );
+		$this->autoloader()->register_prefix( $this->get_prefix(), $this->get_plugin_dir() . 'classes/' );
 
 		// Third Party
 		new AC_ThirdParty_ACF();
@@ -130,8 +131,11 @@ class CPAC extends AC_Plugin {
 		new AC_ThirdParty_WPML();
 
 		// Init
-		$this->addons = new AC_Addons();
+		$this->addons = new AC_Admin_Addons();
+
 		$this->admin = new AC_Admin();
+		$this->admin->register();
+
 		$this->table_screen = new AC_TableScreen();
 		$this->helper = new AC_Helper();
 		$this->api = new AC_API();
@@ -140,7 +144,6 @@ class CPAC extends AC_Plugin {
 
 		// Hooks
 		add_action( 'init', array( $this, 'localize' ) );
-		add_action( 'init', array( $this, 'install' ) );
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 1, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 
@@ -151,8 +154,11 @@ class CPAC extends AC_Plugin {
 		add_action( 'after_setup_theme', array( $this, 'ready' ) );
 
 		// Set capabilities
-		register_activation_hook( __FILE__, array( $this, 'set_capabilities' ) );
-		add_action( 'admin_init', array( $this, 'set_capabilities_multisite' ) );
+		add_action( 'admin_init', array( $this, 'check_capabilities' ) );
+		register_activation_hook( $this->get_file(), array( $this, 'set_capabilities' ) );
+
+		// Updater
+		add_action( 'init', array( $this, 'install' ) );
 	}
 
 	/**
@@ -173,7 +179,11 @@ class CPAC extends AC_Plugin {
 	 * @return string
 	 */
 	public function get_version() {
-		return '3.0.5';
+		return '3.1.10';
+	}
+
+	public function get_prefix() {
+		return 'AC_';
 	}
 
 	public function ready() {
@@ -193,17 +203,6 @@ class CPAC extends AC_Plugin {
 	}
 
 	/**
-	 * @since 3.0
-	 */
-	public function get_plugin_version( $file ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-		$plugin = get_plugin_data( $file, false, false );
-
-		return isset( $plugin['Version'] ) ? $plugin['Version'] : false;
-	}
-
-	/**
 	 * @since 2.2
 	 * @uses  load_plugin_textdomain()
 	 */
@@ -212,33 +211,46 @@ class CPAC extends AC_Plugin {
 	}
 
 	/**
-	 * Handle installation and updates
+	 * Add capability to administrator to manage admin columns.
+	 * You can use the capability 'manage_admin_columns' to grant other roles this privilege as well.
+	 *
+	 * @since 2.0.4
+	 *
+	 * @return bool
 	 */
-	public function install() {
-		$classes = AC()->autoloader()->get_class_names_from_dir( $this->get_plugin_dir() . 'classes/Plugin/Update', 'AC_' );
-		$updater = new AC_Plugin_Updater( $this );
-
-		foreach ( $classes as $class ) {
-			$updater->add_update( new $class( $this->get_stored_version() ) );
+	public function set_capabilities() {
+		if ( ! current_user_can( 'administrator' ) ) {
+			return false;
 		}
 
-		$updater->parse_updates();
+		$role = get_role( 'administrator' );
+
+		if ( ! $role ) {
+			return false;
+		}
+
+		$role->add_cap( 'manage_admin_columns' );
+
+		return update_option( 'ac_capabilities_set', 1, false );
 	}
 
 	/**
-	 * @since 3.0
+	 * Check if the capabilities are set or settable
+	 *
+	 * @since 3.1.6
+	 *
+	 * @return bool
 	 */
-	public function minified() {
-		return defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-	}
-
-	/**
-	 * Add caps for Multisite admins
-	 */
-	public function set_capabilities_multisite() {
-		if ( is_multisite() && current_user_can( 'administrator' ) ) {
-			$this->set_capabilities();
+	public function check_capabilities() {
+		if ( ! current_user_can( 'administrator' ) ) {
+			return false;
 		}
+
+		if ( get_option( 'ac_capabilities_set' ) ) {
+			return true;
+		}
+
+		return $this->set_capabilities();
 	}
 
 	/**
@@ -246,18 +258,6 @@ class CPAC extends AC_Plugin {
 	 */
 	public function user_can_manage_admin_columns() {
 		return current_user_can( 'manage_admin_columns' );
-	}
-
-	/**
-	 * Add capability to administrator to manage admin columns.
-	 * You can use the capability 'manage_admin_columns' to grant other roles this privilege as well.
-	 *
-	 * @since 2.0.4
-	 */
-	public function set_capabilities() {
-		if ( $role = get_role( 'administrator' ) ) {
-			$role->add_cap( 'manage_admin_columns' );
-		}
 	}
 
 	/**
@@ -277,7 +277,7 @@ class CPAC extends AC_Plugin {
 	 */
 	public function add_settings_link( $links, $file ) {
 		if ( $file === $this->get_basename() ) {
-			array_unshift( $links, ac_helper()->html->link( AC()->admin()->get_link( 'settings' ), __( 'Settings' ) ) );
+			array_unshift( $links, ac_helper()->html->link( AC()->admin()->get_link( 'columns' ), __( 'Settings', 'codepress-admin-columns' ) ) );
 		}
 
 		return $links;
@@ -308,7 +308,7 @@ class CPAC extends AC_Plugin {
 
 	/**
 	 * @since 2.2
-	 * @return AC_Addons Add-ons class instance
+	 * @return AC_Admin_Addons Add-ons class instance
 	 */
 	public function addons() {
 		return $this->addons;
@@ -381,44 +381,12 @@ class CPAC extends AC_Plugin {
 	}
 
 	/**
-	 * @param WP_Screen $wp_screen
-	 *
-	 * @return AC_ListScreen|bool
-	 */
-	public function get_list_screen_by_wpscreen( $wp_screen ) {
-		if ( ! $wp_screen instanceof WP_Screen ) {
-			return false;
-		}
-
-		foreach ( $this->get_list_screens() as $list_screen ) {
-			if ( $list_screen->is_current_screen( $wp_screen ) ) {
-				return $list_screen;
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * @param string $key
 	 *
 	 * @return bool
 	 */
 	public function list_screen_exists( $key ) {
 		return $this->get_list_screen( $key ) ? true : false;
-	}
-
-	/**
-	 * Returns the default list screen when no choice is made by the user
-	 *
-	 * @since 3.0
-	 * @return AC_ListScreen
-	 */
-	public function get_default_list_screen() {
-		$screens = $this->get_list_screens();
-		$default_screen = array_shift( $screens );
-
-		return $default_screen;
 	}
 
 	/**
@@ -442,26 +410,31 @@ class CPAC extends AC_Plugin {
 	 */
 	private function set_list_screens() {
 
+		$list_screens = array();
+
 		// Post types
 		foreach ( $this->get_post_types() as $post_type ) {
-			$this->register_list_screen( new AC_ListScreen_Post( $post_type ) );
+			$list_screens[] = new AC_ListScreen_Post( $post_type );
 		}
 
-		$this->register_list_screen( new AC_ListScreen_Media() );
-		$this->register_list_screen( new AC_ListScreen_Comment() );
+		$list_screens[] = new AC_ListScreen_Media();
+		$list_screens[] = new AC_ListScreen_Comment();
 
 		// Users, not for network users
 		if ( ! is_multisite() ) {
-			$this->register_list_screen( new AC_ListScreen_User() );
+			$list_screens[] = new AC_ListScreen_User();
 		}
 
-		// as of 3.5 link manager is removed
-		if ( get_option( 'link_manager_enabled' ) ) {
-			$this->register_list_screen( new AC_ListScreen_Link() );
+		foreach ( $list_screens as $list_screen ) {
+			$this->register_list_screen( $list_screen );
 		}
 
 		/**
+		 * Register list screens
+		 *
 		 * @since 3.0
+		 *
+		 * @param CPAC $this
 		 */
 		do_action( 'ac/list_screens', $this );
 	}
@@ -471,16 +444,6 @@ class CPAC extends AC_Plugin {
 	 */
 	public function register_list_screen( AC_ListScreen $list_screen ) {
 		$this->list_screens[ $list_screen->get_key() ] = $list_screen;
-
-		/**
-		 * Fires when a list screen is registered.
-		 *
-		 * @since 3.0.5
-		 *
-		 * @param AC_ListScreen $list_screen List screen object
-		 * @param CPAC          $ac          Main admin columns class instance
-		 */
-		do_action( 'ac/registered_list_screen', $list_screen, $this );
 	}
 
 	/**
@@ -549,6 +512,7 @@ class CPAC extends AC_Plugin {
 	public function display_notices() {
 		if ( $this->notices ) {
 			echo implode( array_unique( $this->notices ) );
+			wp_enqueue_style( 'ac-sitewide-notices' );
 		}
 	}
 
@@ -559,9 +523,14 @@ class CPAC extends AC_Plugin {
 	 *                        'error' is red
 	 *                        'notice-warning' is yellow
 	 *                        'notice-info' is blue
+	 * @param bool   $paragraph
 	 */
-	public function notice( $message, $type = 'updated' ) {
-		$this->notices[] = '<div class="ac-message notice ' . esc_attr( $type ) . '"><p>' . $message . '</p></div>';
+	public function notice( $message, $type = 'updated', $paragraph = true ) {
+		if ( $paragraph ) {
+			$message = '<p>' . $message . '</p>';
+		}
+
+		$this->notices[] = '<div class="ac-message notice ' . esc_attr( $type ) . '">' . $message . '</div>';
 	}
 
 	/**
@@ -575,8 +544,8 @@ class CPAC extends AC_Plugin {
 	 * @since 3.0
 	 */
 	public function admin_scripts() {
-		wp_register_script( 'ac-sitewide-notices', AC()->get_plugin_url() . "assets/js/message" . AC()->minified() . ".js", array( 'jquery' ), AC()->get_version() );
-		wp_register_style( 'ac-sitewide-notices', AC()->get_plugin_url() . "assets/css/message" . AC()->minified() . ".css", array(), AC()->get_version() );
+		wp_register_script( 'ac-sitewide-notices', AC()->get_plugin_url() . "assets/js/message.js", array( 'jquery' ), AC()->get_version() );
+		wp_register_style( 'ac-sitewide-notices', AC()->get_plugin_url() . "assets/css/message.css", array(), AC()->get_version() );
 	}
 
 	/**
@@ -585,6 +554,42 @@ class CPAC extends AC_Plugin {
 	public function is_doing_ajax() {
 		return defined( 'DOING_AJAX' ) && DOING_AJAX;
 	}
+
+	/**
+	 * @deprecated 3.1.5
+	 *
+	 * @param WP_Screen $wp_screen
+	 */
+	public function get_list_screen_by_wpscreen( $wp_screen ) {
+		_deprecated_function( __METHOD__, '3.1.5' );
+	}
+
+	/**
+	 * @deprecated 3.1.5
+	 * @since      3.0
+	 */
+	public function get_plugin_version( $file ) {
+		_deprecated_function( __METHOD__, '3.1.5' );
+	}
+
+	/**
+	 * Returns the default list screen when no choice is made by the user
+	 *
+	 * @deprecated 3.1.5
+	 * @since      3.0
+	 */
+	public function get_default_list_screen() {
+		_deprecated_function( __METHOD__, '3.1.5' );
+	}
+
+	/**
+	 * @deprecated 3.1.5
+	 * @since      3.0
+	 */
+	public function minified() {
+		_deprecated_function( __METHOD__, '3.1.5' );
+	}
+
 }
 
 /**

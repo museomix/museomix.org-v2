@@ -259,7 +259,7 @@ class RegenerateThumbnails_Regenerator {
 
 				wp_delete_file( $wp_upload_dir . $file );
 			}
-		} elseif ( is_array( $old_metadata ) && is_array( $old_metadata['sizes'] ) ) {
+		} elseif ( ! empty( $old_metadata ) && ! empty( $old_metadata['sizes'] ) && is_array( $old_metadata['sizes'] ) ) {
 			// If not deleting, rename any size conflicts to avoid them being lost if the file still exists.
 			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( empty( $new_metadata['sizes'][ $old_size ] ) ) {
@@ -381,7 +381,7 @@ class RegenerateThumbnails_Regenerator {
 			return false;
 		}
 
-		list( $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h ) = $dims;
+		list( , , , , $dst_w, $dst_h ) = $dims;
 
 		$suffix   = "{$dst_w}x{$dst_h}";
 		$file_ext = strtolower( pathinfo( $this->get_fullsizepath(), PATHINFO_EXTENSION ) );
@@ -407,9 +407,12 @@ class RegenerateThumbnails_Regenerator {
 	 *     @type int   $posts_per_loop How many posts to query at a time to keep memory usage down. You shouldn't need to modify this.
 	 * }
 	 *
-	 * @return array List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
+	 * @return array|WP_Error List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
 	 */
 	public function update_usages_in_posts( $args = array() ) {
+		// Temporarily disabled until it can be even better tested for edge cases
+		return array();
+
 		$args = wp_parse_args( $args, array(
 			'post_type'      => array(),
 			'post_ids'       => array(),
@@ -550,6 +553,21 @@ class RegenerateThumbnails_Regenerator {
 
 		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
+		if ( false === $metadata ) {
+			return new WP_Error(
+				'regenerate_thumbnails_regenerator_no_metadata',
+				__( 'Unable to load the metadata for this attachment.', 'regenerate-thumbnails' ),
+				array(
+					'status'     => 404,
+					'attachment' => $this->attachment,
+				)
+			);
+		}
+
+		if ( ! isset( $metadata['sizes'] ) ) {
+			$metadata['sizes'] = array();
+		}
+
 		// PDFs don't have width/height set.
 		$width  = ( isset( $metadata['width'] ) ) ? $metadata['width'] : null;
 		$height = ( isset( $metadata['height'] ) ) ? $metadata['height'] : null;
@@ -561,13 +579,13 @@ class RegenerateThumbnails_Regenerator {
 		} elseif (
 			is_array( $metadata['sizes']['full'] ) &&
 			file_exists( str_replace(
-				basename( $fullsizepath ),
+				wp_basename( $fullsizepath ),
 				$metadata['sizes']['full']['file'],
 				$fullsizepath
 			) )
 		) {
 			$preview = str_replace(
-				basename( $fullsizepath ),
+				wp_basename( $fullsizepath ),
 				$metadata['sizes']['full']['file'],
 				wp_get_attachment_url( $this->attachment->ID )
 			);
@@ -576,9 +594,9 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		$response = array(
-			'name'               => $this->attachment->post_title,
+			'name'               => ( $this->attachment->post_title ) ? $this->attachment->post_title : sprintf( __( 'Attachment %d', 'regenerate-thumbnails' ), $this->attachment->ID ),
 			'preview'            => $preview,
-			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . basename( $fullsizepath ),
+			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . wp_basename( $fullsizepath ),
 			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
 			'width'              => $width,
 			'height'             => $height,
@@ -608,16 +626,14 @@ class RegenerateThumbnails_Regenerator {
 				$thumbnail = $this->get_thumbnail( $editor, $width, $height, $size['width'], $size['height'], $size['crop'] );
 
 				if ( $thumbnail ) {
-					$size['filename']   = basename( $thumbnail['filename'] );
+					$size['filename']   = wp_basename( $thumbnail['filename'] );
 					$size['fileexists'] = file_exists( $thumbnail['filename'] );
 				} else {
 					$size['filename']   = false;
 					$size['fileexists'] = false;
 				}
-			}
-			// No width and height? Let's see if there's a filename in the metadata.
-			elseif ( ! empty( $metadata['sizes'][ $size['label'] ]['file'] ) ) {
-				$size['filename']   = basename( $metadata['sizes'][ $size['label'] ]['file'] );
+			} elseif ( ! empty( $metadata['sizes'][ $size['label'] ]['file'] ) ) {
+				$size['filename']   = wp_basename( $metadata['sizes'][ $size['label'] ]['file'] );
 				$size['fileexists'] = file_exists( $wp_upload_dir . $metadata['sizes'][ $size['label'] ]['file'] );
 			} else {
 				$size['filename']   = false;

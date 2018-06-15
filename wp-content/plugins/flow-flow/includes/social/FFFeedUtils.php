@@ -124,7 +124,7 @@ class FFFeedUtils{
     						if (isset($body->error->message)) $error = $body->error->message;
     						else if (isset($body->meta->error_message)) $error = $body->meta->error_message;
     						else if (isset($body->message)) $error = $body->message;
-    						else if (!is_null($body)) $error = print_r($body, true);
+    						else if (!is_null($body)) $error = 'Problem with parsing the error data';//print_r($body, true);
     					}
     					$errors[] = array('msg' => $error, 'url' => $url);
     		}

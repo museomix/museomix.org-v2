@@ -7,7 +7,13 @@ $this->extend('layout');
 ?> 
 
     <div class="notice inline notice-info">
-        <h3><?php esc_attr_e('Welcome to Loco Translate','loco-translate')?></h3>
+        <p class="has-lang">
+            <span <?php echo $siteLocale->attr?>><code><?php $siteLocale->e('code')?></code></span>
+            <span><?php printf( esc_html( __('The language of this site is %s.','loco-translate') ), $siteLocale->link );?> 
+            <?php if( $params->has('adminLocale') ):
+            printf( esc_html( __('Your admin language is %s.','loco-translate') ), $adminLocale->link );
+            endif?></span>
+        </p>
         <p><?php
             // translators: 1: help URL, 2: forum URL; Must be HTML encoded
             printf(
@@ -18,10 +24,11 @@ $this->extend('layout');
         </p>
     </div><?php
 
+
     if( $recent ):?> 
     <div>
         <h2>
-            <?php esc_attr_e('Recently updated:','loco-translate')?> 
+            <?php esc_html_e('Recently updated:','loco-translate')?> 
         </h2>
         <p>
             <?php esc_html_e("Translations have been recently modified in the following bundles",'loco-translate')?>:
@@ -33,7 +40,7 @@ $this->extend('layout');
 
     <div>
         <h2>
-            <?php esc_attr_e('Active theme:','loco-translate')?> 
+            <?php esc_html_e('Active theme:','loco-translate')?> 
         </h2><?php
         echo $this->render('list/inc-table', array( 'bundles' => array($theme) ) )?> 
         <p>
@@ -45,7 +52,7 @@ $this->extend('layout');
     <?php if( $plugins ):?> 
     <div>
         <h2>
-            <?php esc_attr_e('Running plugins:','loco-translate')?> 
+            <?php esc_html_e('Running plugins:','loco-translate')?> 
         </h2>
         <p>
             <?php esc_html_e('These plugins have recently loaded translation files into the admin area','loco-translate')?>:

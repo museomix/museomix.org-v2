@@ -81,8 +81,8 @@ class FlowFlowActivator extends LAActivatorBase{
 				'slug_down'         => 'flow_flow',
 				'plugin_url'        => plugin_dir_url(dirname($file).'/'),
 				'admin_url'         => admin_url('admin-ajax.php'),
-				'table_name_prefix' => $wpdb->base_prefix . 'ff_',
-				'version' 			=> '3.1.3',
+				'table_name_prefix' => $wpdb->prefix . 'ff_',
+				'version' 			=> '3.2.25',
 				'faq_url' 			=> 'http://docs.social-streams.com/'
 		);
 		$adapter = new FFFacebookCacheAdapter();
@@ -116,6 +116,7 @@ class FlowFlowActivator extends LAActivatorBase{
 	protected function singleSiteDeactivate(){
 		wp_clear_scheduled_hook( 'flow_flow_load_cache' );
 		wp_clear_scheduled_hook( 'flow_flow_load_cache_4disabled' );
+		wp_clear_scheduled_hook( 'flow_flow_email_notification' );
 	}
 	
 	protected function beforePluginLoad(){
@@ -151,6 +152,11 @@ class FlowFlowActivator extends LAActivatorBase{
 		if(false == wp_next_scheduled('flow_flow_load_cache_4disabled')){
 			wp_schedule_event($time, 'sex_hours', 'flow_flow_load_cache_4disabled');
 		}
+
+		add_action('flow_flow_email_notification', array($ff, 'emailNotification'));
+		if(false == wp_next_scheduled('flow_flow_email_notification')){
+			wp_schedule_event($time, 'daily', 'flow_flow_email_notification');
+		}
 	}
 	
 	protected function registrationAjaxActions(){
@@ -158,17 +164,18 @@ class FlowFlowActivator extends LAActivatorBase{
 		$dbm = $this->context['db_manager'];
 		$slug_down = $this->context['slug_down'];
 		$ff = FlowFlow::get_instance($this->context);
-		
+
+		// public endpoints
 		add_action('wp_ajax_fetch_posts', array( $ff, 'processAjaxRequest'));
 		add_action('wp_ajax_nopriv_fetch_posts', array( $ff, 'processAjaxRequest'));
+        add_action('wp_ajax_load_cache', array( $ff, 'processAjaxRequestBackground'));
+        add_action('wp_ajax_nopriv_load_cache', array( $ff, 'processAjaxRequestBackground'));
+        add_action('wp_ajax_' . $slug_down . '_load_comments_and_carousel', array( $ff, 'loadCommentsAndCarousel'));
+        add_action('wp_ajax_nopriv_' . $slug_down . '_load_comments_and_carousel', array( $ff, 'loadCommentsAndCarousel'));
+		// roles detect
 		add_action('wp_ajax_' . $slug_down . '_moderation_apply_action', array( $ff, 'moderation_apply'));
-		add_action('wp_ajax_load_cache', array( $ff, 'processAjaxRequestBackground'));
-		add_action('wp_ajax_nopriv_load_cache', array( $ff, 'processAjaxRequestBackground'));
-        add_action('wp_ajax_' . $slug_down . '_load_comments', array( $ff, 'processAjaxRequestBackground'));
-        add_action('wp_ajax_nopriv_' . $slug_down . '_load_comments', array( $ff, 'processAjaxRequestBackground'));
-        add_action('wp_ajax_' . $slug_down . '_load_carousel', array( $ff, 'loadCarousel'));
-        add_action('wp_ajax_nopriv_' . $slug_down . '_load_carousel', array( $ff, 'loadCarousel'));
-		
+
+		// secured endpoints
 		add_action('wp_ajax_' . $slug_down . '_social_auth',			array( $dbm, 'social_auth' ));
 		add_action('wp_ajax_' . $slug_down . '_save_sources_settings',	array( $dbm, 'save_sources_settings' ));
 		add_action('wp_ajax_' . $slug_down . '_get_stream_settings',	array( $dbm, 'get_stream_settings' ));

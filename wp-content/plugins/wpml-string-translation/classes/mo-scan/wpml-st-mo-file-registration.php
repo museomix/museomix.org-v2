@@ -48,10 +48,6 @@ class WPML_ST_MO_File_Registration {
 	}
 
 	public function save_mo_file_info( $override, $domain, $mo_file_path ) {
-		if ( ! $this->components_find->is_component_active( $mo_file_path ) ) {
-			return $override;
-		}
-
 		$file_path_pattern = $this->get_file_path_pattern( $mo_file_path );
 
 		foreach ( $this->active_languages as $lang_data ) {
@@ -82,6 +78,10 @@ class WPML_ST_MO_File_Registration {
 		$file          = $this->mo_dictionary->find_file_info_by_path( $relative_path );
 
 		if ( ! $file ) {
+			if ( ! $this->components_find->is_component_active( $mo_file_path ) ) {
+				return;
+			}
+
 			$file = new WPML_ST_MO_File( $relative_path, $domain );
 			$file->set_last_modified( $last_modified );
 

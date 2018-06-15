@@ -55,3 +55,21 @@ $this->add_field( array(
 		),
 	),
 ) );
+
+
+$this->add_field( array(
+	'title'             => __( 'Block Fake SEO Bots', 'secupress' ),
+	'description'       => __( 'Some servers are claming to be GoogleBots (or else), detect and block them.', 'secupress' ),
+	'label_for'         => $this->get_field_name( 'fake-google-bots' ),
+	'plugin_activation' => true,
+	'disabled'          => ! secupress_check_bot_ip( true ),
+	'type'              => 'checkbox',
+	'value'             => (int) secupress_is_submodule_active( 'firewall', 'fake-google-bots' ),
+	'label'             => __( 'Yes, protect my site from fake SEO Bots', 'secupress' ),
+	'helpers'           => array(
+		array(
+			'type'        => 'warning',
+			'description' => ! secupress_check_bot_ip( true ) ? __( 'Impossible to use this feature, your server can not check a hostname correctly! Sorry.', 'secupress' ) : '',
+		),
+	),
+) );

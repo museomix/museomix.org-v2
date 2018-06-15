@@ -253,7 +253,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 	function admin_manual_rename_callback( $args ) {
 		$html = '<input ' . disabled( $this->is_registered(), false, false ) . ' type="checkbox" id="mfrh_manual_rename" name="mfrh_manual_rename" value="1" ' .
 			checked( 1, apply_filters( 'mfrh_manual', false ), false ) . '/>';
-    $html .= '<label>Enable</label><br /><small>Manual field will be enabled in the Media Edit screen.</small>';
+    $html .= '<label>Enable</label><br /><small>Manual field will be enabled in the Media Library and the Media Edit Screen.</small>';
     echo $html;
   }
 
@@ -280,7 +280,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 			$what = __( "Title of Media", 'media-file-renamer' );
 		else if ( $method == "post_title" )
 			$what = __( "Attached Post Title", 'media-file-renamer' );
-    $html .= __( "<label>ALT = <b>$what</b></label><br /><small>Keep in mind that the HTML in your posts and pages will be however not modified, that is too dangerous!</small>", 'media-file-renamer' );
+    $html .= __( "<label>ALT = <b>$what</b></label><br /><small>Keep in mind that the HTML of your posts and pages WILL NOT be modified, as that is simply too dangerous for a plug-in.</small>", 'media-file-renamer' );
     echo $html;
   }
 
@@ -293,7 +293,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 			$what = __( "Media ALT", 'media-file-renamer' );
 		else if ( $method == "post_title" )
 			$what = __( "Attached Post Title", 'media-file-renamer' );
-    $html .= __( "<label>Media Title = <b>$what</b></label><br /><small>Keep in mind that the HTML in your posts and pages will be however not modified, that is too dangerous!</small>", 'media-file-renamer' );
+    $html .= __( "<label>Media Title = <b>$what</b></label><br /><small>Keep in mind that the HTML of your posts and pages WILL NOT be modified, as that is simply too dangerous for a plug-in.</small>", 'media-file-renamer' );
     echo $html;
   }
 

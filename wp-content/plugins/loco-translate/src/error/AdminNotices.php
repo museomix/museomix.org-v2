@@ -47,13 +47,16 @@ class Loco_error_AdminNotices extends Loco_hooks_Hookable {
             $stack = debug_backtrace();
             $error->setCallee( $stack[1] );
         }
-        // Log everything of debug verbosity level or lower if enabled
-        if( $error->getLevel() < Loco_error_Exception::LEVEL_INFO ){
-            if( loco_debugging() && ini_get('error_log') ){
-                $file = new Loco_fs_File( $error->getRealFile() );
-                $path = $file->getRelativePath( loco_plugin_root() );
-                error_log( sprintf('[Loco.%s] "%s" in %s:%u', $error->getType(), $error->getMessage(), $path, $error->getRealLine() ), 0 );
-            }
+        // Log messages of minimum priority and up, depending on debug mode
+        // note that non-debug level is in line with error_reporting set by WordPress (notices ignored)
+        $priority = loco_debugging() ? Loco_error_Exception::LEVEL_DEBUG : Loco_error_Exception::LEVEL_WARNING;
+        if( $error->getLevel() <= $priority ){
+            $file = new Loco_fs_File( $error->getRealFile() );
+            $path = $file->getRelativePath( loco_plugin_root() );
+            $text = sprintf('[Loco.%s] "%s" in %s:%u', $error->getType(), $error->getMessage(), $path, $error->getRealLine() );
+            // This writes to default PHP log, but note that WP_DEBUG_LOG may have set that to wp-content/debug.log.
+            // If no `error_log` is set this will send message to the SAPI, so check your httpd/fast-cgi errors too.
+            error_log( $text, 0 );
         }
         return $error;
     }
@@ -126,25 +129,33 @@ class Loco_error_AdminNotices extends Loco_hooks_Hookable {
         return $data;
     }
 
+
     
     /**
      * @return void
      */
     private function flush(){
         if( $this->errors ){
-            $html = array();
+            $htmls = array();
             /* $var $error Loco_error_Exception */
             foreach( $this->errors as $error ){
-                $html[] = sprintf (
-                    '<div class="notice notice-%s loco-notice%s"><p><strong class="has-icon">%s:</strong> <span>%s</span></p></div>',
-                    $error->getType(),
-                    $this->inline ? ' inline' : '',
+                $html = sprintf (
+                    '<p><strong class="has-icon">%s:</strong> <span>%s</span></p>',
                     esc_html( $error->getTitle() ),
                     esc_html( $error->getMessage() )
                 );
+                $styles = array( 'notice', 'notice-'.$error->getType() );
+                if( $this->inline ){
+                    $styles[] = 'inline';
+                }
+                if( $links = $error->getLinks() ){
+                    $styles[] = 'has-nav';
+                    $html .= '<nav>'.implode( '<span> | </span>', $links ).'</nav>';
+                }
+                $htmls[] = '<div class="'.implode(' ',$styles).'">'.$html.'</div>';
             }
             $this->errors = array();
-            echo implode("\n", $html),"\n";
+            echo implode("\n", $htmls),"\n";
         }
     }
 

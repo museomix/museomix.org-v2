@@ -591,6 +591,8 @@ class IWP_MMB_Activities_log {
 		$to_key = 'to';
 		$translations_updated = 'translations-updated';
 		$sucuri = 'sucuri';
+		$ithemesec = 'ithemesec';
+		$wordfence = 'wordfence';
 		
 		if(
 			!is_array($params['originalActions']) 
@@ -690,6 +692,20 @@ class IWP_MMB_Activities_log {
 				}
 			}
 		}
+		if (in_array($ithemesec, $params['actions']) && iwp_mmb_ithemes_security_check()) {
+			global $iwp_mmb_core;
+			$ithemessec_instance = $iwp_mmb_core->get_ithemessec_instance();
+			$logCounts = $ithemessec_instance->getLogCounts($params['fromDate'], $params['toDate']);
+			$return['detailed'][$ithemesec]['details'] = $logCounts;
+		}
+
+		if (in_array($wordfence, $params['actions']) && iwp_mmb_is_wordfence()) {
+			global $iwp_mmb_core;
+			require_once($GLOBALS['iwp_mmb_plugin_dir'] . "/addons/wordfence/wordfence.class.php");
+			$wordfence_instance = $iwp_mmb_core->get_wordfence_instance();
+			$logCounts = $wordfence_instance->getLogCounts($params['fromDate'], $params['toDate']);
+			$return['detailed'][$wordfence]['details'] = $logCounts;
+		}
 		iwp_mmb_response($return, true);		
 	}
 	
@@ -711,7 +727,7 @@ class IWP_MMB_Activities_log {
 	}	
 
 	function iwp_mmb_register_custom_post_type(){
-		register_post_type('iwp-log');	
+		register_post_type('iwp-log', array('label' => 'IWP Log'));	
 	}
 	function iwp_mmb_save_sucuri_activity_log(){
 		$object = new IWP_MMB_Sucuri();
@@ -721,6 +737,10 @@ class IWP_MMB_Activities_log {
 			$userid = $this->iwp_mmb_get_current_user_id();
 			$this->iwp_mmb_save_iwp_activities('sucuri', 'scan', 'automatic',$info, $userid);
 		}
+	}
+
+	function iwp_mmb_backup_complete(){
+		return true;
 	}
 }
 

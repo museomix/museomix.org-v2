@@ -14,9 +14,9 @@ var ff_templates = {
                     <h1 class="desc-following">Connected feeds</h1>\
                     <p class="desc">Here you can connect feeds created on <a class="ff-pseudo-link" href="#sources-tab">Feeds tab</a>. To detach feed click feed label.</p>\
         <div class="stream-feeds">\
-            <div class="stream-feeds__list"></div>\
-            <div class="stream-feeds__block"><span class="stream-feeds__add">+ Connect feed to stream</span></div>\
+            <div class="stream-feeds__block"><span class="stream-feeds__add">+ Connect new feed to stream</span></div>\
             <div class="stream-feeds__select"><select></select><span class="stream-feeds__btn stream-feeds__ok"><i class="flaticon-plus"></i></span><span class="stream-feeds__btn stream-feeds__close"><i class="flaticon-cross"></i></span></div>\
+            <div class="stream-feeds__list"></div>\
         </div>\
     </div>\
     <div class="section"  data-tab="general" id="stream-settings-<%= id %>">\
@@ -431,21 +431,26 @@ Content to show\
     </span>\
     <div class="hint hint-pro">\
         <h1>Content to show</h1>\
-        1. <b>Home timeline</b> — enter your own username (without @).<br>\
-        2. <b>User feed</b> — enter username of any public Twitter account (without @).<br>\
-        3. <b>Tweets by search</b> — enter any word or #hashtag. <a href="https://developer.twitter.com/en/docs/api-reference-index" target="_blank">Advanced search terms</a>.<br>\
-        4. <b>User list</b> — enter username here and List name in corresponding field below.<br>\
-        5. <b>User’s likes</b> —  enter username.\
+        <ul>\
+            <li><b>Home timeline</b> — enter your own username.</li>\
+            <li><b>User feed</b> — enter username of any public Twitter account.</li>\
+            <li><b>Tweets by search</b> — enter any word or #hashtag. <a href="https://developer.twitter.com/en/docs/api-reference-index" target="_blank">Advanced search terms</a>.</li>\
+            <li><b>User list</b> — enter username here and List name in corresponding field below.</li>\
+            <li><b>User’s likes</b> —  enter username.</li>\
+        </ul>\
     </div>\
 </div>\
 </dt>\
 <dd><input type="text" name="<%= uid %>-content"/></dd>\
-<dt>List name</dt>\
-<dd>\
-<input type="text" name="<%= uid %>-list-name" placeholder=""/>\
-<p class="desc">Required if you choose list feed.</p>\
-</dd>\
-<dt class="">Tweets language</dt>\
+<dt>\
+    List name\
+    <p class="desc">Required if you choose list feed.</p>\
+</dt>\
+<dd><input type="text" name="<%= uid %>-list-name" placeholder=""/></dd>\
+<dt class="">\
+    Tweets language\
+    <p class="desc">As detected by Twitter. Only for search feeds.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper">\
 <select id="<%= uid %>-lang" name="<%= uid %>-lang">\
@@ -503,7 +508,6 @@ Content to show\
 <option value="zh">Chinese (中文)</option>\
 </select>\
 </div>\
-<p class="desc">As detected by Twitter. Only for search feeds.</p>\
 </dd>\
 <!--\
 <dt class="multiline">Geolocalization<p class="desc">Only for search</p></dt>\
@@ -524,8 +528,11 @@ Content to show\
 </dd>\
 <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -547,9 +554,9 @@ Content to show\
 <dt>FEED TYPE </dt>\
 <dd>\
 <input id="<%= uid %>-page-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="page_timeline" checked />\
-<label for="<%= uid %>-page-timeline-type">Page</label><br><br>\
-<input id="<%= uid %>-group-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="group" />\
-<label for="<%= uid %>-group-timeline-type">Group</label><br><br>\
+<label for="<%= uid %>-page-timeline-type">Page</label>\
+<input class="hide" id="<%= uid %>-group-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="group" />\
+<label class="hide" for="<%= uid %>-group-timeline-type">Group</label><br><br>\
 <input id="<%= uid %>-album-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="album" />\
 <label for="<%= uid %>-album-timeline-type">Album</label>\
 </dd>\
@@ -561,9 +568,11 @@ Content to show\
     </span>\
     <div class="hint hint-pro">\
         <h1>Content to show</h1>\
-        1. <b>Page</b> — enter nickname of any public page or Page ID.<br>\
-        2. <b>Group</b> — enter Group ID.<br>\
-        3. <b>Album</b> — enter Album ID. <a href="http://docs.social-streams.com/article/50-find-facebook-album-id" target="_blank">What is it?</a> <br><br>\
+        <ul>\
+            <li><b>Page</b> — enter nickname of any public page or Page ID.</li>\
+            <li class="hide"><b>Group</b> — enter Group ID.</li>\
+            <li><b>Album</b> — enter Album ID. <a href="http://docs.social-streams.com/article/50-find-facebook-album-id" target="_blank">What is it?</a> </li>\
+        </ul><br>\
         Use <a href="http://lookup-id.com" target="_blank">Find my Facebook ID</a> tool to find your Page ID or Group ID.\
     </div>\
 </div>\
@@ -571,8 +580,11 @@ Content to show\
 <dd><input type="text" name="<%= uid %>-content"/></dd>\
 <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -612,18 +624,20 @@ Content to show\
         </span>\
         <div class="hint hint-pro">\
             <h1>Content to show</h1>\
-            1. <b>User videos</b> — enter nickname of Vimeo user.<br>\
-            2. <b>Liked videos</b> — enter nickname of Vimeo user.<br>\
-            3. <b>Channel</b> — enter nickname of Vimeo channel.<br>\
-            4. <b>Group</b> — enter nickname of Vimeo group.<br>\
-            5. <b>Album</b> — enter nickname of Vimeo album.\
+            <ul>\
+                <li><b>User videos</b> — enter nickname of Vimeo user.</li>\
+                <li><b>Liked videos</b> — enter nickname of Vimeo user.</li>\
+                <li><b>Channel</b> — enter nickname of Vimeo channel.</li>\
+                <li><b>Group</b> — enter nickname of Vimeo group.</li>\
+                <li><b>Album</b> — enter nickname of Vimeo album.</li>\
+            </ul>\
         </div>\
     </div>\
 </dt>\
 <dd><input type="text" name="<%= uid %>-content"/></dd>\
 <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
 <dt>MODERATE THIS FEED</dt>\
 <dd>\
 <label for="<%= uid %>-mod"><input id="<%= uid %>-mod" class="switcher" type="checkbox" name="<%= uid %>-mod" value="yep"/> <div><div></div></div></label>\
@@ -651,8 +665,11 @@ Content to show\
       <dd><input type="text" name="<%= uid %>-content" placeholder="+UserName"/></dd>\
       <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -671,7 +688,7 @@ Content to show\
   <div class="feed-view"  data-feed-type="rss" data-uid="<%= uid %>">\
       <h1>RSS feed settings</h1>\
       <dl class="section-settings">\
-          <dt class="">Content to show</dt>\
+          <dt class="">RSS CHANNEL URL</dt>\
           <dd class=""><input type="text" name="<%= uid %>-content" placeholder="Enter RSS feed full URL"/></dd>\
           <dt class="multiline">RSS channel name<p class="desc">Fill if RSS does not have own title.</p></dt><dd><input type="text" name="<%= uid %>-channel-name" placeholder="Enter name to show in card"/></dd>\
           <dt>Avatar url</dt>\
@@ -688,7 +705,7 @@ Content to show\
           </dd>\
           <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
 <dt>\
     MODERATE THIS FEED\
     <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
@@ -712,15 +729,17 @@ Content to show\
                 </span>\
                 <div class="hint hint-pro">\
                     <h1>Content to show</h1>\
-                    1. <b>User feed</b> — enter username e.g. <i>elainen</i>.<br>\
-                    2. <b>User board</b> — enter user board slug e.g. <i>elainen/cute-animals</i>.<br>\
+                    <ul>\
+                        <li><b>User feed</b> — enter username e.g. <i>elainen</i>.</li>\
+                        <li><b>User board</b> — enter user board slug e.g. <i>elainen/cute-animals</i>.</li>\
+                    </ul>\
                 </div>\
             </div>\
           </dt>\
           <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
               <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
 <dt>\
     MODERATE THIS FEED\
     <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
@@ -739,14 +758,14 @@ Content to show\
           <dt>FEED TYPE</dt>\
           <dd>\
           <input id="<%= uid %>-user-timeline-type" checked type="radio" name="<%= uid %>-timeline-type" value="user_timeline"/>\
-            <label for="<%= uid %>-user-timeline-type">User feed</label><br><br>\
-          <input id="<%= uid %>-likes-type"  type="radio" name="<%= uid %>-timeline-type" value="likes"/>\
-            <label for="<%= uid %>-likes-type">User\'s likes</label><br><br>\
+            <label for="<%= uid %>-user-timeline-type">User feed</label>\
+          <input class="hide" id="<%= uid %>-likes-type"  type="radio" name="<%= uid %>-timeline-type" value="likes"/>\
+            <label class="hide" for="<%= uid %>-likes-type">User\'s likes</label><br><br>\
           <input id="<%= uid %>-search-timeline-type" type="radio" name="<%= uid %>-timeline-type" value="tag"/>\
             <label for="<%= uid %>-search-timeline-type">Hashtag</label><br><br>\
           <input id="<%= uid %>-location-type" type="radio" name="<%= uid %>-timeline-type" value="location"/>\
             <label for="<%= uid %>-location-type">Location</label><br><br>\
-          </dt>\
+          </dd>\
           <dt>\
             Content to show\
             <div class="desc hint-block">\
@@ -755,21 +774,49 @@ Content to show\
                 </span>\
                 <div class="hint hint-pro">\
                     <h1>Content to show</h1>\
-                    1. <b>User feed</b> — enter nickname of any public Instagram account.<br>\
-                    2. <b>User\'s likes</b> — enter nickname of your own account.<br>\
-                    3. <b>Hashtag</b> — enter one word without #.<br>\
-                    4. <b>Location</b> — enter <a href="http://docs.social-streams.com/article/118-find-instagram-location-id" target="_blank">Location ID</a>.\
+                    <ul>\
+                        <li><b>User feed</b> — enter nickname of any public Instagram account.</li>\
+                        <li class="hide"><b>User\'s likes</b> — enter nickname of your own account.</li>\
+                        <li><b>Hashtag</b> — enter a hashtag.</li>\
+                        <li><b>Location</b> — enter <a href="http://docs.social-streams.com/article/118-find-instagram-location-id" target="_blank">Location ID</a>.</li>\
+                    </ul>\
                 </div>\
             </div>\
           </dt>\
           <dd>\
               <input type="text" name="<%= uid %>-content"/>\
                       </dd>\
+          <dt class="hide">API METHODS\
+          <div class="desc hint-block">\
+                <span class="hint-link">\
+                    <img src="<%= plugin_url %>/assets/info_icon.svg">\
+                </span>\
+                <div class="hint hint-pro">\
+                    <h1>Which API to choose</h1>\
+                    <ul>\
+                        <li><b>Official</b> — best way to stream posts of account for which you obtained token.</li>\
+                        <li><b>JSON</b> — unofficial method to stream posts of other accounts but only latest 13 posts and no video posts available for this method.</li>\
+                        <li><b>Graph</b> — this unofficial API is subject of fluent changes and requires updates to work but allows pagination and video posts.</li>\
+                    </ul>\
+                </div>\
+            </div>\
+          </dt>\
+          <dd class="hide" style="margin-top: 8px">\
+          <input id="<%= uid %>-api-official" checked type="radio" name="<%= uid %>-api-type" value="official"/>\
+            <label for="<%= uid %>-api-official">Official API</label><br><br>\
+          <input id="<%= uid %>-api-json" type="radio" name="<%= uid %>-api-type" value="json"/>\
+            <label for="<%= uid %>-api-json">JSON API</label><br><br>\
+          <input id="<%= uid %>-api-graph" type="radio" name="<%= uid %>-api-type" value="graph"/>\
+            <label for="<%= uid %>-api-graph">Graph API (experimental)</label><br><br>\
+          </dd>\
                       <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
-<dd>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt class="hide" >\
+    Posts to load during update\
+    <p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
+<dd class="hide" >\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
 <dt>\
@@ -819,8 +866,7 @@ Content to show\
               </dt>\
               <dd>\
               <input id = "<%= uid %>-strip" type = "radio" name = "<%= uid %>-shortcodes" checked value = "strip" /> <label for="<%= uid %>-strip">Remove shortcodes</label>\
-              <input id="<%= uid %>-expand" type="radio" name="<%= uid %>-shortcodes" value="expand"/> <label for="<%= uid %>-expand">Expand shortcodes</label> <br>\
-                  <p class="desc" style="margin-top: 5px">Disclaimer: we do not guarantee compatibility with any shortcodes if you choose expanding option</p>\
+              <input id="<%= uid %>-expand" type="radio" name="<%= uid %>-shortcodes" value="expand"/> <label for="<%= uid %>-expand">Expand shortcodes</label>\
               </dd>\
               <dt>Include post title in comments</dt>\
               <dd>\
@@ -836,8 +882,11 @@ Content to show\
               </dd>\
               <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -875,10 +924,12 @@ Content to show\
                             </span>\
                             <div class="hint hint-pro">\
                                 <h1>Content to show</h1>\
-                                1. <b>User feed</b> — enter YouTube username with public access.<br>\
-                                2. <b>Channel</b> — enter channel ID. <a href="admin-old.jshttps://support.google.com/youtube/answer/3250431?hl=en" target="_blank">What is it?</a><br>\
-                                3. <b>Playlist</b> — enter playlist ID. <a href="http://docs.social-streams.com/article/139-find-youtube-playlist-id" target="_blank">What is it?</a><br>\
-                                4. <b>Search</b> — enter any search query.\
+                                <ul>\
+                                    <li><b>User feed</b> — enter YouTube username with public access.</li>\
+                                    <li><b>Channel</b> — enter channel ID. <a href="https://support.google.com/youtube/answer/3250431?hl=en" target="_blank">What is it?</a></li>\
+                                    <li><b>Playlist</b> — enter playlist ID. <a href="http://docs.social-streams.com/article/139-find-youtube-playlist-id" target="_blank">What is it?</a></li>\
+                                    <li><b>Search</b> — enter any search query.</li>\
+                                </ul>\
                             </div>\
                         </div>\
                       </dt>\
@@ -891,8 +942,11 @@ Content to show\
       </dd>\
       <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -931,8 +985,11 @@ Content to show\
              </dd>\
              <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -965,8 +1022,11 @@ Content to show\
                  <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
                  <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -987,11 +1047,9 @@ Content to show\
          <dl class="section-settings">\
              <dt class="">\
                 LOCATION ID\
-                <p class="desc">http://docs.social-streams.com/article/116-find-foursquare-location-id</p>\
+                <p class="desc"><a href="http://docs.social-streams.com/article/116-find-foursquare-location-id" target="_blank">What is it?</a></p>\
              </dt>\
-             <dd class=""><input type="text" name="<%= uid %>-content"/>\
-                 <p class="desc">Enter venue ID (<a target="_blank" href="http://docs.social-streams.com/article/116-find-foursquare-location-id">Find it in location URL</a> ).</p>\
-             </dd>\
+             <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
              <dt>Content type</dt>\
              <dd>\
                  <input id="<%= uid %>-foursquare-tips" type="radio" name="<%= uid %>-content-type" value="tips" checked/> <label for="<%= uid %>-foursquare-tips">Tips</label>\
@@ -1003,8 +1061,11 @@ Content to show\
              </dd>\
              <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -1038,15 +1099,17 @@ Content to show\
                         </span>\
                         <div class="hint hint-pro">\
                             <h1>Content to show</h1>\
-                            1. <b>User Photostream</b> — enter Flickr username.<br>\
-                            2. <b>Tag</b> — enter one or multiple words separated by commas.<br>\
+                            <ul>\
+                                <li><b>User Photostream</b> — enter Flickr username.</li>\
+                                <li><b>Tag</b> — enter one or multiple words separated by commas.</li>\
+                            </ul>\
                         </div>\
                     </div>\
                  </dt>\
                  <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
                  <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
 <dt>\
     MODERATE THIS FEED\
     <p class="desc"><a href="http://docs.social-streams.com/article/70-manual-premoderation" target="_blank">Learn more</a></p>\
@@ -1081,8 +1144,11 @@ tumblrView:     '\
              </dd>\
              <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -1105,9 +1171,7 @@ linkedinView:   '\
                 COMPANY PAGE ID\
                 <p class="desc"><a href="http://docs.social-streams.com/article/51-find-linkedin-id" target="_blank">What is it?</a></p>\
             </dt>\
-             <dd class=""><input type="text" name="<%= uid %>-content"/>\
-                 <p class="desc">Enter company ID, <a href="http://docs.social-streams.com/article/51-find-linkedin-id" target="_blank">find out where to get</a> if it is not in company page URL.</p>\
-             </dd>\
+             <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
              <dt>Event type</dt>\
              <dd>\
                  <input id="<%= uid %>-status-update" type="radio" name="<%= uid %>-event-type" value="status-update"/> <label for="<%= uid %>-status-update">Updates of company</label><br/><br/>\
@@ -1116,8 +1180,11 @@ linkedinView:   '\
              </dd>\
              <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\
@@ -1148,8 +1215,11 @@ soundcloudView: '\
                  <dd class=""><input type="text" name="<%= uid %>-content"/></dd>\
                  <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="5">Every 5 min</option> <option value="30" selected>Every 30 min</option> <option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
-<dt>Posts to load during update</dt>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<dt>\
+Posts to load during update\
+<p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\
+</dt>\
 <dd>\
 <div class="select-wrapper"> <select name="<%= uid %>-posts" id="<%= uid %>-post"><option value="1">1 post</option><option value="5">5 posts</option><option selected value="10">10 posts</option><option value="20">20 posts</option></select></div>\
 </dd>\

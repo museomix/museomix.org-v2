@@ -261,8 +261,10 @@ function secupress_write_rules_on_activation( $rules ) {
 	}
 
 	// Nginx.
-	$message = sprintf( __( 'Since your %1$s file cannot be edited directly, please add the following in your file: %2$s', 'secupress' ), '<code>nginx.conf</code>', '<pre>' . implode( "\n", $rules ) . '</pre>' );
-	secupress_add_notice( $message, 'error', 'secupress-activation-file-not-writable' );
+	if ( apply_filters( 'secupress.nginx.notice', true ) ) {
+		$message = sprintf( __( 'Since your %1$s file cannot be edited directly, please add the following in your file: %2$s', 'secupress' ), '<code>nginx.conf</code>', '<pre>' . implode( "\n", $rules ) . '</pre>' );
+		secupress_add_notice( $message, 'error', 'secupress-activation-file-not-writable' );
+	}
 }
 
 
@@ -408,13 +410,14 @@ function secupress_maybe_remove_rules_on_deactivation() {
 		$message  = sprintf( __( '%s:', 'secupress' ), SECUPRESS_PLUGIN_NAME ) . ' ';
 		$message .= sprintf(
 			/** Translators: 1 and 2 are small parts of code, 3 is a file name. */
-			__( 'Your server runs <strong>Ngnix</strong>. You have to edit the configuration file manually. Please remove all rules between %1$s and %2$s from the %3$s file.', 'secupress' ),
+			__( 'Your server runs <strong>Nginx</strong>. You have to edit the configuration file manually. Please remove all rules between %1$s and %2$s from the %3$s file.', 'secupress' ),
 			'<code># BEGIN SecuPress</code>',
 			'<code># END SecuPress</code>',
 			'<code>nginx.conf</code>'
 		);
-
-		secupress_create_deactivation_notice_muplugin( 'nginx_remove_rules', $message );
+		if ( apply_filters( 'secupress.nginx.notice', true ) ) {
+			secupress_create_deactivation_notice_muplugin( 'nginx_remove_rules', $message );
+		}
 	}
 }
 

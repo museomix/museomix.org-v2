@@ -74,6 +74,10 @@ class AC_Helper_String {
 			return false;
 		}
 
+		if ( ! $num_words ) {
+			return $string;
+		}
+
 		return wp_trim_words( $string, $num_words, $more );
 	}
 
@@ -201,15 +205,15 @@ class AC_Helper_String {
 	 * @return array
 	 */
 	public function string_to_array_integers( $string ) {
-		$values = $this->comma_separated_to_array( $string );
+		$integers = array();
 
-		foreach ( $values as $k => $value ) {
-			if ( ! is_numeric( trim( $value ) ) ) {
-				unset( $values[ $k ] );
+		foreach ( $this->comma_separated_to_array( $string ) as $k => $value ) {
+			if ( is_numeric( trim( $value ) ) ) {
+				$integers[] = $value;
 			}
 		}
 
-		return $values;
+		return $integers;
 	}
 
 	/**

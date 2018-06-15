@@ -2,7 +2,7 @@
 Contributors: infinitewp
 Tags: admin, administration, amazon, api, authentication, automatic, dashboard, dropbox, events, integration, manage, multisite, multiple, notification, performance, s3, security, seo, stats, tracking, infinitewp, updates, backup, restore, iwp, infinite
 Requires at least: 3.1
-Tested up to: 4.8.1
+Tested up to: 4.9.1
 Stable tag: trunk
 
 Install this plugin on unlimited sites and manage them all from a central dashboard.
@@ -47,6 +47,28 @@ Credits: [Vladimir Prelovac](http://prelovac.com/vladimir) for his worker plugin
 5. One-click updates
 
 == Changelog ==
+= 1.6.8.3 - Jan 8th 2018 =
+* Improvement: Now IWP Client Plugin is compatible with most of the premium plugin/theme updates.
+* Improvement: Now you can update your Child Themes on WP sites from your IWP dashboard.
+* Improvement: MySQL dump is enabled for multicall backup method.
+* Improvement: Enabled debug logs to sort out any backup issues in future.
+* Fix: If any file named api.php called directly they will get an empty response.
+* Fix: Premium updates for specific plugins/themes are not fetched on some instances.
+* Fix: File list table break time increased and introduced a constant to change the value (IWP_FILE_LIST_BREAK_TIME) on wp-config.php file.
+* Fix: Fatal error in Broken Link checker addon.
+* Fix: IWP Client Plugin connection error due to the warning thrown by other plugins.
+* Fix: "Zip-error: Error while updating the file .. .. .. in the file list table" error while backing up a site using the multicall method.
+* Fix: "Zip-error: Unable to zip" error while backing up the site.
+* Fix: Update failed for sites installed on a WP Engine server.
+* Fix: Unknown error occurred while backing up the site.
+* Fix: "Calling Next Function failed – Error while fetching table data" while backing up your sites.
+* Fix: cURL operation timeout error while doing reload data.
+* Fix: Windows server had issues in using MySQL dump.
+* Fix: "Uncaught Exception: Submitted input out of alignment error" while uploading the backup to your Dropbox account.
+* Fix: "Please deactivate & activate InfiniteWP Client plugin on your site, then add the site again" error while adding the site to your panel.
+* Fix: IWP client plugin connection is broken when NextGEN plugin is installed on WordPress sites.
+* Fix: "Empty Response" error from the sites while backing up using the multicall method.
+
 = 1.6.6.3 - Sep 29th 2017 =
 * Fix: v1_retired error while backing up the site to Dropbox
 

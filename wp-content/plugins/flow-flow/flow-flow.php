@@ -4,13 +4,13 @@
  * @author    Looks Awesome <hello@looks-awesome.com>
 
  * @link      http://looks-awesome.com
- * @copyright 2014-2016 Looks Awesome
+ * @copyright 2014-2018 Looks Awesome
  *
  * @wordpress-plugin
  * Plugin Name:       Flow-Flow
  * Plugin URI:        social-streams.com
  * Description:       Awesome social streams on your site
- * Version:           3.1.3
+ * Version:           3.2.25
  * Author:            Looks Awesome
  * Author URI:        looks-awesome.com
  * Text Domain:       flow-flow

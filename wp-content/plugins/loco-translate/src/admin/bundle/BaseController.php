@@ -118,15 +118,18 @@ abstract class Loco_admin_bundle_BaseController extends Loco_mvc_AdminController
 
     /**
      * Prepare file system connect
+     * @param string "create", "update", "delete"
+     * @param string path relative to wp-content
      * @return Loco_mvc_HiddenFields
      */
-    protected function prepareFsConnect( $type, $path ){
+    protected function prepareFsConnect( $type, $relpath ){
+
         $fields = new Loco_mvc_HiddenFields( array(
             'auth' => $type,
-            'path' => $path,
-            'loco-nonce' => wp_create_nonce('fsConnect'), // <- used for our ajax action
+            'path' => $relpath,
+            'loco-nonce' => wp_create_nonce('fsConnect'),
             '_fs_nonce' => wp_create_nonce('filesystem-credentials'), // <- WP 4.7.5 added security fix
-        ) );
+        ) ) ;
         $this->set('fsFields', $fields );
 
         // may have fs credentials saved in session
@@ -140,7 +143,45 @@ abstract class Loco_admin_bundle_BaseController extends Loco_mvc_AdminController
             Loco_error_AdminNotices::debug( $e->getMessage() );
         }
 
+        // specific wording based on file operation type
+        if( 'create' === $type ){
+            $this->set('fsPrompt', __('Creating this file requires permission','loco-translate') );
+        }
+        else if( 'delete' === $type ){
+            $this->set('fsPrompt', __('Deleting this file requires permission','loco-translate') );
+        }
+        else {
+            $this->set('fsPrompt', __('Saving this file requires permission','loco-translate') );
+        }
+        
+        // Run pre-checks that may determine file should not be written
+        if( $relpath ){
+            $file = new Loco_fs_File( $relpath );
+            $file->normalize( loco_constant('WP_CONTENT_DIR') );
+            // total file system block makes connection type irrelevent
+            try {
+                $api = new Loco_api_WordPressFileSystem;
+                $api->preAuthorize($file);
+                // else just warn if file is sensitive (system)
+                if( Loco_data_Settings::get()->fs_protect && ( $systype = $file->getUpdateType() ) ){
+                    if( 'create' === $type ){
+                        $this->set('fsWarning', __('This file may be overwritten or deleted when you update WordPress','loco-translate' ) );
+                    }
+                    else if( 'delete' === $type ){
+                        $this->set('fsWarning', __('This directory is managed by WordPress, be careful what you delete','loco-translate' ) );
+                    }
+                    else {
+                        $this->set('fsWarning', __('Changes to this file may be overwritten or deleted when you update WordPress','loco-translate' ) );
+                    }
+                }
+            }
+            catch( Loco_error_WriteException $e ){
+                $this->set('fsLocked', $e->getMessage() );
+            }
+        }
+        
         return $fields;
     }
-    
+
+
 }

@@ -12,7 +12,17 @@ class Loco_admin_ErrorController extends Loco_mvc_AdminController {
 
 
     public function render(){
-        $e = $this->get('error') or $e = new Loco_error_Exception('No error set');
+        $e = $this->get('error');
+        if( $e ){
+            $file = Loco_mvc_FileParams::create( new Loco_fs_File( $e->getRealFile() ) ); 
+            $file['line'] = $e->getRealLine();
+            $this->set('file', $file );
+        }
+        else {
+            $e = new Loco_error_Exception('Unknown error');
+            $this->set('error', $e );
+        }
+
         return $this->view( $e->getTemplate() );
     }
     

@@ -1,0 +1,359 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: TinyMCE Custom Styles\n"
+"POT-Creation-Date: 2017-12-28 12:50+0100\n"
+"PO-Revision-Date: 2017-12-28 12:51+0100\n"
+"Last-Translator: \n"
+"Language-Team: Tim Reeves\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: tinymce-custom-styles.php\n"
+
+#: tinymce-custom-styles.php:31
+#, php-format
+msgid ""
+"This Plugin requires WordPress version 3.0 or higher. %sPlease update!%s"
+msgstr ""
+
+#: tinymce-custom-styles.php:119
+msgid "Settings saved successfully."
+msgstr ""
+
+#: tinymce-custom-styles.php:135
+msgid "No (valid) location for CSS files selected."
+msgstr ""
+
+#: tinymce-custom-styles.php:142
+#, php-format
+msgid "A stub file %s has been created automatically."
+msgstr ""
+
+#: tinymce-custom-styles.php:215
+#, php-format
+msgid ""
+"Could not create one or both CSS stub files. The folder %s must exist on "
+"your server and be writable for WordPress."
+msgstr ""
+
+#: tinymce-custom-styles.php:228
+#, php-format
+msgid "%s Settings %s"
+msgstr ""
+
+#: tinymce-custom-styles.php:319
+msgid "Settings: TinyMCE Custom Styles"
+msgstr ""
+
+#: tinymce-custom-styles.php:381
+#, php-format
+msgid "Settings row %d not saved: No Type Option was checked."
+msgstr ""
+
+#: tinymce-custom-styles.php:387
+#, php-format
+msgid "Settings row %d not saved: No Type Value was entered."
+msgstr ""
+
+#: tinymce-custom-styles.php:443
+msgid "Enhance the visual style of your TinyMCE"
+msgstr ""
+
+#: tinymce-custom-styles.php:444
+msgid ""
+"This plugin adds two stylesheets to upgrade the appearance of your TinyMCE "
+"visual editor: editor-style.css (TinyMCE only) and editor-style-shared.css "
+"(for TinyMCE AND your theme)."
+msgstr ""
+
+#: tinymce-custom-styles.php:445
+msgid "Please choose a location for your stylesheet files:"
+msgstr ""
+
+#: tinymce-custom-styles.php:446
+#, php-format
+msgid ""
+"Directory of current Theme (do %snot%s choose in case of automatically "
+"updated theme)"
+msgstr ""
+
+#: tinymce-custom-styles.php:447
+#, php-format
+msgid ""
+"Directory of current Child Theme (do %snot%s choose in case of automatically "
+"updated child theme)"
+msgstr ""
+
+#: tinymce-custom-styles.php:448
+#, php-format
+msgid "Use a custom directory (recommended) at %s/"
+msgstr ""
+
+#: tinymce-custom-styles.php:449
+#, php-format
+msgid ""
+"%sYour custom directory must pre-exist and your input above must begin "
+"without a slash, and include one at the end of each directory.%sAny "
+"characters after the last slash will be prepended to the file names."
+msgstr ""
+
+#: tinymce-custom-styles.php:453
+msgid "Error: "
+msgstr ""
+
+#: tinymce-custom-styles.php:455
+msgid ""
+"Please choose a location for the editor css files (select a radio button "
+"above)."
+msgstr ""
+
+#: tinymce-custom-styles.php:459
+#, php-format
+msgid ""
+"The file \"%s\" was not found and could not be created in the specified "
+"directory. The directory must exist and be writable for WordPress."
+msgstr ""
+
+#: tinymce-custom-styles.php:471
+#, php-format
+msgid "Edit your %s editor-style.css %s for the editor-only styles here."
+msgstr ""
+
+#: tinymce-custom-styles.php:473
+#, php-format
+msgid ""
+"Edit your %s editor-style-shared.css %s for the common editor AND theme "
+"styles here."
+msgstr ""
+
+#: tinymce-custom-styles.php:475
+#, php-format
+msgid "Edit your editor-only styles located at %s on your server."
+msgstr ""
+
+#: tinymce-custom-styles.php:477
+#, php-format
+msgid "Edit your theme/editor shared styles located at %s on your server."
+msgstr ""
+
+#: tinymce-custom-styles.php:479
+#, php-format
+msgid "Your editor-only styles are located at %s"
+msgstr ""
+
+#: tinymce-custom-styles.php:481
+#, php-format
+msgid "Your theme/editor shared styles are located at %s"
+msgstr ""
+
+#: tinymce-custom-styles.php:488
+msgid "Select to add the styles in a submenu \"Custom Styles\"."
+msgstr ""
+
+#: tinymce-custom-styles.php:490
+msgid ""
+"Select to remove the standard styles from the menu (overridden by WP Edit > "
+"Add Predefined Styles)."
+msgstr ""
+
+#: tinymce-custom-styles.php:492 tinymce-custom-styles.php:764
+msgid "Save all settings"
+msgstr ""
+
+#: tinymce-custom-styles.php:494
+msgid "Manage your custom formats and styles for TinyMCE"
+msgstr ""
+
+#: tinymce-custom-styles.php:496
+#, php-format
+msgid ""
+"%s This part %s of the official TinyMCE documentation will help you "
+"understanding this table."
+msgstr ""
+
+#: tinymce-custom-styles.php:501
+msgid "Column"
+msgstr ""
+
+#: tinymce-custom-styles.php:502
+msgid "Description"
+msgstr ""
+
+#: tinymce-custom-styles.php:507
+msgid "Title"
+msgstr ""
+
+#: tinymce-custom-styles.php:507 tinymce-custom-styles.php:511
+#: tinymce-custom-styles.php:519
+msgid "required"
+msgstr ""
+
+#: tinymce-custom-styles.php:508
+msgid "The label (name) for this dropdown item."
+msgstr ""
+
+#: tinymce-custom-styles.php:511
+#, php-format
+msgid "Type%s (radios) [%s]"
+msgstr ""
+
+#: tinymce-custom-styles.php:513
+#, php-format
+msgid ""
+"%sInline%s: Enter one %s HTML inline element %s (e.g. span) to create, with "
+"the classes/styles of the row applied, which will wrap the current editor "
+"selection, not replacing any tags."
+msgstr ""
+
+#: tinymce-custom-styles.php:514
+#, php-format
+msgid ""
+"%sBlock%s: Enter one %s HTML block-level element %s (e.g. blockquote) to "
+"create with the classes/styles of the row applied. It will REPLACE the "
+"existing block element at cursor."
+msgstr ""
+
+#: tinymce-custom-styles.php:515
+#, php-format
+msgid ""
+"%sSelector%s: Enter %s a valid CSS 3 selector %s to select existing HTML "
+"tags to which the classes/styles of the row will be applied. Can select "
+"complex things like odd rows in a table."
+msgstr ""
+
+#: tinymce-custom-styles.php:519
+msgid "Type Value"
+msgstr ""
+
+#: tinymce-custom-styles.php:520
+msgid "The HTML-Element to create or CSS 3 selector pattern to apply."
+msgstr ""
+
+#: tinymce-custom-styles.php:523 tinymce-custom-styles.php:559
+#: tinymce-custom-styles.php:678
+msgid "CSS Class(es)"
+msgstr ""
+
+#: tinymce-custom-styles.php:523 tinymce-custom-styles.php:527
+#: tinymce-custom-styles.php:535 tinymce-custom-styles.php:539
+#: tinymce-custom-styles.php:543
+msgid "optional"
+msgstr ""
+
+#: tinymce-custom-styles.php:524
+msgid "A space-separated list of classes to apply to the element."
+msgstr ""
+
+#: tinymce-custom-styles.php:527 tinymce-custom-styles.php:560
+#: tinymce-custom-styles.php:679
+msgid "CSS Styles"
+msgstr ""
+
+#: tinymce-custom-styles.php:529
+msgid ""
+"You can enter CSS here which will be applied directly to the element in its "
+"style attribute."
+msgstr ""
+
+#: tinymce-custom-styles.php:530 tinymce-custom-styles.php:531
+msgid "Note:"
+msgstr ""
+
+#: tinymce-custom-styles.php:530
+#, php-format
+msgid ""
+"Multi-word attributes, like %sfont-size%s, are written in Javascript-"
+"friendly camel case: %sfontSize%s."
+msgstr ""
+
+#: tinymce-custom-styles.php:531
+msgid ""
+"It is more recommendable to use classes of your editor-style.css / editor-"
+"style-shared.css in most cases."
+msgstr ""
+
+#: tinymce-custom-styles.php:535 tinymce-custom-styles.php:561
+#: tinymce-custom-styles.php:680
+msgid "Attributes"
+msgstr ""
+
+#: tinymce-custom-styles.php:536
+msgid ""
+"You can define HTML-Attributes here which will be applied to the element(s)."
+msgstr ""
+
+#: tinymce-custom-styles.php:539 tinymce-custom-styles.php:562
+#: tinymce-custom-styles.php:681
+msgid "Exact"
+msgstr ""
+
+#: tinymce-custom-styles.php:540
+msgid ""
+"Checking this option disables the \"merge similar styles\" feature, needed "
+"for some CSS inheritance issues."
+msgstr ""
+
+#: tinymce-custom-styles.php:543 tinymce-custom-styles.php:563
+#: tinymce-custom-styles.php:682
+msgid "Wrapper"
+msgstr ""
+
+#: tinymce-custom-styles.php:544
+msgid ""
+"If you check this, selecting the style creates a new block-level element "
+"around any selected block-level elements."
+msgstr ""
+
+#: tinymce-custom-styles.php:547 tinymce-custom-styles.php:564
+#: tinymce-custom-styles.php:683
+msgid "Remove"
+msgstr ""
+
+#: tinymce-custom-styles.php:547
+msgid "action"
+msgstr ""
+
+#: tinymce-custom-styles.php:548
+msgid ""
+"Clicking the \"X\" removes the row. Multiple rows can be deleted by saving "
+"with empty titles."
+msgstr ""
+
+#: tinymce-custom-styles.php:556 tinymce-custom-styles.php:675
+msgid "Title *"
+msgstr ""
+
+#: tinymce-custom-styles.php:557 tinymce-custom-styles.php:676
+msgid "Type *"
+msgstr ""
+
+#: tinymce-custom-styles.php:558 tinymce-custom-styles.php:677
+msgid "Type Value *"
+msgstr ""
+
+#: tinymce-custom-styles.php:607 tinymce-custom-styles.php:638
+msgid "Value"
+msgstr ""
+
+#: tinymce-custom-styles.php:608 tinymce-custom-styles.php:639
+msgid "Delete"
+msgstr ""
+
+#: tinymce-custom-styles.php:631 tinymce-custom-styles.php:689
+#: tinymce-custom-styles.php:737
+msgid "Add new style"
+msgstr ""
+
+#: tinymce-custom-styles.php:637
+msgid "Attribute"
+msgstr ""
+
+#: tinymce-custom-styles.php:662 tinymce-custom-styles.php:750
+msgid "Add new attribute"
+msgstr ""

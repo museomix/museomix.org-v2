@@ -8,13 +8,13 @@
 	$ajax_nonce	= wp_create_nonce('dup_package_build');
 
 	//Help support Duplicator
-	$atext0  = __('Help', 'duplicator') . "&nbsp;<a target='_blank' href='https://wordpress.org/support/plugin/duplicator/reviews/?filter=5'>";
-	$atext0 .= __('review the plugin', 'duplicator') . '</a>!';
+	$atext0  = "<a target='_blank' href='https://wordpress.org/support/plugin/duplicator/reviews/?filter=5'>";
+	$atext0 .= __('Help review the plugin', 'duplicator') . '!</a>';
 
 	//Get even more power & features with Duplicator Pro
 	$atext1 = __('Want more power?  Try', 'duplicator');
 	$atext1 .= "&nbsp;<a target='_blank' href='https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wordpress_plugin&utm_content=package_build_more_power&utm_campaign=duplicator_pro'>";
-	$atext1 .=  __('Duplicator Pro', 'duplicator') . '</a>!';
+	$atext1 .=  __('Duplicator Pro', 'duplicator') . '!</a>';
 
 	$rand_txt = array();
 	$rand_txt[0] = $atext0;
@@ -48,7 +48,7 @@
 	div.dup-button-footer {text-align:right; margin:20px 10px 0px 0px}
 	button.button {font-size:16px !important; height:30px !important; font-weight:bold; padding:0px 10px 5px 10px !important; min-width: 150px }
 	span.dup-btn-size {font-size:11px;font-weight: normal}
-	p.get-pro {font-size:13px; color:#999; border-top:1px solid #eeeeee; padding:5px 0 0 0; margin:0; font-style:italic}
+	p.get-pro {font-size:13px; color:#222; border-top:1px solid #eeeeee; padding:5px 0 0 0; margin:0; font-style:italic}
 	div.dup-howto-exe {font-size:16px; font-style: italic; font-weight: bold; margin:45px 0 45px 0}
 
 	/*HOST TIMEOUT */
@@ -81,9 +81,9 @@ TOOL BAR: STEPS -->
 			</div>
 		</td>
 		<td style="padding-bottom:4px">
-			<a href="?page=duplicator" class="add-new-h2"><i class="fa fa-archive"></i> <?php _e("Packages", 'duplicator'); ?></a> &nbsp;
 			<div id="dup-create-area-nolink"><?php _e("Create New", 'duplicator'); ?></div>
 			<div id="dup-create-area-link"><a href="admin.php?page=duplicator&tab=new1" class="add-new-h2"><?php _e("Create New", 'duplicator'); ?></a></div>
+			<div style="float:right;margin: 0px 5px;"><a href="?page=duplicator" class="add-new-h2"><i class="fa fa-archive"></i> <?php _e("Packages", 'duplicator'); ?></a></div>
 		</td>
 	</tr>
 </table>		
@@ -296,6 +296,42 @@ TOOL BAR: STEPS -->
 					</div>
 				</div>
 			</div>
+
+
+			<!-- OPTION 4: Try DupArchive Engine -->
+			<div class="dup-box no-top">
+				<div class="dup-box-title">
+					<i class="fa fa-share-alt"></i>&nbsp;<?php _e('Try Duplicator 1.3', 'duplicator'); ?>
+					<div class="dup-box-arrow"><i class="fa fa-caret-down"></i></div>
+				</div>
+				<div class="dup-box-panel" id="dup-pack-build-try2" style="display:none">
+					<b class="opt-title"><?php _e('OPTION 4:', 'duplicator'); ?></b><br/>
+
+					<?php _e('Duplicator 1.3 now has a new engine format named DupArchive.  This format is specific to Duplicator and is designed around performance and scalability. '
+						. 'Many budget hosting providers have very strict timeouts, CPU/IO constraints that they configure into their servers. With DupArchive the format is '
+						. 'designed	to help get around these server constraints so that users can build larger packages.  The DupArchive engine is currently only available  in '
+						. 'Duplicator 1.3 and above.  This version is currently in Beta and after we have had a good amount of community support we will make it publicly available.', 'duplicator'); ?><br/><br/>
+
+					<b><?php _e('<i class="fa fa-file-text-o"></i> Overview', 'duplicator'); ?></b><br/>
+					<?php _e('Please follow these steps:', 'duplicator'); ?><br/>
+					<ol>
+						<li><?php _e('Uninstall this version of Duplicator.', 'duplicator'); ?></li>
+						<li><?php _e('Install Duplicator 1.3 (Beta) via the link below.', 'duplicator'); ?></li>
+						<li><?php _e('After plugin install goto Duplicator &gt; Settings &gt; Packages Tab &gt; Archive Engine &gt; Enable DupArchive', 'duplicator'); ?></li>
+						<li><?php _e('Try and build a new package again using the new engine format and let us know how it goes.', 'duplicator'); ?></li>
+					</ol> <br/>
+
+					<div style="text-align: center; margin: 10px">
+						<input type="checkbox" id="dup-duparchive-check" onclick="Duplicator.Pack.ToggleDupArchive()">
+						<label for="dup-duparchive-check"><?php _e('Yes. I have read the above overview and would like to try the new DupArchive engine!', 'duplicator'); ?></label><br/><br/>
+						<button id="dup-duparchive-btn"  type="button" class="button-large button-primary" disabled="true" onclick="Duplicator.Pack.OpenBetaLink()">
+							<i class="fa fa-share-alt"></i> <?php _e('Download Duplicator 1.3 (Beta)', 'duplicator'); ?>
+						</button>
+					</div><br/>
+				</div>
+			</div>
+			
+
 			<br/><br/><br/>
 		</div>
 
@@ -377,6 +413,19 @@ jQuery(document).ready(function($) {
 		} else {
 			$btn.attr("disabled", true);
 		}
+	};
+
+	Duplicator.Pack.ToggleDupArchive = function() {
+		var $btn = $('#dup-duparchive-btn');
+		if ($('#dup-duparchive-check').is(':checked')) {
+			$btn.removeAttr("disabled");
+		} else {
+			$btn.attr("disabled", true);
+		}
+	};
+
+	Duplicator.Pack.OpenBetaLink = function() {
+		window.open('http://snapcreek.com/duplicator/duplicator-lite-1-3-beta/');
 	};
 
 	//Page Init:

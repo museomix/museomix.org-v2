@@ -5,11 +5,8 @@ if (!defined('UPDRAFTPLUS_DIR')) die('No access.');
 /*
 	- A container for all the remote commands implemented. Commands map exactly onto method names (and hence this class should not implement anything else, beyond the constructor, and private methods)
 	- Return format is either to return data (boolean, string, array), or an WP_Error object
-	
 	Commands are not allowed to begin with an underscore. So, any private methods can be prefixed with an underscore.
-	
 	TODO: Many of these just verify input, and then call back into a relevant method in UpdraftPlus_Admin. Once all commands have been ported over to go via this class, those methods in UpdraftPlus_Admin can generally be folded into the relevant method in here, and removed from UpdraftPlus_Admin. (Since this class is intended to become the official way of performing actions). As a bonus, we then won't need so much _load_ud(_admin) boilerplate.
-	
 */
 
 if (class_exists('UpdraftPlus_Commands')) return;
@@ -21,7 +18,7 @@ class UpdraftPlus_Commands {
 	/**
 	 * Constructor
 	 *
-	 * @param string $uc_helper The 'helper' needs to provide the method _updraftplus_background_operation_started
+	 * @param Class $uc_helper The 'helper' needs to provide the method _updraftplus_background_operation_started
 	 */
 	public function __construct($uc_helper) {
 		$this->_uc_helper = $uc_helper;
@@ -55,6 +52,13 @@ class UpdraftPlus_Commands {
 	
 	}
 	
+	/**
+	 * Begin a download process
+	 *
+	 * @param Array $downloader_params - download parameters (findex, type, timestamp, stage)
+	 *
+	 * @return Array - as from UpdrafPlus_Admin::do_updraft_download_backup() (with 'request' key added, with value $downloader_params)
+	 */
 	public function downloader($downloader_params) {
 
 		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return new WP_Error('no_updraftplus');
@@ -92,7 +96,6 @@ class UpdraftPlus_Commands {
 		$request = array(
 			'thisjobonly' => $params['job_id']
 		);
-		
 		$activejobs_list = $updraftplus_admin->get_activejobs_list($request);
 		
 		return $activejobs_list;
@@ -105,7 +108,8 @@ class UpdraftPlus_Commands {
 		
 		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
 
-		$updraftplus_admin->request_backupnow($params, array($this->_uc_helper, '_updraftplus_background_operation_started'));
+		$background_operation_started_method_name = empty($params['background_operation_started_method_name']) ? '_updraftplus_background_operation_started' : $params['background_operation_started_method_name'];
+		$updraftplus_admin->request_backupnow($params, array($this->_uc_helper, $background_operation_started_method_name));
 		
 		// Control returns when the backup finished; but, the browser connection should have been closed before
 		die;
@@ -208,23 +212,32 @@ class UpdraftPlus_Commands {
 		
 	}
 	
+	/**
+	 * Run a credentials test
+	 *
+	 * @param Array $test_data - test configuration
+	 *
+	 * @return WP_Error|Array - test results (keys: results, (optional)data), or an error
+	 */
 	public function test_storage_settings($test_data) {
 	
 		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
 		
 		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
 	
-		ob_start();
-		$updraftplus_admin->do_credentials_test($test_data);
-		$output = ob_get_contents();
-		ob_end_clean();
+		$results = $updraftplus_admin->do_credentials_test($test_data, true);
 	
-		return array(
-			'output' => $output,
-		);
+		return $results;
 	
 	}
 	
+	/**
+	 * Perform a connection test on a database
+	 *
+	 * @param Array $info - test parameters
+	 *
+	 * @return Array - test results
+	 */
 	public function extradb_testconnection($info) {
 	
 		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
@@ -342,13 +355,20 @@ class UpdraftPlus_Commands {
 			$data = $updraftplus_addon_cloudfilesenhanced->create_api_user($data);
 		}
 		
-		if (0 === $data["e"]) {
+		if (0 === $data['e']) {
 			return $data;
 		} else {
 			return new WP_Error('error', '', $data);
 		}
 	}
 	
+	/**
+	 * Get an HTML fragment
+	 *
+	 * @param String|Array $fragment - what fragment to fetch. If an array, the fragment identifier is in 'fragment' (and 'data' is associated data)
+	 *
+	 * @return Array|WP_Error
+	 */
 	public function get_fragment($fragment) {
 	
 		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
@@ -365,55 +385,50 @@ class UpdraftPlus_Commands {
 		switch ($fragment) {
 		
 			case 'last_backup_html':
-			$output = $updraftplus_admin->last_backup_html();
+					$output = $updraftplus_admin->last_backup_html();
 				break;
-		
+			
 			case 's3_new_api_user_form':
-			ob_start();
-			do_action('updraft_s3_print_new_api_user_form', false);
-			$output = ob_get_contents();
-			ob_end_clean();
+				ob_start();
+				do_action('updraft_s3_print_new_api_user_form', false);
+				$output = ob_get_contents();
+				ob_end_clean();
 				break;
 				
 			case 'cloudfiles_new_api_user_form':
-			global $updraftplus_addon_cloudfilesenhanced;
-			if (!is_a($updraftplus_addon_cloudfilesenhanced, 'UpdraftPlus_Addon_CloudFilesEnhanced')) {
-					$error = true;
-					$output = 'cloudfiles_addon_not_found';
-			} else {
-								$output = array(
-					'accounts' => $updraftplus_addon_cloudfilesenhanced->account_options(),
-					'regions' => $updraftplus_addon_cloudfilesenhanced->region_options(),
-								);
-			}
+				global $updraftplus_addon_cloudfilesenhanced;
+				if (!is_a($updraftplus_addon_cloudfilesenhanced, 'UpdraftPlus_Addon_CloudFilesEnhanced')) {
+						$error = true;
+						$output = 'cloudfiles_addon_not_found';
+				} else {
+					$output = array(
+						'accounts' => $updraftplus_addon_cloudfilesenhanced->account_options(),
+						'regions' => $updraftplus_addon_cloudfilesenhanced->region_options(),
+					);
+				}
 				break;
-				
+			
 			case 'backupnow_modal_contents':
-			$updraft_dir = $updraftplus->backups_dir_location();
-			if (!$updraftplus->really_is_writable($updraft_dir)) {
-					$output = array('error' => true, 'html' => __("The 'Backup Now' button is disabled as your backup directory is not writable (go to the 'Settings' tab and find the relevant option).", 'updraftplus'));
-			} else {
-								$output = array('html' => $updraftplus_admin->backupnow_modal_contents());
-			}
+				$updraft_dir = $updraftplus->backups_dir_location();
+				if (!$updraftplus->really_is_writable($updraft_dir)) {
+						$output = array('error' => true, 'html' => __("The 'Backup Now' button is disabled as your backup directory is not writable (go to the 'Settings' tab and find the relevant option).", 'updraftplus'));
+				} else {
+									$output = array('html' => $updraftplus_admin->backupnow_modal_contents());
+				}
 				break;
 			
 			case 'panel_download_and_restore':
-			$backup_history = UpdraftPlus_Backup_History::get_history();
-			if (empty($backup_history)) {
-				UpdraftPlus_Backup_History::rebuild_backup_history();
 				$backup_history = UpdraftPlus_Backup_History::get_history();
-			}
-				
-			$output = $updraftplus_admin->settings_downloading_and_restoring($backup_history, true, $data);
+				$output = $updraftplus_admin->settings_downloading_and_restoring($backup_history, true, $data);
 				break;
 			
 			case 'disk_usage':
-			$output = $updraftplus_admin->get_disk_space_used($data);
+				$output = $updraftplus_admin->get_disk_space_used($data);
 				break;
 			default:
-			// We just return a code - translation is done on the other side
-			$output = 'ud_get_fragment_could_not_return';
-			$error = true;
+				// We just return a code - translation is done on the other side
+				$output = 'ud_get_fragment_could_not_return';
+				$error = true;
 				break;
 		}
 		
@@ -446,11 +461,8 @@ class UpdraftPlus_Commands {
 		if (isset($response_decode->e)) {
 		  return new WP_Error('error', '', htmlspecialchars($response_decode->e));
 		}
-	
-			 return array(
-			'status' => $response_decode->code,
-			'response' => $response_decode->html_response
-		);
+
+		return array('status' => $response_decode->code, 'response' => $response_decode->html_response);
 	}
 
 	/**
@@ -611,6 +623,36 @@ class UpdraftPlus_Commands {
 	}
 
 	/**
+	 * A handler method to call the UpdraftPlus admin auth_remote_method
+	 *
+	 * @param Array - $data It consists of below key elements:
+	 *                $remote_method - Remote storage service
+	 *                $instance_id - Remote storage instance id
+	 * @return Array An Array response to be sent back
+	 */
+	public function auth_remote_method($data) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
+		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
+		$response = $updraftplus_admin->auth_remote_method($data);
+		return $response;
+	}
+
+	/**
+	 * A handler method to call the UpdraftPlus admin deauth_remote_method
+	 *
+	 * @param Array - $data It consists of below key elements:
+	 *                $remote_method - Remote storage service
+	 *                $instance_id - Remote storage instance id
+	 * @return Array An Array response to be sent back
+	 */
+	public function deauth_remote_method($data) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
+		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
+		$response = $updraftplus_admin->deauth_remote_method($data);
+		return $response;
+	}
+	
+	/**
 	 * A handler method to call the UpdraftPlus admin wipe settings method
 	 *
 	 * @return Array An Array response to be sent back
@@ -622,6 +664,185 @@ class UpdraftPlus_Commands {
 
 		// pass false to this method so that it does not remove the UpdraftCentral key
 		$response = $updraftplus_admin->updraft_wipe_settings(false);
+
+		return $response;
+	}
+
+	/**
+	 * Retrieves backup information (next scheduled backups, last backup jobs and last log message)
+	 * for UpdraftCentral consumption
+	 *
+	 * @return Array An array containing the results of the backup information retrieval
+	 */
+	public function get_backup_info() {
+		try {
+			
+			// load global updraftplus admin
+			if (false === ($updraftplus_admin = $this->_load_ud_admin())) return new WP_Error('no_updraftplus');
+
+			ob_start();
+			$updraftplus_admin->next_scheduled_backups_output();
+			$next_scheduled_backups = ob_get_clean();
+
+			$response = array(
+				'next_scheduled_backups' => $next_scheduled_backups,
+				'last_backup_job' => $updraftplus_admin->last_backup_html(),
+				'last_log_message' => UpdraftPlus_Options::get_updraft_lastmessage()
+			);
+
+			$updraft_last_backup = UpdraftPlus_Options::get_updraft_option('updraft_last_backup', false);
+			$backup_history = UpdraftPlus_Backup_History::get_history();
+			
+			if (false !== $updraft_last_backup && !empty($backup_history)) {
+				$backup_nonce = $updraft_last_backup['backup_nonce'];
+
+				$response['backup_nonce'] = $backup_nonce;
+				$response['log'] = $this->get_log($backup_nonce);
+			}
+
+		} catch (Exception $e) {
+			$response = array('error' => true, 'message' => $e->getMessage());
+		}
+
+		return $response;
+	}
+
+	/**
+	 * This method will check the connection status to UpdraftPlus.com using the submitted credentials and return the result of that check.
+	 *
+	 * @param  array $data - an array that contains the users UpdraftPlus.com credentials
+	 *
+	 * @return array       - an array with the result of the connection status
+	 */
+	public function updraftplus_com_login_submit($data) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
+		
+		global $updraftplus_addons2;
+		
+		$options = $updraftplus_addons2->get_option(UDADDONS2_SLUG.'_options');
+		$new_options = $data['data'];
+		
+		// Check if we can make a connection if we can then we don't want to reset the options in the case where the user has removed their password from the form
+		$result = !empty($options['email']) ? $updraftplus_addons2->connection_status() : false;
+		
+		if (true !== $result) {
+			// We failed to make a connection so try the new options
+			$updraftplus_addons2->update_option(UDADDONS2_SLUG.'_options', $new_options);
+			$result = $updraftplus_addons2->connection_status();
+		}
+
+		if (true !== $result) {
+			if (is_wp_error($result)) {
+				$connection_errors = array();
+				foreach ($result->get_error_messages() as $key => $msg) {
+					$connection_errors[] = $msg;
+				}
+			} else {
+				if (!empty($options['email']) && !empty($options['password'])) $connection_errors = array(__('An unknown error occurred when trying to connect to UpdraftPlus.Com', 'updraftplus'));
+			}
+			$result = false;
+		}
+
+		if ($result) {
+			return array(
+				'success' => true
+			);
+		} else {
+			// There was an error reset the options so that we don't get unwanted notices on the dashboard.
+			$updraftplus_addons2->update_option(UDADDONS2_SLUG.'_options', array('email' => '', 'password' => ''));
+
+			return array(
+				'error' => true,
+				'message' => $connection_errors
+			);
+		}
+	}
+
+	/**
+	 * This function will add some needed filters in order to be able to send a local backup to remote storage it will then boot the backup process.
+	 *
+	 * @param array $data - data sent from the front end, it includes the backup timestamp and nonce
+	 *
+	 * @return array      - the response to be sent back to the front end
+	 */
+	public function upload_local_backup($data) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
+		
+		add_filter('updraftplus_initial_jobdata', array($updraftplus_admin, 'upload_local_backup_jobdata'), 10, 3);
+		add_filter('updraftplus_get_backup_file_basename_from_time', array($updraftplus_admin, 'upload_local_backup_name'), 10, 3);
+		
+		$background_operation_started_method_name = empty($data['background_operation_started_method_name']) ? '_updraftplus_background_operation_started' : $data['background_operation_started_method_name'];
+
+		$msg = array(
+			'nonce' => $data['use_nonce'],
+			'm' => apply_filters('updraftplus_backupnow_start_message', '<strong>'.__('Start backup', 'updraftplus').':</strong> '.htmlspecialchars(__('OK. You should soon see activity in the "Last log message" field below.', 'updraftplus')), $data['use_nonce'])
+		);
+
+		$close_connection_callable = array($this->_uc_helper, $background_operation_started_method_name);
+
+		if (is_callable($close_connection_callable)) {
+			call_user_func($close_connection_callable, $msg);
+		} else {
+			$updraftplus->close_browser_connection(json_encode($msg));
+		}
+
+		do_action('updraft_backupnow_backup_all', apply_filters('updraft_backupnow_options', $data, array()));
+
+		// Control returns when the backup finished; but, the browser connection should have been closed before
+		die;
+	}
+
+	/**
+	 * Pre-check before sending request and delegates login request to the appropriate service
+	 *
+	 * @param array $params - The submitted form data
+	 * @return string - the result of the call
+	 */
+	public function process_updraftcentral_login($params) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return new WP_Error('no_updraftplus');
+		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
+
+		return $updraftplus_admin->get_updraftcentral_cloud()->ajax_process_login($params);
+	}
+
+	/**
+	 * Pre-check before sending request and delegates registration request to the appropriate service
+	 *
+	 * @param array $params - The submitted form data
+	 * @return string - the result of the call
+	 */
+	public function process_updraftcentral_registration($params) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return new WP_Error('no_updraftplus');
+		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
+
+		return $updraftplus_admin->get_updraftcentral_cloud()->ajax_process_registration($params);
+	}
+
+	/**
+	 * Pre-check before sending request and delegates login request to the appropriate service
+	 *
+	 * @param array $params - The submitted form data
+	 * @return string - the result of the call
+	 */
+	public function process_updraftplus_clone_login($params) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return new WP_Error('no_updraftplus');
+		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
+		
+		$response = $updraftplus_admin->get_updraftplus_clone()->ajax_process_login($params, false);
+
+		if (isset($response['status']) && 'authenticated' == $response['status']) {
+			$tokens = isset($response['tokens']) ? $response['tokens'] : 0;
+			$content = '<p>' . __("Available temporary clone tokens:", "updraftplus") . ' ' . $tokens . '</p>';
+			
+			if (0 != $response['tokens']) {
+				$content .= $updraftplus_admin->updraftplus_clone_versions();
+				$content .= '<button id="updraft_migrate_createclone" class="button button-primary" data-user_id="'.$response['user_id'].'" data-tokens="'.$tokens.'" onclick="alert(\'Not yet done!\');">'. __('Create clone', 'updraftplus') . '</button>';
+			} else {
+				$content .= '<p><a href="https://updraftplus.com/shop/">' . __("You can add more temporary clone tokens to your account here.", "updraftplus") .'</a></p>';
+			}
+
+			$response['html'] = $content;
+		}
 
 		return $response;
 	}

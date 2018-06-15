@@ -56,7 +56,7 @@ class UpdraftCentral_Plugin_Commands extends UpdraftCentral_Commands {
 				$result = array('activated' => true);
 			}
 		} else {
-			$result = array('error' => true, 'message' => 'plugin_not_installed', 'values' => array());
+			$result = array('error' => true, 'message' => 'plugin_not_installed', 'values' => array($query['plugin']));
 		}
 
 		return $this->_response($result);
@@ -126,7 +126,7 @@ class UpdraftCentral_Plugin_Commands extends UpdraftCentral_Commands {
 			}
 
 			if (!$installed) {
-				$result = array('error' => true, 'message' => 'plugin_install_failed', 'values' => array());
+				$result = array('error' => true, 'message' => 'plugin_install_failed', 'values' => array($query['plugin']));
 			} else {
 				// Here, we're pulling the information one more time to verify the installation and to
 				// extract the plugin_path that will be used to activate the plugin in case it did not

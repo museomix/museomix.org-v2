@@ -21,16 +21,23 @@ class AC_Column_Taxonomy extends AC_Column {
 		return $this->get_option( 'taxonomy' );
 	}
 
-	// Display
-
 	public function get_value( $post_id ) {
-		$terms = ac_helper()->taxonomy->get_term_links( get_the_terms( $post_id, $this->get_taxonomy() ), get_post_type( $post_id ) );
+		$terms = ac_helper()->taxonomy->get_term_links( $this->get_raw_value( $post_id ), get_post_type( $post_id ) );
+
+		if ( empty( $terms ) ) {
+			return $this->get_empty_char();
+		}
 
 		return ac_helper()->string->enumeration_list( $terms, 'and' );
 	}
 
+	/**
+	 * @param int $post_id
+	 *
+	 * @return array|false
+	 */
 	public function get_raw_value( $post_id ) {
-		$terms = wp_get_post_terms( $post_id, $this->get_taxonomy(), array( 'fields' => 'ids' ) );
+		$terms = get_the_terms( $post_id, $this->get_taxonomy() );
 
 		if ( ! $terms || is_wp_error( $terms ) ) {
 			return false;
@@ -38,8 +45,6 @@ class AC_Column_Taxonomy extends AC_Column {
 
 		return $terms;
 	}
-
-	// Settings
 
 	public function register_settings() {
 		$this->add_setting( new AC_Settings_Column_Taxonomy( $this ) );

@@ -3,7 +3,7 @@
  * $Id$
  *
  * Copyright (c) 2011, Donovan Schönknecht.  All rights reserved.
- * Portions copyright (c) 2012-3, David Anderson (http://www.simbahosting.co.uk).  All rights reserved.
+ * Portions copyright (c) 2012-2018, David Anderson (https://david.dw-perspective.org.uk).  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -47,9 +47,11 @@ class UpdraftPlus_S3 {
 	private $__accessKey = null; // AWS Access key
 	private $__secretKey = null; // AWS Secret key
 	private $__sslKey = null;
+	private $__session_token = null; //For Vault temporary users
+	private $_serverSideEncryption = false;
 
 	public $endpoint = 's3.amazonaws.com';
-	public $region = '';
+	public $region = 'us-east-1';
 	public $proxy = null;
 
 	// Added to cope with a particular situation where the user had no permission to check the bucket location, which necessitated using DNS-based endpoints.
@@ -80,14 +82,16 @@ class UpdraftPlus_S3 {
 	 * @param boolean $useSSL Enable SSL
 	 * @param boolean $sslCACert SSL Certificate
 	 * @param string|null $endpoint Endpoint
+	 * @param string $session_token The session token returned by AWS for temporary credentials access
 	 * @param string $region Region
-	 * @throws Exception
+
+	 * @throws Exception If cURL extension is not present
 	 *
 	 * @return self
 	 */
-	public function __construct($accessKey = null, $secretKey = null, $useSSL = true, $sslCACert = true, $endpoint = null, $region = '') {
+	public function __construct($accessKey = null, $secretKey = null, $useSSL = true, $sslCACert = true, $endpoint = null, $session_token = null, $region = 'us-east-1') {
 		if (null !== $accessKey && null !== $secretKey) {
-			$this->setAuth($accessKey, $secretKey);
+			$this->setAuth($accessKey, $secretKey, $session_token);
 		}
 		$this->useSSL = $useSSL;
 		$this->sslCACert = $sslCACert;
@@ -114,7 +118,18 @@ class UpdraftPlus_S3 {
 	public function setEndpoint($host) {
 		$this->endpoint = $host;
 	}
-
+	
+	/**
+	 * Set Server Side Encryption
+	 * Example value: 'AES256'. See: https://docs.aws.amazon.com/AmazonS3/latest/dev/SSEUsingPHPSDK.html
+	 *
+	 * @param string|boolean $sse Server side encryption standard; or false for none
+	 * @return void
+	 */
+	public function setServerSideEncryption($value) {
+		$this->_serverSideEncryption = $value;
+	}
+	
 	/**
 	 * Set the service region
 	 *
@@ -154,9 +169,10 @@ class UpdraftPlus_S3 {
 	 *
 	 * @return void
 	 */
-	public function setAuth($accessKey, $secretKey) {
+	public function setAuth($accessKey, $secretKey, $session_token = null) {
 		$this->__accessKey = $accessKey;
 		$this->__secretKey = $secretKey;
+		$this->__session_token = $session_token;
 	}
 
 	/**
@@ -272,7 +288,6 @@ class UpdraftPlus_S3 {
 	public function setSignatureVersion($version = 'v2') {
 		$this->signVer = $version;
 	}
-
 
 	/**
 	 * Internal error handler
@@ -671,6 +686,10 @@ class UpdraftPlus_S3 {
 		}
 
 		if (false !== $rest->error) {
+			// Special case: when the error means "you've already done that". Turn it into success. See in: https://trello.com/c/6jJoiCG5
+			if ('InternalError' == $rest->error['code'] && 'This multipart completion is already in progress' == $rest->error['message']) {
+				return true;
+			}
 			$this->__triggerError(sprintf("UpdraftPlus_S3::completeMultipartUpload(): [%s] %s",
 			$rest->error['code'], $rest->error['message']), __FILE__, __LINE__);
 			return false;
@@ -763,7 +782,10 @@ class UpdraftPlus_S3 {
 
 		if ($storageClass !== self::STORAGE_CLASS_STANDARD) // Storage class
 			$rest->setAmzHeader('x-amz-storage-class', $storageClass);
-
+			
+		if (!empty($this->_serverSideEncryption)) {
+			$rest->setAmzHeader('x-amz-server-side-encryption', $this->_serverSideEncryption);
+		}
 		// We need to post with Content-Length and Content-Type, MD5 is optional
 		if ($rest->size >= 0 && (false !== $rest->fp || false !== $rest->data)) {
 			$rest->setHeader('Content-Type', $input['type']);
@@ -1053,12 +1075,12 @@ class UpdraftPlus_S3 {
 		if (false === $rest->error && 200 !== $rest->code) {
 			$rest->error = array('code' => $rest->code, 'message' => 'Unexpected HTTP status');
 		}
-
 		if (false !== $rest->error) {
 			$this->__triggerError(sprintf("UpdraftPlus_S3::getBucketLocation({$bucket}): [%s] %s",
 			$rest->error['code'], $rest->error['message']), __FILE__, __LINE__);
 			return false;
 		}
+		
 		return (isset($rest->body[0]) && (string)$rest->body[0] !== '') ? (string)$rest->body[0] : 'US';
 	}
 
@@ -2135,7 +2157,7 @@ final class UpdraftPlus_S3Request {
 	public function setAmzHeader($key, $value) {
 		$this->amzHeaders[$key] = $value;
 	}
-
+	
 	/**
 	 * Get the S3 response
 	 *
@@ -2288,23 +2310,23 @@ final class UpdraftPlus_S3Request {
 		@curl_close($curl);
 
 		// Parse body into XML
-		if (false === $this->response->error && isset($this->response->headers['type']) &&
-		'application/xml' == $this->response->headers['type'] && isset($this->response->body)) {
+		// The case in which there is not application/xml content-type header is to support a DreamObjects case seen, April 2018
+		if (false === $this->response->error && isset($this->response->body) && ((isset($this->response->headers['type']) && 'application/xml' == $this->response->headers['type']) || (!isset($this->response->headers['type']) && 0 === strpos($this->response->body, '<?xml')))) {
 			$this->response->body = simplexml_load_string($this->response->body);
 
 			// Grab S3 errors
 			if (!in_array($this->response->code, array(200, 204, 206)) &&
-			isset($this->response->body->Code, $this->response->body->Message)) {
+			isset($this->response->body->Code)) {
 				$this->response->error = array(
 					'code' => (string)$this->response->body->Code,
-					'message' => (string)$this->response->body->Message
 				);
+				$this->response->error['message'] = isset($this->response->body->Message) ? $this->response->body->Message : '';
 				if (isset($this->response->body->Resource))
 					$this->response->error['resource'] = (string)$this->response->body->Resource;
 				unset($this->response->body);
 			}
 		}
-
+		
 		// Clean up file resources
 		if (false !== $this->fp && is_resource($this->fp)) fclose($this->fp);
 

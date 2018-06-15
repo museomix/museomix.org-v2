@@ -32,7 +32,7 @@ final class DUP_PackageType
 /**
  * Class used to store and process all Package logic
  *
- * @package Dupicator\classes
+ * @package Duplicator\classes
  */
 class DUP_Package
 {
@@ -117,8 +117,12 @@ class DUP_Package
 		$report['ARC']['FilterFilesAll'] = $this->Archive->FilterFilesAll;
 		$report['ARC']['FilterExtsAll'] = $this->Archive->FilterExtsAll;
         $report['ARC']['FilterInfo'] = $this->Archive->FilterInfo;
+        $report['ARC']['RecursiveLinks'] = $this->Archive->RecursiveLinks;
+        $report['ARC']['UnreadableItems'] = array_merge($this->Archive->FilterInfo->Files->Unreadable,$this->Archive->FilterInfo->Dirs->Unreadable);
         $report['ARC']['Status']['Size']  = ($this->Archive->Size > DUPLICATOR_SCAN_SIZE_DEFAULT) ? 'Warn' : 'Good';
         $report['ARC']['Status']['Names'] = (count($this->Archive->FilterInfo->Files->Warning) + count($this->Archive->FilterInfo->Dirs->Warning)) ? 'Warn' : 'Good';
+        $report['ARC']['Status']['UnreadableItems'] = !empty($this->Archive->RecursiveLinks) || !empty($report['ARC']['UnreadableItems'])? 'Warn' : 'Good';
+
         //$report['ARC']['Status']['Big']   = count($this->Archive->FilterInfo->Files->Size) ? 'Warn' : 'Good';
         $report['ARC']['Dirs']  = $this->Archive->Dirs;
         $report['ARC']['Files'] = $this->Archive->Files;
@@ -362,8 +366,6 @@ class DUP_Package
         update_option(self::OPT_ACTIVE, $package);
     }
 
-
-
     /**
      * Sets the status to log the state of the build
      *
@@ -392,7 +394,7 @@ class DUP_Package
     }
 
     /**
-     * Does a hash already exisit
+     * Does a hash already exist
      *
      * @param string $hash An existing hash value
      *

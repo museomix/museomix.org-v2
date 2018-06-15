@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin
  */
 
@@ -50,12 +52,7 @@ if ( get_blog_count() > 100 ) {
 }
 else {
 
-	if ( function_exists( 'get_sites' ) ) { // WP 4.6+.
-		$sites = array_map( 'get_object_vars', get_sites( array( 'deleted' => 0 ) ) );
-	}
-	else {
-		$sites = wp_get_sites( array( 'deleted' => 0 ) );
-	}
+	$sites = array_map( 'get_object_vars', get_sites( array( 'deleted' => 0 ) ) );
 
 	if ( is_array( $sites ) && $sites !== array() ) {
 		$dropdown_input = array(
@@ -119,8 +116,14 @@ if ( $use_dropdown === true ) {
 }
 else {
 	$yform->textinput( 'defaultblog', __( 'New sites in the network inherit their SEO settings from this site', 'wordpress-seo' ), 'wpseo_ms' );
-	/* translators: 1: link open tag; 2: link close tag. */
-	echo '<p>' . sprintf( __( 'Enter the %1$sSite ID%2$s for the site whose settings you want to use as default for all sites that are added to your network. Leave empty for none (i.e. the normal plugin defaults will be used).', 'wordpress-seo' ), '<a href="' . esc_url( network_admin_url( 'sites.php' ) ) . '">', '</a>' ) . '</p>';
+	echo '<p>';
+	printf(
+		/* translators: 1: link open tag; 2: link close tag. */
+		esc_html__( 'Enter the %1$sSite ID%2$s for the site whose settings you want to use as default for all sites that are added to your network. Leave empty for none (i.e. the normal plugin defaults will be used).', 'wordpress-seo' ),
+		'<a href="' . esc_url( network_admin_url( 'sites.php' ) ) . '">',
+		'</a>'
+	);
+	echo '</p>';
 }
 	echo '<p><strong>' . esc_html__( 'Take note:', 'wordpress-seo' ) . '</strong> ' . esc_html__( 'Privacy sensitive (FB admins and such), theme specific (title rewrite) and a few very site specific settings will not be imported to new blogs.', 'wordpress-seo' ) . '</p>';
 

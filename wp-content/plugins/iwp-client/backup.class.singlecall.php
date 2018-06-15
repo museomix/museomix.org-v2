@@ -1822,7 +1822,7 @@ function ftp_backup($args)
              * SFTP section start here phpseclib library is used for this functionality
              */
             $iwp_mmb_plugin_dir = WP_PLUGIN_DIR . '/' . basename(dirname(__FILE__));
-            $path = $iwp_mmb_plugin_dir.'/lib/phpseclib';
+            $path = $iwp_mmb_plugin_dir.'/lib/phpseclib/phpseclib/phpseclib';
             set_include_path(get_include_path() . PATH_SEPARATOR . $path);
             include_once('Net/SFTP.php');
             
@@ -1943,7 +1943,7 @@ function ftp_backup($args)
              * SFTP section start here phpseclib library is used for this functionality
              */
             $iwp_mmb_plugin_dir = WP_PLUGIN_DIR . '/' . basename(dirname(__FILE__));
-            $path = $iwp_mmb_plugin_dir.'/lib/phpseclib';
+            $path = $iwp_mmb_plugin_dir.'/lib/phpseclib/phpseclib/phpseclib';
             set_include_path(get_include_path() . PATH_SEPARATOR . $path);
             include_once('Net/SFTP.php');
             
@@ -2026,10 +2026,10 @@ function ftp_backup($args)
                     else
                         $dropbox_destination .= '/' . basename($backup_file);
                 }else{
-                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/API.php';
-                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/Exception.php';
-                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/OAuth/Consumer/ConsumerAbstract.php';
-                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/OAuth/Consumer/Curl.php';
+                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/API.php';
+                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/Exception.php';
+                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/OAuth/Consumer/ConsumerAbstract.php';
+                    require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/OAuth/Consumer/Curl.php';
                     
                     $oauth = new IWP_Dropbox_OAuth_Consumer_Curl($dropbox_app_key, $dropbox_app_secure_key);
                     $oauth->setToken($dropbox_access_token);
@@ -2094,10 +2094,10 @@ function ftp_backup($args)
                 $dropbox_destination .= '/' . $this->site_name;
             $oldVersion = true;
        }else{
-            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/API.php';
-            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/Exception.php';
-            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/OAuth/Consumer/ConsumerAbstract.php';
-            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox2/OAuth/Consumer/Curl.php';
+            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/API.php';
+            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/Exception.php';
+            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/OAuth/Consumer/ConsumerAbstract.php';
+            require_once $GLOBALS['iwp_mmb_plugin_dir'] . '/lib/Dropbox/OAuth/Consumer/Curl.php';
             
             $oauth = new IWP_Dropbox_OAuth_Consumer_Curl($dropbox_app_key, $dropbox_app_secure_key);
             $oauth->setToken($dropbox_access_token);
@@ -2726,7 +2726,7 @@ function ftp_backup($args)
 			$task_res[$value->taskName][$value->historyID] = $task_results['task_results'][$value->historyID];
 			$task_res[$value->taskName][$value->historyID]['backhack_status'] = $task_results['backhack_status'];
 		}		
-		$stats = $task_res;
+        $stats = $task_res;
 		return $stats;
 		/*foreach ($rows as $obj) {
 		
@@ -2772,6 +2772,42 @@ function ftp_backup($args)
 		$requestParams = $this->get_this_tasks("requestParams");
 		
 		$limit = $requestParams['args']['limit'];
+
+        $other_method_backups = iwp_mmb_get_backup_ID_by_taskname('advanced', $task_name);
+        $current_backups = $this->get_timestamp_by_label($task_name);
+        $all_backups = array();
+        $delete_backup = array();
+        if (!empty($other_method_backups)) {
+            $all_backups = array_merge($all_backups, $other_method_backups);
+            if (!empty($current_backups)) {
+                $all_backups = array_merge($all_backups, $current_backups);
+                ksort($all_backups);
+                ksort($current_backups);
+                foreach ($other_method_backups as $timestamp => $historyID) {
+                    foreach ($current_backups as $time => $value) {
+                        if ($time > $timestamp) {
+                            $delete_backup[$timestamp] = $timestamp;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (!empty($delete_backup)) {
+            $total_backups = count($all_backups);
+            if ($total_backups > $limit) {
+                require_once($GLOBALS['iwp_mmb_plugin_dir'].'/backup/backup.core.class.php');
+                iwp_mmb_define_constant();
+                $backup_instance = new IWP_MMB_Backup_Core();
+                foreach ($delete_backup as $timestamp => $historyID) {
+                    $total_backups--;
+                    $backup_instance->delete_backup(array('result_id' => $historyID));
+                    if ($total_backups<= $limit) {
+                        return;
+                    }
+                }
+            }
+        }
 						
 		$select_prev_backup = "SELECT historyID, taskResults FROM ".$table_name." WHERE taskName = '".$task_name."' ORDER BY ID DESC LIMIT ".$limit.",100 ";
 										
@@ -3012,9 +3048,9 @@ function ftp_backup($args)
             $num_deleted = 0;
             
             foreach ($files as $file) {
-                if (!in_array($file, $results) && basename($file) != 'index.php') {
+                if ((!in_array($file, $results) && basename($file) != 'index.php')) {
                     @unlink($file);
-                    //$deleted[] = basename($file);
+                    // $deleted[] = basename($file);
 					$deleted[] = $file;
                     $num_deleted++;
                 }
@@ -3211,6 +3247,18 @@ function ftp_backup($args)
 		else
 			return true;
 	}
+
+    function get_timestamp_by_label($label){
+        $new_backup_keys = array();
+        global $wpdb;
+        $table_name = $wpdb->base_prefix . "iwp_backup_status";
+        $select_prev_backup = "SELECT historyID, lastUpdateTime FROM ".$table_name." WHERE taskName = '".$label."' ORDER BY ID DESC ";
+        $select_prev_backup_res = $wpdb->get_results($select_prev_backup, ARRAY_A);
+        foreach ($select_prev_backup_res as $key => $value) {
+            $new_backup_keys[$value['lastUpdateTime']]= $value['historyID'];
+        }
+        return $new_backup_keys;
+    }
 }
 
 /*if( function_exists('add_filter') ){

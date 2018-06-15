@@ -29,7 +29,8 @@ class UpdraftPlus_UpdraftCentral_Main {
 			'users' => 'UpdraftCentral_Users_Commands',
 			'comments' => 'UpdraftCentral_Comments_Commands',
 			'analytics' => 'UpdraftCentral_Analytics_Commands',
-			'plugin' => 'UpdraftCentral_Plugin_Commands'
+			'plugin' => 'UpdraftCentral_Plugin_Commands',
+			'posts' => 'UpdraftCentral_Posts_Commands'
 		));
 	
 		// If nothing was sent, then there is no incoming message, so no need to set up a listener (or CORS request, etc.). This avoids a DB SELECT query on the option below in the case where it didn't get autoloaded, which is the case when there are no keys.
@@ -149,6 +150,12 @@ class UpdraftPlus_UpdraftCentral_Main {
 		update_site_option('updraftcentral_client_log', $udrpc_log);
 	}
 	
+	/**
+	 * Delete UpdraftCentral Key
+	 *
+	 * @param array $key_id key_id of UpdraftCentral
+	 * @return array which contains deleted flag and key table. If error, Returns array which contains fatal_error flag and fatal_error_message
+	 */
 	public function delete_key($key_id) {
 		$our_keys = UpdraftPlus_Options::get_updraft_option('updraft_central_localkeys');
 		if (!is_array($our_keys)) $our_keys = array();
@@ -159,6 +166,12 @@ class UpdraftPlus_UpdraftCentral_Main {
 		return array('deleted' => 1, 'keys_table' => $this->get_keys_table());
 	}
 	
+	/**
+	 * Get UpdraftCentral Log
+	 *
+	 * @param array $params which have action, subaction and nonce
+	 * @return array which contains log_contents. If error, Returns array which contains fatal_error flag and fatal_error_message
+	 */
 	public function get_log($params) {
 	
 		$udrpc_log = get_site_option('updraftcentral_client_log');
@@ -205,6 +218,8 @@ class UpdraftPlus_UpdraftCentral_Main {
 			if (empty($purl) || !array($purl) || empty($purl['scheme']) || empty($purl['host'])) return array('error' => __('An invalid URL was entered', 'updraftplus'));
 		}
 
+		// ENT_HTML5 exists only on PHP 5.4+
+		// @codingStandardsIgnoreLine
 		$flags = defined('ENT_HTML5') ? ENT_QUOTES | ENT_HTML5 : ENT_QUOTES;
 		
 		$extra_info = array(

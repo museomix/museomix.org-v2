@@ -10,26 +10,30 @@ class AC_Admin_Page_Settings extends AC_Admin_Page {
 
 	const SETTINGS_GROUP = 'cpac-general-settings';
 
-	private $options;
-
 	public function __construct() {
 		$this
 			->set_slug( 'settings' )
 			->set_label( __( 'Settings', 'codepress-admin-columns' ) );
+	}
 
-		$this->options = get_option( self::SETTINGS_NAME );
-
-		register_setting( self::SETTINGS_GROUP, self::SETTINGS_NAME );
-
+	/**
+	 * Register Hooks
+	 */
+	public function register() {
 		add_filter( 'option_page_capability_' . self::SETTINGS_GROUP, array( $this, 'set_capability' ) );
+		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'admin_init', array( $this, 'handle_column_request' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 	}
 
+	public function register_setting() {
+		register_setting( self::SETTINGS_GROUP, self::SETTINGS_NAME );
+	}
+
 	public function admin_scripts() {
-	    if ( $this->is_current_screen() ) {
-		    wp_enqueue_style( 'ac-admin-page-settings', AC()->get_plugin_url() . 'assets/css/admin-page-settings' . AC()->minified() . '.css', array(), AC()->get_version() );
-	    }
+		if ( $this->is_current_screen() ) {
+			wp_enqueue_style( 'ac-admin-page-settings', AC()->get_plugin_url() . 'assets/css/admin-page-settings.css', array(), AC()->get_version() );
+		}
 	}
 
 	public function set_capability() {
@@ -43,17 +47,23 @@ class AC_Admin_Page_Settings extends AC_Admin_Page {
 		echo esc_attr( self::SETTINGS_NAME . '[' . sanitize_key( $key ) . ']' );
 	}
 
+	private function get_options() {
+		return get_option( self::SETTINGS_NAME );
+	}
+
 	/**
 	 * @param $key
 	 *
 	 * @return false|string When '0' there are no options stored.
 	 */
 	public function get_option( $key ) {
-		return isset( $this->options[ $key ] ) ? $this->options[ $key ] : false;
+		$options = $this->get_options();
+
+		return isset( $options[ $key ] ) ? $options[ $key ] : false;
 	}
 
 	private function is_empty_options() {
-		return false === $this->options;
+		return false === $this->get_options();
 	}
 
 	public function delete_options() {
@@ -117,23 +127,23 @@ class AC_Admin_Page_Settings extends AC_Admin_Page {
 
 		$current_value = $this->is_empty_options() ? $args->default_value : $this->get_option( $args->name );
 		?>
-        <p>
-            <label for="<?php echo $args->name; ?>">
-                <input name="<?php $this->attr_name( $args->name ); ?>" id="<?php echo $args->name; ?>" type="checkbox" value="1" <?php checked( $current_value, '1' ); ?>>
+		<p>
+			<label for="<?php echo $args->name; ?>">
+				<input name="<?php $this->attr_name( $args->name ); ?>" id="<?php echo $args->name; ?>" type="checkbox" value="1" <?php checked( $current_value, '1' ); ?>>
 				<?php echo $args->label; ?>
-            </label>
+			</label>
 			<?php if ( $args->instructions ) : ?>
-                <a class="ac-pointer instructions" rel="pointer-<?php echo $args->name; ?>" data-pos="right">
+				<a class="ac-pointer instructions" rel="pointer-<?php echo $args->name; ?>" data-pos="right">
 					<?php _e( 'Instructions', 'codepress-admin-columns' ); ?>
-                </a>
+				</a>
 			<?php endif; ?>
-        </p>
+		</p>
 		<?php if ( $args->instructions ) : ?>
-            <div id="pointer-<?php echo $args->name; ?>" style="display:none;">
-                <h3><?php _e( 'Notice', 'codepress-admin-columns' ); ?></h3>
+			<div id="pointer-<?php echo $args->name; ?>" style="display:none;">
+				<h3><?php _e( 'Notice', 'codepress-admin-columns' ); ?></h3>
 				<?php echo $args->instructions; ?>
-            </div>
-			<?php
+			</div>
+		<?php
 		endif;
 	}
 
@@ -143,25 +153,25 @@ class AC_Admin_Page_Settings extends AC_Admin_Page {
 	 * @return string
 	 */
 	public function get_default_text( $type = 'on' ) {
-	    $string = __( 'off', 'codepress-admin-columns' );
+		$string = __( 'off', 'codepress-admin-columns' );
 
-	    if ( 'on' === $type ) {
-		    $string = __( 'on', 'codepress-admin-columns' );
-        }
+		if ( 'on' === $type ) {
+			$string = __( 'on', 'codepress-admin-columns' );
+		}
 
 		return sprintf( __( "Default is %s.", 'codepress-admin-columns' ), '<code>' . $string . '</code>' );
 	}
 
 	public function display() { ?>
-        <table class="form-table ac-form-table settings">
-            <tbody>
-            <tr class="general">
-                <th scope="row">
-                    <h2><?php _e( 'General Settings', 'codepress-admin-columns' ); ?></h2>
-                    <p><?php _e( 'Customize your Admin Columns settings.', 'codepress-admin-columns' ); ?></p>
-                </th>
-                <td>
-                    <form method="post" action="options.php">
+		<table class="form-table ac-form-table settings">
+			<tbody>
+			<tr class="general">
+				<th scope="row">
+					<h2><?php _e( 'General Settings', 'codepress-admin-columns' ); ?></h2>
+					<p><?php _e( 'Customize your Admin Columns settings.', 'codepress-admin-columns' ); ?></p>
+				</th>
+				<td>
+					<form method="post" action="options.php">
 
 						<?php settings_fields( self::SETTINGS_GROUP ); ?>
 
@@ -175,12 +185,12 @@ class AC_Admin_Page_Settings extends AC_Admin_Page {
 
 						<?php do_action( 'ac/settings/general', $this ); ?>
 
-                        <p>
-                            <input type="submit" class="button" value="<?php _e( 'Save' ); ?>"/>
-                        </p>
-                    </form>
-                </td>
-            </tr>
+						<p>
+							<input type="submit" class="button" value="<?php _e( 'Save' ); ?>"/>
+						</p>
+					</form>
+				</td>
+			</tr>
 
 			<?php
 
@@ -194,45 +204,45 @@ class AC_Admin_Page_Settings extends AC_Admin_Page {
 
 					?>
 
-                    <tr>
-                        <th scope="row">
-                            <h2><?php echo esc_html( $title ); ?></h2>
+					<tr>
+						<th scope="row">
+							<h2><?php echo esc_html( $title ); ?></h2>
 
-                            <p><?php echo $description; ?></p>
-                        </th>
-                        <td>
+							<p><?php echo $description; ?></p>
+						</th>
+						<td>
 							<?php
 
 							/** Use this Hook to add additional fields to the group */
 							do_action( "ac/settings/group/" . $id );
 
 							?>
-                        </td>
-                    </tr>
+						</td>
+					</tr>
 
 					<?php
 				}
 			}
 			?>
 
-            <tr class="restore">
-                <th scope="row">
-                    <h2><?php _e( 'Restore Settings', 'codepress-admin-columns' ); ?></h2>
-                    <p><?php _e( 'This will delete all column settings and restore the default settings.', 'codepress-admin-columns' ); ?></p>
-                </th>
-                <td>
-                    <form method="post">
+			<tr class="restore">
+				<th scope="row">
+					<h2><?php _e( 'Restore Settings', 'codepress-admin-columns' ); ?></h2>
+					<p><?php _e( 'This will delete all column settings and restore the default settings.', 'codepress-admin-columns' ); ?></p>
+				</th>
+				<td>
+					<form method="post">
 
 						<?php $this->nonce_field( 'restore-all' ); ?>
 
-                        <input type="hidden" name="ac_action" value="restore_all">
-                        <input type="submit" class="button" name="ac-restore-defaults" value="<?php echo esc_attr( __( 'Restore default settings', 'codepress-admin-columns' ) ); ?>" onclick="return confirm('<?php echo esc_js( __( "Warning! ALL saved admin columns data will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop", 'codepress-admin-columns' ) ); ?>');">
-                    </form>
-                </td>
-            </tr>
+						<input type="hidden" name="ac_action" value="restore_all">
+						<input type="submit" class="button" name="ac-restore-defaults" value="<?php echo esc_attr( __( 'Restore default settings', 'codepress-admin-columns' ) ); ?>" onclick="return confirm('<?php echo esc_js( __( "Warning! ALL saved admin columns data will be deleted. This cannot be undone. 'OK' to delete, 'Cancel' to stop", 'codepress-admin-columns' ) ); ?>');">
+					</form>
+				</td>
+			</tr>
 
-            </tbody>
-        </table>
+			</tbody>
+		</table>
 
 		<?php
 	}

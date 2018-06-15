@@ -19,7 +19,10 @@ if ($arcStatus) {
 
 			$arcFilePath = basename($GLOBALS['ARCHIVE_PATH']);
 			$arcFilePath = substr($arcFilePath, 0, strrpos($arcFilePath, "."));
-			$badFiles  = array('__MACOSX', $arcFilePath);
+			//Some systems the __MACOSX folder can cause issues on others it works fine removing
+			//until further reports are discovered, removed on 04-06-2018
+			//$badFiles  = array('__MACOSX', $arcFilePath);
+			$badFiles  = array('', $arcFilePath);
 			$goodFiles = array('database.sql', 'installer-backup.php');
 			$goodFilesFound = true;
 			$badFilesFound  = false;
@@ -203,10 +206,10 @@ ARCHIVE
 					<span class="dupx-fail">Unable to validate format</span><br/>
 				<?php elseif ($arcFormat == 'NoZipArchive') : ?>
 					<div class="s1-archive-failed-msg">
-						The PHP extraction library <a href="" target="_help">ZipArchive</a> was not found on this server.  There are a few options:
+						The PHP extraction library <a href="http://php.net/manual/en/book.zip.php" target="_help">ZipArchive</a> was not found on this server.  There are a few options:
 						<ol>
-							<li>Contact your host to enable the this PHP library. <a href="" target="_help">[more info]</a></li>
-							<li>Enable 'Manual package extraction' in the options menu and <a href="" target="_help">Manually extract the archive</a></li>
+							<li>Contact your host to enable the this PHP library. <a href="http://php.net/manual/en/zip.installation.php" target="_help">[more info]</a></li>
+							<li>Enable 'Manual package extraction' in the options menu and <a href="https://snapcreek.com/duplicator/docs/faqs-tech/#faq-installer-015-q" target="_help">Manually extract the archive</a></li>
 						</ol>
 					</div>
 				<?php else : ?>

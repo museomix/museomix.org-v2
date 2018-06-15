@@ -11,20 +11,25 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 	private $messages = array();
 
 	public function __construct() {
-
 		$this
 			->set_slug( 'help' )
 			->set_label_with_count();
+	}
 
-		// Hide page when there are no messages
-		if ( ! $this->get_message_count() ) {
-			$this->set_show_in_menu( false );
-		}
-
-		// Init and request
+	/**
+	 * Register Hooks
+	 */
+	public function register() {
 		add_action( 'admin_init', array( $this, 'init' ), 9 );
 		add_action( 'admin_init', array( $this, 'run_hooks_on_help_tab' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function show_in_menu() {
+		return $this->get_message_count() > 0;
 	}
 
 	/**
@@ -71,9 +76,9 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 	 * Admin scripts
 	 */
 	public function admin_scripts() {
-	    if ( $this->is_current_screen() ) {
-		    wp_enqueue_style( 'ac-admin-page-help-css', AC()->get_plugin_url() . 'assets/css/admin-page-help' . AC()->minified() . '.css', array(), AC()->get_version() );
-	    }
+		if ( $this->is_current_screen() ) {
+			wp_enqueue_style( 'ac-admin-page-help-css', AC()->get_plugin_url() . 'assets/css/admin-page-help.css', array(), AC()->get_version() );
+		}
 	}
 
 	private function update_message_count() {
@@ -99,8 +104,8 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 		$post_types = get_post_types();
 
 		$columns = array();
-		foreach ( AC()->get_list_screens() as $ls ) {
-			foreach ( $ls->get_column_types() as $column ) {
+		foreach ( AC()->get_list_screens() as $list_screen ) {
+			foreach ( $list_screen->get_column_types() as $column ) {
 				$columns[ $column->get_type() ] = $column->get_type();
 			}
 		}
@@ -150,18 +155,18 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 		}
 
 		// Actions
-        $this->deprecated_action( 'cac/admin_head', '3.0', 'cac-admin_head' );
-        $this->deprecated_action( 'cac/loaded', '3.0', 'cac-cacloaded' );
-        $this->deprecated_action( 'cac/inline-edit/after_ajax_column_save', '3.0', 'cacinline-editafter_ajax_column_save' );
-        $this->deprecated_action( 'cac/settings/after_title', '3.0' );
-        $this->deprecated_action( 'cac/settings/form_actions', '3.0' );
-        $this->deprecated_action( 'cac/settings/sidebox', '3.0' );
-        $this->deprecated_action( 'cac/settings/form_columns', '3.0' );
-        $this->deprecated_action( 'cac/settings/after_columns', '3.0' );
-        $this->deprecated_action( 'cac/column/settings_meta', '3.0' );
-        $this->deprecated_action( 'cac/settings/general', '3.0' );
-        $this->deprecated_action( 'cpac_messages', '3.0' );
-        $this->deprecated_action( 'cac/settings/after_menu', '3.0' );
+		$this->deprecated_action( 'cac/admin_head', '3.0', 'cac-admin_head' );
+		$this->deprecated_action( 'cac/loaded', '3.0', 'cac-loaded' );
+		$this->deprecated_action( 'cac/inline-edit/after_ajax_column_save', '3.0', 'cacinline-editafter_ajax_column_save' );
+		$this->deprecated_action( 'cac/settings/after_title', '3.0' );
+		$this->deprecated_action( 'cac/settings/form_actions', '3.0' );
+		$this->deprecated_action( 'cac/settings/sidebox', '3.0' );
+		$this->deprecated_action( 'cac/settings/form_columns', '3.0' );
+		$this->deprecated_action( 'cac/settings/after_columns', '3.0' );
+		$this->deprecated_action( 'cac/column/settings_meta', '3.0' );
+		$this->deprecated_action( 'cac/settings/general', '3.0' );
+		$this->deprecated_action( 'cpac_messages', '3.0' );
+		$this->deprecated_action( 'cac/settings/after_menu', '3.0' );
 
 		$this->update_message_count();
 	}
@@ -184,7 +189,12 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 		if ( has_filter( $hook ) ) {
 			$message = sprintf( __( 'The filter %s used on this website is deprecated since %s.', 'codepress-admin-columns' ), '<code>' . $hook . '</code>', '<strong>' . $version . '</strong>' );
 
-			$this->add_deprecated_message( 'filter', $message, $hook, 'filter-reference/' . $page_slug );
+			$page = '#filter-reference';
+			if ( $page_slug ) {
+				$page = 'filter-reference/' . $page_slug;
+			}
+
+			$this->add_deprecated_message( 'filter', $message, $hook, $page );
 		}
 	}
 
@@ -197,7 +207,12 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 		if ( has_action( $hook ) ) {
 			$message = sprintf( __( 'The action %s used on this website is deprecated since %s.', 'codepress-admin-columns' ), '<code>' . $hook . '</code>', '<strong>' . $version . '</strong>' );
 
-			$this->add_deprecated_message( 'action', $message, $hook, 'action-reference/' . $page_slug );
+			$page = '#action-reference';
+			if ( $page_slug ) {
+				$page = 'action-reference/' . $page_slug;
+			}
+
+			$this->add_deprecated_message( 'action', $message, $hook, $page );
 		}
 	}
 
@@ -245,7 +260,7 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 	 * @return false|string
 	 */
 	private function get_documention_link( $page ) {
-		return ac_helper()->html->link( ac_get_site_url( 'documentation/' . $page ), __( 'View documentation', 'codepress-admin-columns' ) . ' &raquo;', array( 'target' => '_blank' ) );
+		return ac_helper()->html->link( ac_get_site_utm_url( 'documentation', 'documentation' ) . $page, __( 'View documentation', 'codepress-admin-columns' ) . ' &raquo;', array( 'target' => '_blank' ) );
 	}
 
 	/**
@@ -308,20 +323,20 @@ class AC_Admin_Page_Help extends AC_Admin_Page {
 	 */
 	public function display() {
 		?>
-        <h2><?php _e( 'Help', 'codepress-admin-columns' ); ?></h2>
-        <p>
+		<h2><?php _e( 'Help', 'codepress-admin-columns' ); ?></h2>
+		<p>
 			<?php _e( 'The Admin Columns plugin has undergone some major changes in version 4.', 'codepress-admin-columns' ); ?> <br/>
 
 			<?php printf( __( 'This site is using some actions or filters that have changed. Please read %s to resolve them.', 'codepress-admin-columns' ), ac_helper()->html->link( ac_get_site_utm_url( 'documentation/faq/upgrading-from-v3-to-v4', 'help' ), __( 'our documentation', 'codepress-admin-columns' ) ) ); ?>
-        </p>
+		</p>
 
 		<?php foreach ( $this->get_groups() as $type => $label ) {
 			if ( $messages = $this->get_messages( $type ) ) : ?>
-                <h3><?php echo esc_html( $label ); ?></h3>
+				<h3><?php echo esc_html( $label ); ?></h3>
 				<?php foreach ( $messages as $message ) : ?>
-                    <div class="ac-deprecated-message">
-                        <p><?php echo $message; ?></p>
-                    </div>
+					<div class="ac-deprecated-message">
+						<p><?php echo $message; ?></p>
+					</div>
 				<?php endforeach; ?>
 			<?php endif;
 		}

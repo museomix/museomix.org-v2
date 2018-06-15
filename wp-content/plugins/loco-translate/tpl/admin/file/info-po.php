@@ -8,11 +8,15 @@ $this->start('header');
 
     <div class="notice inline notice-info">
         <h3>
-            <span class="<?php $locale->e('icon')?>" lang="<?php $locale->e('lang')?>"> </span>
-            <span><?php $locale->e('name')?></span>
-            <code><?php $locale->e('code')?></code>
+            <a href="<?php $locale->e('href')?>" class="has-lang">
+                <span class="<?php $locale->e('icon')?>" lang="<?php $locale->e('lang')?>"><code><?php $locale->e('code')?></code></span>
+                <span><?php $locale->e('name')?></span>
+            </a>
         </h3>
         <dl>
+            <dt><?php self::e( __('File size','loco-translate') )?>:</dt>
+            <dd><?php $file->e('size')?></dd>
+
             <dt><?php self::e( __('File modified','loco-translate') )?>:</dt>
             <dd><?php $file->date('mtime')?></dd>
 
@@ -55,7 +59,7 @@ $this->start('header');
     </div><?php
 
     else:?> 
-    <div class="notice inline notice-debug">
+    <div class="notice inline notice-info">
         <h3 class="has-icon">
             <?php self::e( __('Out of sync with template','loco-translate') )?> 
         </h3>
@@ -66,15 +70,8 @@ $this->start('header');
     </div><?php
     endif;
     
-    /*if( $params->has('altpot') ):?> 
-    <div class="notice inline notice-debug">
-        <h3 class="has-icon">
-            Alternative template file
-        </h3>
-    </div><?php
-    endif;*/
-    
-    else:?> 
+    // only showing missing template warning when project was matched. Avoids confusion if something went wrong
+    elseif( $params->has('project') ):?> 
     <div class="notice inline notice-debug">
         <h3 class="has-icon">
             <?php self::e( __('Missing template','loco-translate') )?> 

@@ -69,6 +69,7 @@ abstract class LADBMigrationBase implements ILADBMigration{
 				`system_enabled` TINYINT(1) DEFAULT 1,
 				`changed_time` INT DEFAULT 0,
 				`cache_lifetime` INT DEFAULT 60,
+				`send_email` TINYINT(1) DEFAULT 0,
 				PRIMARY KEY (`feed_id`)
 			) ?p";
 			$conn->query($sql, $table_name, $this->charset());
@@ -116,7 +117,7 @@ abstract class LADBMigrationBase implements ILADBMigration{
 				`post_status` VARCHAR(15),
 				`post_source` VARCHAR(300),
 				`post_additional` VARCHAR(300),
-				`user_bio` VARCHAR(200),
+				`user_bio` TEXT,
 				`user_counts_media` INT,
 				`user_counts_follows` INT,
 				`user_counts_followed_by` INT,

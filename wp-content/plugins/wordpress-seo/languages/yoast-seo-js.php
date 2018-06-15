@@ -1,38 +1,40 @@
 <?php
 /* THIS IS A GENERATED FILE. DO NOT EDIT DIRECTLY. */
 $generated_i18n_strings = array(
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:17
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:81
+	/* Translators: %1$s expands to the numeric Flesch reading ease score,
+	   %2$s to a link to a Yoast.com article about Flesch reading ease score,
+	   %3$s to the easyness of reading,
+	   %4$s expands to a note about the flesch reading score. */
+	__( 'The copy scores %1$s in the %2$s test, which is considered %3$s to read. %4$s', 'wordpress-seo' ),
+
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:84
 	__( 'very easy', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:24
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:91
 	__( 'easy', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:31
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:98
 	__( 'fairly easy', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:38
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:105
 	__( 'ok', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:45
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:112
 	__( 'fairly difficult', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:46
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:113
 	__( 'Try to make shorter sentences to improve readability.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:52
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:120
 	__( 'difficult', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:53
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:60
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:121
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:128
 	__( 'Try to make shorter sentences, using less difficult words to improve readability.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:59
+	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:127
 	__( 'very difficult', 'wordpress-seo' ),
-
-	// Reference: node_modules/yoastseo/js/assessments/readability/fleschReadingEaseAssessment.js:76
-	/* Translators: %1$s expands to the numeric flesch reading ease score, %2$s to a link to a Yoast.com article about Flesch ease reading score,
-	   %3$s to the easyness of reading, %4$s expands to a note about the flesch reading score. */
-	__( 'The copy scores %1$s in the %2$s test, which is considered %3$s to read. %4$s', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/js/assessments/readability/paragraphTooLongAssessment.js:52
 	__( 'None of the paragraphs are too long, which is great.', 'wordpress-seo' ),
@@ -41,12 +43,12 @@ $generated_i18n_strings = array(
 	/* Translators: %1$d expands to the number of paragraphs, %2$d expands to the recommended value */
 	_n_noop( '%1$d of the paragraphs contains more than the recommended maximum of %2$d words. Are you sure all information is about the same topic, and therefore belongs in one single paragraph?', '%1$d of the paragraphs contain more than the recommended maximum of %2$d words. Are you sure all information within each of these paragraphs is about the same topic, and therefore belongs in a single paragraph?', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/passiveVoiceAssessment.js:44
+	// Reference: node_modules/yoastseo/js/assessments/readability/passiveVoiceAssessment.js:48
 	/* Translators: %1$s expands to the number of sentences in passive voice, %2$s expands to a link on yoast.com,
 	   %3$s expands to the anchor end tag, %4$s expands to the recommended value. */
 	__( '%1$s of the sentences contain %2$spassive voice%3$s, which is less than or equal to the recommended maximum of %4$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/passiveVoiceAssessment.js:53
+	// Reference: node_modules/yoastseo/js/assessments/readability/passiveVoiceAssessment.js:57
 	/* Translators: %1$s expands to the number of sentences in passive voice, %2$s expands to a link on yoast.com,
 	   %3$s expands to the anchor end tag, %4$s expands to the recommended value. */
 	__( '%1$s of the sentences contain %2$spassive voice%3$s, which is more than the recommended maximum of %4$s. Try to use their active counterparts.', 'wordpress-seo' ),
@@ -78,13 +80,14 @@ $generated_i18n_strings = array(
 	   %5$s expands to the recommended maximum percentage. */
 	__( '%1$s of the sentences contain %2$smore than %3$s words%4$s, which is more than the recommended maximum of %5$s. Try to shorten the sentences.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/subheadingDistributionTooLongAssessment.js:167
-	__( 'The text does not contain any subheadings. Add at least one subheading.', 'wordpress-seo' ),
+	// Reference: node_modules/yoastseo/js/assessments/readability/subheadingDistributionTooLongAssessment.js:168
+	/* Translators: %1$s expands to a link to https://yoa.st/headings, %2$s expands to the link closing tag. */
+	__( 'The text does not contain any %1$ssubheadings%2$s. Add at least one subheading.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/subheadingDistributionTooLongAssessment.js:170
+	// Reference: node_modules/yoastseo/js/assessments/readability/subheadingDistributionTooLongAssessment.js:171
 	__( 'The amount of words following each of the subheadings doesn\'t exceed the recommended maximum of %1$d words, which is great.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/readability/subheadingDistributionTooLongAssessment.js:173
+	// Reference: node_modules/yoastseo/js/assessments/readability/subheadingDistributionTooLongAssessment.js:174
 	/* Translators: %1$d expands to the number of subheadings, %2$d expands to the recommended value */
 	_n_noop( '%1$d subheading is followed by more than the recommended maximum of %2$d words. Try to insert another subheading.', '%1$d of the subheadings are followed by more than the recommended maximum of %2$d words. Try to insert additional subheadings.', 'wordpress-seo' ),
 
@@ -140,21 +143,21 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/js/assessments/seo/keyphraseLengthAssessment.js:20
 	__( 'The keyphrase is over 10 words, a keyphrase should be shorter.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:27
+	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:26
 	/* Translators: %1$s expands to the keyword density percentage, %2$d expands to the keyword count,
 	   %3$s expands to the maximum keyword density percentage. */
 	__( 'The keyword density is %1$s, which is way over the advised %3$s maximum; the focus keyword was found %2$d times.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:35
+	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:34
 	/* Translators: %1$s expands to the keyword density percentage, %2$d expands to the keyword count,
 	   %3$s expands to the maximum keyword density percentage. */
 	__( 'The keyword density is %1$s, which is over the advised %3$s maximum; the focus keyword was found %2$d times.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:42
+	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:41
 	/* Translators: %1$s expands to the keyword density percentage, %2$d expands to the keyword count. */
 	__( 'The keyword density is %1$s, which is great; the focus keyword was found %2$d times.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:48
+	// Reference: node_modules/yoastseo/js/assessments/seo/keywordDensityAssessment.js:47
 	/* Translators: %1$s expands to the keyword density percentage, %2$d expands to the keyword count. */
 	__( 'The keyword density is %1$s, which is too low; the focus keyword was found %2$d times.', 'wordpress-seo' ),
 
@@ -168,16 +171,16 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionKeywordAssessment.js:20
 	__( 'A meta description has been specified, but it does not contain the focus keyword.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:107
+	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:124
 	__( 'No meta description has been specified. Search engines will display copy from the page instead.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:110
+	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:127
 	__( 'The meta description is under %1$d characters long. However, up to %2$d characters are available.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:113
+	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:130
 	__( 'The meta description is over %1$d characters. Reducing the length will ensure the entire description will be visible.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:116
+	// Reference: node_modules/yoastseo/js/assessments/seo/metaDescriptionLengthAssessment.js:133
 	__( 'The meta description has a nice length.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/js/assessments/seo/outboundLinksAssessment.js:121
@@ -195,20 +198,20 @@ $generated_i18n_strings = array(
 	/* Translators: %1$s expands to the number of outbound links */
 	__( 'This page has %1$s outbound link(s).', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:105
+	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:120
 	__( 'The SEO title is too short. Use the space to add keyword variations or create compelling call-to-action copy.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:108
+	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:123
 	__( 'The SEO title has a nice length.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:111
+	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:126
 	__( 'The SEO title is wider than the viewable limit.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:113
+	// Reference: node_modules/yoastseo/js/assessments/seo/pageTitleWidthAssessment.js:128
 	__( 'Please create an SEO title.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/js/assessments/seo/subheadingsKeywordAssessment.js:116
-	__( 'The focus keyword appears only in %2$d (out of %1$d) subheadings in your copy. Try to use it in at least one more subheading.', 'wordpress-seo' ),
+	__( 'The focus keyword appears in %2$d (out of %1$d) subheadings in your copy.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/js/assessments/seo/subheadingsKeywordAssessment.js:119
 	__( 'You have not used the focus keyword in any subheading (such as an H2) in your copy.', 'wordpress-seo' ),
@@ -301,14 +304,16 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/js/bundledPlugins/previouslyUsedKeywords.js:65
 	__( 'You\'ve never used this focus keyword before, very good.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/bundledPlugins/previouslyUsedKeywords.js:73
-	/* Translators: %1$s and %2$s expand to an admin link where the focus keyword is already used */
-	__( 'You\'ve used this focus keyword %1$sonce before%2$s, be sure to make very clear which URL on your site is the most important for this keyword.', 'wordpress-seo' ),
+	// Reference: node_modules/yoastseo/js/bundledPlugins/previouslyUsedKeywords.js:74
+	/* Translators: %1$s and %2$s expand to an admin link where the focus keyword is already used. %3$s and %4$s
+	   expand to a link to an article on yoast.com about why you should not use a keyword more than once. */
+	__( 'You\'ve used this focus keyword %1$sonce before%2$s. It’s probably a good idea to read about %3$swhy you should not use your focus keyword more than once%4$s.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/bundledPlugins/previouslyUsedKeywords.js:82
-	/* Translators: %1$s and $3$s expand to the admin search page for the focus keyword, %2$d expands to the number of times this focus
-	   keyword has been used before, %4$s and %5$s expand to a link to an article on yoast.com about cornerstone content */
-	__( 'You\'ve used this focus keyword %1$s%2$d times before%3$s, it\'s probably a good idea to read %4$sthis post on cornerstone content%5$s and improve your keyword strategy.', 'wordpress-seo' ),
+	// Reference: node_modules/yoastseo/js/bundledPlugins/previouslyUsedKeywords.js:84
+	/* Translators: %1$s and $3$s expand to the admin search page for the focus keyword, %2$d expands to the number
+	   of times this focus keyword has been used before, %4$s and %5$s expand to a link to an article on yoast.com
+	   about why you should not use a keyword more than once. */
+	__( 'You\'ve used this focus keyword %1$s%2$d times before%3$s. It’s probably a good idea to read about %4$swhy you should not use your focus keyword more than once%5$s.', 'wordpress-seo' ),
 
 	// Reference: node_modules/yoastseo/js/config/presenter.js:12
 	__( 'Feedback', 'wordpress-seo' ),
@@ -352,49 +357,49 @@ $generated_i18n_strings = array(
 	// Reference: node_modules/yoastseo/js/renderers/AssessorPresenter.js:309
 	__( 'Remove marks in the text', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:323
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:331
 	__( 'Edit snippet', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:324
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:332
 	__( 'SEO title', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:325
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:333
 	__( 'Slug', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:326
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:334
 	__( 'Meta description', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:327
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:335
 	__( 'Close snippet editor', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:328
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:336
 	__( 'Snippet preview', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:329
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:337
 	__( 'SEO title preview:', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:330
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:338
 	__( 'Slug preview:', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:331
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:339
 	__( 'Meta description preview:', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:332
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:340
 	__( 'You can click on each element in the preview to jump to the Snippet Editor.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:333
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:341
 	__( 'Desktop preview', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:334
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:342
 	__( 'Mobile preview', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:335
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:343
 	__( 'Scroll to see the preview content.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:513
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:524
 	__( 'Please provide an SEO title by editing the snippet below.', 'wordpress-seo' ),
 
-	// Reference: node_modules/yoastseo/js/snippetPreview.js:572
+	// Reference: node_modules/yoastseo/js/snippetPreview.js:585
 	__( 'Please provide a meta description by editing the snippet below.', 'wordpress-seo' )
 );
 /* THIS IS THE END OF THE GENERATED FILE */

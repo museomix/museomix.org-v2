@@ -34,6 +34,7 @@ class IWP_MMB_Core extends IWP_MMB_Helper
     var $links_instance;
     var $user_instance;
     var $backup_instance;
+    var $backup_new_instance;
 	var $wordfence_instance;
 	var $sucuri_instance;
     var $installer_instance;
@@ -43,8 +44,10 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 	var $ithemessec_instance;
 	var $backup_repository_instance;
 	var $optimize_instance;
+	var $wp_purge_cache_instance;
 	
     private $action_call;
+    public  $request_params;
     private $action_params;
     private $iwp_mmb_pre_init_actions;
     private $iwp_mmb_pre_init_filters;
@@ -146,10 +149,14 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'email_backup' => 'iwp_mmb_email_backup',
 			'check_backup_compat' => 'iwp_mmb_check_backup_compat',
 			'scheduled_backup' => 'iwp_mmb_scheduled_backup',
+			'new_scheduled_backup' => 'iwp_mmb_new_scheduled_backup',
 			'run_task' => 'iwp_mmb_run_task_now',
+			'new_run_task' => 'iwp_mmb_new_run_task_now',
 			'delete_schedule_task' => 'iwp_mmb_delete_task_now',
 			'execute_php_code' => 'iwp_mmb_execute_php_code',
 			'delete_backup' => 'iwp_mmb_delete_backup',
+			'delete_backup_new' => 'iwp_mmb_delete_backup_new',
+			'kill_new_backup' => 'iwp_mmb_kill_new_backup',
 			'remote_backup_now' => 'iwp_mmb_remote_backup_now',
 			'set_notifications' => 'iwp_mmb_set_notifications',
 			'clean_orphan_backups' => 'iwp_mmb_clean_orphan_backups',
@@ -166,9 +173,11 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'maintenance' => 'iwp_mmb_maintenance_mode',
 			
 			'wp_optimize' => 'iwp_mmb_wp_optimize',
+			'wp_purge_cache' => 'iwp_mmb_wp_purge_cache',
 			
 			'backup_repository' => 'iwp_mmb_backup_repository',
 			'trigger_backup_multi' => 'iwp_mmb_trigger_check',
+			'trigger_backup_multi_new' => 'iwp_mmb_trigger_check_new',
 			'get_all_links'         => 'iwp_mmb_get_all_links',
             'update_broken_link'    => 'iwp_mmb_update_broken_link',
             'unlink_broken_link'    => 'iwp_mmb_unlink_broken_link',
@@ -190,39 +199,59 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'save_seo_info' => 'iwp_mmb_yoast_save_seo_info',
 			'fetch_activities_log' => 'iwp_mmb_fetch_activities_log',
 			'sucuri_scan' => 'iwp_mmb_sucuri_scan',
-			'sucuri_change_alert' => 'iwp_mmb_sucuri_change_alert'
+			'sucuri_change_alert' => 'iwp_mmb_sucuri_change_alert',
+			'backup_downlaod' => 'iwp_mmb_backup_downlaod'
 		);
 		
 		add_action('rightnow_end', array( &$this, 'add_right_now_info' ));       
 		add_action('admin_menu', array($this,'iwp_admin_menu_actions'), 999, 1);
 		add_action('admin_init', array(&$this,'admin_actions'));   
-		add_action('init', array( &$this, 'iwp_mmb_remote_action'), 9999);
-		add_action('setup_theme', 'iwp_mmb_parse_request');
+		add_filter('deprecated_function_trigger_error', '__return_false');
+		// add_action('wp_loaded', array( &$this, 'iwp_mmb_remote_action'), 2147483650);
+		add_action('plugins_loaded', 'iwp_mmb_add_readd_request');
+		add_action('setup_theme', 'iwp_mmb_set_request');
 		add_action('set_auth_cookie', array( &$this, 'iwp_mmb_set_auth_cookie'));
 		add_action('set_logged_in_cookie', array( &$this, 'iwp_mmb_set_logged_in_cookie'));
 		
     }
     
+	function admin_wp_loaded_iwp(){
+        if (!defined('WP_ADMIN')) {
+        	define('WP_ADMIN', true);
+        }
+        if (is_multisite() && !defined('WP_NETWORK_ADMIN')) {
+        	define('WP_NETWORK_ADMIN', true);
+        }
+        define('WP_BLOG_ADMIN', true);
+        require_once ABSPATH.'wp-admin/includes/admin.php';
+        // define('DOING_AJAX', true);
+        do_action('admin_init');
+        if (function_exists('wp_clean_update_cache')) {
+            /** @handled function */
+            wp_clean_update_cache();
+        }
+
+        /** @handled function */
+        wp_update_plugins();
+
+        /** @handled function */
+        set_current_screen();
+        do_action('load-update-core.php');
+
+        /** @handled function */
+        wp_version_check();
+
+        /** @handled function */
+        wp_version_check(array(), true);
+    }
+    	
 	function iwp_mmb_remote_action(){
-		if($this->action_call != null){
-			$params = isset($this->action_params) && $this->action_params != null ? $this->action_params : array();
-			call_user_func($this->action_call, $params);
-		}
-	}
-	
-	function register_action_params( $action = false, $params = array() ){
-		
-		if(isset($this->iwp_mmb_pre_init_actions[$action]) && function_exists($this->iwp_mmb_pre_init_actions[$action])){
-			call_user_func($this->iwp_mmb_pre_init_actions[$action], $params);
-		}
-		
-		if(isset($this->iwp_mmb_init_actions[$action]) && function_exists($this->iwp_mmb_init_actions[$action])){
-			$this->action_call = $this->iwp_mmb_init_actions[$action];
-			$this->action_params = $params;
-			
+		global $iwp_mmb_core;
+		if (!empty($iwp_mmb_core->request_params)) {
+			$params = $iwp_mmb_core->request_params;
+			$action = $iwp_mmb_core->request_params['iwp_action'];
 			if( isset($this->iwp_mmb_pre_init_filters[$action]) && !empty($this->iwp_mmb_pre_init_filters[$action])){
 				global $iwp_mmb_filters;
-				
 				foreach($this->iwp_mmb_pre_init_filters[$action] as $_name => $_functions){
 					if(!empty($_functions)){
 						$data = array();
@@ -240,6 +269,32 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 					
 				}
 			}
+		}
+		if($this->action_call != null){
+			$params = isset($this->action_params) && $this->action_params != null ? $this->action_params : array();
+			call_user_func($this->action_call, $params);
+		}
+	}
+	
+	function register_action_params( $action = false, $params = array() ){
+		if ($action == 'get_stats' || $action == 'do_upgrade') {
+			add_action('wp_loaded', array( &$this, 'iwp_mmb_remote_action'), 2147483650);
+			add_action('wp_loaded', array( &$this, 'admin_wp_loaded_iwp'), 2147483649);
+		}elseif ($action == 'install_addon') {
+			add_action('wp_loaded', array( &$this, 'iwp_mmb_remote_action'));
+		}elseif ($action == 'new_run_task' || $action == 'new_scheduled_backup') {
+			add_action('after_setup_theme', array( &$this, 'iwp_mmb_remote_action'), 9999);
+		}else{
+			add_action('init', array( &$this, 'iwp_mmb_remote_action'), 9999);
+		}
+		
+		if(isset($this->iwp_mmb_pre_init_actions[$action]) && function_exists($this->iwp_mmb_pre_init_actions[$action])){
+			call_user_func($this->iwp_mmb_pre_init_actions[$action], $params);
+		}
+		
+		if(isset($this->iwp_mmb_init_actions[$action]) && function_exists($this->iwp_mmb_init_actions[$action])){
+			$this->action_call = $this->iwp_mmb_init_actions[$action];
+			$this->action_params = $params;
 			return true;
 		} 
 		return false;
@@ -372,7 +427,16 @@ class IWP_MMB_Core extends IWP_MMB_Helper
         return $this->optimize_instance;
     }
     
-
+     function wp_purge_cache_instance()
+    {
+    	global $iwp_mmb_plugin_dir;
+    	require_once("$iwp_mmb_plugin_dir/addons/wp_optimize/purge-plugins-cache-class.php");
+        if (!isset($this->wp_purge_cache_instance)) {
+            $this->wp_purge_cache_instance = new IWP_MMB_PURGE_CACHE();
+        }
+        
+        return $this->wp_purge_cache_instance;
+    }
     /**
      * Gets an instance of the WP_BrokenLinks class
      * 
@@ -557,6 +621,26 @@ class IWP_MMB_Core extends IWP_MMB_Helper
      * Gets an instance of stats class
      *
      */
+    function get_new_backup_instance($params = array())
+    {
+    	if ((isset($iwp_backup_core) && is_object($iwp_backup_core) && is_a($iwp_backup_core, 'IWP_MMB_Backup_Core'))) return $iwp_backup_core;
+
+    	require_once($GLOBALS['iwp_mmb_plugin_dir'].'/backup/backup.core.class.php');
+    	iwp_mmb_define_constant();
+    	$iwp_backup_core = new IWP_MMB_Backup_Core();
+    	$GLOBALS['iwp_backup_core'] = $iwp_backup_core;
+    	$this->backup_new_instance = $iwp_backup_core;
+    	if (!$iwp_backup_core->memory_check(192)) {
+    		if (!$iwp_backup_core->memory_check($iwp_backup_core->memory_check_current(WP_MAX_MEMORY_LIMIT))) {
+    			$new = absint($iwp_backup_core->memory_check_current(WP_MAX_MEMORY_LIMIT));
+    			if ($new>32 && $new<100000) {
+    				@ini_set('memory_limit', $new.'M');
+    			}
+    		}
+    	}
+        return $this->backup_new_instance;
+    }
+
     function get_backup_instance($mechanism='')
     {
 		require_once($GLOBALS['iwp_mmb_plugin_dir']."/backup.class.singlecall.php");
@@ -785,7 +869,11 @@ class IWP_MMB_Core extends IWP_MMB_Helper
             @include_once ABSPATH . 'wp-admin/includes/template.php';
             @include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
             @include_once ABSPATH . 'wp-admin/includes/screen.php';
-		
+			if (!$this->define_ftp_constants($params)) {
+				return array(
+					'error' => 'FTP constant define failed', 'error_code' => 'ftp constant define failed'
+				);
+			}
 			if (!$this->is_server_writable()) {
 				return array(
 					'error' => 'Failed, please add FTP details', 'error_code' => 'automatic_upgrade_failed_add_ftp_details'
@@ -1035,6 +1123,10 @@ class IWP_MMB_Core extends IWP_MMB_Helper
     	}
 		    	  	
     	return $all_plugins;
+    }
+
+    function add_login_action(){
+		add_action('plugins_loaded', array( &$this, 'automatic_login'), 10);
     }
     
    

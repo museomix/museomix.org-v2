@@ -28,6 +28,13 @@ class AC_Column_CustomField extends AC_Column_Meta {
 	public function register_settings() {
 		$this->add_setting( new AC_Settings_Column_CustomField( $this ) );
 		$this->add_setting( new AC_Settings_Column_BeforeAfter( $this ) );
+
+		if ( ! ac_is_pro_active() ) {
+			$this->add_setting( new AC_Settings_Column_Pro_Sorting( $this ) );
+			$this->add_setting( new AC_Settings_Column_Pro_Editing( $this ) );
+			$this->add_setting( new AC_Settings_Column_Pro_Filtering( $this ) );
+			$this->add_setting( new AC_Settings_Column_Pro_Export( $this ) );
+		}
 	}
 
 	/**
@@ -42,15 +49,6 @@ class AC_Column_CustomField extends AC_Column_Meta {
 	 */
 	public function get_field() {
 		return $this->get_meta_key();
-	}
-
-	/**
-	 * Only valid for a Listscreen with a meta type
-	 *
-	 * @return mixed
-	 */
-	public function is_valid() {
-		return in_array( $this->get_list_screen()->get_meta_type(), array( 'post', 'user', 'comment', 'term' ) );
 	}
 
 }

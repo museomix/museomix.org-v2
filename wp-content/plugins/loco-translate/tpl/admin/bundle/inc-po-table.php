@@ -43,17 +43,20 @@
                         </a><?php
                         if( $domain ):?> 
                         <nav class="row-actions">
-                            <span class="edit">
+                            <span>
                                 <a href="<?php $po->e('edit')?>"><?php esc_html_e('Edit','loco-translate')?></a> |
                             </span>
-                            <span class="_edit">
+                            <span>
+                                <a href="<?php $po->e('view')?>"><?php esc_html_e('View','loco-translate')?></a> |
+                            </span>
+                            <span>
                                 <a href="<?php $po->e('copy')?>"><?php esc_html_e('Copy','loco-translate')?></a> |
                             </span>
-                            <span class="trash">
-                                <a href="<?php $po->e('delete')?>"><?php esc_html_e('Delete','loco-translate')?></a> | 
+                            <span>
+                                <a href="<?php $po->e('info')?>"><?php esc_html_e('Info','loco-translate')?></a> |
                             </span>
-                            <span class="_edit">
-                                <a href="<?php $po->e('info')?>"><?php esc_html_e('Info','loco-translate')?></a>
+                            <span class="trash">
+                                <a href="<?php $po->e('delete')?>"><?php esc_html_e('Delete','loco-translate')?></a>
                             </span>
                         </nav><?php
                         endif?> 
@@ -86,7 +89,7 @@
                          <a href="<?php $po->e('info')?>"><?php $po->e('name')?></a>
                     </td>
                     <td data-sort-value="<?php $po->f('time','%u')?>">
-                        <time datetime="<?php $po->date('time','Y-m-d H:i:s')?>"><?php $po->date('time')?></time>
+                        <time datetime="<?php $po->date('time','c')?>"><?php $po->date('time')?></time>
                     </td>
                     <td>
                         <?php $po->e('store')?> 

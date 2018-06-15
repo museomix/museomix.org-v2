@@ -39,11 +39,11 @@ class Loco_ajax_XgettextController extends Loco_ajax_common_BundleController {
         $data = $ext->addProject($project)->includeMeta()->getTemplate( $domain );
         
         // additional headers to set in new POT file
-        $headers = array (
-            'Project-Id-Version' => $project->getName(),
-        );
+        $head = $data->getHeaders();
+        $head['Project-Id-Version'] = $project->getName();
         
-        $potsize = $potfile->putContents( $data->msgcat() );
+        // write POT file to disk returning byte length
+        $potsize = $potfile->putContents( $data->msgcat(true) );
         
         // set response data for debugging
         if( loco_debugging() ){

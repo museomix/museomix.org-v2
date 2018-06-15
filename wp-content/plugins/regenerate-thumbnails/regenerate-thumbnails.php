@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Description:  Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.
 Plugin URI:   https://alex.blog/wordpress-plugins/regenerate-thumbnails/
-Version:      3.0.0
+Version:      3.0.2
 Author:       Alex Mills (Viper007Bond)
 Author URI:   https://alex.blog/
 Text Domain:  regenerate-thumbnails
@@ -43,7 +43,7 @@ class RegenerateThumbnails {
 	 *
 	 * @var string
 	 */
-	public $version = '3.0.0';
+	public $version = '3.0.2';
 
 	/**
 	 * The menu ID of this plugin, as returned by add_management_page().
@@ -199,10 +199,11 @@ class RegenerateThumbnails {
 		$script_data = array(
 			'data'    => array(
 				'thumbnailSizes' => $this->get_thumbnail_sizes(),
+				'genericEditURL' => admin_url( 'post.php?action=edit&post=' ),
 			),
 			'options' => array(
 				'onlyMissingThumbnails' => apply_filters( 'regenerate_thumbnails_options_onlymissingthumbnails', true ),
-				'updatePostContents'    => apply_filters( 'regenerate_thumbnails_options_updatepostcontents', true ),
+				'updatePostContents'    => apply_filters( 'regenerate_thumbnails_options_updatepostcontents', false ),
 				'deleteOldThumbnails'   => apply_filters( 'regenerate_thumbnails_options_deleteoldthumbnails', false ),
 			),
 			'l10n'    => array(
@@ -253,17 +254,18 @@ class RegenerateThumbnails {
 					'unregisteredSizes'        => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
 				),
 				'RegenerateMultiple' => array(
-					'errorsEncountered'  => __( 'Errors Encountered', 'regenerate-thumbnails' ),
-					'regenerationLog'    => __( 'Regeneration Log', 'regenerate-thumbnails' ),
-					'pause'              => __( 'Pause', 'regenerate-thumbnails' ),
-					'resume'             => __( 'Resume', 'regenerate-thumbnails' ),
-					'logRegeneratedItem' => __( 'Regenerated {name}', 'regenerate-thumbnails' ),
-					'logSkippedItem'     => __( 'Skipped {name}. {reason}', 'regenerate-thumbnails' ),
-					'duration'           => __( 'All done in {duration}.', 'regenerate-thumbnails' ),
-					'hours'              => __( '{count} hours', 'regenerate-thumbnails' ),
-					'minutes'            => __( '{count} minutes', 'regenerate-thumbnails' ),
-					'seconds'            => __( '{count} seconds', 'regenerate-thumbnails' ),
-					'error'              => __( "Unable to fetch a list of attachment IDs to process from the WordPress REST API. You can check your browser's console for details.", 'regenerate-thumbnails' ),
+					'errorsEncountered'    => __( 'Errors Encountered', 'regenerate-thumbnails' ),
+					'regenerationLog'      => __( 'Regeneration Log', 'regenerate-thumbnails' ),
+					'pause'                => __( 'Pause', 'regenerate-thumbnails' ),
+					'resume'               => __( 'Resume', 'regenerate-thumbnails' ),
+					'logRegeneratedItem'   => __( 'Regenerated {name}', 'regenerate-thumbnails' ),
+					'logSkippedItem'       => __( 'Skipped Attachment ID {id} ({name}): {reason}', 'regenerate-thumbnails' ),
+					'logSkippedItemNoName' => __( 'Skipped Attachment ID {id}: {reason}', 'regenerate-thumbnails' ),
+					'duration'             => __( 'All done in {duration}.', 'regenerate-thumbnails' ),
+					'hours'                => __( '{count} hours', 'regenerate-thumbnails' ),
+					'minutes'              => __( '{count} minutes', 'regenerate-thumbnails' ),
+					'seconds'              => __( '{count} seconds', 'regenerate-thumbnails' ),
+					'error'                => __( "Unable to fetch a list of attachment IDs to process from the WordPress REST API. You can check your browser's console for details.", 'regenerate-thumbnails' ),
 				),
 			),
 		);
@@ -379,13 +381,19 @@ class RegenerateThumbnails {
 			return false;
 		}
 
-		$editor = wp_get_image_editor( $fullsize );
+		$image_editor_args = array(
+			'path'    => $fullsize,
+			'methods' => array( 'resize' )
+		);
 
-		if ( is_wp_error( $editor ) ) {
-			return false;
+		$file_info = wp_check_filetype( $image_editor_args['path'] );
+		// If $file_info['type'] is false, then we let the editor attempt to
+		// figure out the file type, rather than forcing a failure based on extension.
+		if ( isset( $file_info ) && $file_info['type'] ) {
+			$image_editor_args['mime_type'] = $file_info['type'];
 		}
 
-		return true;
+		return (bool) _wp_image_editor_choose( $image_editor_args );
 	}
 
 	/**
@@ -538,4 +546,4 @@ function RegenerateThumbnails() {
 /**
  * Initialize this plugin once all other plugins have finished loading.
  */
-add_action( 'plugins_loaded', 'RegenerateThumbnails' );
+add_action( 'init', 'RegenerateThumbnails' );

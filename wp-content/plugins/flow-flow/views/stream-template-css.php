@@ -102,6 +102,10 @@ border-color: <?php echo $stream->headingcolor;?>;
 	box-shadow: 0 1px 4px 0 <?php echo $stream->shadow;?>;
 }
 
+#ff-stream-<?php echo $id;?> a {
+	color: <?php echo $stream->linkscolor;?>;
+}
+
 #ff-stream-<?php echo $id;?>-slideshow .ff-share-popup, #ff-stream-<?php echo $id;?>-slideshow .ff-share-popup:after,
 #ff-stream-<?php echo $id;?> .ff-share-popup, #ff-stream-<?php echo $id;?> .ff-share-popup:after {
 	background: <?php echo $stream->cardcolor;?>;

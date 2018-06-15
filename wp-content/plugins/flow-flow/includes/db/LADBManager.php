@@ -3,7 +3,6 @@
 use flow\settings\FFGeneralSettings;
 use flow\settings\FFSettingsUtils;
 use flow\LABase;
-use flow\db\FFDB;
 
 if ( ! defined( 'WPINC' ) ) die;
 /**
@@ -83,6 +82,13 @@ abstract class LADBManager {
 	 * Get stream settings by id endpoint
 	 */
 	public final function get_stream_settings(){
+
+        if (FF_USE_WP) {
+            if (!check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( json_encode( array('error' => 'not_allowed') ) );
+            }
+        }
+
 		$id = $_GET['stream-id'];
 		$this->dataInit();
 		die(json_encode( $this->streams[$id]));
@@ -92,6 +98,13 @@ abstract class LADBManager {
 	 * Create stream endpoint
 	 */
 	public final function create_stream(){
+
+        if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( json_encode( array('error' => 'not_allowed') ) );
+            }
+        }
+
 		$stream = $_POST['stream'];
 		$stream = (object)$stream;
 		try{
@@ -121,10 +134,21 @@ abstract class LADBManager {
 	 * Save sources endpoint
 	 */	
 	public final function save_sources_settings(){
+
+        if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                $dontChange = true;
+            }
+        }
+
 		if (isset($_POST['model'])){
 			$model = $_POST['model'];
 			$model['id'] = 1; // DON'T DELETE, ID is always 1, this is needed to detect if model was saved
-			
+
+            if (isset( $dontChange ) && isset( $_POST['model']['feeds_changed'] )) {
+                unset( $_POST['model']['feeds_changed'] );
+            }
+
 			if (isset($_POST['model']['feeds_changed'])){
 				foreach ( $_POST['model']['feeds_changed'] as $feed ) {
 					switch ($feed['state']) {
@@ -159,6 +183,9 @@ abstract class LADBManager {
 					}
 				}
 			}
+            if (isset( $dontChange )) {
+                $model['error'] = 'Not allowed';
+            }
 			echo json_encode($model);
 			die();
 		}
@@ -169,6 +196,13 @@ abstract class LADBManager {
 	 * Save stream endpoint
 	 */
 	public final function save_stream_settings(){
+
+        if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( json_encode( array('error' => 'not_allowed') ) );
+            }
+        }
+
 		$stream = $_POST['stream'];
 		$stream = (object)$stream;
 		$id = $stream->id;
@@ -196,6 +230,13 @@ abstract class LADBManager {
 	 * Save general settings endpoint
 	 */
 	public final function ff_save_settings_fn() {
+
+        if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( json_encode( array('error' => 'not_allowed') ) );
+            }
+        }
+
 		$serialized_settings = $_POST['settings']; // param1=foo&param2=bar
 		$settings = array();
 		parse_str( $serialized_settings, $settings );
@@ -231,7 +272,53 @@ abstract class LADBManager {
 		FFDB::close();
 		die();
 	}
-	
+
+	/**
+	 *
+	 */
+	public final function email_notification(){
+		$admin_email = get_option('admin_email');
+		if (!empty($admin_email)){
+			$disabled_feeds = FFDB::conn()->getAll('SELECT * FROM ?n WHERE enabled = 1 AND system_enabled = 0 AND send_email = 0', $this->cache_table_name);
+			if (!empty($disabled_feeds)){
+				ob_start();
+				include($this->context['root']  . 'views/email.php');
+				$message = ob_get_clean();
+
+				$headers = array();
+				$headers[] = 'MIME-Version: 1.0';
+				$headers[] = 'Content-type: text/html; charset=iso-8859-1';
+				$headers[] = 'X-Mailer: PHP/' . phpversion();
+//				$headers[] = 'To: ' . $admin_email;
+				$headers[] = 'From: Social Stream Apps <' . $admin_email . '>';
+				$blogname = htmlspecialchars_decode(get_bloginfo('name'));
+
+				$success = mail($admin_email, "[Flow-Flow] Broken feeds detected on " . $blogname, $message, implode("\r\n", $headers));
+				if ($success) {
+					try {
+						FFDB::beginTransaction();
+						foreach ( $disabled_feeds as $feed ) {
+							$success = $this->saveSource($feed['feed_id'], array('send_email' => 1));
+							if (!$success){
+								throw new \Exception('Save source problem');
+							}
+						}
+						FFDB::commit();
+					}
+					catch ( \Exception $e){
+						error_log('email_notification');
+						error_log($e->getMessage());
+						error_log($e->getTraceAsString());
+						FFDB::rollbackAndClose();
+					}
+				}
+				else {
+                    $errorMessage = error_get_last();
+                    error_log($errorMessage['message']);
+				}
+			}
+		}
+	}
 
 	public function modifySource($source, $changed_content = true){
 		$id = $source['id'];
@@ -296,7 +383,7 @@ abstract class LADBManager {
 	public function getOption( $optionName, $serialized = false, $lock_row = false ) {
 		$options = FFDB::getOption($this->option_table_name, $this->plugin_slug_down . '_' . $optionName, $serialized, $lock_row);
 		if ($optionName == 'options') {
-			$options['general-uninstall'] = get_option($this->plugin_slug_down . '_general_uninstall', 'nope');
+			$options['general-uninstall'] = get_option($this->plugin_slug_down . '_general_uninstall', FFSettingsUtils::NOPE);
 		}
 		return $options;
 	}
@@ -324,13 +411,20 @@ abstract class LADBManager {
 	}
 	
 	public function delete_stream(){
-		try{
+
+	    if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( json_encode( array('error' => 'not_allowed') ) );
+            }
+        }
+
+		try {
 			FFDB::beginTransaction();
 			$id = $_GET['stream-id'];
 			FFDB::deleteStream($this->streams_table_name, $this->streams_sources_table_name, $id);
 			do_action('ff_after_delete_stream', $id);
 			FFDB::commit();
-		}catch (Exception $e){
+		} catch (Exception $e){
 			error_log($e->getMessage());
 			error_log($e->getTraceAsString());
 			FFDB::rollbackAndClose();
@@ -354,6 +448,9 @@ abstract class LADBManager {
 		}
 		
 		$filename = $dir . "/stream-id" . $stream->id . ".css";
+		if (!is_main_site()){
+			$filename = $dir . '/stream-id' . $stream->id . '-'. get_current_blog_id() . '.css';
+		}
 		ob_start();
 		include($this->context['root']  . 'views/stream-template-css.php');
 		$output = ob_get_clean();
@@ -364,6 +461,13 @@ abstract class LADBManager {
 	}
 	
 	public function clone_stream(){
+
+        if (FF_USE_WP) {
+            if (!current_user_can('manage_options') && !check_ajax_referer( 'flow_flow_nonce', 'security', false ) ) {
+                die( json_encode( array('error' => 'not_allowed') ) );
+            }
+        }
+
 		$stream = $_REQUEST['stream'];
 		$stream = (object)$stream;
 		try{
@@ -395,7 +499,7 @@ abstract class LADBManager {
 	protected function saveGeneralSettings($settings){
 		if (isset($settings['flow_flow_options']['general-uninstall'])){
 			$general_uninstall_option_name = $this->plugin_slug_down . '_general_uninstall';
-			$value = ($settings['flow_flow_options']['general-uninstall'] === 'yep') ? 'yep' : 'nope';
+			$value = ($settings['flow_flow_options']['general-uninstall'] === FFSettingsUtils::YEP) ? FFSettingsUtils::YEP : FFSettingsUtils::NOPE;
 			if ( get_option( $general_uninstall_option_name) !== false ) {
 				update_option( $general_uninstall_option_name, $value );
 			}
@@ -446,7 +550,7 @@ abstract class LADBManager {
 				FFDB::commit();
 			}
 			FFDB::rollback();
-		}catch (Exception $e){
+		}catch (\Exception $e){
 			FFDB::rollbackAndClose();
 		}
 	}
@@ -500,8 +604,8 @@ abstract class LADBManager {
 	}
 	
 	public function addOrUpdatePost($only4insertPartOfSql, $imagePartOfSql, $mediaPartOfSql, $common){
-		$sql = "INSERT INTO ?n SET ?p, ?p ?p ?u ON DUPLICATE KEY UPDATE ?u";
-		if (false == FFDB::conn()->query($sql, $this->posts_table_name, $only4insertPartOfSql, $imagePartOfSql, $mediaPartOfSql, $common, $common)){
+		$sql = "INSERT INTO ?n SET ?p, ?p ?p ?u ON DUPLICATE KEY UPDATE ?p ?p ?u";
+		if (false == FFDB::conn()->query($sql, $this->posts_table_name, $only4insertPartOfSql, $imagePartOfSql, $mediaPartOfSql, $common, $imagePartOfSql, $mediaPartOfSql, $common)){
 			throw new \Exception(FFDB::conn()->conn->error);
 		}
 	}
@@ -537,7 +641,7 @@ abstract class LADBManager {
 	public function addComments($post_id, $comment){
 		$time = time();
 		$sql_insert = "INSERT INTO ?n SET `id` = ?s, `post_id` = ?s, `from` = ?s, `text` = ?s, `created_time` = ?s, `updated_time` = ?s ON DUPLICATE KEY UPDATE ?u";
-		$result = FFDB::conn()->query($sql_insert, $this->comments_table_name, $comment->id, $post_id, is_string($comment->from) ? $comment->from : json_encode($comment->from), $comment->text, $comment->created_time, $comment->created_time, array('updated_time' => $time, 'text' => $comment->text));
+		$result = FFDB::conn()->query($sql_insert, $this->comments_table_name, $comment->id, $post_id, is_string($comment->from) ? $comment->from : (is_object($comment->from) ?  $comment->from->name : 'Facebook user' ), $comment->text, $comment->created_time, $comment->created_time, array('updated_time' => $time, 'text' => $comment->text));
 		if (false === $result){
 			throw new \Exception(FFDB::conn()->conn->error);
 		}
@@ -610,7 +714,15 @@ abstract class LADBManager {
 	}
 	
 	public function systemDisableSource($feedId, $enabled){
-		return FFDB::conn()->query('UPDATE ?n SET `system_enabled` = ?i WHERE `feed_id`=?s', $this->cache_table_name, $enabled, $feedId);
+		$values = array('system_enabled' => $enabled);
+		if($enabled == 0){
+			$values['send_email'] = 0;
+		}
+		return $this->saveSource($feedId, $values);
+	}
+
+	public function saveSource( $feedId, $values ) {
+		return FFDB::saveFeed($this->cache_table_name, $feedId, $values);
 	}
 	
 	public function setCacheInfo($feedId, $values){
@@ -642,7 +754,6 @@ abstract class LADBManager {
 				FFDB::conn()->query('delete from ?n where feed_id = ?s and post_timestamp <= (?p)', $this->posts_table_name, $feed, $sub_query);
 				continue;
 			}
-			break;
 		}
 	}
 	
@@ -666,6 +777,14 @@ abstract class LADBManager {
 						curl_close( $ch );
 						$result = json_decode($result);
 						if (isset($result->registration_id) && $registration_id == $result->registration_id){
+							$settings = $this->getGeneralSettings();
+							$settings = $settings->original();
+							$current_subscription = $settings['news_subscription'];
+							$remote_subscription = $result->subscription == "1" ? FFSettingsUtils::YEP : FFSettingsUtils::NOPE;
+							if ($remote_subscription != $current_subscription){
+								$settings['news_subscription'] = $remote_subscription;
+								$this->setOption('options', $settings, true);
+							}
 							$this->setOption('registration_id', $result->registration_id);
 							$this->setOption('registration_date', time());
 							return true;
@@ -687,7 +806,7 @@ abstract class LADBManager {
 					$name = isset($settings[$option_name]['company_name']) ? $settings[$option_name]['company_name'] : 'Unnamed';
 					$subscription = 0;
 					if (isset($settings[$option_name]['news_subscription']) && !empty($settings[$option_name]['news_subscription'])){
-						$subscription = $settings[$option_name]['news_subscription'] == 'yep' ? 1 : 0;
+						$subscription = $settings[$option_name]['news_subscription'] == FFSettingsUtils::YEP ? 1 : 0;
 					}
 					$post = array(
 							'action' => 'la_activation',

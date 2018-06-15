@@ -34,8 +34,9 @@ class FFTumblr extends FFHttpRequestFeed{
 		return $this->url;
 	}
 
-	protected function items( $request ) {
-		$pxml = json_decode($request);
+	protected function items( $response ) {
+		$response = trim(preg_replace('/^var tumblr_api_read = /', '', trim($response)), ';');
+		$pxml = json_decode($response);
 		return $pxml->posts;
 	}
 

@@ -1,5 +1,7 @@
 <?php
 /**
+ * WPSEO plugin file.
+ *
  * @package WPSEO\Admin
  */
 
@@ -68,6 +70,10 @@ class WPSEO_Configuration_Page {
 	public function enqueue_assets() {
 		wp_enqueue_media();
 
+		if ( ! wp_script_is( 'wp-element', 'registered' ) && function_exists( 'gutenberg_register_scripts_and_styles' ) ) {
+			gutenberg_register_scripts_and_styles();
+		}
+
 		/*
 		 * Print the `forms.css` WP stylesheet before any Yoast style, this way
 		 * it's easier to override selectors with the same specificity later.
@@ -81,6 +87,9 @@ class WPSEO_Configuration_Page {
 		$config = $this->get_config();
 
 		wp_localize_script( WPSEO_Admin_Asset_Manager::PREFIX . 'configuration-wizard', 'yoastWizardConfig', $config );
+
+		$yoast_components_l10n = new WPSEO_Admin_Asset_Yoast_Components_l10n();
+		$yoast_components_l10n->localize_script( WPSEO_Admin_Asset_Manager::PREFIX . 'configuration-wizard' );
 	}
 
 	/**
@@ -249,28 +258,14 @@ class WPSEO_Configuration_Page {
 	 * @return bool
 	 */
 	private function should_add_notification() {
-		$options = $this->get_options();
-
-		return $options['show_onboarding_notice'] === true;
+		return ( WPSEO_Options::get( 'show_onboarding_notice' ) === true );
 	}
 
 	/**
 	 * Remove the options that triggers the notice for the configuration wizard.
 	 */
 	private function remove_notification_option() {
-		$options = $this->get_options();
-
-		$options['show_onboarding_notice'] = false;
-
-		update_option( 'wpseo', $options );
+		WPSEO_Options::set( 'show_onboarding_notice', false );
 	}
 
-	/**
-	 * Returns the set options
-	 *
-	 * @return mixed|void
-	 */
-	private function get_options() {
-		return get_option( 'wpseo' );
-	}
 }

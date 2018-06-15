@@ -59,7 +59,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 	 */
 	public function get_supported_features() {
 		// This options format is handled via only accessing options via $this->get_options()
-		return array('multi_options', 'config_templates');
+		return array('multi_options', 'config_templates', 'multi_storage');
 	}
 
 	/**
@@ -419,6 +419,39 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 	}
 
 	/**
+	 * Get the pre configuration template
+	 *
+	 * @return String - the template
+	 */
+	public function get_pre_configuration_template() {
+
+		global $updraftplus_admin;
+
+		$classes = $this->get_css_classes(false);
+		
+		?>
+		<tr class="<?php echo $classes . ' ' . 'cloudfiles_pre_config_container';?>">
+			<td colspan="2">
+				<img alt="Rackspace Cloud Files" src="<?php echo UPDRAFTPLUS_URL;?>/images/rackspacecloud-logo.png"><br>
+			<?php
+				// Check requirements.
+				global $updraftplus_admin;
+				if (!function_exists('mb_substr')) {
+					$updraftplus_admin->show_double_warning('<strong>'.__('Warning', 'updraftplus').':</strong> '.sprintf(__('Your web server\'s PHP installation does not included a required module (%s). Please contact your web hosting provider\'s support.', 'updraftplus'), 'mbstring').' '.sprintf(__("UpdraftPlus's %s module <strong>requires</strong> %s. Please do not file any support requests; there is no alternative.", 'updraftplus'), 'Cloud Files', 'mbstring'), 'cloudfiles', false);
+				}
+				$updraftplus_admin->curl_check('Rackspace Cloud Files', false, 'cloudfiles', false);
+			?>
+
+			<?php
+				echo '<p>' . __('Get your API key <a href="https://mycloud.rackspace.com/">from your Rackspace Cloud console</a> (read instructions <a href="http://www.rackspace.com/knowledge_center/article/rackspace-cloud-essentials-1-generating-your-api-key">here</a>), then pick a container name to use for storage. This container will be created for you if it does not already exist.', 'updraftplus').' <a href="https://updraftplus.com/faqs/there-appear-to-be-lots-of-extra-files-in-my-rackspace-cloud-files-container/">'.__('Also, you should read this important FAQ.', 'updraftplus').'</a></p>';
+			?>
+			</td>
+		</tr>
+
+		<?php
+	}
+
+	/**
 	 * Get the configuration template
 	 *
 	 * @return String - the template, ready for substitutions to be carried out
@@ -426,28 +459,6 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 	public function get_configuration_template() {
 		$classes = $this->get_css_classes();
 		$template_str = '
-		<tr class="'.$classes.'">
-			<td></td>
-			<td><img alt="Rackspace Cloud Files" src="'.UPDRAFTPLUS_URL.'/images/rackspacecloud-logo.png">
-				<p><em>'.sprintf(__('%s is a great choice, because UpdraftPlus supports chunked uploads - no matter how big your site is, UpdraftPlus can upload it a little at a time, and not get thwarted by timeouts.', 'updraftplus'), 'Rackspace Cloud Files').'</em></p></td>
-		</tr>
-		<tr class="'.$classes.'">
-			<th></th>
-			<td>';
-			// Check requirements.
-			global $updraftplus_admin;
-			if (!function_exists('mb_substr')) {
-			$template_str .= $updraftplus_admin->show_double_warning('<strong>'.__('Warning', 'updraftplus').':</strong> '.sprintf(__('Your web server\'s PHP installation does not included a required module (%s). Please contact your web hosting provider\'s support.', 'updraftplus'), 'mbstring').' '.sprintf(__("UpdraftPlus's %s module <strong>requires</strong> %s. Please do not file any support requests; there is no alternative.", 'updraftplus'), 'Cloud Files', 'mbstring'), 'cloudfiles', false);
-			}
-			$template_str .= $updraftplus_admin->curl_check('Rackspace Cloud Files', false, 'cloudfiles', false).
-			'</td>
-		</tr>
-		<tr class="'.$classes.'">
-		<th></th>
-			<td>
-				<p>'.__('Get your API key <a href="https://mycloud.rackspace.com/">from your Rackspace Cloud console</a> (read instructions <a href="http://www.rackspace.com/knowledge_center/article/rackspace-cloud-essentials-1-generating-your-api-key">here</a>), then pick a container name to use for storage. This container will be created for you if it does not already exist.', 'updraftplus').' <a href="https://updraftplus.com/faqs/there-appear-to-be-lots-of-extra-files-in-my-rackspace-cloud-files-container/">'.__('Also, you should read this important FAQ.', 'updraftplus').'</a></p>
-			</td>
-		</tr>
 		<tr class="'.$classes.'">
 			<th>'.__('US or UK Cloud', 'updraftplus').':</th>
 			<td>
@@ -464,9 +475,8 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 			<tr class="updraftplusmethod cloudfiles">
 				<th><?php _e('Rackspace Storage Region','updraftplus');?>:</th>
 				<td>
-					
 				</td>
-			</tr> 
+			</tr>
 			*/
 		$template_str .= '
 		<tr class="'.$classes.'">
@@ -498,6 +508,11 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 		return $opts;
 	}
 	
+	/**
+	 * Perform a test of user-supplied credentials, and echo the result
+	 *
+	 * @param Array $posted_settings - settings to test
+	 */
 	public function credentials_test($posted_settings) {
 
 		if (empty($posted_settings['apikey'])) {
@@ -510,7 +525,7 @@ class UpdraftPlus_BackupModule_cloudfiles_oldsdk extends UpdraftPlus_BackupModul
 			return;
 		}
 
-		$key = stripslashes($posted_settings['apikey']);
+		$key = $posted_settings['apikey'];
 		$user = $posted_settings['user'];
 		$path = $posted_settings['path'];
 		$authurl = $posted_settings['authurl'];

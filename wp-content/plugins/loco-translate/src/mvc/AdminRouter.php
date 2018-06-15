@@ -55,6 +55,11 @@ class Loco_mvc_AdminRouter extends Loco_hooks_Hookable {
             // translators: Page title for core WordPress translations
             $title = __('Core translations &lsaquo; Loco', 'loco-translate');
             add_submenu_page( 'loco', $title, $label, $cap, 'loco-core', $render );
+
+            $label = __('Languages', 'loco-translate');
+            // translators: Page title for installed languages page
+            $title = __('Languages &lsaquo; Loco', 'loco-translate');
+            add_submenu_page( 'loco', $title, $label, $cap, 'loco-lang', $render );
             
             // settings page only for users with manage_options permission in addition to Loco access:
             if( $user->has_cap('manage_options') ){
@@ -121,13 +126,21 @@ class Loco_mvc_AdminRouter extends Loco_hooks_Hookable {
         catch( Exception $e ){
             Loco_error_AdminNotices::debug( $e->getMessage() );
         }
-        // buffer errors during controller setup
+        // catch errors during controller setup
         try {
             $this->ctrl->_init( $_GET + $args );
             do_action('loco_admin_init', $this->ctrl );
         }
         catch( Loco_error_Exception $e ){
-            Loco_error_AdminNotices::add( $e );
+            $this->ctrl = new Loco_admin_ErrorController;
+            // can't afford an error during an error
+            try {
+                $this->ctrl->_init( array( 'error' => $e ) );
+            }
+            catch( Exception $_e ){
+                Loco_error_AdminNotices::debug( $_e->getMessage() );
+                Loco_error_AdminNotices::add($e);
+            }
         }
 
         return $this->ctrl;
@@ -172,11 +185,13 @@ class Loco_mvc_AdminRouter extends Loco_hooks_Hookable {
             'theme'  => 'list_Themes',
             'plugin' => 'list_Plugins',
             'core'   => 'list_Core',
+            'lang'   => 'list_Locales',
             // bundle level views
             '{type}-view' => 'bundle_View',
             '{type}-conf' => 'bundle_Conf',
             '{type}-setup' => 'bundle_Setup',
             '{type}-debug' => 'bundle_Debug',
+            'lang-view' => 'bundle_Locale',
             // file initialization
             '{type}-msginit'   => 'init_InitPo',
             '{type}-xgettext'  => 'init_InitPot',
@@ -184,7 +199,10 @@ class Loco_mvc_AdminRouter extends Loco_hooks_Hookable {
             '{type}-file-view' => 'file_View',
             '{type}-file-edit' => 'file_Edit',
             '{type}-file-info' => 'file_Info',
+            '{type}-file-diff' => 'file_Diff',
             '{type}-file-delete' => 'file_Delete',
+            // test routes that don't actually exist
+            'test-no-class' => 'test_NonExistantClass',
         );
         if( ! $page ){
             $page = $action;
@@ -266,8 +284,11 @@ class Loco_mvc_AdminRouter extends Loco_hooks_Hookable {
         if( loco_debugging() ){
             $tmp = array();
             $class = self::pageToClass( substr($page,5), $action, $tmp );
-            if( ! $class || ! class_exists($class) ){
-                throw new InvalidArgumentException( sprintf('Invalid admin route: %s => %s', json_encode($route), json_encode($class) ) );
+            if( ! $class ){
+                throw new UnexpectedValueException( sprintf('Invalid admin route: %s', json_encode($route) ) );
+            }
+            else {
+                class_exists( $class, true ); // <- autoloader will throw if not class found
             }
         }
         // if url found, it should contain the page

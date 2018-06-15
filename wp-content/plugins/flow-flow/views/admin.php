@@ -25,7 +25,12 @@ if (!$dbm->canCreateCssFolder()){
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));</script>
 <div id="fade-overlay" class="loading">
+	<div id="waiting-posts">
+		<h1>Pulling the posts for your feed</h1>
+		<p>Please wait until the fetching process is complete. Usually it's quick but it can take up to 2 min. If it takes longer or fails we recommend to ask for <a href="https://social-streams.com/contact/" target="_blank">our support</a> </p>
+	</div>
 	<i class="flaticon-settings"></i>
+
 </div>
 <!-- @TODO: Provide markup for your options page here. -->
 <form id="flow_flow_form" method="post" action="<?php echo $context['form-action']; ?>" enctype="multipart/form-data">

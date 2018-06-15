@@ -32,6 +32,13 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		parent::__construct($uc_helper);
 	}
 	
+	/**
+	 * Forces a resumption of a backup where the resumption is overdue (so apparently cron is not working)
+	 *
+	 * @param Array $info - keys 'job_id' and 'resumption'
+	 *
+	 * @return Array - if there is an error. Otherwise, dies.
+	 */
 	public function forcescheduledresumption($info) {
 	
 		// Casting $resumption to int is absolutely necessary, as the WP cron system uses a hashed serialisation of the parameters for identifying jobs. Different type => different hash => does not match
@@ -52,6 +59,13 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		}
 	}
 	
+	/**
+	 * Calls a WordPress action and dies
+	 *
+	 * @param Array $data - must have at least the key 'wpaction' with a string value
+	 *
+	 * @return WP_Error if no command was included
+	 */
 	public function call_wordpress_action($data) {
 
 		if (empty($data['wpaction'])) return new WP_Error('error', '', 'no command sent');
@@ -60,11 +74,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 
 		die;
 
-// return array(
-// 'response' => $response['response'],
-// 'status' => $response['status'],
-// 'log' => $response['log']
-// );
+		// return array('response' => $response['response'], 'status' => $response['status'], 'log' => $response['log'] );
 	}
 	
 	public function updraftcentral_delete_key($params) {
@@ -199,6 +209,26 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				}
 			}
 
+			// Check this backup set has a incremental_sets array e.g may have been created before this array was introduced
+			if (isset($backups[$timestamp]['incremental_sets'])) {
+				$incremental_sets = array_keys($backups[$timestamp]['incremental_sets']);
+				// Check if there are more than one timestamp in the incremental set
+				if (1 < count($incremental_sets)) {
+					$incremental_select_html = '<label>'.__('Select your incremental restore point', 'updraftplus').': </label>';
+					$incremental_select_html .= '<select name="updraft_incremental_restore_point" id="updraft_incremental_restore_point">';
+					$first_timestamp = $incremental_sets[0];
+					
+					foreach ($incremental_sets as $timestamp) {
+						$pretty_date = get_date_from_gmt(gmdate('Y-m-d H:i:s', (int) $timestamp), 'M d, Y G:i');
+						$esc_pretty_date = esc_attr($pretty_date);
+						$incremental_select_html .= '<option value="'.$timestamp.'" '.selected($timestamp, $first_timestamp, false).'>'.$esc_pretty_date.'</option>';
+					}
+
+					$incremental_select_html .= '</select>';
+					$info['addui'] = empty($info['addui']) ? $incremental_select_html : $info['addui'].'<br>'.$incremental_select_html;
+				}
+			}
+
 			if (0 == count($err) && 0 == count($warn)) {
 				$mess_first = __('The backup archive files have been successfully processed. Now press Restore again to proceed.', 'updraftplus');
 			} elseif (0 == count($err)) {
@@ -285,6 +315,8 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	/**
 	 * N.B. Not exactly the same as the phpinfo method in the UpdraftCentral core class
 	 * Returns a string, as it is directly fetched as the source of an iframe
+	 *
+	 * @return String - returns the resulting HTML
 	 */
 	public function phpinfo() {
 	
@@ -297,6 +329,8 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		ksort($opts);
 		echo '<table><thead></thead><tbody>';
 		foreach ($opts as $key => $opt) {
+			// Administrators can already read these in other ways, but we err on the side of caution
+			if (false !== stripos($opt, 'api_key')) $opt = '***';
 			echo '<tr><td>'.htmlspecialchars($key).'</td><td>'.htmlspecialchars(print_r($opt, true)).'</td>';
 		}
 		echo '</tbody></table>';
@@ -308,6 +342,11 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 
 	}
 	
+	/**
+	 * Return a message if there are more than 4 overdue cron jobs
+	 *
+	 * @return Array - the message, if there is one,  is in the key 'm'
+	 */
 	public function check_overdue_crons() {
 		$how_many_overdue = $this->_updraftplus_admin->howmany_overdue_crons();
 		return ($how_many_overdue >= 4) ? array('m' => $this->_updraftplus_admin->show_admin_warning_overdue_crons($how_many_overdue)) : array();
@@ -426,7 +465,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 						);
 					} else {
 						$node_array[] = array(
-'text' => $value,
+							'text' => $value,
 							'children' => false,
 							'id' => $path . DIRECTORY_SEPARATOR . $value,
 							'type' => 'file',
@@ -561,7 +600,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 							'icon' => 'jstree-file',
 							'li_attr' => array(
 								'path' => $parent_name . DIRECTORY_SEPARATOR . $si['name'],
-'size' => $updraftplus->convert_numeric_size_to_text($si['size'])
+								'size' => UpdraftPlus_Manipulation_Functions::convert_numeric_size_to_text($si['size'])
 							)
 						);
 					}
@@ -585,6 +624,13 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		return $node_array;
 	}
 
+	/**
+	 * Return information on the zipfile download
+	 *
+	 * @param Array $params - details on the download; keys: type, findex, path, timestamp
+	 *
+	 * @return Array
+	 */
 	public function get_zipfile_download($params) {
 		return apply_filters('updraftplus_command_get_zipfile_download', array('error' => 'UpdraftPlus: command (get_zipfile_download) not installed (are you missing an add-on?)'), $params);
 	}
@@ -592,7 +638,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	/**
 	 * Dismiss the notice  which will if .htaccess have any old migrated site reference.
 	 *
-	 * @return boolean Return true if migration notice is dismissed
+	 * @return Boolean Return true if migration notice is dismissed
 	 */
 	public function dismiss_migration_notice_for_old_site_reference() {
 		delete_site_option('updraftplus_migrated_site_domain');
@@ -617,7 +663,8 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 	 * elem_val - Dropdown element value which should be selected for other drodown
 	 */
 	public function collate_change_on_charset_selection($params) {
-		$collate_change_on_charset_selection_data = json_decode(wp_unslash($params['collate_change_on_charset_selection_data']), true);
+		global $updraftplus;
+		$collate_change_on_charset_selection_data = json_decode(UpdraftPlus_Manipulation_Functions::wp_unslash($params['collate_change_on_charset_selection_data']), true);
 		$updraft_restorer_collate = $params['updraft_restorer_collate'];
 		$updraft_restorer_charset = $params['updraft_restorer_charset'];
 
