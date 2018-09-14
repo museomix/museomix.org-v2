@@ -202,6 +202,7 @@ function secupress_add_settings_scripts( $hook_suffix ) {
 			),
 			'comingSoon'       => __( 'Coming Soon', 'secupress' ),
 			'docNotReady'      => __( 'The documentation is actually under construction, thank you for your patience.', 'secupress' ),
+			'offset'           => (int) apply_filters( 'secupress.scanner.scan-speed', (int) secupress_get_option( 'scan-speed', 0 ) ),
 		);
 
 		if ( $is_main ) {
@@ -303,7 +304,9 @@ function secupress_create_menus() {
 		if ( secupress_has_pro() ) {
 			$title = __( 'Add my license', 'secupress' );
 		}
+		if ( ! secupress_is_pro() ) {
 			add_submenu_page( SECUPRESS_PLUGIN_SLUG . '_scanners', $title, $title, $cap, '__return_false', '__return_false' );
+		}
 	}
 
 	// Fix `add_menu_page()` nonsense.
@@ -315,7 +318,7 @@ function secupress_create_menus() {
 	if ( ! secupress_is_pro() ) {
 		end( $submenu );
 		$key = key( $submenu );
-		$url = secupress_has_pro() ? esc_url( secupress_admin_url( 'modules' ) ) : esc_url( secupress_admin_url( 'get-pro' ) );
+		$url = secupress_has_pro() ? esc_url( secupress_admin_url( 'modules' ) . '#module-secupress_display_apikey_options' ) : esc_url( secupress_admin_url( 'get-pro' ) );
 		$submenu[ $key ][ count( $submenu[ $key ] ) -1 ] = array( $title, $cap, $url, $title );
 	}
 }
@@ -641,6 +644,27 @@ function secupress_scanners() {
 										<span class="secupress-progress-val-txt" aria-hidden="true">2 %</span>
 									</span>
 								</button>
+								<?php if ( ! has_filter( 'secupress.scanner.scan-speed' ) ) { ?>
+									<button class="hide-if-no-js secupress-button secupress-button-primary" id="secupress-button-scan-speed" type="button" data-nonce="<?php echo esc_attr( wp_create_nonce( 'secupress-set-scan-speed' ) ); ?>">
+										<span class="dashicons dashicons-arrow-down" aria-hidden="true">
+										</span>
+									</button>
+									<?php
+									$allowed_values = [ 0 => 'max', 250 => 'normal', 1000 => 'low' ];
+									$value          = secupress_get_option( 'scan-speed', 0 );
+									$value          = isset( $allowed_values[ $value ] ) ? $value : 0;
+									$value          = apply_filters( 'secupress.scanner.scan-speed', $value );
+									?>
+									<div class="hidden" id="secupress-scan-speed">
+										<ul>
+											<li><label><input type="radio" name="secupress-scan-speed" value="max" <?php checked( $value, 0 ); ?>> <?php _e( 'Max Speed (def.)', 'secupress' ); ?></label></li>
+											<li><label><input type="radio" name="secupress-scan-speed" value="normal" <?php checked( $value, 250 ); ?>> <?php _e( 'Normal Speed', 'secupress' ); ?></label></li>
+											<li><label><input type="radio" name="secupress-scan-speed" value="low" <?php checked( $value, 1000 ); ?>> <?php _e( 'Low Speed', 'secupress' ); ?></label></li>
+										<span class="dashicons dashicons-editor-help"></span>
+										<a href="<?php _e( 'https://docs.secupress.me/article/156-whats-this-speed-thing', 'secupress' ); ?>" target="_blank"><?php _e( 'What’s this speed thing?', 'secupress' ); ?></a>
+										</ul>
+									</div>
+								<?php } ?>
 							</p>
 						</div>
 					</div><!-- .secupress-scan-header-main -->

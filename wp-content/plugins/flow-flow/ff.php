@@ -44,7 +44,9 @@ if (isset($_REQUEST['action'])){
 					$db->setOption('bg_task_time', $time);
 					echo 'new cache time: ' . $time;
 				}
-			} else  $db->setOption('bg_task_time', time());
+			} else  {
+			    $db->setOption('bg_task_time', time());
+            }
 			break;
 		case 'flow_flow_save_stream_settings':
 			$db->save_stream_settings();

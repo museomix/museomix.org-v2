@@ -40,9 +40,9 @@ class Media extends AbstractModel
      */
     protected $link = '';
 
-	/**
-	 * @var array
-	 */
+    /**
+     * @var array
+     */
     protected $thumbnailResources = [];
 
     /**
@@ -68,7 +68,7 @@ class Media extends AbstractModel
     /**
      * @var array
      */
-    protected $squareThumbnailsUrl = [];
+    protected $squareImages = [];
 
     /**
      * @var array
@@ -125,9 +125,9 @@ class Media extends AbstractModel
      */
     protected $likesCount = 0;
 
-	/**
-	 * @var
-	 */
+    /**
+     * @var
+     */
     protected $location;
 
     /**
@@ -287,9 +287,9 @@ class Media extends AbstractModel
     /**
      * @return array
      */
-    public function getSquareThumbnailsUrl()
+    public function getSquareImages()
     {
-        return $this->squareThumbnailsUrl;
+        return $this->squareImages;
     }
 
 
@@ -472,22 +472,22 @@ class Media extends AbstractModel
             case 'likes':
                 $this->likesCount = $arr[$prop]['count'];
                 break;
-	        case 'thumbnail_resources':
-		        foreach ($value as $thumbnail) {
-			        $resource                                     = new \stdClass();
-			        $resource->url                                = $thumbnail['src'];
-			        $resource->width                              = $thumbnail['config_width'];
-			        $resource->height                             = $thumbnail['config_height'];
-			        $this->thumbnailResources[ $resource->width ] = $resource;
-		        }
-	        	break;
+            case 'thumbnail_resources':
+                foreach ($value as $thumbnail) {
+                    $resource                                     = new \stdClass();
+                    $resource->url                                = $thumbnail['src'];
+                    $resource->width                              = $thumbnail['config_width'];
+                    $resource->height                             = $thumbnail['config_height'];
+                    $this->thumbnailResources[ $resource->width ] = $resource;
+                }
+                break;
             case 'display_resources':
                 foreach ($value as $thumbnail) {
-                	$resource = new \stdClass();
-	                $resource->url = $thumbnail['src'];
-	                $resource->width = $thumbnail['config_width'];
-	                $resource->height = $thumbnail['config_height'];
-                	$this->thumbnailResources[$resource->width] = $resource;
+                    $resource = new \stdClass();
+                    $resource->url = $thumbnail['src'];
+                    $resource->width = $thumbnail['config_width'];
+                    $resource->height = $thumbnail['config_height'];
+                    $this->thumbnailResources[$resource->width] = $resource;
 
                     $thumbnailsUrl[] = $thumbnail['src'];
                     switch ($thumbnail['config_width']) {
@@ -504,7 +504,7 @@ class Media extends AbstractModel
                             ;
                     }
                 }
-                $this->squareThumbnailsUrl = $thumbnailsUrl;
+                $this->squareImages = $thumbnailsUrl;
                 break;
             case 'display_url':
                 $this->imageHighResolutionUrl = $value;
@@ -514,6 +514,9 @@ class Media extends AbstractModel
                 if (!isset($this->type)) {
                     $this->type = static::TYPE_IMAGE;
                 }
+                break;
+            case 'thumbnail_src':
+                $this->imageThumbnailUrl = $value;
                 break;
             case 'carousel_media':
                 $this->type = self::TYPE_CAROUSEL;
@@ -545,7 +548,7 @@ class Media extends AbstractModel
                 }
                 break;
             case 'location':
-            	$this->location = $arr[$prop];
+                $this->location = $arr[$prop];
                 $this->locationId = $arr[$prop]['id'];
                 $this->locationName = $arr[$prop]['name'];
                 break;

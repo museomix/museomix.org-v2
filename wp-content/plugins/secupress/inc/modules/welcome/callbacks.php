@@ -15,7 +15,6 @@ function secupress_welcome_settings_callback() {
 	secupress_check_user_capability();
 	secupress_check_admin_referer( 'secupress_welcome_settings-options' );
 
-	// die(var_dump($_POST));
 	// Handle Import.
 	if ( ! empty( $_FILES['import'] ) ) {
 		secupress_settings_import_callback();
@@ -23,7 +22,7 @@ function secupress_welcome_settings_callback() {
 	}
 
 	// Handle White Label.
-	if ( secupress_is_pro() && isset( $_POST['secupress_display_white_label_submit'] ) ) {
+	if ( secupress_is_pro() && isset( $_POST['secupress_display_white_label_submit'], $_POST['secupress_welcome_settings'] ) ) {
 		secupress_pro_settings_white_label_callback();
 		return;
 	}
@@ -54,7 +53,7 @@ function secupress_settings_licence_callback() {
 	$old_is_pro = $has_old ? $old_is_pro : 0;
 	unset( $old_values['sanitized'] ); // Back compat'.
 	// New values.
-	$values     = ! empty( $_POST['secupress_welcome_settings'] ) && is_array( $_POST['secupress_welcome_settings'] ) ? $_POST['secupress_welcome_settings'] : array(); // WPCS: CSR ok.
+	$values     = ! empty( $_POST['secupress_welcome_settings'] ) && is_array( $_POST['secupress_welcome_settings'] ) ? $_POST['secupress_welcome_settings'] : array(); // WPCS: CSRF ok.
 	$values     = secupress_array_merge_intersect( $values, array(
 		'consumer_email' => '',
 		'consumer_key'   => '',
@@ -123,34 +122,8 @@ function secupress_settings_licence_callback() {
 	// Add other previous values.
 	$values = array_merge( $old_values, $values );
 
-	// Some cleanup.
-	if ( empty( $old_values['wl_plugin_name'] ) || 'SecuPress' === $old_values['wl_plugin_name'] ) {
-		unset( $old_values['wl_plugin_name'] );
-	}
-	if ( empty( $values['wl_plugin_name'] ) || 'SecuPress' === $values['wl_plugin_name'] ) {
-		unset( $values['wl_plugin_name'] );
-	}
-
 	// Finally, save.
 	secupress_update_options( $values );
-
-	// White Label: trick the referrer for the redirection.
-	if ( ! empty( $values['wl_plugin_name'] ) ) {
-		if ( empty( $values['site_is_pro'] ) ) {
-			// Pro deactivation.
-			$old_slug = ! empty( $old_values['wl_plugin_name'] ) ? sanitize_title( $old_values['wl_plugin_name'] ) : 'secupress';
-			$old_slug = 'page=' . $old_slug . '_settings';
-			$new_slug = 'page=secupress_settings';
-		} else {
-			// Pro activation.
-			$old_slug = 'page=secupress_settings';
-			$new_slug = 'page=' . sanitize_title( $values['wl_plugin_name'] ) . '_settings';
-		}
-
-		if ( $old_slug !== $new_slug ) {
-			$_REQUEST['_wp_http_referer'] = str_replace( $old_slug, $new_slug, wp_get_raw_referer() );
-		}
-	}
 
 	/**
 	 * Handle settings errors and return to settings page.
@@ -173,7 +146,61 @@ function secupress_settings_licence_callback() {
 	exit;
 }
 
+/**
+ * Handle the white label validation
+ *
+ * @since 1.4.5
+ * @author Julio Potier
+ **/
+function secupress_pro_settings_white_label_callback() {
+	$old_values = get_site_option( SECUPRESS_SETTINGS_SLUG );
+	$old_values = is_array( $old_values ) ? $old_values : [];
+	$names      = [
+			'wl_plugin_name' => '',
+			'wl_plugin_URI'  => '',
+			'wl_description' => '',
+			'wl_author'      => '',
+			'wl_author_URI'  => '',
+		];
+	// New values.
+	$values     = $_POST['secupress_welcome_settings']; // WPCS: CSRF ok.
+	// Some cleanup.
+	if ( empty( $values['wl_plugin_name'] ) || '' === trim( $values['wl_plugin_name'] ) ) {
+		$values = $names;
+	} else {
+		$values = wp_parse_args( $values, $names );
+	}
 
+	// White Label: trick the referer for the redirection.
+	$old_slug = 'page=' . SECUPRESS_PLUGIN_SLUG . '_modules';
+	$new_slug = 'page=' . sanitize_title( $values['wl_plugin_name'] ) . '_modules';
+
+	if ( '' !== $values['wl_plugin_name'] ) {
+		$values = wp_parse_args( $values, $old_values );
+	} else {
+		$new_slug = 'page=secupress_modules';
+		$values = wp_parse_args( $values, $old_values );
+		foreach ( $names as $name => $dummy ) {
+			unset( $values[ $name ] );
+		}
+	}
+
+	if ( $old_slug !== $new_slug ) {
+		$_REQUEST['_wp_http_referer'] = str_replace( $old_slug, $new_slug, wp_get_raw_referer() );
+		secupress_add_settings_error( 'general', 'settings_updated', __( 'Plugin has been renamed correctly.', 'secupress' ), 'updated' );
+		set_transient( 'settings_errors', secupress_get_settings_errors(), 30 );
+	}
+
+	// Finally, save.
+	secupress_update_options( $values );
+
+	/**
+	 * Redirect back to the settings page that was submitted.
+	 */
+	$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
+	wp_redirect( esc_url_raw( $goback ) );
+	exit;
+}
 /**
  * Call our server to activate the Pro license.
  *
@@ -511,57 +538,4 @@ function secupress_global_settings_pro_license_deactivation_error_message( $mess
 	}
 
 	return $message;
-}
-
-
-/**
- * Deal with the settings import.
- *
- * @since 1.0.3
- * @author Julio Potier
- */
-function secupress_settings_import_callback() {
-	// Make all security tests.
-	secupress_check_user_capability();
-	secupress_check_admin_referer( 'secupress_welcome_settings-options' );
-
-	$import = ! empty( $_FILES['import'] ) && is_array( $_FILES['import'] ) && isset( $_FILES['import']['type'], $_FILES['import']['name'] ) ? $_FILES['import'] : array();
-	$regex  = '/' . SECUPRESS_PLUGIN_SLUG . '-settings-20\d{2}-\d{2}-\d{2}-[a-f0-9]{13}\.txt/';
-
-	if ( ! $import || 'text/plain' !== $import['type'] || ! preg_match( $regex, $import['name'] ) ) {
-		secupress_add_settings_error( 'general', 'settings_updated', __( 'The file was empty.', 'secupress-pro' ), 'error' );
-		set_transient( 'settings_errors', secupress_get_settings_errors(), 30 );
-		$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
-		wp_redirect( esc_url_raw( $goback ) );
-		exit;
-	}
-
-	$file_name       = $import['name'];
-	$_post_action    = $_POST['action'];
-	$_POST['action'] = 'wp_handle_sideload';
-	$file            = wp_handle_sideload( $import, array( 'mimes' => array( 'txt' => 'text/plain' ) ) );
-	$_POST['action'] = $_post_action;
-	$filesystem      = secupress_get_filesystem();
-	$settings        = $filesystem->get_contents( $file['file'] );
-	$settings        = maybe_unserialize( $settings );
-
-	$filesystem->put_contents( $file['file'], '' );
-	$filesystem->delete( $file['file'] );
-
-	if ( is_array( $settings ) ) {
-		$settings = array_map( 'maybe_unserialize', $settings );
-		array_map( 'update_site_option', array_keys( $settings ), $settings );
-		secupress_add_settings_error( 'general', 'settings_updated', __( 'Settings imported and saved.', 'secupress-pro' ), 'updated' );
-	} else {
-		secupress_add_settings_error( 'general', 'settings_updated', __( 'Error: settings could not be imported.', 'secupress-pro' ), 'error' );
-	}
-
-	set_transient( 'settings_errors', secupress_get_settings_errors(), 30 );
-
-	/**
-	 * Redirect back to the settings page that was submitted.
-	 */
-	$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
-	wp_redirect( esc_url_raw( $goback ) );
-	exit;
 }

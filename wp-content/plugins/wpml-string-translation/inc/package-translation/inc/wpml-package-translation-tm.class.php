@@ -322,7 +322,7 @@ class WPML_Package_TM extends WPML_Package_TM_Jobs {
 		$send_to_basket = true;
 		$message_args   = array();
 
-		if ( $job_details->status == ICL_TM_IN_PROGRESS ) {
+        if ( $job_details->status == ICL_TM_IN_PROGRESS && ! $job_details->needs_update ) {
 			$message_args   = array(
 				'type' => 'update',
 				'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already in progress.', 'wpml-string-translation' ), $post_title, $language_name )

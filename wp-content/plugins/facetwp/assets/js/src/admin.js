@@ -1,460 +1,1823 @@
-window.FWP = {
-    is_indexing: false,
-    is_name_editable: false
-};
-
-(function($) {
-    $(function() {
-
-        var row_count = 0;
-
-        FWP.load_settings = function() {
-
-            // Settings load hook
-            FWP.settings = wp.hooks.applyFilters('facetwp/load_settings', FWP.settings);
-
-            $.each(FWP.settings.facets, function(idx, obj) {
-                var $row = $('.clone-facet .facetwp-row').clone();
-                $row.attr('data-id', row_count);
-                $row.attr('data-type', obj.type);
-                $row.find('.facet-fields').html(FWP.clone[obj.type]);
-                $row.find('.facet-label').val(obj.label);
-                $row.find('.facet-name').text(obj.name);
-                $row.find('.facet-type').val(obj.type);
-
-                // Facet load hook
-                wp.hooks.doAction('facetwp/load/' + obj.type, $row, obj);
-
-                // UI for code-based facets
-                if ('undefined' !== typeof obj['_code']) {
-                    $row.addClass('in-code');
-                }
-
-                $('.facetwp-content').append($row);
-                $('.content-facets .facetwp-cards').append(FWP.build_card({
-                    card: 'facet',
-                    id: row_count,
-                    label: obj.label,
-                    name: obj.name,
-                    type: obj.type
-                }));
-                row_count++;
-            });
-
-            $.each(FWP.settings.templates, function(idx, obj) {
-                var $row = $('.clone-template .facetwp-row').clone();
-                $row.attr('data-id', row_count);
-                $row.find('.template-label').val(obj.label);
-                $row.find('.template-name').text(obj.name);
-                $row.find('.template-query').val(obj.query);
-                $row.find('.template-template').val(obj.template);
-
-                // UI for code-based templates
-                if ('undefined' !== typeof obj['_code']) {
-                    $row.addClass('in-code');
-                }
-
-                $('.facetwp-content').append($row);
-                $('.content-templates .facetwp-cards').append(FWP.build_card({
-                    card: 'template',
-                    id: row_count,
-                    label: obj.label,
-                    name: obj.name
-                }));
-                row_count++;
-            });
-
-            $.each(FWP.settings.settings, function(key, val) {
-                var $this = $('.facetwp-setting[data-name=' + key + ']');
-                $this.val(val);
-            });
-
-            // Initialize the Query Builder
-            $('.qb-area').queryBuilder({
-                post_types: FWP.builder.post_types,
-                taxonomies: FWP.builder.taxonomies,
-                refresh: function(el) {
-                    var json = JSON.stringify(el.data('query_args'), null, 2);
-                    json = "<?php\nreturn " + json + ';';
-                    json = json.replace(/[\{\(\[]/g, 'array(');
-                    json = json.replace(/[\}\]]/g, ')');
-                    json = json.replace(/:/g, ' =>');
-                    $('.qb-results').val(json);
-                }
-            });
-
-            // Initialize fSelect
-            $('.qb-post-type').fSelect({
-                placeholder: FWP.i18n['All post types']
-            });
-
-            $('.export-items').fSelect({
-                placeholder: FWP.i18n['Select some items']
-            });
-
-            // Sortable
-            $('.facetwp-cards').sortable({
-                handle: '.card-label'
-            });
-
-            // Hide the preloader
-            $('.facetwp-loading').addClass('hidden');
-            $('.facetwp-header-nav a:first').click();
-            $('.facetwp-region-settings .facetwp-subnav a:first').click();
-        }
-
-
-        FWP.build_card = function(params) {
-            var output = '<li data-id="' + params.id + '">';
-            output += '<div class="facetwp-card">';
-            output += '<div class="card-delete"></div>';
-            output += '<div class="card-label">' + params.label + '</div>';
-            if ('facet' === params.card) {
-                output += '<div class="card-type">' + params.type + '</div>';
-            }
-            output += '</div>';
-            output += '</li>';
-            return output;
-        }
-
-
-        // Is the indexer running?
-        FWP.get_progress = function() {
-            $.post(ajaxurl, {
-                action: 'facetwp_heartbeat',
-                nonce: FWP.nonce
-            }, function(response) {
-
-                // Remove extra spaces added by some themes
-                var response = response.trim();
-
-                if ('-1' == response) {
-                    $('.facetwp-response').html(FWP.i18n['Indexing complete']);
-                    FWP.is_indexing = false;
-                }
-                else if ($.isNumeric(response)) {
-                    $('.facetwp-response').html(FWP.i18n['Indexing'] + '... ' + response + '%');
-                    $('.facetwp-response').addClass('visible');
-                    setTimeout(function() {
-                        FWP.get_progress();
-                    }, 5000);
-                }
-                else {
-                    $('.facetwp-response').html(response);
-                    FWP.is_indexing = false;
-                }
-            });
-        }
-        FWP.get_progress();
-
-
-        // Topnav
-        $(document).on('click', '.facetwp-tab', function() {
-            var tab = $(this).attr('rel');
-            $('.facetwp-tab').removeClass('active');
-            $(this).addClass('active');
-            $('.facetwp-region').removeClass('active');
-            $('.facetwp-region-' + tab).addClass('active');
-        });
-
-
-        // Conditionals based on facet type
-        $(document).on('change', '.facet-type', function() {
-            var val = $(this).val();
-            var $facet = $(this).closest('.facetwp-row');
-            $facet.find('.facetwp-show').show();
-
-            if (val !== $facet.attr('data-type')) {
-                $facet.find('.facet-fields').html(FWP.clone[val]);
-                $facet.attr('data-type', val);
-            }
-
-            wp.hooks.doAction('facetwp/change/' + val, $(this));
-
-            // Update the card
-            var id = $facet.attr('data-id');
-            $('.facetwp-cards li[data-id="'+ id +'"] .card-type').text(val);
-
-            // Trigger .facet-source
-            $facet.find('.facet-source').trigger('change');
-        });
-
-
-        // Conditionals based on facet source
-        $(document).on('change', '.facet-source', function() {
-            var val = $(this).val();
-            var $facet = $(this).closest('.facetwp-row');
-            var facet_type = $facet.find('.facet-type').val();
-            var display = ('string' === typeof val && -1 < val.indexOf('tax/')) ? 'table-row' : 'none';
-
-            if ('checkboxes' === facet_type || 'dropdown' === facet_type) {
-                $facet.find('.facet-parent-term').closest('tr').css({ 'display' : display });
-                $facet.find('.facet-hierarchical').closest('tr').css({ 'display' : display });
-            }
-            else if ('fselect' === facet_type || 'radio' === facet_type) {
-                $facet.find('.facet-parent-term').closest('tr').css({ 'display' : display });
-            }
-        });
-
-
-        // Conditionals based on facet source_other
-        $(document).on('change', '.facet-source-other', function() {
-            var $facet = $(this).closest('.facetwp-row');
-            var display = ('' !== $(this).val()) ? 'table-row' : 'none';
-            $facet.find('.facet-compare-type').closest('tr').css({ 'display' : display });
-        });
-
-
-        // Add item
-        $(document).on('click', '.facetwp-add', function() {
-            var $parent = $(this).closest('.facetwp-col');
-            var type = $parent.hasClass('content-facets') ? 'facet' : 'template';
-            var label = ('facet' === type) ? 'New facet' : 'New template';
-            var name = ('facet' === type) ? 'new_facet' : 'new_template';
-
-            var $row = $('.clone-' + type + ' .facetwp-row').clone();
-            $row.attr('data-id', row_count);
-
-            $('.facetwp-content').append($row);
-            $parent.find('.facetwp-cards').append(FWP.build_card({
-                card: type,
-                id: row_count,
-                label: label,
-                name: name,
-                type: 'checkboxes'
-            }));
-
-            // Simulate a click
-            $parent.find('.facetwp-cards li:last .facetwp-card').trigger('click');
-
-            row_count++;
-        });
-
-
-        // Remove item
-        $(document).on('click', '.card-delete', function(e) {
-            if (confirm(FWP.i18n['Are you sure?'])) {
-                var id = $(this).closest('li').attr('data-id');
-                $(this).closest('.facetwp-region').find('.facetwp-content .facetwp-row[data-id="' + id + '"]').remove();
-                $(this).closest('li').remove();
-            }
-            e.stopPropagation();
-        });
-
-
-        // Edit item
-        $(document).on('click', '.facetwp-card', function(e) {
-            var $this = $(this);
-            var id = $this.closest('li').attr('data-id');
-            var $el = $('.facetwp-row[data-id="' + id + '"]');
-
-            $('.facetwp-grid').addClass('hidden');
-            $('.facetwp-region-basics .facetwp-subnav .btn-wrap').removeClass('hidden');
-            $('.facetwp-region-basics .facetwp-subnav .search-wrap').addClass('hidden');
-            $el.addClass('visible');
-
-            // Trigger facet conditionals
-            if ($this.closest('.facetwp-col').hasClass('content-facets')) {
-                $el.find('.facet-type').trigger('change');
-                $el.find('.facet-source').fSelect();
-            }
-
-            // Scroll to top
-            $('html, body').animate({ scrollTop: 0 }, 'fast');
-
-            // Set the active row
-            FWP.active_row = id;
-        });
-
-
-        // Back button
-        $(document).on('click', '.facetwp-back', function() {
-            $('.facetwp-grid').removeClass('hidden');
-            $('.facetwp-row.visible').removeClass('visible');
-            $(this).closest('.btn-wrap').addClass('hidden');
-            $(this).closest('.facetwp-subnav').find('.search-wrap').removeClass('hidden');
-        });
-
-
-        // Focus on the label
-        $(document).on('focus', '.facet-label, .template-label', function() {
-            var type = $(this).hasClass('facet-label') ? 'facet' : 'template';
-            var name_val = $(this).siblings('.' + type + '-name').text();
-            FWP.is_name_editable = ('' === name_val || ('new_' + type) === name_val);
-        });
-
-
-        // Change the label
-        $(document).on('keyup', '.facet-label, .template-label', function() {
-            var label = $(this).val();
-            var type = $(this).hasClass('facet-label') ? 'facet' : 'template';
-            var $row = $(this).closest('.facetwp-row');
-            var id = $row.attr('data-id');
-
-            if (FWP.is_name_editable) {
-                var val = $.trim(label).toLowerCase();
-                val = val.replace(/[^\w- ]/g, ''); // strip invalid characters
-                val = val.replace(/[- ]/g, '_'); // replace space and hyphen with underscore
-                val = val.replace(/[_]{2,}/g, '_'); // strip consecutive underscores
-
-                // Update the input field
-                $(this).siblings('.' + type + '-name').text(val);
-            }
-
-            // Edit the card
-            $('.facetwp-cards li[data-id="'+ id +'"] .card-label').text(label);
-        });
-
-
-        // Open modal window
-        $(document).on('click', '.open-builder', function() {
-            $('.media-modal').show();
-            $('.media-modal-backdrop').show();
-        });
-
-
-        // Send Query Builder arguments to the active editor
-        $(document).on('click', '.qb-send', function() {
-            var args = $('.modal-content-wrap').find('.qb-results').val();
-            $('.facetwp-row[data-id="' + FWP.active_row + '"] .template-query').val(args);
-            $('.media-modal-close').trigger('click');
-        });
-
-
-        // Close modal window
-        $(document).on('click', '.media-modal-close', function() {
-            $('.media-modal').hide();
-            $('.media-modal-backdrop').hide();
-        });
-
-
-        // Copy to clipboard
-        $(document).on('click', '.copy-shortcode', function() {
-            var $this = $(this);
-            var orig_text = $this.text();
-            var $el = $('.facetwp-clipboard');
-            var name = $(this).closest('.facetwp-row').find('.facet-name').text();
-
-            try {
-                $el.removeClass('hidden');
-                $el.val('[facetwp facet="' + name + '"]');
-                $el.select();
-                document.execCommand('copy');
-                $el.addClass('hidden');
-                $this.text('Copied!');
-            }
-            catch(err) {
-                $this.text('Press CTRL+C to copy');
-            }
-
-            window.setTimeout(function() {
-                $this.text(orig_text);
-            }, 2000);
-        });
-
-
-        // Code unlock
-        $(document).on('click', '.code-unlock .unlock', function() {
-            $(this).closest('.facetwp-row').removeClass('in-code');
-        });
-
-
-        // Tab click
-        $(document).on('click', '.facetwp-region-settings .facetwp-subnav a', function() {
-            var tab = $(this).attr('data-tab');
-            $('.facetwp-region-settings .facetwp-subnav a').removeClass('active');
-            $('.facetwp-settings-section').removeClass('active');
-            $('.facetwp-region-settings .facetwp-subnav a[data-tab=' + tab + ']').addClass('active');
-            $('.facetwp-settings-section[data-tab=' + tab + ']').addClass('active');
-        });
-
-
-        // Save
-        $(document).on('click', '.facetwp-save', function() {
-            $('.facetwp-response').html(FWP.i18n['Saving'] + '...');
-            $('.facetwp-response').addClass('visible');
-
-            var data = {
-                'facets': [],
-                'templates': [],
-                'settings': {}
-            };
-
-            // Loop through cards, looking up the content
-            $('.facetwp-cards li').each(function() {
-                var $this = $('.facetwp-row[data-id="' + $(this).data('id') + '"]');
-
-                if ($this.hasClass('in-code')) {
-                    return;
-                }
-
-                // Facet
-                if ($this.is('[data-type]')) {
-                    var obj = {
-                        'label': $this.find('.facet-label').val(),
-                        'name': $this.find('.facet-name').text(),
-                        'type': $this.find('.facet-type').val()
+(($ => {
+
+    $(() => {
+        init_vue();
+        init_jquery();
+    });
+
+    function init_vue() {
+
+        Vue.config.devtools = true;
+
+        Vue.component('multiselect', VueMultiselect.default);
+
+        Vue.filter('i18n', str => FWP.__(str));
+
+        // Defaults mixin
+        const builder_defaults = {
+            methods: {
+                defaultLayout() {
+                    return {
+                        items: [this.defaultRow()],
+                        settings: this.getDefaultSettings('layout')
+                    };
+                },
+                defaultRow() {
+                    return {
+                        type: 'row',
+                        items: [this.defaultCol()],
+                        settings: this.getDefaultSettings('row')
+                    };
+                },
+                defaultCol() {
+                    return {
+                        type: 'col',
+                        items: [],
+                        settings: this.getDefaultSettings('col')
+                    };
+                },
+                defaultItem(source) {
+                    return {
+                        type: 'item',
+                        source,
+                        settings: this.getDefaultSettings('item', source)
+                    };
+                },
+                mergeSettings(settings, type, source) {
+                    let defaults = this.getDefaultSettings(type, source);
+                    let default_keys = Object.keys(defaults);
+                    let setting_keys = Object.keys(settings);
+
+                    // Automatically inject new settings
+                    let missing_keys = default_keys.filter(name => !setting_keys.includes(name));
+
+                    missing_keys.forEach((name, index) => {
+                        Vue.set(settings, name, defaults[name]);
+                    });
+
+                    return settings;
+                },
+                cloneObj(obj) {
+                    return JSON.parse(JSON.stringify(obj));
+                },
+                getSettingsMeta() {
+                    let settings = {
+                        num_columns: {
+                            type: 'number',
+                            title: FWP.__('Results per row'),
+                            defaultValue: 1
+                        },
+                        grid_gap: {
+                            type: 'number',
+                            title: FWP.__('Grid gap'),
+                            defaultValue: 10
+                        },
+                        text_style: {
+                            type: 'text-style',
+                            title: FWP.__('Text style'),
+                            tab: 'style',
+                            defaultValue: {
+                                align: '',
+                                bold: false,
+                                italic: false
+                            }
+                        },
+                        text_color: {
+                            type: 'color',
+                            title: FWP.__('Text color'),
+                            tab: 'style'
+                        },
+                        font_size: {
+                            type: 'slider',
+                            title: FWP.__('Font size'),
+                            tab: 'style',
+                            defaultValue: {
+                                unit: 'px',
+                                size: 0
+                            }
+                        },
+                        background_color: {
+                            type: 'color',
+                            title: FWP.__('Background color'),
+                            tab: 'style'
+                        },
+                        border: {
+                            type: 'border',
+                            title: FWP.__('Border'),
+                            tab: 'style',
+                            defaultValue: {
+                                style: 'none',
+                                color: '',
+                                width: {
+                                    unit: 'px',
+                                    top: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    left: 0
+                                }
+                            },
+                            children: {
+                                style: {
+                                    type: 'select',
+                                    title: FWP.__('Border style'),
+                                    choices: {
+                                        'none': FWP.__('None'),
+                                        'solid': FWP.__('Solid'),
+                                        'dashed': FWP.__('Dashed'),
+                                        'dotted': FWP.__('Dotted'),
+                                        'double': FWP.__('Double')
+                                    }
+                                },
+                                color: {
+                                    type: 'color',
+                                    title: FWP.__('Border color')
+                                },
+                                width: {
+                                    type: 'utrbl',
+                                    title: FWP.__('Border width')
+                                }
+                            }
+                        },
+                        button_text: {
+                            type: 'text',
+                            title: FWP.__('Button text')
+                        },
+                        button_text_color: {
+                            type: 'color',
+                            title: FWP.__('Button text color')
+                        },
+                        button_color: {
+                            type: 'color',
+                            title: FWP.__('Button color')
+                        },
+                        button_padding: {
+                            type: 'utrbl',
+                            title: FWP.__('Button padding'),
+                            defaultValue: {
+                                unit: 'px',
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                left: 0
+                            }
+                        },
+                        separator: {
+                            type: 'text',
+                            title: FWP.__('Separator'),
+                            defaultValue: ', '
+                        },
+                        custom_css: {
+                            type: 'textarea',
+                            title: FWP.__('Custom CSS'),
+                            tab: 'advanced'
+                        },
+                        grid_template_columns: {
+                            type: 'text',
+                            title: FWP.__('Column widths'),
+                            defaultValue: '1fr'
+                        },
+                        content: {
+                            type: 'textarea',
+                            title: FWP.__('Content')
+                        },
+                        image_size: {
+                            type: 'select',
+                            title: FWP.__('Image size'),
+                            defaultValue: 'thumbnail',
+                            choices: {
+                                'thumbnail': 'Thumbnail (150px)',
+                                'medium': 'Medium (300px)',
+                                'medium_large': 'Medium Large (768px)',
+                                'large': 'Large (1024px)',
+                                'full': 'Original'
+                            },
+                            v_show: [
+                                { type: 'source', value: 'featured_image' }
+                            ]
+                        },
+                        author_field: {
+                            type: 'select',
+                            title: FWP.__('Author field'),
+                            defaultValue: 'display_name',
+                            choices: {
+                                'display_name': FWP.__('Display name'),
+                                'user_login': FWP.__('User login'),
+                                'ID': FWP.__('User ID')
+                            }
+                        },
+                        field_type: {
+                            type: 'select',
+                            title: FWP.__('Field type'),
+                            defaultValue: 'text',
+                            choices: {
+                                'text': 'Text',
+                                'date': 'Date',
+                                'number': 'Number'
+                            }
+                        },
+                        date_format: {
+                            type: 'text',
+                            title: FWP.__('Date format'),
+                            placeholder: 'F j, Y',
+                            v_show: [
+                                { type: 'field_type', value: 'date' },
+                                { type: 'source', value: 'post_date' },
+                                { type: 'source', value: 'post_modified' }
+                            ]
+                        },
+                        input_format: {
+                            type: 'text',
+                            title: FWP.__('Input format'),
+                            placeholder: 'Y-m-d',
+                            v_show: [
+                                { type: 'field_type', value: 'date' },
+                                { type: 'source', value: 'post_date' },
+                                { type: 'source', value: 'post_modified' }
+                            ]
+                        },
+                        number_format: {
+                            type: 'select',
+                            title: FWP.__('Number format'),
+                            choices: {
+                                '': FWP.__('None'),
+                                'n': '1234',
+                                'n.n': '1234.5',
+                                'n.nn': '1234.56',
+                                'n,n': '1,234',
+                                'n,n.n': '1,234.5',
+                                'n,n.nn': '1,234.56'
+                            },
+                            v_show: [
+                                { type: 'field_type', value: 'number' }
+                            ]
+                        },
+                        link: {
+                            type: 'link',
+                            title: FWP.__('Link'),
+                            defaultValue: {
+                                type: 'none',
+                                href: '',
+                                target: ''
+                            },
+                            children: {
+                                type: {
+                                    type: 'select',
+                                    title: FWP.__('Link type'),
+                                    choices: {
+                                        'none': FWP.__('None'),
+                                        'post': FWP.__('Post URL'),
+                                        'custom': FWP.__('Custom URL')
+                                    }
+                                }
+                            }
+                        },
+                        prefix: {
+                            type: 'text',
+                            title: FWP.__('Prefix')
+                        },
+                        suffix: {
+                            type: 'text',
+                            title: FWP.__('Suffix')
+                        },
+                        is_hidden: {
+                            type: 'checkbox',
+                            defaultValue: false,
+                            suffix: FWP.__('Hide item?'),
+                            tab: 'advanced'
+                        },
+                        padding: {
+                            type: 'utrbl',
+                            title: FWP.__('Padding'),
+                            defaultValue: {
+                                unit: 'px',
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                left: 0
+                            },
+                            tab: 'style'
+                        },
+                        name: {
+                            type: 'text',
+                            title: FWP.__('Unique name'),
+                            tab: 'advanced'
+                        },
+                        css_class: {
+                            type: 'text',
+                            title: FWP.__('CSS class'),
+                            tab: 'advanced'
+                        }
                     };
 
-                    // Argument order changed in 3.0.0
-                    try {
-                        obj = wp.hooks.applyFilters('facetwp/save/' + obj.type, obj, $this);
-                    }
-                    catch(err) {
-                        obj = wp.hooks.applyFilters('facetwp/save/' + obj.type, $this, obj);
+                    settings.button_border = this.cloneObj(settings.border);
+                    settings.button_border.title = FWP.__('Button border');
+                    settings.button_border.tab = 'content';
+
+                    settings.term_link = this.cloneObj(settings.link);
+                    settings.term_link.children.type.choices = {
+                        'none': FWP.__('None'),
+                        'term': FWP.__('Term URL'),
+                        'custom': FWP.__('Custom URL')
+                    };
+
+                    return settings;
+                },
+                getDefaultFields(type, source) {
+                    let fields = [];
+
+                    if ('layout' == type) {
+                        fields.push('num_columns', 'grid_gap', 'custom_css');
                     }
 
-                    data.facets.push(obj);
-                }
-                // Template
-                else {
-                    data.templates.push({
-                        'label': $this.find('.template-label').val(),
-                        'name': $this.find('.template-name').text(),
-                        'query': $this.find('.template-query').val(),
-                        'template': $this.find('.template-template').val()
+                    if ('row' == type) {
+                        fields.push('grid_template_columns');
+                    }
+
+                    if ('item' == type) {
+                        if ('html' == source) {
+                            fields.push('content');
+                        }
+                        if ('featured_image' == source) {
+                            fields.push('image_size', 'link');
+                        }
+                        if ('button' == source) {
+                            fields.push('button_text', 'button_text_color', 'button_color', 'button_padding', 'button_border', 'link');
+                        }
+                        if ('post_date' == source || 'post_modified' == source) {
+                            fields.push('date_format', 'input_format');
+                        }
+                        if ('post_title' == source) {
+                            fields.push('link');
+                        }
+                        if ('post_author' == source) {
+                            fields.push('author_field');
+                        }
+                        if (0 === source.indexOf('cf/')) {
+                            fields.push('field_type', 'date_format', 'input_format', 'number_format', 'link');
+                        }
+                        if (0 === source.indexOf('tax/')) {
+                            fields.push('separator', 'term_link');
+                        }
+                        if (!['html', 'button', 'featured_image'].includes(source)) {
+                            fields.push('prefix', 'suffix');
+                        }
+
+                        fields.push('is_hidden');
+                    }
+
+                    fields.push('border', 'background_color', 'padding', 'text_color', 'text_style', 'font_size', 'name', 'css_class');
+
+                    return fields;
+                },
+                getDefaultSettings(type, source) {
+                    let settings = {};
+                    let settings_meta = this.getSettingsMeta();
+                    let fields = this.getDefaultFields(type, source);
+
+                    fields.forEach(name => {
+                        let defaultValue = settings_meta[name].defaultValue || '';
+
+                        if ('name' == name) {
+                            defaultValue = 'el-' + Math.random().toString(36).substring(7);
+                        }
+
+                        settings[name] = defaultValue;
                     });
+
+                    return settings;
                 }
-            });
+            }
+        };
 
-            $('.facetwp-region-settings .facetwp-setting').each(function() {
-                var name = $(this).attr('data-name');
-                data.settings[name] = $(this).val();
-            });
+        /* ================ query builder ================ */
 
-            // Settings save hook
-            data = wp.hooks.applyFilters('facetwp/save_settings', data);
+        Vue.component('query-builder', {
+            props: {
+                query_obj: {
+                    type: Object,
+                    required: true
+                }
+            },
+            template: `
+            <div class="qb-wrap">
+                <div>
+                    {{ 'Fetch' | i18n }}
+                    <multiselect
+                        v-model="query_obj.post_type"
+                        :multiple="true"
+                        :searchable="false"
+                        :options="$root.query_data.post_types"
+                        :close-on-select="false"
+                        :show-labels="false"
+                        label="label"
+                        track-by="value"
+                        placeholder="All post types">
+                    </multiselect>
+                    {{ 'and show' | i18n }}
+                    <input type="number" v-model.number="query_obj.posts_per_page" class="qb-posts-per-page" />
+                    {{ 'per page' | i18n }}
+                </div>
 
-            $.post(ajaxurl, {
-                action: 'facetwp_save',
-                nonce: FWP.nonce,
-                data: JSON.stringify(data)
-            }, function(response) {
-                $('.facetwp-response').html(response.message);
-                $('.facetwp-rebuild').toggleClass('flux', response.reindex);
-            }, 'json');
+                <div class="qb-condition"
+                    v-show="query_obj.orderby.length">
+                    {{ 'Sort by' | i18n }}
+                </div>
+
+                <div v-for="(row, index) in query_obj.orderby" class="qb-condition">
+                    <select v-model="row.key" class="qb-object">
+                        <optgroup label="Posts">
+                            <option value="ID">ID</option>
+                            <option value="title">{{ 'Post Title' | i18n }}</option>
+                            <option value="name">{{ 'Post Name' | i18n }}</option>
+                            <option value="type">{{ 'Post Type' | i18n }}</option>
+                            <option value="date">{{ 'Post Date' | i18n }}</option>
+                            <option value="modified">{{ 'Post Modified' | i18n }}</option>
+                            <option value="menu_order">{{ 'Menu Order' | i18n }}</option>
+                            <option value="post__in">post__in</option>
+                        </optgroup>
+                        <optgroup label="Custom Fields">
+                            <option v-for="(label, name) in $root.data_sources.custom_fields.choices" :value="name">{{ label }}</option>
+                        </optgroup>
+                    </select>
+                    <select v-model="row.type" v-show="row.key.substr(0, 3) == 'cf/'" class="qb-type">
+                        <option value="CHAR">TEXT</option>
+                        <option value="NUMERIC">NUMERIC</option>
+                    </select>
+                    <select v-model="row.order" class="qb-order">
+                        <option value="ASC">ASC</option>
+                        <option value="DESC">DESC</option>
+                    </select>
+                    <span @click="deleteSortCriteria(index)" class="qb-remove">
+                        <i class="fas fa-minus-circle"></i>
+                    </span>
+                </div>
+
+                <div class="qb-condition"
+                    v-show="query_obj.filters.length">
+                    {{ 'Narrow results by' | i18n }}
+                </div>
+
+                <div v-for="(row, index) in query_obj.filters" class="qb-condition">
+                    <select v-model="row.key" class="qb-object">
+                        <optgroup v-for="data in $root.query_data.filter_by" :label="data.label">
+                            <option v-for="(label, name) in data.choices" :value="name" v-html="label"></option>
+                        </optgroup>
+                    </select>
+
+                    <select v-model="row.type" v-show="row.key.substr(0, 3) == 'cf/'" class="qb-type">
+                        <option value="CHAR">TEXT</option>
+                        <option value="NUMERIC">NUMERIC</option>
+                    </select>
+
+                    <select v-model="row.compare" class="qb-compare">
+                        <option v-if="showCompare('=', row)" value="=">=</option>
+                        <option v-if="showCompare('!=', row)" value="!=">!=</option>
+                        <option v-if="showCompare('>', row)" value=">">&gt;</option>
+                        <option v-if="showCompare('>=', row)" value=">=">&gt;=</option>
+                        <option v-if="showCompare('<', row)" value="<">&lt;</option>
+                        <option v-if="showCompare('<=', row)" value="<=">&lt;=</option>
+                        <option v-if="showCompare('IN', row)" value="IN">IN</option>
+                        <option v-if="showCompare('NOT IN', row)" value="NOT IN">NOT IN</option>
+                        <option v-if="showCompare('EXISTS', row)" value="EXISTS">EXISTS</option>
+                        <option v-if="showCompare('NOT EXISTS', row)" value="NOT EXISTS">NOT EXISTS</option>
+                    </select>
+
+                    <multiselect
+                        v-model="row.value"
+                        v-show="row.compare != 'EXISTS' && row.compare != 'NOT EXISTS'"
+                        v-on:tag="addTag($event, row.value)"
+                        :multiple="true"
+                        :taggable="true"
+                        :show-labels="false"
+                        :options="[]"
+                        :closeOnSelect="false"
+                        :placeholder="getPlaceholder(row)"
+                        tag-placeholder="Hit Enter">
+                    </multiselect>
+                    <span @click="deleteFilterCriteria(index)" class="qb-remove">
+                        <i class="fas fa-minus-circle"></i>
+                    </span>
+                </div>
+
+                <div class="qb-add">
+                    <button class="button" @click="addSortCriteria">{{ 'Add sort' | i18n }}</button>
+                    <button class="button" @click="addFilterCriteria">{{ 'Add filter' | i18n }}</button>
+                </div>
+            </div>
+            `,
+            methods: {
+                addTag(newTag, value) {
+                    value.push(newTag);
+                },
+                getPlaceholder({key}) {
+                    return ('tax/' == key.substr(0, 4)) ? FWP.__('Enter term slugs') : FWP.__('Enter values');
+                },
+                showCompare(option, {key}) {
+                    if ('tax/' == key.substr(0, 4)) {
+                        if (!['IN', 'NOT IN', 'EXISTS', 'NOT EXISTS'].includes(option)) {
+                            return false;
+                        }
+                    }
+                    if (['ID', 'post_author', 'post_status', 'post_name'].includes(key)) {
+                        if (option != 'IN' && option != 'NOT IN') {
+                            return false;
+                        }
+                    }
+                    if ('post_date' == key || 'post_modified' == key) {
+                        if (!['>', '>=', '<', '<='].includes(option)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                addSortCriteria() {
+                    this.query_obj.orderby.push({
+                        key: 'title',
+                        order: 'ASC',
+                        type: 'CHAR'
+                    });
+                },
+                addFilterCriteria() {
+                    this.query_obj.filters.push({
+                        key: 'ID',
+                        value: [],
+                        compare: 'IN',
+                        type: 'CHAR'
+                    });
+                },
+                deleteSortCriteria(index) {
+                    Vue.delete(this.query_obj.orderby, index);
+                },
+                deleteFilterCriteria(index) {
+                    Vue.delete(this.query_obj.filters, index);
+                }
+            }
+        });
+
+        /* ================ layout builder ================ */
+
+
+        Vue.component('builder', {
+            props: {
+                layout: Object
+            },
+            template: `
+            <div class="builder-wrap">
+                <div class="builder-canvas-wrap">
+                    <div class="builder-canvas">
+                        <div class="builder-edge"></div>
+                        <div class="builder-edge vertical"></div>
+                        <draggable :list="layout.items" :options="{ handle: '.builder-row-actions.not-child' }">
+                            <builder-row
+                                v-for="(row, index) in layout.items"
+                                :row="row"
+                                :rows="layout.items"
+                                :index="index"
+                                :key="index">
+                            </builder-row>
+                        </draggable>
+                    </div>
+                    <div class="builder-intro">
+                        In the above canvas, build the layout for an individual result.<br><br>
+                        Then in <strong>Layout</strong>, choose the number of results per row.
+                    </div>
+                </div>
+                <builder-settings :layout="layout"></builder-settings>
+            </div>
+            `
+        });
+
+        Vue.component('setting-wrap', {
+            mixins: [builder_defaults],
+            props: ['settings', 'name', 'source', 'tab'],
+            template: `
+            <div class="builder-setting" v-show="isVisible">
+                <div v-html="title"></div>
+                <component :is="getSettingComponent" v-bind="$props" :meta="meta"></component>
+            </div>
+            `,
+            computed: {
+                getSettingComponent() {
+                    return 'setting-' + this.type;
+                },
+                isVisible() {
+                    let ret = true;
+                    let self = this;
+
+                    if ('undefined' === typeof this.meta.tab) {
+                        this.meta.tab = 'content';
+                    }
+
+                    if (this.meta.tab !== this.tab) {
+                        ret = false;
+                    }
+                    else if ('undefined' !== typeof this.meta.v_show) {
+                        ret = false;
+                        this.meta.v_show.forEach((cond, index) => {
+                            let type = cond.type;
+                            let setting_val = ('source' == type) ? self[type] : self.settings[type];
+                            let cond_value = cond.value || '';
+                            let cond_compare = cond.compare || '==';
+                            let is_match = ('==' == cond_compare)
+                                ? setting_val == cond_value
+                                : setting_val != cond_value;
+
+                            if (is_match) {
+                                ret = true;
+                            }
+                        });
+                    }
+
+                    return ret;
+                }
+            },
+            created() {
+                this.settings_meta = this.getSettingsMeta();
+                this.meta = this.settings_meta[this.name];
+                this.type = this.meta.type;
+                this.title = this.meta.title;
+            }
+        });
+
+        Vue.component('setting-text', {
+            props: ['settings', 'name', 'meta'],
+            template: '<input type="text" v-model="settings[name]" :placeholder="meta.placeholder" />'
+        });
+
+        Vue.component('setting-number', {
+            props: ['settings', 'name', 'meta'],
+            template: '<input type="number" v-model.number="settings[name]" :placeholder="meta.placeholder" />'
+        });
+
+        Vue.component('setting-textarea', {
+            props: ['settings', 'name', 'meta'],
+            template: '<textarea v-model="settings[name]"></textarea>'
+        });
+
+        Vue.component('setting-slider', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <div>
+                <input type="range" min="0" max="80" step="1" v-model.number="settings[name].size" />
+                <span v-html="fontSizeLabel" style="vertical-align:top"></span>
+            </div>
+            `,
+            computed: {
+                fontSizeLabel() {
+                    let val = this.settings[this.name];
+                    return (0 === val.size) ? 'none' : val.size + val.unit;
+                }
+            }
+        });
+
+        Vue.component('setting-color', {
+            props: ['settings', 'name', 'meta'],
+            template: '<input type="text" v-model="settings[name]" class="minicolors" />',
+            mounted() {
+                let self = this;
+                $(this.$el).minicolors();
+                $(this.$el).on('change', function() {
+                    self.settings[self.name] = this.value;
+                });
+            }
+        });
+
+        Vue.component('setting-link', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <div>
+                <setting-select
+                    :settings="settings[name]"
+                    name="type"
+                    :meta="meta.children.type">
+                </setting-select>
+
+                <div v-show="settings[name].type == 'custom'">
+                    <input
+                        type="text"
+                        v-model="settings[name].href"
+                        placeholder="https://"
+                    />
+                </div>
+                <div v-show="settings[name].type != 'none'">
+                    <input
+                        type="checkbox"
+                        v-model="settings[name].target"
+                        true-value="_blank"
+                        false-value=""
+                    />
+                    {{ 'Open in new tab?' | i18n }}
+                </div>
+            </div>
+            `
+        });
+
+        Vue.component('setting-border', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <div>
+                <setting-select
+                    :settings="settings[name]"
+                    name="style"
+                    :meta="meta.children.style">
+                </setting-select>
+
+                <div v-show="settings[name].style != 'none'">
+                    <div v-html="meta.children.color.title" style="margin-top:10px"></div>
+
+                    <setting-color
+                        :settings="settings[name]"
+                        name="color"
+                        :meta="meta.children.color">
+                    </setting-color>
+
+                    <div v-html="meta.children.width.title" style="margin-top:10px"></div>
+
+                    <setting-utrbl
+                        :settings="settings[name]"
+                        name="width"
+                        :meta="meta.children.width">
+                    </setting-utrbl>
+                </div>
+            </div>
+            `
+        });
+
+        Vue.component('setting-checkbox', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <div>
+                <input type="checkbox" v-model="settings[name]" /> {{ meta.suffix }}
+            </div>
+            `
+        });
+
+        Vue.component('setting-select', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <select v-model="settings[name]">
+                <option v-for="(label, value) in meta.choices" :value="value">{{ label }}</option>
+            </select>
+            `
+        });
+
+        Vue.component('setting-utrbl', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <div>
+                <div class="utrbl utrbl-unit"><input type="text" v-model="settings[name].unit" /><span>unit</span></div>
+                <div class="utrbl"><input type="number" v-model.number="settings[name].top" /><span>top</span></div>
+                <div class="utrbl"><input type="number" v-model.number="settings[name].right" /><span>right</span></div>
+                <div class="utrbl"><input type="number" v-model.number="settings[name].bottom" /><span>bottom</span></div>
+                <div class="utrbl"><input type="number" v-model.number="settings[name].left" /><span>left</span></div>
+            </div>
+            `
+        });
+
+        Vue.component('setting-text-style', {
+            props: ['settings', 'name', 'meta'],
+            template: `
+            <div class="text-style-icons">
+                <span @click="toggleChoice('align', 'left')" :class="{ active: isActive('align', 'left') }"><i class="fas fa-align-left"></i></span>
+                <span @click="toggleChoice('align', 'center')" :class="{ active: isActive('align', 'center') }"><i class="fas fa-align-center"></i></span>
+                <span @click="toggleChoice('align', 'right')" :class="{ active: isActive('align', 'right') }"><i class="fas fa-align-right"></i></span>
+                <span @click="toggleChoice('bold')" :class="{ active: isActive('bold') }"><i class="fas fa-bold"></i></span>
+                <span @click="toggleChoice('italic')" :class="{ active: isActive('italic') }"><i class="fas fa-italic"></i></span>
+            </div>
+            `,
+            methods: {
+                toggleChoice(opt, val) {
+                    let old_val = this.settings[this.name][opt];
+
+                    if ('undefined' !== typeof val) {
+                        this.settings[this.name][opt] = (val !== old_val) ? val : '';
+                    }
+                    else {
+                        this.settings[this.name][opt] = ! old_val;
+                    }
+                },
+                isActive(opt, val) {
+                    let new_val = ('undefined' !== typeof val) ? val : true;
+                    return this.settings[this.name][opt] === new_val;
+                }
+            }
+        });
+
+        Vue.component('builder-settings', {
+            mixins: [builder_defaults],
+            props: {
+                layout: Object
+            },
+            data() {
+                return {
+                    title: '',
+                    type: 'layout',
+                    settings: this.layout.settings,
+                    source: '',
+                    active_tab: 'content'
+                }
+            },
+            template: `
+            <div class="builder-settings-wrap">
+                <h3>
+                    <div v-show="this.title" class="builder-crumb">
+                        <a href="javascript:;" @click="$root.$emit('edit-layout')">{{ 'Layout' | i18n }}</a> &raquo;
+                    </div>
+                    {{ settingTitle }}
+                </h3>
+                <div class="builder-settings">
+                    <div class="template-tabs">
+                        <span @click="setActiveTab('content')" :class="isActiveTab('content')">{{ 'Content' | i18n }}</span>
+                        <span @click="setActiveTab('style')" :class="isActiveTab('style')">{{ 'Style' | i18n }}</span>
+                        <span @click="setActiveTab('advanced')" :class="isActiveTab('advanced')">{{ 'Advanced' | i18n }}</span>
+                    </div>
+                    <setting-wrap
+                        v-for="name in settingsFields"
+                        :settings="settings"
+                        :name="name"
+                        :source="source"
+                        :tab="active_tab"
+                        :key="uniqueKey()">
+                    </setting-wrap>
+                </div>
+            </div>
+            `,
+            computed: {
+                settingTitle() {
+                    return ('' === this.title) ? FWP.__('Layout') : this.title;
+                },
+                settingsFields() {
+                    return this.getDefaultFields(this.type, this.source);
+                }
+            },
+            methods: {
+                uniqueKey() {
+                    // method to prevent caching
+                    return Math.floor(Math.random() * 999999);
+                },
+                isActiveTab(which) {
+                    return (this.active_tab === which) ? 'active' : '';
+                },
+                setActiveTab(which) {
+                    this.active_tab = which;
+                }
+            },
+            created() {
+                let self = this;
+
+                this.$root.$on('edit-layout', () => {
+                    self.title = '';
+                    self.type = 'layout';
+                    self.settings = self.mergeSettings(self.layout.settings, self.type);
+                    self.source = '';
+                });
+
+                this.$root.$on('edit-row', ({settings}, num) => {
+                    self.title = FWP.__('Row') + ' ' + num;
+                    self.type = 'row';
+                    self.settings = self.mergeSettings(settings, self.type);
+                    self.source = '';
+                });
+
+                this.$root.$on('edit-col', ({settings}, num) => {
+                    self.title = FWP.__('Column') + ' ' + num;
+                    self.type = 'col';
+                    self.settings = self.mergeSettings(settings, self.type);
+                    self.source = '';
+                });
+
+                this.$root.$on('edit-item', ({source, settings}) => {
+                    self.title = self.$root.layout_data[source];
+                    self.type = 'item';
+                    self.settings = self.mergeSettings(settings, self.type, source);
+                    self.source = source;
+                });
+            }
+        });
+
+        Vue.component('builder-row', {
+            mixins: [builder_defaults],
+            props: {
+                row: Object,
+                rows: Array,
+                index: Number,
+                is_child: Boolean
+            },
+            template: `
+            <div class="builder-row">
+                <div class="builder-row-actions" :class="classIsChild">
+                    <span @click="editRow"><i class="fas fa-cog"></i></span>
+                    <span @click="addCol"><i class="fas fa-columns"></i></span>
+                    <span @click="addRow"><i class="fas fa-plus"></i></span>
+                    <span @click="deleteRow"><i class="fas fa-times"></i></span>
+                </div>
+                <div class="builder-row-inner" :style="{ gridTemplateColumns: row.settings.grid_template_columns }">
+                    <builder-col
+                        v-for="(col, index) in row.items"
+                        :col="col"
+                        :cols="row.items"
+                        :index="index"
+                        :key="index">
+                    </builder-col>
+                </div>
+            </div>
+            `,
+            computed: {
+                classIsChild() {
+                    return this.is_child ? 'is-child' : 'not-child';
+                }
+            },
+            methods: {
+                addRow() {
+                    this.rows.splice(this.index + 1, 0, this.defaultRow());
+
+                    if (1 < this.rows.length) {
+                        this.$root.$emit('edit-row', this.rows[this.index + 1], this.index + 2);
+                    }
+                    else {
+                        this.$root.$emit('edit-layout');
+                    }
+                },
+                addCol() {
+                    let len = this.row.items.push(this.defaultCol());
+                    this.$root.$emit('edit-col', this.row.items[len - 1], len);
+
+                    let grid_str = '1fr '.repeat(this.row.items.length).trim();
+                    this.row.settings.grid_template_columns = grid_str;
+                },
+                editRow() {
+                    this.$root.$emit('edit-row', this.row, this.index + 1);
+                },
+                deleteRow() {
+                    Vue.delete(this.rows, this.index);
+                    this.$root.$emit('edit-layout');
+
+                    // Add default row
+                    if (this.rows.length < 1) {
+                        if (! this.is_child) {
+                            this.addRow();
+                        }
+                    }
+                }
+            }
+        });
+
+        Vue.component('builder-col', {
+            mixins: [builder_defaults, VueClickaway.mixin],
+            props: {
+                col: Object,
+                cols: Array,
+                index: Number
+            },
+            data() {
+                return {
+                    adding_item: false
+                }
+            },
+            template: `
+            <div class="builder-col">
+                <col-resizer :cols="cols" :index="index" v-show="index < (cols.length - 1)"></col-resizer>
+                <popover :col="col" v-if="adding_item" v-on-clickaway="away"></popover>
+                <div class="builder-col-actions">
+                    <span @click="editCol"><i class="fas fa-cog"></i></span>
+                    <span @click="addItem"><i class="fas fa-plus"></i></span>
+                    <span @click="deleteCol"><i class="fas fa-times"></i></span>
+                </div>
+                <div class="builder-col-inner" :class="[ !col.items.length ? 'empty-col' : '' ]">
+                    <draggable v-model="col.items" :options="{ group: 'builder-items', handle: '.item-drag' }" class="draggable">
+                        <div v-for="(item, index) in col.items" :key="index">
+                        <builder-item
+                            v-if="item.type != 'row'"
+                            :item="item"
+                            :items="col.items"
+                            :index="index">
+                        </builder-item>
+                        <builder-row
+                            v-if="item.type == 'row'"
+                            :row="item"
+                            :rows="col.items"
+                            :index="index"
+                            :is_child="true">
+                        </builder-row>
+                        </div>
+                        <div class="builder-empty-view" @click="addItem" v-if="!col.items.length">
+                            <div class="builder-first-add">+</div>
+                        </div>
+                    </draggable>
+                </div>
+            </div>
+            `,
+            methods: {
+                addItem() {
+                    this.adding_item = ! this.adding_item;
+                },
+                editCol() {
+                    this.$root.$emit('edit-col', this.col, this.index + 1);
+                    this.adding_item = false;
+                },
+                deleteCol() {
+                    // Remove the column
+                    this.cols.splice(this.index, 1);
+
+                    // Show the "Layout" settings
+                    this.$root.$emit('edit-layout');
+
+                    // Add default column
+                    if (this.cols.length < 1) {
+                        this.cols.push(this.defaultCol());
+                    }
+
+                    // Adjust the row's `grid_template_columns` string
+                    let grid_str = '1fr '.repeat(this.cols.length).trim();
+                    this.$parent.row.settings.grid_template_columns = grid_str;
+                },
+                away() {
+                    this.adding_item = false;
+                }
+            }
+        });
+
+        Vue.component('col-resizer', {
+            props: {
+                cols: Array,
+                index: Number
+            },
+            data() {
+                return {
+                    isResizing: false
+                };
+            },
+            template: '<div :class="classNames" @mousedown="onMouseDown"></div>',
+            computed: {
+                classNames() {
+                    return [
+                        'resizer',
+                        this.isResizing ? 'is-resizing' : ''
+                    ];
+                }
+            },
+            methods: {
+                onMouseDown({ target: resizer, pageX: initialPageX, pageY: initialPageY }) {
+                    if (! resizer.classList.contains('resizer')) {
+                        return;
+                    }
+
+                    let self = this;
+                    let pane = resizer.parentElement;
+                    let row_inner = pane.parentElement;
+                    let initialPaneWidth = pane.offsetWidth;
+
+                    const resize = (initialSize, offset = 0) => {
+                        let containerWidth = row_inner.clientWidth;
+                        let paneWidth = initialSize + offset;
+                        let width = ((paneWidth / containerWidth) * 100).toFixed(1) + '%';
+                        let gridColumns = this.$parent.$parent.row.settings.grid_template_columns.split(' ');
+
+                        gridColumns[this.index] = width;
+
+                        this.$parent.$parent.row.settings.grid_template_columns = gridColumns.join(' ');
+                    };
+
+                    // This adds is-resizing class to container
+                    self.isResizing = true;
+
+                    const onMouseMove = ({ pageX, pageY }) => {
+                        resize(initialPaneWidth, pageX - initialPageX);
+                    };
+
+                    const onMouseUp = () => {
+                        // Run resize one more time to set computed width/height.
+                        resize(pane.clientWidth);
+
+                        // This removes is-resizing class to container
+                        self.isResizing = false;
+
+                        window.removeEventListener('mousemove', onMouseMove);
+                        window.removeEventListener('mouseup', onMouseUp);
+                    };
+
+                    window.addEventListener('mousemove', onMouseMove);
+                    window.addEventListener('mouseup', onMouseUp);
+                }
+            }
+        });
+
+        Vue.component('builder-item', {
+            props: {
+                item: Object,
+                items: Array,
+                index: Number
+            },
+            template: `
+            <div class="builder-item">
+                    <div class="builder-item-actions">
+                    <span @click="deleteItem"><i class="fas fa-times"></i></span>
+                </div>
+                <div class="builder-item-inner" @click="editItem" :class="[ item.settings.is_hidden ? 'is-hidden' : '' ]">
+                    <span class="item-drag" v-html="$root.layout_data[item.source]"></span>
+                    <span v-if="item.settings.is_hidden"><i class="fas fa-eye-slash"></i></span>
+                </div>
+            </div>
+            `,
+            methods: {
+                editItem() {
+                    this.$root.$emit('edit-item', this.item);
+                },
+                deleteItem() {
+                    this.items.splice(this.index, 1);
+                    this.$root.$emit('edit-layout');
+                }
+            }
+        });
+
+        Vue.component('popover', {
+            mixins: [builder_defaults],
+            props: {
+                col: Object
+            },
+            data() {
+                return {
+                    keywords: ''
+                }
+            },
+            template: `
+            <div class="popover">
+                <div class="popover-search">
+                    <input
+                        type="text"
+                        ref="keywords"
+                        placeholder="Start typing"
+                        v-model="keywords"
+                    />
+                </div>
+                <div class="popover-choices">
+                    <div
+                        @click="saveItem(source)"
+                        v-for="(label, source) in $root.layout_data"
+                        v-show="isMatch(label)"
+                        v-html="label">
+                    </div>
+                </div>
+            </div>
+            `,
+            methods: {
+                isMatch(label) {
+                    let bool = ('' == this.keywords) ? true : false;
+
+                    if (false === bool) {
+                        let needle = this.keywords.toLowerCase();
+                        let haystack = label.toLowerCase();
+                        if (haystack.includes(needle)) {
+                            bool = true;
+                        }
+                    }
+
+                    return bool;
+                },
+                saveItem(source) {
+                    if ('row' == source) {
+                        let len = this.col.items.push(this.defaultRow());
+                        this.$root.$emit('edit-row', this.col.items[len - 1], len);
+                    }
+                    else {
+                        let len = this.col.items.push(this.defaultItem(source));
+                        this.$root.$emit('edit-item', this.col.items[len - 1]);
+                    }
+
+                    this.$parent.adding_item = false;
+                }
+            },
+            mounted() {
+                this.$refs.keywords.focus();
+            }
         });
 
 
+        /* ================ facets / templates ================ */
+
+
+        Vue.component('facets', {
+            props: ['facets'],
+            template: `
+            <draggable class="facetwp-cards" v-model="$root.app.facets" :options="{ handle: '.card-label' }">
+                <div
+                    class="facetwp-card"
+                    v-for="(facet, index) in facets"
+                    v-show="$root.isMatch(facet)"
+                    @click="$root.editItem('facet', facet)"
+                >
+                    <div class="card-delete" @click.stop="$root.deleteItem('facet', index)"></div>
+                    <div class="card-label">{{ facet.label }}</div>
+                    <div class="card-type">{{ facet.type }}</div>
+                </div>
+            </draggable>
+            `
+        });
+
+        Vue.component('templates', {
+            props: ['templates'],
+            template: `
+            <draggable class="facetwp-cards" v-model="$root.app.templates" :options="{ handle: '.card-label' }">
+                <div
+                    class="facetwp-card"
+                    v-for="(template, index) in templates"
+                    v-show="$root.isMatch(template)"
+                    @click="$root.editItem('template', template)"
+                >
+                    <div class="card-delete" @click.stop="$root.deleteItem('template', index)"></div>
+                    <div class="card-label">{{ template.label }}</div>
+                </div>
+            </draggable>
+            `
+        });
+
+        Vue.component('facet-edit', {
+            data() {
+                return {
+                    facet: {}
+                };
+            },
+            created() {
+                this.facet = this.$root.editing;
+            },
+            template: `
+            <div class="facetwp-content" :class="[ 'type-' + facet.type ]">
+                <div class="facetwp-row">
+                    <div>{{ 'Label' | i18n }}:</div>
+                    <div>
+                        <input
+                            type="text"
+                            v-model="facet.label"
+                            @focus="$root.isNameEditable(facet)"
+                            @keyup="$root.maybeEditName(facet)"
+                        />
+                        &nbsp; &nbsp; {{ 'Name' | i18n }}:
+                        <input
+                            type="text"
+                            class="item-name"
+                            v-model="facet.name"
+                        />
+                    </div>
+                </div>
+                <div class="facetwp-row">
+                    <div>{{ 'Facet type' | i18n }}:</div>
+                    <div>
+                        <facet-types
+                            :facet="facet"
+                            :selected="facet.type"
+                            :types="$root.facet_types">
+                        </facet-types>
+                        &nbsp; &nbsp;
+                        <span class="facetwp-btn" @click="$root.copyToClipboard(facet.name, $event)">
+                            {{ 'Copy shortcode' | i18n }}
+                        </span>
+                    </div>
+                </div>
+                <div class="facetwp-row field-data-source">
+                    <div>{{ 'Data source' | i18n }}:</div>
+                    <div>
+                        <data-sources
+                            :facet="facet"
+                            :selected="facet.source"
+                            :sources="$root.data_sources">
+                        </data-sources>
+                    </div>
+                </div>
+                <hr />
+                <facet-settings :facet="facet"></facet-settings>
+            </div>
+            `
+        });
+
+        Vue.component('template-edit', {
+            mixins: [builder_defaults],
+            data() {
+                return {
+                    template: {},
+                    tab: 'display'
+                };
+            },
+            created() {
+                this.template = this.$root.editing;
+
+                // Set defaults for the layout builder
+                if (! this.template.layout) {
+                    Vue.set(this.template, 'layout', this.defaultLayout());
+                }
+
+                // Set defaults for the query builder
+                if (! this.template.query_obj) {
+                    Vue.set(this.template, 'query_obj', {
+                        post_type: [],
+                        posts_per_page: 10,
+                        orderby: [],
+                        filters: []
+                    });
+                }
+
+                // Set the modes
+                if (! this.template.modes) {
+                    Vue.set(this.template, 'modes', {
+                        display: ('' !== this.template.template) ? 'advanced' : 'visual',
+                        query: ('' !== this.template.query) ? 'advanced' : 'visual'
+                    });
+                }
+            },
+            methods: {
+                isMode(mode) {
+                    return this.template.modes[this.tab] === mode;
+                },
+                switchMode() {
+                    const now = this.template.modes[this.tab];
+                    this.template.modes[this.tab] = ('visual' === now) ? 'advanced' : 'visual';
+                }
+            },
+            template: `
+            <div class="facetwp-content">
+                <div class="table-row">
+                    <input
+                        type="text"
+                        v-model="template.label"
+                        @focus="$root.isNameEditable(template)"
+                        @keyup="$root.maybeEditName(template)"
+                    />
+                    &nbsp; &nbsp; Name:
+                    <input
+                        type="text"
+                        class="item-name"
+                        v-model="template.name"
+                    />
+                </div>
+
+                <div @click="switchMode()" v-show="isMode('visual')" class="side-link">{{ 'Switch to advanced mode' | i18n }}</div>
+                <div @click="switchMode()" v-show="isMode('advanced')" class="side-link">{{ 'Switch to visual mode' | i18n }}</div>
+
+                <div class="template-tabs top-level">
+                    <span @click="tab = 'display'" :class="{ active: tab == 'display' }">{{ 'Display' | i18n }}</span>
+                    <span @click="tab = 'query'" :class="{ active: tab == 'query' }">{{ 'Query' | i18n }}</span>
+                </div>
+
+                <div v-show="tab == 'display'">
+                    <div class="table-row" v-show="template.modes.display == 'visual'">
+                        <builder :layout="template.layout"></builder>
+                    </div>
+                    <div class="table-row" v-show="template.modes.display == 'advanced'">
+                        <div class="side-link">
+                            <a href="https://facetwp.com/documentation/template-configuration/#display-code" target="_blank">{{ 'Help' | i18n }}</a>
+                        </div>
+                        <div class="row-label">{{ 'Display Code' | i18n }}</div>
+                        <textarea v-model="template.template"></textarea>
+                    </div>
+                </div>
+
+                <div v-show="tab == 'query'">
+                    <div class="table-row" v-show="template.modes.query == 'visual'">
+                        <query-builder :query_obj="template.query_obj"></query-builder>
+                    </div>
+                    <div class="table-row" v-show="template.modes.query == 'advanced'">
+                        <div class="side-link">
+                            <a href="https://facetwp.com/documentation/template-configuration/#query-arguments" target="_blank">{{ 'Help' | i18n }}</a>
+                        </div>
+                        <div class="row-label">{{ 'Query Arguments' | i18n }}</div>
+                        <textarea v-model="template.query"></textarea>
+                    </div>
+                </div>
+            </div>
+            `
+        });
+
+        Vue.component('facet-types', {
+            props: ['facet', 'selected', 'types'],
+            template: `
+            <select v-model="facet.type">
+                <option v-for="(type, key) in types" :value="key" :selected="selected == key">{{ type.label }}</option>
+            </select>
+            `
+        });
+
+        Vue.component('facet-settings', {
+            props: ['facet'],
+            data() {
+                return {
+                    original_facet_type: ''
+                };
+            },
+            template: `
+            <div class="facet-fields">
+                <component :is="dynComponent" v-bind="$props"></component>
+            </div>
+            `,
+            computed: {
+
+                tableToDivs() {
+                    const self = this;
+                    let html = this.$root.clone[this.facet.type];
+                    let custom_settings = [];
+
+                    // Backwards compatibility
+                    html = html.replace(/<tr>/g, '<div class="facetwp-row">');
+                    html = html.replace(/<td>/g, '<div class="facetwp-col">');
+                    html = html.replace(/<\/td>/g, '</div>');
+                    html = html.replace(/<\/tr>/g, '</div>');
+
+                    // Remove default keys
+                    const keys = Object.keys(this.facet).filter(key => {
+                        return !['label', 'name', 'type', 'source', 'source_other'].includes(key);
+                    });
+
+                    // Add setting names by parsing the DOM
+                    $(html).find('input, textarea, select').each(function() {
+                        let $el = $(this);
+                        let setting_name = $el.attr('class').replace(/-/g, '_').substr(6);
+                        custom_settings.push(setting_name);
+
+                        let is_new_type = (self.facet.type !== self.original_facet_type);
+                        let is_new_setting = (!keys.includes(setting_name));
+
+                        if (is_new_type || is_new_setting) {
+                            let val = $el.val();
+
+                            if ($el.is(':checkbox')) {
+                                val = $el.is(':checked') ? 'yes' : 'no';
+                            }
+                            if ('[]' === val) {
+                                val = [];
+                            }
+
+                            Vue.set(self.facet, setting_name, val);
+                        }
+
+                        if (is_new_setting) {
+                            keys.push(setting_name);
+                        }
+                    });
+
+                    keys.forEach((key) => {
+
+                        // Delete orphan settings
+                        if (!custom_settings.includes(key)) {
+                            Vue.delete(this.facet, key);
+                        }
+
+                        // Dynamically add v-models
+                        const key_dashed = key.replace(/_/g, '-');
+                        const pattern = new RegExp('(class="facet-' + key_dashed + '")', 'gm');
+                        const replacement = '$1 v-model="facet.' + key + '"';
+                        html = html.replace(pattern, replacement);
+                    });
+
+                    return html;
+                },
+
+                // use a dynamic component so the data bindings (e.g. v-model) get compiled
+                dynComponent() {
+                    return {
+                        template: '<div>' + this.tableToDivs + '</div>',
+                        props: this.$options.props
+                    }
+                }
+            },
+            created() {
+                this.original_facet_type = this.facet.type;
+            },
+            watch: {
+                'facet.ghosts': function(val) {
+                    if ('no' == val) {
+                        this.facet.preserve_ghosts = 'no';
+                    }
+                },
+                'facet.hierarchical': function(val) {
+                    if ('no' == val) {
+                        this.facet.show_expanded = 'no';
+                    }
+                }
+            }
+        });
+
+        Vue.component('data-sources', {
+            props: {
+                facet: Object,
+                selected: String,
+                sources: Object,
+                settingName: {
+                    type: String,
+                    default: 'source'
+                }
+            },
+            template: `
+            <select :id="rand" v-model="modelName">
+                <option v-if="settingName != 'source'" value="">{{ 'None' | i18n }}</option>
+                <optgroup v-for="optgroup in sources" :label="optgroup.label">
+                    <option v-for="(label, key) in optgroup.choices" :value="key" :selected="selected == key">{{ label }}</option>
+                </optgroup>
+            </select>
+            `,
+            methods: {
+                fSelectChanged(event, $wrap) {
+
+                    // only update this current instance
+                    if (0 < $($wrap).find('#' + this.rand).length) {
+                        this.facet[this.settingName] = this.$el.value;
+                    }
+                }
+            },
+            computed: {
+                modelName() {
+                    return this.facet[this.settingName];
+                }
+            },
+            created() {
+
+                // create a random ID for each fSelect instance
+                this.rand = 'fs-' + Math.random().toString(36).substring(7);
+            },
+            mounted() {
+                $(this.$el).fSelect();
+                $(document).on('fs:changed', this.fSelectChanged);
+            },
+            beforeDestroy() {
+                $(document).off('fs:changed', this.fSelectChanged);
+            }
+        });
+
+        // Vue instance
+        FWP.vue = new Vue({
+            el: '#app',
+            data: {
+                app: FWP.data,
+                editing: {},
+                editing_facet: false,
+                editing_template: false,
+                facet_types: FWP.facet_types,
+                data_sources: FWP.data_sources,
+                layout_data: FWP.layout_data,
+                query_data: FWP.query_data,
+                support_html: FWP.support_html,
+                clone: FWP.clone,
+                active_tab: 'basics',
+                active_subnav: 'general',
+                is_support_loaded: false,
+                is_name_editable: false,
+                is_rebuild_open: false,
+                is_indexing: false,
+                timeout: null,
+                keywords: ''
+            },
+            methods: {
+                addItem(type) {
+                    if ('facet' == type) {
+                        var index = this.app.facets.push({
+                            'name': 'new_facet',
+                            'label': 'New Facet',
+                            'type': 'checkboxes',
+                            'source': 'post_type'
+                        });
+                        this.editItem('facet', this.app.facets[index-1]);
+                    }
+                    else {
+                        var index = this.app.templates.push({
+                            'name': 'new_template',
+                            'label': 'New Template',
+                            'query': '',
+                            'template': ''
+                        });
+                        this.editItem('template', this.app.templates[index-1]);
+                    }
+                },
+                editItem(type, data) {
+                    this['editing_' + type] = true;
+                    this.editing = data;
+                },
+                doneEditing() {
+                    this.editing_template = false;
+                    this.editing_facet = false;
+                    this.editing = {};
+                },
+                deleteItem(type, index) {
+                    this.app[type + 's'].splice(index, 1);
+                },
+                saveChanges() {
+                    $('.facetwp-response').html(FWP.__('Saving') + '...');
+                    $('.facetwp-response').addClass('visible');
+
+                    // Settings save hook
+                    const data = wp.hooks.applyFilters('facetwp/save_settings', FWP.data);
+
+                    $.ajax(ajaxurl, {
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            action: 'facetwp_save',
+                            nonce: FWP.nonce,
+                            data: JSON.stringify(data)
+                        }
+                    }).done(({message, reindex}) => {
+                        $('.facetwp-response').html(message);
+                        $('.facetwp-rebuild').toggleClass('flux', reindex);
+                    }).fail(({status}, textStatus, errorThrown) => {
+                        $('.facetwp-response').html(status + ' ' + errorThrown);
+                    });
+                },
+                rebuildAction() {
+                    this.is_indexing ? this.cancelReindex() : this.rebuildIndex();
+                },
+                rebuildIndex() {
+                    let self = this;
+
+                    $('.facetwp-rebuild').removeClass('flux');
+
+                    if (this.is_indexing) {
+                        return;
+                    }
+
+                    this.is_indexing = true;
+
+                    $.post(ajaxurl, { action: 'facetwp_rebuild_index', nonce: FWP.nonce });
+                    $('.facetwp-response').html(FWP.__('Indexing') + '... 0%');
+                    $('.facetwp-response').addClass('visible');
+                    this.timeout = setTimeout(() => {
+                        self.getProgress();
+                    }, 5000);
+                },
+                cancelReindex() {
+                    let self = this;
+
+                    $.ajax(ajaxurl, {
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            action: 'facetwp_get_info',
+                            type: 'cancel_reindex',
+                            nonce: FWP.nonce
+                        }
+                    }).done(({message}) => {
+                        self.is_indexing = false;
+                        clearTimeout(self.timeout);
+                        $('.facetwp-response').html(message);
+                    }).fail(({status}, textStatus, errorThrown) => {
+                        $('.facetwp-response').html(status + ' ' + errorThrown);
+                    });
+                },
+                getProgress() {
+                    let self = this;
+
+                    $.post(ajaxurl, {
+                        action: 'facetwp_heartbeat',
+                        nonce: FWP.nonce
+                    }, response => {
+
+                        // Remove extra spaces added by some themes
+                        var response = response.trim();
+
+                        if ('-1' == response) {
+                            $('.facetwp-response').html(FWP.__('Indexing complete'));
+                            self.is_indexing = false;
+                        }
+                        else if ($.isNumeric(response)) {
+                            $('.facetwp-response').html(FWP.__('Indexing') + '... ' + response + '%');
+                            $('.facetwp-response').addClass('visible');
+                            self.is_indexing = true;
+
+                            self.timeout = setTimeout(() => {
+                                self.getProgress();
+                            }, 5000);
+                        }
+                        else {
+                            $('.facetwp-response').html(response);
+                            self.is_indexing = false;
+                        }
+                    });
+                },
+                getInfo(type, label) {
+                    $('.facetwp-response').html(FWP.__(label) + '...');
+                    $('.facetwp-response').addClass('visible');
+
+                    $.ajax(ajaxurl, {
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            action: 'facetwp_get_info',
+                            type,
+                            nonce: FWP.nonce
+                        }
+                    }).done(({message}) => {
+                        $('.facetwp-response').html(message);
+                    }).fail(({status}, textStatus, errorThrown) => {
+                        $('.facetwp-response').html(status + ' ' + errorThrown);
+                    });
+                },
+                showIndexerStats() {
+                    this.getInfo('indexer_stats', 'Looking');
+                },
+                searchablePostTypes() {
+                    this.getInfo('post_types', 'Looking');
+                },
+                purgeIndexTable() {
+                    this.getInfo('purge_index_table', 'Purging');
+                },
+                copyToClipboard(name, {target}) {
+                    const $this = $(target);
+                    const $el = $('.facetwp-clipboard');
+                    const orig_text = $this.text();
+
+                    try {
+                        $el.removeClass('hidden');
+                        $el.val('[facetwp facet="' + name + '"]');
+                        $el.select();
+                        document.execCommand('copy');
+                        $el.addClass('hidden');
+                        $this.text(FWP.__('Copied!'));
+                    }
+                    catch(err) {
+                        $this.text(FWP.__('Press CTRL+C to copy'));
+                    }
+
+                    window.setTimeout(() => {
+                        $this.text(orig_text);
+                    }, 2000);
+                },
+                activate() {
+                    $('.facetwp-activation-status').html(FWP.__('Activating') + '...');
+                    $.post(ajaxurl, {
+                        action: 'facetwp_license',
+                        nonce: FWP.nonce,
+                        license: $('.facetwp-license').val()
+                    }, ({message}) => {
+                        $('.facetwp-activation-status').html(message);
+                    }, 'json');
+                },
+                isMatch(obj) {
+                    let bool = ('' == this.keywords) ? true : false;
+
+                    if (false === bool) {
+                        ['name', 'label', 'type'].forEach((key) => {
+                            if (obj.hasOwnProperty(key)) {
+                                if (obj[key].includes(this.keywords)) {
+                                    bool = true;
+                                }
+                            }
+                        });
+                    }
+
+                    return bool;
+                },
+                isNameEditable({name}) {
+                    this.is_name_editable = ('' == name || 'new_' == name.substr(0, 4));
+                },
+                maybeEditName(item) {
+                    if (this.is_name_editable) {
+                        let val = $.trim(item.label).toLowerCase();
+                        val = val.replace(/[^\w- ]/g, ''); // strip invalid characters
+                        val = val.replace(/[- ]/g, '_'); // replace space and hyphen with underscore
+                        val = val.replace(/[_]{2,}/g, '_'); // strip consecutive underscores
+                        item.name = val;
+                    }
+                },
+                documentClick({target}) {
+                    let el = target;
+
+                    if (! el.classList.contains('btn-caret')) {
+                        this.is_rebuild_open = false;
+                    }
+                }
+            },
+            computed: {
+                isEditing() {
+                    return this.editing_facet || this.editing_template;
+                },
+                indexButtonLabel() {
+                    return this.is_indexing ? FWP.__('Stop indexer') : FWP.__('Re-index');
+                }
+            },
+            created() {
+                document.addEventListener('click', this.documentClick);
+            },
+            mounted() {
+                this.getProgress();
+            }
+        });
+    }
+
+    function init_jquery() {
+
         // Export
-        $(document).on('click', '.export-submit', function() {
-                $('.import-code').val(FWP.i18n['Loading'] + '...');
+        $(document).on('click', '.export-submit', () => {
+                $('.import-code').val(FWP.__('Loading') + '...');
                 $.post(ajaxurl, {
                     action: 'facetwp_backup',
                     nonce: FWP.nonce,
                     action_type: 'export',
                     items: $('.export-items').val()
                 },
-                function(response) {
+                response => {
                     $('.import-code').val(response);
                 });
         });
 
-
         // Import
-        $(document).on('click', '.import-submit', function() {
+        $(document).on('click', '.import-submit', () => {
             $('.facetwp-response').addClass('visible');
-            $('.facetwp-response').html(FWP.i18n['Importing'] + '...');
+            $('.facetwp-response').html(FWP.__('Importing') + '...');
             $.post(ajaxurl, {
                 action: 'facetwp_backup',
                 nonce: FWP.nonce,
@@ -462,51 +1825,18 @@ window.FWP = {
                 import_code: $('.import-code').val(),
                 overwrite: $('.import-overwrite').is(':checked') ? 1 : 0
             },
-            function(response) {
+            response => {
                 $('.facetwp-response').html(response);
-                setTimeout(function() {
+                setTimeout(() => {
                     window.location.reload();
                 }, 1500);
             });
         });
 
-
-        // Rebuild index
-        $(document).on('click', '.facetwp-rebuild', function() {
-            $(this).removeClass('flux');
-
-            if (FWP.is_indexing) {
-                return;
-            }
-
-            FWP.is_indexing = true;
-
-            $.post(ajaxurl, { action: 'facetwp_rebuild_index', nonce: FWP.nonce });
-            $('.facetwp-response').html(FWP.i18n['Indexing'] + '...');
-            $('.facetwp-response').addClass('visible');
-            setTimeout(function() {
-                FWP.get_progress();
-            }, 5000);
-        });
-
-
-        // Activation
-        $(document).on('click', '.facetwp-activate', function() {
-            $('.facetwp-activation-status').html(FWP.i18n['Activating'] + '...');
-            $.post(ajaxurl, {
-                action: 'facetwp_license',
-                nonce: FWP.nonce,
-                license: $('.facetwp-license').val()
-            }, function(response) {
-                $('.facetwp-activation-status').html(response.message);
-            }, 'json');
-        });
-
-
         // Tooltips
         $(document).on('mouseover', '.facetwp-tooltip', function() {
             if ('undefined' === typeof $(this).data('powertip')) {
-                var content = $(this).find('.facetwp-tooltip-content').html();
+                const content = $(this).find('.facetwp-tooltip-content').html();
                 $(this).data('powertip', content);
                 $(this).powerTip({
                     placement: 'e',
@@ -516,31 +1846,8 @@ window.FWP = {
             }
         });
 
+        // fSelect
+        $('.export-items').fSelect();
+    }
 
-        // Search
-        $(document).on('keyup', '.facetwp-search', function() {
-            var input = $(this).val().toLowerCase();
-
-            if (input.length < 1) {
-                $('.facetwp-cards li.hidden').removeClass('hidden');
-            }
-            else {
-                $('.facetwp-card').each(function() {
-                    var label = $(this).find('.card-label').text().toLowerCase();
-                    var type = $(this).find('.card-type').text().toLowerCase();
-
-                    if (-1 === label.indexOf(input) && -1 === type.indexOf(input)) {
-                        $(this).closest('li').addClass('hidden');
-                    }
-                    else {
-                        $(this).closest('li').removeClass('hidden');
-                    }
-                });
-            }
-        });
-
-
-        // Initialize
-        FWP.load_settings();
-    });
-})(jQuery);
+}))(jQuery);

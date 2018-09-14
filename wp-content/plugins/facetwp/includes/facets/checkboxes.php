@@ -24,30 +24,9 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
         // Limit
         $limit = ctype_digit( $facet['count'] ) ? $facet['count'] : 10;
 
-        // Properly handle "OR" facets
+        // Facet in "OR" mode
         if ( 'or' == $facet['operator'] ) {
-
-            // Apply filtering (ignore the facet's current selections)
-            if ( isset( FWP()->or_values ) && ( 1 < count( FWP()->or_values ) || ! isset( FWP()->or_values[ $facet['name'] ] ) ) ) {
-                $post_ids = array();
-                $or_values = FWP()->or_values; // Preserve the original
-                unset( $or_values[ $facet['name'] ] );
-
-                $counter = 0;
-                foreach ( $or_values as $name => $vals ) {
-                    $post_ids = ( 0 == $counter ) ? $vals : array_intersect( $post_ids, $vals );
-                    $counter++;
-                }
-
-                // Return only applicable results
-                $post_ids = array_intersect( $post_ids, FWP()->unfiltered_post_ids );
-            }
-            else {
-                $post_ids = FWP()->unfiltered_post_ids;
-            }
-
-            $post_ids = empty( $post_ids ) ? array( 0 ) : $post_ids;
-            $where_clause = ' AND post_id IN (' . implode( ',', $post_ids ) . ')';
+            $where_clause = $this->get_where_clause( $facet );
         }
 
         $orderby = apply_filters( 'facetwp_facet_orderby', $orderby, $facet );
@@ -69,7 +48,7 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
         $show_ghosts = FWP()->helper->facet_is( $facet, 'ghosts', 'yes' );
         $is_filtered = FWP()->unfiltered_post_ids !== FWP()->facet->query_args['post__in'];
 
-        if ( $show_ghosts && $is_filtered ) {
+        if ( $show_ghosts && $is_filtered && ! empty( FWP()->unfiltered_post_ids ) ) {
             $raw_post_ids = implode( ',', FWP()->unfiltered_post_ids );
 
             $sql = "
@@ -240,65 +219,6 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
 
 
     /**
-     * Output any admin scripts
-     */
-    function admin_scripts() {
-?>
-<script>
-(function($) {
-    wp.hooks.addAction('facetwp/load/checkboxes', function($this, obj) {
-        $this.find('.facet-source').val(obj.source);
-        $this.find('.facet-parent-term').val(obj.parent_term);
-        $this.find('.facet-orderby').val(obj.orderby);
-        $this.find('.facet-operator').val(obj.operator);
-        $this.find('.facet-hierarchical').val(obj.hierarchical);
-        $this.find('.facet-show-expanded').val(obj.show_expanded);
-        $this.find('.facet-ghosts').val(obj.ghosts);
-        $this.find('.facet-preserve-ghosts').val(obj.preserve_ghosts);
-        $this.find('.facet-count').val(obj.count);
-        $this.find('.facet-soft-limit').val(obj.soft_limit);
-    });
-
-    wp.hooks.addFilter('facetwp/save/checkboxes', function(obj, $this) {
-        obj['source'] = $this.find('.facet-source').val();
-        obj['parent_term'] = $this.find('.facet-parent-term').val();
-        obj['orderby'] = $this.find('.facet-orderby').val();
-        obj['operator'] = $this.find('.facet-operator').val();
-        obj['hierarchical'] = $this.find('.facet-hierarchical').val();
-        obj['show_expanded'] = $this.find('.facet-show-expanded').val();
-        obj['ghosts'] = $this.find('.facet-ghosts').val();
-        obj['preserve_ghosts'] = $this.find('.facet-preserve-ghosts').val();
-        obj['count'] = $this.find('.facet-count').val();
-        obj['soft_limit'] = $this.find('.facet-soft-limit').val();
-        return obj;
-    });
-
-    wp.hooks.addAction('facetwp/change/checkboxes', function($this) {
-        $this.closest('.facetwp-row').find('.facet-ghosts').trigger('change');
-        $this.closest('.facetwp-row').find('.facet-hierarchical').trigger('change');
-    });
-
-    $(document).on('change', '.facet-ghosts', function() {
-        var $facet = $(this).closest('.facetwp-row');
-        var display = ('yes' == $(this).val()) ? 'table-row' : 'none';
-        $facet.find('.facet-preserve-ghosts').closest('tr').css({ 'display' : display });
-    });
-
-    $(document).on('change', '.facet-hierarchical', function() {
-        var $facet = $(this).closest('.facetwp-row');
-        var hierarchical = ('yes' == $(this).val());
-        var show_expanded = hierarchical ? 'table-row' : 'none';
-        var soft_limit = hierarchical ? 'none' : 'table-row';
-        $facet.find('.facet-show-expanded').closest('tr').css({ 'display' : show_expanded });
-        $facet.find('.facet-soft-limit').closest('tr').css({ 'display' : soft_limit });
-    });
-})(jQuery);
-</script>
-<?php
-    }
-
-
-    /**
      * Output any front-end scripts
      */
     function front_scripts() {
@@ -312,8 +232,8 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
      */
     function settings_html() {
 ?>
-        <tr>
-            <td>
+        <div class="facetwp-row" v-show="facet.source.substr(0, 3) == 'tax'">
+            <div>
                 <?php _e('Parent term', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
@@ -322,117 +242,117 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
                         Otherwise, leave blank.
                     </div>
                 </div>
-            </td>
-            <td>
-                <input type="text" class="facet-parent-term" value="" />
-            </td>
-        </tr>
-        <tr>
-            <td><?php _e('Sort by', 'fwp'); ?>:</td>
-            <td>
+            </div>
+            <div>
+                <input type="text" class="facet-parent-term" />
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div>
+                <?php _e('Hierarchical', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Is this a hierarchical taxonomy?', 'fwp' ); ?></div>
+                </div>
+            </div>
+            <div>
+                <label class="facetwp-switch">
+                    <input type="checkbox" class="facet-hierarchical" true-value="yes" false-value="no" />
+                    <span class="facetwp-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="facetwp-row" v-show="facet.hierarchical == 'yes'">
+            <div>
+                <?php _e('Show expanded', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Should child terms be visible by default?', 'fwp' ); ?></div>
+                </div>
+            </div>
+            <div>
+                <label class="facetwp-switch">
+                    <input type="checkbox" class="facet-show-expanded" true-value="yes" false-value="no" />
+                    <span class="facetwp-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div>
+                <?php _e('Show ghosts', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Show choices that would return zero results?', 'fwp' ); ?></div>
+                </div>
+            </div>
+            <div>
+                <label class="facetwp-switch">
+                    <input type="checkbox" class="facet-ghosts" true-value="yes" false-value="no" />
+                    <span class="facetwp-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="facetwp-row" v-show="facet.ghosts == 'yes'">
+            <div>
+                <?php _e('Preserve ghost order', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'Keep ghost choices in the same order?', 'fwp' ); ?></div>
+                </div>
+            </div>
+            <div>
+                <label class="facetwp-switch">
+                    <input type="checkbox" class="facet-preserve-ghosts" true-value="yes" false-value="no" />
+                    <span class="facetwp-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div>
+                <?php _e('Behavior', 'fwp'); ?>:
+                <div class="facetwp-tooltip">
+                    <span class="icon-question">?</span>
+                    <div class="facetwp-tooltip-content"><?php _e( 'How should multiple selections affect the results?', 'fwp' ); ?></div>
+                </div>
+            </div>
+            <div>
+                <select class="facet-operator">
+                    <option value="and"><?php _e( 'Narrow the result set', 'fwp' ); ?></option>
+                    <option value="or"><?php _e( 'Widen the result set', 'fwp' ); ?></option>
+                </select>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div><?php _e('Sort by', 'fwp'); ?>:</div>
+            <div>
                 <select class="facet-orderby">
                     <option value="count"><?php _e( 'Highest Count', 'fwp' ); ?></option>
                     <option value="display_value"><?php _e( 'Display Value', 'fwp' ); ?></option>
                     <option value="raw_value"><?php _e( 'Raw Value', 'fwp' ); ?></option>
                     <option value="term_order"><?php _e( 'Term Order', 'fwp' ); ?></option>
                 </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php _e('Behavior', 'fwp'); ?>:
-                <div class="facetwp-tooltip">
-                    <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'How should multiple selections affect the results?', 'fwp' ); ?></div>
-                </div>
-            </td>
-            <td>
-                <select class="facet-operator">
-                    <option value="and"><?php _e( 'Narrow the result set', 'fwp' ); ?></option>
-                    <option value="or"><?php _e( 'Widen the result set', 'fwp' ); ?></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php _e('Hierarchical', 'fwp'); ?>:
-                <div class="facetwp-tooltip">
-                    <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'Is this a hierarchical taxonomy?', 'fwp' ); ?></div>
-                </div>
-            </td>
-            <td>
-                <select class="facet-hierarchical">
-                    <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
-                    <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php _e('Show expanded', 'fwp'); ?>:
-                <div class="facetwp-tooltip">
-                    <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'Should child terms be visible by default?', 'fwp' ); ?></div>
-                </div>
-            </td>
-            <td>
-                <select class="facet-show-expanded">
-                    <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
-                    <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php _e('Show ghosts', 'fwp'); ?>:
-                <div class="facetwp-tooltip">
-                    <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'Show choices that would return zero results?', 'fwp' ); ?></div>
-                </div>
-            </td>
-            <td>
-                <select class="facet-ghosts">
-                    <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
-                    <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <?php _e('Preserve ghost order', 'fwp'); ?>:
-                <div class="facetwp-tooltip">
-                    <span class="icon-question">?</span>
-                    <div class="facetwp-tooltip-content"><?php _e( 'Keep ghost choices in the same order?', 'fwp' ); ?></div>
-                </div>
-            </td>
-            <td>
-                <select class="facet-preserve-ghosts">
-                    <option value="no"><?php _e( 'No', 'fwp' ); ?></option>
-                    <option value="yes"><?php _e( 'Yes', 'fwp' ); ?></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Count', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'The maximum number of facet choices to show', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td><input type="text" class="facet-count" value="10" /></td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+            <div><input type="text" class="facet-count" value="10" /></div>
+        </div>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Soft Limit', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'Show a toggle link after this many choices', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td><input type="text" class="facet-soft-limit" value="5" /></td>
-        </tr>
+            </div>
+            <div><input type="text" class="facet-soft-limit" value="5" /></div>
+        </div>
 <?php
     }
 

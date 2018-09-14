@@ -17,7 +17,7 @@ function icl_st_init(){
         exit;
     }
 
-    if(isset($_GET['icl_action']) && $_GET['icl_action'] == 'view_string_in_source'){
+    if ( isset( $_GET['icl_action'], $_GET['nonce'] ) && $_GET['icl_action'] == 'view_string_in_source' && wp_verify_nonce( $_GET['nonce'], 'view_string_in_source' ) ) {
         icl_st_string_in_source($_GET['string_id']);
         exit;
     }
@@ -250,7 +250,7 @@ function icl_translate( $context, $name, $value = false, $allow_empty_value = fa
 	}
 	$lock = true;
 
-	$is_requested_blog = ! ( is_multisite() && ms_is_switched() ) || $GLOBALS['blog_id'] === end( $GLOBALS['_wp_switched_stack'] );
+	$is_requested_blog = ! ( is_multisite() && ms_is_switched() ) || (int)$GLOBALS['blog_id'] === (int)end( $GLOBALS['_wp_switched_stack'] );
 
 	if ( $is_requested_blog ) {
 		if ( is_translated_admin_string( $name ) ) {

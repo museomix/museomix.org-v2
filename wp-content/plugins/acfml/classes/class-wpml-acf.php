@@ -6,6 +6,7 @@
 class WPML_ACF {
 
 	private $WPML_ACF_Requirements;
+	private $WPML_ACF_Editor_Hooks;
 
 	/**
 	 * @return WPML_ACF_Worker
@@ -14,8 +15,12 @@ class WPML_ACF {
 		global $wpdb;
 		add_action( 'wpml_loaded', array( $this, 'init_acf_xliff' ) );
 		add_action( 'wpml_loaded', array( $this, 'init_acf_pro' ) );
+		add_action( 'wpml_loaded', array( $this, 'init_acf_field_annotations' ) );
 
 		$this->WPML_ACF_Requirements = new WPML_ACF_Requirements();
+
+		$this->WPML_ACF_Editor_Hooks = new WPML_ACF_Editor_Hooks();
+		$this->WPML_ACF_Editor_Hooks->init_hooks();
 
 		return $this->init_duplicated_post( $wpdb );
 	}
@@ -41,6 +46,12 @@ class WPML_ACF {
 	public function init_acf_pro() {
 		if ( class_exists( 'acf' ) ) {
 			$WPML_ACF_Pro = new WPML_ACF_Pro();
+		}
+	}
+
+	public function init_acf_field_annotations() {
+		if ( class_exists( 'acf' ) ) {
+			$WPML_ACF_Field_Annotations = new WPML_ACF_Field_Annotations();
 		}
 	}
 }

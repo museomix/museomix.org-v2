@@ -15,8 +15,8 @@ $needsRename = $core->check_attachment( get_post( $id, ARRAY_A ), $file );
 <input type="hidden" name="id" value="<?php echo $id; ?>">
 
 <?php // Quick Renamer ?>
-<?php $filename = basename( get_attached_file( $id ) ); ?>
-<?php $disabled = !( $admin->is_registered() && get_option( 'mfrh_manual_rename' ) ); ?>
+<?php $filename = mfrh_basename( get_attached_file( $id ) ); ?>
+<?php $disabled = !( $admin->is_registered() && apply_filters( 'mfrh_manual', false ) ); ?>
 <input type="text" name="filename" value="<?php esc_attr_e( $filename ); ?>" autocomplete="off" data-origin="<?php esc_attr_e( $filename ); ?>"<?php if ($disabled) echo ' readonly'; ?>>
 <?php if ( isset( $file['desired_filename'] ) ): // i ?>
 <input type="text" name="recommended-filename" value="<?php esc_attr_e( $file['desired_filename'] ); ?>" readonly>

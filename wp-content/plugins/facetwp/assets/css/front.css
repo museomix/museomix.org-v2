@@ -24,8 +24,6 @@
     height: 20px;
     background: url(../images/loading.png) no-repeat;
     background-size: 20px 20px;
-    -webkit-animation: spin 700ms infinite linear;
-    -moz-animation: spin 700ms infinite linear;
     animation: spin 700ms infinite linear;
 }
 
@@ -120,6 +118,7 @@
     cursor: pointer;
 }
 
+.facetwp-seo,
 .facetwp-hidden {
     display: none;
 }
@@ -171,11 +170,6 @@
     background-size: 20px 20px;
 }
 
-.facetwp-btn.f-reset:before {
-    background: url(../images/icon-close.png) no-repeat;
-    background-size: 20px 20px;
-}
-
 /* Proximity */
 
 .facetwp-location {
@@ -207,8 +201,6 @@
 .locate-me.f-loading:before {
     background: url(../images/loading.png) no-repeat;
     background-size: 20px 20px;
-    -webkit-animation: spin 700ms infinite linear;
-    -moz-animation: spin 700ms infinite linear;
     animation: spin 700ms infinite linear;
 }
 
@@ -217,45 +209,37 @@
     background-size: 20px 20px;
 }
 
+/* Rating */
+
+.facetwp-stars {
+    float: left;
+    line-height: 1;
+    padding-right: 4px;
+    user-select: none;
+}
+
+.facetwp-star {
+    float: right;
+    cursor: pointer;
+    font-size: 20px;
+    color: #ccc;
+}
+
+.facetwp-star:hover,
+.facetwp-star:hover ~ .facetwp-star,
+.facetwp-star.selected,
+.facetwp-star.selected ~ .facetwp-star {
+    color: #000;
+}
+
+.facetwp-star.selected:hover,
+.facetwp-star.selected:hover ~ .facetwp-star {
+    color: red;
+}
+
 /* CSS animations */
 
-@-o-keyframes spin {
-    from {
-        -o-transform: rotate(0deg);
-    }
-    to {
-        -o-transform: rotate(360deg);
-    }
-}
-
-@-moz-keyframes spin {
-    from {
-        -moz-transform: rotate(0deg);
-    }
-    to {
-        -moz-transform: rotate(360deg);
-    }
-}
-
-@-ms-keyframes spin {
-    from {
-        -ms-transform: rotate(0deg);
-    }
-    to {
-        -ms-transform: rotate(360deg);
-    }
-}
-
-@-webkit-keyframes spin {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-    to {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-@-keyframes spin {
+@keyframes spin {
     from {
         transform: rotate(0deg);
     }

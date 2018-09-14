@@ -420,7 +420,7 @@ var FlowFlowApp = (function($){
           view.$el.addClass('stream-view-new');
           self.$container.append(view.$el);
           view.saveViaAjax().then(function ( stream ) {
-            debugger
+
               if ( stream.error ) {
               // todo remove view
                   self.$container.find('#stream-view-new').remove();
@@ -645,7 +645,7 @@ var FlowFlowApp = (function($){
         }, 'json' ).fail( function( d ){
           console.log( d.responseText );
           console.log( d );
-          alert('Error occurred. ' + concat(d.responseText));
+          alert('Error occurred. ' + d.responseText);
           self.makeOverlayTo('hide');
         });
 
@@ -912,7 +912,7 @@ var FlowFlowApp = (function($){
     },
 
     validateEmail: function (val) {
-      return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}$/.test(val);
+      return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,20}$/.test(val);
     },
 
     validateCode: function (val) {
@@ -932,6 +932,7 @@ var FlowFlowApp = (function($){
         "cache":                 "yep",
         "cache_lifetime":        "10",
         "gallery":               "yep",
+        "gallery-type":          "classic",
         "private":               "nope",
         "hide-on-desktop":       "nope",
         "hide-on-mobile":        "nope",
@@ -957,7 +958,7 @@ var FlowFlowApp = (function($){
         "gc-style":              "style-1",
         "upic-pos":              "timestamp",
         "upic-style":            "round",
-        "icon-style":            "label1",
+        "icon-style":            "label2",
         "cardcolor":             "rgb(255, 255, 255)",
         "namecolor":             "rgb(59, 61, 64)",
         "textcolor":             "rgb(131, 141, 143)",
@@ -979,8 +980,8 @@ var FlowFlowApp = (function($){
         "s-laptop":              "15",
         "s-tablet-l":            "10",
         "s-tablet-p":            "10",
-        "s-smart-l":             "5",
-        "s-smart-p":             "5",
+        "s-smart-l":             "15",
+        "s-smart-p":             "15",
         "m-c-desktop":           "5",
         "m-c-laptop":            "4",
         "m-c-tablet-l":          "3",
@@ -991,8 +992,8 @@ var FlowFlowApp = (function($){
         "m-s-laptop":            "15",
         "m-s-tablet-l":          "10",
         "m-s-tablet-p":          "10",
-        "m-s-smart-l":           "5",
-        "m-s-smart-p":           "5",
+        "m-s-smart-l":           "15",
+        "m-s-smart-p":           "15",
         "j-h-desktop":           "260",
         "j-h-laptop":            "240",
         "j-h-tablet-l":          "220",
@@ -1005,6 +1006,23 @@ var FlowFlowApp = (function($){
         "j-s-tablet-p":          "0",
         "j-s-smart-l":           "0",
         "j-s-smart-p":           "0",
+        "c-r-desktop":           "2",
+        "c-r-laptop":            "2",
+        "c-r-tablet-l":          "2",
+        "c-r-tablet-p":          "2",
+        "c-r-smart-l":           "2",
+        "c-r-smart-p":           "2",
+        "c-s-desktop":           "0",
+        "c-s-laptop":            "0",
+        "c-s-tablet-l":          "0",
+        "c-s-tablet-p":          "0",
+        "c-s-smart-l":           "0",
+        "c-s-smart-p":           "0",
+        "c-autoplay":            "",
+        "wallwidth":             "",
+        "wallvm":                "20",
+        "wallhm":                "0",
+        "wallcomments":          "yep",
         "g-ratio-w":             "1",
         "g-ratio-h":             "2",
         "g-ratio-img":           "1/2",
@@ -1012,7 +1030,7 @@ var FlowFlowApp = (function($){
         "m-overlay":             "nope",
         "css":                   "",
         "feeds":                 [],
-        "template":              ['header', 'text', 'image', 'meta'],
+        "template":              ['meta', 'image', 'header', 'text'],
         "tv":                    "nope",
         "tv-int":                "5",
         "tv-logo":               "",
@@ -1043,7 +1061,6 @@ var FlowFlowApp = (function($){
       if ($params.data.stream.errors) delete $params.data.stream.errors;
 
       return Backbone.sync( 'create', this, $params ).done( function( serverModel ){
-        debugger
         if ( serverModel.error ) {
           var promise = Controller.popup('Yay! You have no permissions to do this, please contact admin.', false, 'alert');
           Controller.makeOverlayTo('hide');
@@ -1077,7 +1094,6 @@ var FlowFlowApp = (function($){
     },
     destroy: function() {
       var self = this;
-      debugger
       var $params = {
         emulateJSON: true,
         type: 'GET',
@@ -1532,6 +1548,8 @@ var FlowFlowApp = (function($){
         Controller.tabsCursor.initFor(this.$el, id);
 
         setTimeout(function () {
+          self.$preview = self.$el.find('.preview .ff-stream-wrapper');
+
           self.configDesign();
           self.applySavedTemplate();
           self.trigger('preview-update');
@@ -1568,16 +1586,17 @@ var FlowFlowApp = (function($){
       this.$el.find('input[type="range"]').on('mouseup', function() {
         this.blur();
       }).on('change input', function () {
-        var $t = $(this);
-        var $v = $t.data('el') ? $t.data('el') : $t.parent().find('.range-value');
+          var $t = $(this);
+          var name = this.name.indexOf('-r-') + 1 ? 'row' : 'column';
+          var $v = $t.data('el') ? $t.data('el') : $t.next('.range-value');
 
-        if (!$v) {
-          $v = $t.parent().find('.range-value');
-          $t.data('el', $v)
-        }
+          if (!$v) {
+              $v = $t.parent().find('.range-value');
+              $t.data('el', $v)
+          }
 
-        $v.html(this.value + ' column' + (this.value > 1 ? 's' : ''));
-        $t = null;
+          $v.html(this.value + ' ' + name + (this.value > 1 ? 's' : ''));
+          $t = null;
       }).change()/*.rangeslider()*/;
 
       this.$el.find('input[data-color-format]').ColorPickerSliders(this.colorPickersConfig);
@@ -1622,11 +1641,11 @@ var FlowFlowApp = (function($){
       }
 
       for ( i = 0, len = template.length; i < len; i++ ) {
-         $cont.append(detached[template[i]]);
+         $cont.append( detached[template[i]] );
       }
 
-      $cont.find('.ff-label-wrapper').insertAfter(detached.meta);
-      $cont.find('.ff-item-bar').appendTo($cont);
+      $cont.find('.ff-label-wrapper').insertAfter( detached.meta );
+      $cont.find('> .ff-item-bar').appendTo($cont);
     },
 
     renderConnectedFeeds: function () {
@@ -1819,11 +1838,14 @@ var FlowFlowApp = (function($){
       var val = e.currentTarget.value;
       var self = this;
       var $p = $(e.currentTarget).closest('.section');
-      $p.find('.section-settings').removeClass('settings-section__active').end()
+
+      $p.removeClass(function(index, cls) {
+          return cls.match(/\w+-layout-chosen/)[0];
+      }).addClass(val + '-layout-chosen').find('.section-settings').removeClass('settings-section__active').end()
           .find('.settings-' + val).addClass('settings-section__active');
-      // setTimeout(function () {
-      //   Controller.setHeight(self.model.get('id'));
-      // },0);
+      setTimeout(function () {
+          Controller.setHeight(self.model.get('id'));
+      },0);
     },
 
     previewChangeAlign: function (e) {
@@ -2037,8 +2059,6 @@ var FlowFlowApp = (function($){
       var promise = this.model.save(isNew);
 
       promise.done(function(serverModel){
-
-        debugger
 
         if (serverModel.error) return;
 
@@ -3217,6 +3237,7 @@ function capitaliseFirstLetter (string)
 
 
 function stripslashes (str) {
+  if ( !str ) return;
   str = str.replace(/\\'/g, '\'');
   str = str.replace(/\\"/g, '"');
   str = str.replace(/\\0/g, '\0');

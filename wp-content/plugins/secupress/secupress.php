@@ -5,7 +5,7 @@
  * Description: Protect your WordPress with SecuPress, analyze and ensure the safety of your website daily.
  * Author: SecuPress
  * Author URI: https://secupress.me
- * Version: 1.4.4
+ * Version: 1.4.6
  * Code Name: Hotrod
  * Network: true
  * License: GPLv2
@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 /** DEFINES ===================================================================================== */
 /** --------------------------------------------------------------------------------------------- */
 
-define( 'SECUPRESS_VERSION'               , '1.4.4' );
+define( 'SECUPRESS_VERSION'               , '1.4.6' );
 define( 'SECUPRESS_ACTIVE_SUBMODULES'     , 'secupress_active_submodules' );
 define( 'SECUPRESS_SETTINGS_SLUG'         , 'secupress_settings' );
 define( 'SECUPRESS_SCAN_TIMES'            , 'secupress_scanners_times' );
@@ -238,9 +238,11 @@ function secupress_load_plugins() {
 		 */
 		do_action( 'secupress.all.plugins.activation' );
 	}
-
 	// Autovalidate license if constants are set.
 	if ( ! secupress_has_pro_license() && defined( 'SECUPRESS_API_EMAIL' ) && defined( 'SECUPRESS_API_KEY' ) ) {
+		if ( ! function_exists( 'secupress_global_settings_activate_pro_license' ) ) {
+			include( SECUPRESS_MODULES_PATH . 'welcome/callbacks.php' );
+		}
 		$args                   = array();
 		$options                = get_site_option( SECUPRESS_SETTINGS_SLUG );
 		$args['install_time']   = isset( $options['install_time'] ) && -1 !== (int) $options['install_time'] ? $options['install_time'] : time();
@@ -312,6 +314,7 @@ function secupress_load_functions() {
 	require_once( SECUPRESS_INC_PATH . 'functions/deprecated.php' );
 	require_once( SECUPRESS_INC_PATH . 'functions/common.php' );
 	require_once( SECUPRESS_INC_PATH . 'functions/3rdparty.php' );
+	require_once( SECUPRESS_INC_PATH . 'functions/hotfixes.php' );
 	require_once( SECUPRESS_INC_PATH . 'functions/formatting.php' );
 	require_once( SECUPRESS_INC_PATH . 'functions/options.php' );
 	require_once( SECUPRESS_INC_PATH . 'functions/modules.php' );
@@ -331,6 +334,9 @@ function secupress_load_functions() {
 	secupress_require_class( 'Cleanup_Leftovers' );
 	// The Scanner results class.
 	secupress_require_class( 'Scanner_Results' );
+
+	// Admin side but need when running cron.
+	require_once( SECUPRESS_ADMIN_PATH . 'functions/scan-fix.php' );
 
 	if ( ! is_admin() ) {
 		return;
@@ -353,7 +359,6 @@ function secupress_load_functions() {
 	require_once( SECUPRESS_ADMIN_PATH . 'functions/options.php' );
 	require_once( SECUPRESS_ADMIN_PATH . 'functions/settings.php' );
 	require_once( SECUPRESS_ADMIN_PATH . 'functions/ajax-post.php' );
-	require_once( SECUPRESS_ADMIN_PATH . 'functions/scan-fix.php' );
 	require_once( SECUPRESS_ADMIN_PATH . 'functions/modules.php' );
 	require_once( SECUPRESS_ADMIN_PATH . 'functions/notices.php' );
 }

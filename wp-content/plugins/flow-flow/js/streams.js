@@ -51,10 +51,20 @@ var ff_templates = {
                         <dd class="hidden">\
                             <label for="stream-<%= id %>-cache-lifetime"><input id="stream-<%= id %>-cache-lifetime" class="short clearcache" type="text" name="stream-<%= id %>-cache-lifetime" value="10"/> minutes</label>\
                         </dd>\
-                        <dt class="multiline">Show lightbox on card click\
-                            <p class="desc">If disabled, click on the post opens original post URL.</p></dt>\
+                        <dt class="multiline">Show gallery on card click\
+                            <p class="desc">If disabled, click on the card will open original post URL.</p></dt>\
                         <dd>\
                             <label for="stream-<%= id %>-gallery"><input id="stream-<%= id %>-gallery" class="switcher" type="checkbox" checked name="stream-<%= id %>-gallery" value="yep"/><div><div></div></div></label>\
+                        </dd>\
+                        <dt class="multiline">Gallery type <span class="badge badge-new">New!</span>\
+                            <p class="desc">Choose between classic lightbox style or scrollable news feed.</p></dt>\
+                        <dd class="">\
+                            <div class="select-wrapper">\
+                                <select name="stream-<%= id %>-gallery-type" id="stream-<%= id %>-gallery-type">\
+                                    <option value="classic" selected>Lightbox</option>\
+                                    <option value="news">News feed style</option>\
+                                </select>\
+                            </div>\
                         </dd>\
                         <dt class="multiline">Private stream<p class="desc">Show only for logged in users.</p></dt>\
                         <dd>\
@@ -99,18 +109,20 @@ var ff_templates = {
     <div class="choose-wrapper">\
         <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-masonry-<%= id %>" type="radio" value="masonry" checked/><label for="stream-layout-masonry-<%= id %>"><span class="choose-button"><i class="sprite-masonry"></i>Masonry</span><br><span class="desc">Pinterest-like layout with flexible post height (depending on post content).</span></label>\
         <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-grid-<%= id %>" type="radio" value="grid" /><label for="stream-layout-grid-<%= id %>"><span class="choose-button"><i class="sprite-grid"></i>Grid</span><br><span class="desc">Classic grid with posts of the same height. Recommended for posts of similar format.</span></label>\
-        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-justified-<%= id %>" type="radio" value="justified"/><label for="stream-layout-justified-<%= id %>"><span class="choose-button"><i class="sprite-justified"></i>Justified</span><br><span class="desc">One-height posts with fluid adjustable width. Only for image posts. Content always overlays.</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-justified-<%= id %>" type="radio" value="justified"/><label for="stream-layout-justified-<%= id %>"><span class="choose-button"><i class="sprite-justified"></i>Justified</span><br><span class="desc">One-height posts with fluid adjustable width. Only for image posts.</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-list-<%= id %>" type="radio" value="list"/><label for="stream-layout-list-<%= id %>"><span class="choose-button"><i class="sprite-list"></i>Wall</span><br><span class="desc"><span class="badge badge-new">New!</span> Classic news feed like layout. Easily integrates in any part of your site.</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" disabled id="stream-layout-carousel-<%= id %>" type="radio" value="carousel"/><label class="coming-soon" for="stream-layout-carousel-<%= id %>"><span class="choose-button"><i class="sprite-carousel"></i>Carousel</span><br><span class="desc"><span class="badge badge-coming-soon">Coming Soon</span> Slide photos in beautiful carousel of posts. All cards are same size. Supports dragging.</span></label>\
         </div>\
     </div>\
     <dl class="section-settings settings-masonry">\
 <dt class="multiline">Gallery mode\
-        <p class="desc">Affects media posts only. Enable if post content overlays post image on mouseover / on touch.</p>\
+        <p class="desc">Affects media posts only. Enable if you want post content to overlay post image on mouseover / on touch.</p>\
     </dt>\
     <dd>\
         <label for="stream-<%= id %>-m-overlay"><input id="stream-<%= id %>-m-overlay" class="switcher" type="checkbox" name="stream-<%= id %>-m-overlay" value="yep"/><div><div></div></div></label>\
     </dd>\
     <dt class="multiline">Responsive settings\
-        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes.</p>\
+        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes. Keep in mind that size depends on container which can have not full width of screen.</p>\
     </dt>\
     <dd class="device-list">\
         <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-m-c-desktop" id="stream-<%= id %>-m-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-m-s-desktop" name="stream-<%= id %>-m-s-desktop" value="0" class="extra-small"> px gaps</div>\
@@ -123,7 +135,7 @@ var ff_templates = {
     </dl>\
     <dl class="section-settings settings-grid">\
     <dt class="multiline">Gallery mode\
-        <p class="desc">Affects media posts only. Enable if post content overlays post image on mouseover / on touch.</p>\
+        <p class="desc">Affects media posts only. Enable if you want post content to overlay post image on mouseover / on touch.</p>\
     </dt>\
     <dd>\
         <label for="stream-<%= id %>-g-overlay"><input id="stream-<%= id %>-g-overlay" class="switcher" type="checkbox" name="stream-<%= id %>-g-overlay" value="yep"/><div><div></div></div></label>\
@@ -147,7 +159,7 @@ var ff_templates = {
         </div>\
     </dd>\
      <dt class="multiline">Responsive settings\
-        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes.</p>\
+        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes. Keep in mind that size depends on container which can have not full width of screen.</p>\
     </dt>\
     <dd class="device-list">\
         <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-c-desktop" id="stream-<%= id %>-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-s-desktop" name="stream-<%= id %>-s-desktop" value="0" class="extra-small"> px gaps</div>\
@@ -160,7 +172,7 @@ var ff_templates = {
     </dl>\
 <dl class="section-settings settings-justified">\
     <dt class="multiline">Responsive settings\
-        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes.</p>\
+        <p class="desc">Set number of columns and gaps between stream posts for various screen sizes. Keep in mind that size depends on container which can have not full width of screen.</p>\
     </dt>\
     <dd class="device-list">\
         <div><i class="flaticon-desktop"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-desktop" name="stream-<%= id %>-j-h-desktop" value="260" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-desktop" name="stream-<%= id %>-j-s-desktop" value="0" class="extra-small"> px gaps</div>\
@@ -169,6 +181,57 @@ var ff_templates = {
         <div><i class="flaticon-tablet"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-tablet-p" name="stream-<%= id %>-j-h-tablet-p" value="200" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-tablet-p" name="stream-<%= id %>-j-s-tablet-p" value="0" class="extra-small"> px gaps</div>\
         <div><i class="flaticon-phone2 rotated"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-smart-l" name="stream-<%= id %>-j-h-smart-l" value="180" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-smart-l" name="stream-<%= id %>-j-s-smart-l" value="0" class="extra-small"> px gaps</div>\
         <div><i class="flaticon-phone2"></i> Preferred row height is <input type="text" id="stream-<%= id %>-j-h-smart-p" name="stream-<%= id %>-j-h-smart-p" value="160" class="short"> px with <input type="text" id="stream-<%= id %>-j-s-smart-p" name="stream-<%= id %>-j-s-smart-p" value="0" class="extra-small"> px gaps</div>\
+    </dd>\
+    </dl>\
+<dl class="section-settings settings-carousel">\
+    <dt class="multiline">Always Visible Controls\
+        <p class="desc">If set to NO controls will be visible on mouseover on desktops.</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-c-arrows-always"><input id="stream-<%= id %>-c-arrows-always" class="switcher" type="checkbox" name="stream-<%= id %>-c-arrows-always" value="yep"/><div><div></div></div></label>\
+    </dd>\
+    <dt class="multiline">Auto Play\
+        <p class="desc">Set speed in seconds. Leave empty to disable.</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-c-autoplay"><input id="stream-<%= id %>-c-autoplay" type="number" name="stream-<%= id %>-c-autoplay" class="extra-small"/><div><div></div></div></label> sec\
+    </dd>\
+    <dt class="multiline">Responsive settings\
+        <p class="desc">Set number of rows/columns and space between cards you want to have on various container sizes. Keep in mind that size depends on container which can have not full width of screen.</p>\
+    </dt>\
+    <dd class="device-list">\
+        <div><i class="flaticon-desktop"></i> <input name="stream-<%= id %>-c-r-desktop" id="stream-<%= id %>-c-r-desktop" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> and <input name="stream-<%= id %>-c-c-desktop" id="stream-<%= id %>-c-c-desktop" type="range" min="1" max="12" step="1" value="5" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-c-s-desktop" name="stream-<%= id %>-c-s-desktop" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-laptop"></i> <input name="stream-<%= id %>-c-r-laptop" id="stream-<%= id %>-c-r-laptop" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> and <input name="stream-<%= id %>-c-c-laptop" id="stream-<%= id %>-c-c-laptop" type="range" min="1" max="12" step="1" value="4" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-c-s-laptop" name="stream-<%= id %>-c-s-laptop" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-tablet rotated"></i> <input name="stream-<%= id %>-c-r-tablet-l" id="stream-<%= id %>-c-r-tablet-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> and <input name="stream-<%= id %>-c-c-tablet-l" id="stream-<%= id %>-c-c-tablet-l" type="range" min="1" max="12" step="1" value="3" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-c-s-tablet-l" name="stream-<%= id %>-c-s-tablet-l" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-tablet"></i> <input name="stream-<%= id %>-c-r-tablet-p" id="stream-<%= id %>-c-r-tablet-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> and <input name="stream-<%= id %>-c-c-tablet-p" id="stream-<%= id %>-c-c-tablet-p" type="range" min="1" max="12" step="1" value="3" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-c-s-tablet-p" name="stream-<%= id %>-c-s-tablet-p" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-phone2 rotated"></i> <input name="stream-<%= id %>-c-r-smart-l" id="stream-<%= id %>-c-r-smart-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> and <input name="stream-<%= id %>-c-c-smart-l" id="stream-<%= id %>-c-c-smart-l" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-c-s-smart-l" name="stream-<%= id %>-c-s-smart-l" value="0" class="extra-small"> px spacing</div>\
+        <div><i class="flaticon-phone2"></i> <input name="stream-<%= id %>-c-r-smart-p" id="stream-<%= id %>-c-r-smart-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> and <input name="stream-<%= id %>-c-c-smart-p" id="stream-<%= id %>-c-c-smart-p" type="range" min="1" max="12" step="1" value="2" data-rangeslider> <span class="range-value"></span> with <input type="text" id="stream-<%= id %>-c-s-smart-p" name="stream-<%= id %>-c-s-smart-p" value="0" class="extra-small"> px spacing</div>\
+    </dd>\
+    </dl>\
+<dl class="section-settings settings-list">\
+    <dt class="multiline">Wall width\
+        <p class="desc">Leave empty for responsiveness, will fill container. Best look for this layout is in 300-800 pixels range.</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-wallwidth"><input id="stream-<%= id %>-wallwidth" type="number" name="stream-<%= id %>-wallwidth" class="small"/><div><div></div></div></label> px\
+    </dd>\
+        <dt class="">Post vertical margins\
+        <p class="desc"></p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-wallvm"><input id="stream-<%= id %>-wallvm" type="number" name="stream-<%= id %>-wallvm" class="extra-small"/><div><div></div></div></label> px\
+    </dd>\
+        <dt class="">Post horizontal margins\
+        <p class="desc"></p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-wallhm"><input id="stream-<%= id %>-wallhm" type="number" name="stream-<%= id %>-wallhm" class="extra-small"/><div><div></div></div></label> px\
+    </dd>\
+    <dt class="multiline">Post comments\
+    <p class="desc">Load comments for posts (if available)</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-wallcomments"><input id="stream-<%= id %>-wallcomments" class="switcher" type="checkbox" name="stream-<%= id %>-wallcomments" checked value="yep"/><div><div></div></div></label>\
     </dd>\
     </dl>\
 <div class="button-wrapper"><span id="stream-layout-sbmt-<%= id %>" class="admin-button green-button submit-button" style="margin-bottom:35px">Save Changes</span></div>\
@@ -211,23 +274,23 @@ var ff_templates = {
             <dd>\
                 <input data-prop="backgroundColor" id="bg-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-bgcolor" type="text" value="rgb(240, 240, 240)" tabindex="-1">\
                 </dd>\
-                <dt class="multiline">SORTING AND SEARCH BAR\
-                <p class="desc"></p>\
+                <dt class="multiline carousel-hidden-field">SORTING AND SEARCH BAR\
+                <p class="desc">Available only for grid layouts.</p>\
                 </dt>\
-                <dd>\
+                <dd class="carousel-hidden-field">\
                     <label for="stream-<%= id %>-filter"><input id="stream-<%= id %>-filter" class="switcher" type="checkbox" name="stream-<%= id %>-filter" checked value="yep"/><div><div></div></div></label>\
                 </dd>\
-                <dt>Filters and controls color\
+                <dt class="carousel-hidden-field">Filters and controls color\
                 </dt>\
-                <dd>\
+                <dd class="carousel-hidden-field">\
                     <input id="filter-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-filtercolor" type="text" value="rgb(205, 205, 205)" tabindex="-1">\
                     </dd>\
                     <dt class="multiline">Slider on mobiles <p class="desc">Stream will turn into a slider with 3 items per slide on mobile devices.</p></dt>\
                     <dd>\
                         <label for="stream-<%= id %>-mobileslider"><input id="stream-<%= id %>-mobileslider" class="switcher" type="checkbox" name="stream-<%= id %>-mobileslider" value="yep"/><div><div></div></div></label>\
                     </dd>\
-                    <dt class="multiline">Animate stream items <p class="desc">Posts are revealed with animation effect if they appear in viewport. Otherwise all posts are visible immediately.</p></dt>\
-                    <dd>\
+                    <dt class="multiline carousel-hidden-field">Animate stream items <p class="desc">Posts are revealed with animation effect if they appear in viewport. Otherwise all posts are visible immediately. Only for grid layouts.</p></dt>\
+                    <dd class="carousel-hidden-field">\
                         <label for="stream-<%= id %>-viewportin"><input id="stream-<%= id %>-viewportin" class="switcher" type="checkbox" name="stream-<%= id %>-viewportin" checked value="yep"/><div><div></div></div></label>\
                     </dd>\
                 </dl>\
@@ -258,8 +321,8 @@ var ff_templates = {
             </select>\
         </div>\
     </dd>\
-    <dt><span class="valign">AVATAR STYLE</span></dt>\
-    <dd>\
+    <dt class="grid-setting"><span class="valign">AVATAR STYLE</span></dt>\
+    <dd class="grid-setting">\
         <div class="select-wrapper">\
             <select name="stream-<%= id %>-upic-pos" id="stream-<%= id %>-upic-pos">\
                 <option value="timestamp" selected>With timestamp</option>\
@@ -281,12 +344,12 @@ var ff_templates = {
             </select>\
         </div>\
     </dd>\
-    <dt><span class="valign">Social icon style</span></dt>\
-    <dd>\
+    <dt class="grid-setting"><span class="valign">Social icon style</span></dt>\
+    <dd class="grid-setting">\
         <div class="select-wrapper">\
             <select name="stream-<%= id %>-icon-style" id="stream-<%= id %>-icon-style">\
-                <option value="label1" selected>Label</option>\
-                <option value="label2">Corner icon</option>\
+                <option value="label2" selected>Corner icon</option>\
+                <option value="label1">Label</option>\
                 <option value="stamp1">Timestamp</option>\
                 <option value="off">Off</option>\
             </select>\
@@ -300,71 +363,71 @@ var ff_templates = {
             <p class="desc">Applies to post heading, name and social buttons hover effect.</p>\
         </dt>\
         <dd>\
-            <input data-prop="color" id="name-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-namecolor" type="text" value="rgb(59, 61, 64)" tabindex="-1">\
-            </dd>\
-            <dt>Regular text color\
-            </dt>\
-            <dd>\
-                <input data-prop="color" id="text-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-textcolor" type="text" value="rgb(131, 141, 143)" tabindex="-1">\
-                </dd>\
-                <dt>Links color</dt>\
-                <dd>\
-                    <input data-prop="color" id="links-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-linkscolor" type="text" value="rgb(94, 159, 202)" tabindex="-1">\
-                    </dd>\
-                    <dt class="multiline">SECONDARY COLOR\
-                        <p class="desc">Applies to timestamp and social counters.</p></dt>\
-                    <dd>\
-                        <input data-prop="color" id="other-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-restcolor" type="text" value="rgb(132, 118, 129)" tabindex="-1">\
-                        </dd>\
-                        <dt>Card shadow</dt>\
-                        <dd>\
-                            <input data-prop="box-shadow" id="shadow-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-shadow" type="text" value="rgba(0,0,0,.05)" tabindex="-1">\
-                            </dd>\
-                            <dt>Overlay for gallery cards</dt>\
-                            <dd>\
-                                <input data-prop="border-color" id="bcolor-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-bcolor" type="text" value="rgba(0, 0, 0, 0.75)" tabindex="-1">\
-                                </dd>\
-                                <dt><span class="valign">Text alignment</span></dt>\
-                                <dd class="">\
-                                    <div class="select-wrapper">\
-                                        <select name="stream-<%= id %>-talign" id="talign-<%= id %>">\
-                                            <option value="left" selected>Left</option>\
-                                            <option value="center">Centered</option>\
-                                            <option value="right">Right</option>\
-                                        </select>\
-                                    </div>\
-                                </dd>\
-                                <dt><span class="valign">COUNTER ICONS STYLE</span></dt>\
-                                <dd class="">\
-                                    <div class="select-wrapper">\
-                                        <select name="stream-<%= id %>-icons-style" id="icons-style-<%= id %>">\
-                                            <option value="outline" selected>Outlined</option>\
-                                            <option value="fill">Solid</option>\
-                                        </select>\
-                                    </div>\
-                                </dd>\
-                                <dt class="hide">Preview</dt>\
-                                <dd class="preview">\
-                                    <h1>Card builder - drag\'n\'drop</h1>\
-                                    <input type="hidden" id="stream-<%= id %>-template" name="stream-<%= id %>-template"/>\
-                                    <div data-preview="bg-color" class="ff-stream-wrapper ff-layout-grid ff-theme-classic ff-layout-masonry ff-upic-timestamp ff-upic-round ff-align-left ff-sc-label1 shuffle">\
-                                        <div data-preview="width" class="ff-item ff-instagram shuffle-item filtered" style="visibility: visible; opacity:1;">\
-                                            <div data-preview="card-color,shadow-color" class="picture-item__inner picture-item__inner--transition">\
-                                                <div class="ff-item-cont">\
-                                                    <span data-template="image" class="ff-img-holder ff-item__draggable"><img src="<%= plugin_url %>/assets/alex_strohl.jpg" style="width:100%;"></span>\
-                                                    <h4 data-template="header" data-preview="name-color" class="ff-item__draggable">Header example</h4>\
-                                                    <div data-template="text" data-preview="text-color" class="ff-content ff-item__draggable">This is regular text paragraph, can be tweet, facebook post etc. This is example of <a href="#" data-preview="links-color">link in text</a>.</div>\
-                                                    <h6 class="ff-label-wrapper"><i class="ff-icon"><i class="ff-icon-inner"><span class="ff-label-text">instagram</span></i></i></h6>\
-                                                    <div data-template="meta" class="ff-item-meta ff-item__draggable">\
-                                                        <span class="ff-userpic" style="background:url(<%= plugin_url %>/assets/alex_strohl_user.jpg)"><i data-preview="border-color" class="ff-icon"><i class="ff-icon-inner"></i></i></span><h6><a data-preview="name-color" target="_blank" rel="nofollow" href="#" class="ff-name">Alex Strohl</a></h6><a data-preview="other-color" target="_blank" rel="nofollow" href="#" class="ff-nickname">@alex_strohl</a><a data-preview="other-color" target="_blank" rel="nofollow" href="#" class="ff-timestamp">21m ago </a>\
-                                                    </div>\
-                                                    <h6 class="ff-item-bar"><a data-preview="other-color" href="#" class="ff-likes" target="_blank"><i class="ff-icon-like"></i> <span>89K</span></a><a data-preview="other-color" href="#" class="ff-comments" target="_blank"><i class="ff-icon-comment"></i> <span>994</span></a><div class="ff-share-wrapper"><i data-preview="other-color" class="ff-icon-share"></i><div class="ff-share-popup"><a href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F" class="ff-fb-share" target="_blank"><span>Facebook</span></a><a href="https://twitter.com/share?url=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F" class="ff-tw-share" target="_blank"><span>Twitter</span></a><a href="https://plus.google.com/share?url=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F" class="ff-gp-share" target="_blank"><span>Google+</span></a><a href="https://www.pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F&amp;media=https%3A%2F%2Fscontent.cdninstagram.com%2Ft51.2885-15%2Fsh0.08%2Fe35%2Fp640x640%2F14482046_188451531582331_7449129988999086080_n.jpg%3Fig_cache_key%3DMTM1MTE5NTAyMDc2NTc2MzY0NA%253D%253D.2" class="ff-pin-share" target="_blank"><span>Pinterest</span></a></div></div></h6>\
-                                                </div>\
-                                            </div>\
-                                        </div>\
-                                    </div>\
-                                </dd>\
-                                </dl>\
+        <input data-prop="color" id="name-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-namecolor" type="text" value="rgb(59, 61, 64)" tabindex="-1">\
+        </dd>\
+        <dt>Regular text color\
+        </dt>\
+        <dd>\
+        <input data-prop="color" id="text-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-textcolor" type="text" value="rgb(131, 141, 143)" tabindex="-1">\
+        </dd>\
+        <dt>Links color</dt>\
+        <dd>\
+        <input data-prop="color" id="links-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-linkscolor" type="text" value="rgb(94, 159, 202)" tabindex="-1">\
+        </dd>\
+        <dt class="multiline">SECONDARY COLOR\
+            <p class="desc">Applies to timestamp and social counters.</p></dt>\
+        <dd>\
+        <input data-prop="color" id="other-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-restcolor" type="text" value="rgb(132, 118, 129)" tabindex="-1">\
+        </dd>\
+        <dt class="grid-setting">Card shadow</dt>\
+        <dd class="grid-setting">\
+        <input data-prop="box-shadow" id="shadow-color-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-shadow" type="text" value="rgba(0,0,0,.05)" tabindex="-1">\
+        </dd>\
+        <dt class="grid-setting">Overlay for gallery cards</dt>\
+        <dd class="grid-setting">\
+        <input data-prop="border-color" id="bcolor-<%= id %>" data-color-format="rgba" name="stream-<%= id %>-bcolor" type="text" value="rgba(0, 0, 0, 0.75)" tabindex="-1">\
+        </dd>\
+        <dt><span class="valign">Text alignment</span></dt>\
+        <dd class="">\
+            <div class="select-wrapper">\
+                <select name="stream-<%= id %>-talign" id="talign-<%= id %>">\
+                    <option value="left" selected>Left</option>\
+                    <option value="center">Centered</option>\
+                    <option value="right">Right</option>\
+                </select>\
+            </div>\
+        </dd>\
+        <dt><span class="valign">COUNTER ICONS STYLE</span></dt>\
+        <dd class="">\
+            <div class="select-wrapper">\
+                <select name="stream-<%= id %>-icons-style" id="icons-style-<%= id %>">\
+                    <option value="outline" selected>Outlined</option>\
+                    <option value="fill">Solid</option>\
+                </select>\
+            </div>\
+        </dd>\
+        <dt class="hide">Preview</dt>\
+        <dd class="preview">\
+            <h1>Card builder - drag\'n\'drop</h1>\
+            <input type="hidden" id="stream-<%= id %>-template" name="stream-<%= id %>-template"/>\
+            <div data-preview="bg-color" class="ff-stream-wrapper ff-layout-grid ff-theme-classic ff-layout-masonry ff-upic-timestamp ff-upic-round ff-align-left ff-sc-label1 shuffle">\
+                <div data-preview="width" class="ff-item ff-instagram shuffle-item filtered" style="visibility: visible; opacity:1;">\
+                    <div data-preview="card-color,shadow-color" class="picture-item__inner picture-item__inner--transition">\
+                        <div class="ff-item-cont">\
+                            <span data-template="image" class="ff-img-holder ff-item__draggable"><img src="<%= plugin_url %>/assets/alex_strohl.jpg" style="width:100%;"></span>\
+                            <h4 data-template="header" data-preview="name-color" class="ff-item__draggable">Header example</h4>\
+                            <div data-template="text" data-preview="text-color" class="ff-content ff-item__draggable"><h4 class="list-preview" data-preview="name-color">Header example</h4>This is regular text paragraph, can be tweet, facebook post etc. This is example of <a href="#" data-preview="links-color">link in text</a>.<h6 class="ff-item-bar list-preview"><a href="" data-preview="other-color" class="ff-likes" target="_blank"><i class="ff-icon-like"></i> <span>15K</span></a><a data-preview="other-color" href="" class="ff-comments" target="_blank"><i class="ff-icon-comment"></i> <span>53</span></a><a data-preview="other-color" rel="nofollow" href="" class="ff-timestamp" target="_blank">July 19</a><span class="ff-location">Lake</span></h6></div>\
+                            <h6 class="ff-label-wrapper"><i class="ff-icon"><i class="ff-icon-inner"><span class="ff-label-text">instagram</span></i></i></h6>\
+                            <div data-template="meta" class="ff-item-meta ff-item__draggable">\
+                                <span class="ff-userpic" style="background:url(<%= plugin_url %>/assets/alex_strohl_user.jpg)"><i data-preview="border-color" class="ff-icon"><i class="ff-icon-inner"></i></i></span><h6><a data-preview="name-color" target="_blank" rel="nofollow" href="#" class="ff-name">Alex Strohl</a></h6><a data-preview="other-color" target="_blank" rel="nofollow" href="#" class="ff-nickname">@alex_strohl</a><a data-preview="other-color" target="_blank" rel="nofollow" href="#" class="ff-timestamp">21m ago </a><div class="ff-dropdown list-preview"><a rel="nofollow" href="#" class="ff-external-link" target="_blank"></a><span class="flaticon-share2"></span></div>\
+                            </div>\
+                            <h6 class="ff-item-bar"><a data-preview="other-color" href="#" class="ff-likes" target="_blank"><i class="ff-icon-like"></i> <span>89K</span></a><a data-preview="other-color" href="#" class="ff-comments" target="_blank"><i class="ff-icon-comment"></i> <span>994</span></a><div class="ff-share-wrapper"><i data-preview="other-color" class="ff-icon-share"></i><div class="ff-share-popup"><a href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F" class="ff-fb-share" target="_blank"><span>Facebook</span></a><a href="https://twitter.com/share?url=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F" class="ff-tw-share" target="_blank"><span>Twitter</span></a><a href="https://plus.google.com/share?url=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F" class="ff-gp-share" target="_blank"><span>Google+</span></a><a href="https://www.pinterest.com/pin/create/button/?url=https%3A%2F%2Fwww.instagram.com%2Fp%2FBLAaLZjBRg8%2F&amp;media=https%3A%2F%2Fscontent.cdninstagram.com%2Ft51.2885-15%2Fsh0.08%2Fe35%2Fp640x640%2F14482046_188451531582331_7449129988999086080_n.jpg%3Fig_cache_key%3DMTM1MTE5NTAyMDc2NTc2MzY0NA%253D%253D.2" class="ff-pin-share" target="_blank"><span>Pinterest</span></a></div></div></h6>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        </dd>\
+        </dl>\
 <span id="stream-stylings-sbmt-<%= id %>" class="admin-button green-button submit-button">Save Changes</span>\
 </div>\
 </div>\
@@ -811,7 +874,7 @@ Posts to load during update\
           </dd>\
                       <dt>Feed updates frequency</dt>\
 <dd>\
-<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option> <option value="10080">Once a week</option></select> </div></dd>\
+<div class="select-wrapper"> <select name="<%= uid %>-cache_lifetime" id="<%= uid %>-cache_lifetime"><option value="60">Every hour</option> <option value="360">Every 6 hours</option> <option value="1440">Once a day</option></select> </div></dd>\
 <dt class="hide" >\
     Posts to load during update\
     <p class="desc">The first load is always 50. <a href="http://docs.social-streams.com/article/137-managing-feed-updates" target="_blank">Learn more</a>.</p>\

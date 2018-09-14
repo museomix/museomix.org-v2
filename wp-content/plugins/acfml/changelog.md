@@ -1,5 +1,11 @@
+# 0.8
+* added support for WPML "display translated" mode (wpmlbridge-131)
+* fixed issue with reordering repeater field (wpmlbridge-98)
+* fixed enqueue scripts notices (wpmlbridge-150)
+* fixed support for WYSIWYG fields in Translation Editor (wpmlbridge-90)
+
 # 0.7
-* Fields are now sycnhronised also during standard post creation when has "Copy" set (wpmlbridge-101) 
+* Fields are now synchronised also during standard post creation when has "Copy" set (wpmlbridge-101) 
 
 # 0.6
 * Introduced support for clone fields (wpmlbridge-46)

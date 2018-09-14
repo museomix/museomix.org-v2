@@ -5,11 +5,11 @@ if ( ! defined('ABSPATH') )
 
 if( !function_exists ( 'iwp_mmb_define_constant' )) {
 	function iwp_mmb_define_constant(){
-		define('IWP_DEFAULT_OTHERS_EXCLUDE','upgrade,cache,updraft,backup*,*backups,mysql.sql,debug.log,managewp,infinity-cache,backupwordpress,old-cache,nfwlog,wflogs,wishlist-backup,w3tc,logs,widget_cache,updraftplus');
+		if (!defined('IWP_DEFAULT_OTHERS_EXCLUDE')) define('IWP_DEFAULT_OTHERS_EXCLUDE','upgrade,cache,updraft,backup*,*backups,mysql.sql,debug.log,managewp,infinity-cache,backupwordpress,old-cache,nfwlog,wflogs,wishlist-backup,w3tc,logs,widget_cache,updraftplus');
 
-		define('IWP_DEFAULT_INCLUDES','google,wp-config.php,.htaccess');
+		if (!defined('IWP_DEFAULT_INCLUDES')) define('IWP_DEFAULT_INCLUDES','google,wp-config.php,.htaccess');
 
-		define('IWP_DEFAULT_UPLOADS_EXCLUDE','backup*,*backups,backwpup*,wp-clone,snapshots,db-backup,backupbuddy_backups,vcf,pb_backupbuddy,sucuri,aiowps_backups,mainwp,wp_system,wpcf7_captcha,wc-logs,siteorigin-widgets,wp-hummingbird-cache,wp-security-audit-log,backwpup-12b462-backups,backwpup-12b462-logs,backwpup-12b462-temp,Dropbox_Backup,cache');
+		if (!defined('IWP_DEFAULT_UPLOADS_EXCLUDE')) define('IWP_DEFAULT_UPLOADS_EXCLUDE','backup*,*backups,backwpup*,wp-clone,snapshots,db-backup,backupbuddy_backups,vcf,pb_backupbuddy,sucuri,aiowps_backups,mainwp,wp_system,wpcf7_captcha,wc-logs,siteorigin-widgets,wp-hummingbird-cache,wp-security-audit-log,backwpup-12b462-backups,backwpup-12b462-logs,backwpup-12b462-temp,Dropbox_Backup,cache');
 
 		if (!defined('IWP_DATA_OPTIONAL_TABLES')) define('IWP_DATA_OPTIONAL_TABLES', 'bwps_log,statpress,slim_stats,redirection_logs,Counterize,Counterize_Referers,Counterize_UserAgents,wbz404_logs,wbz404_redirects,tts_trafficstats,tts_referrer_stats,wponlinebackup_generations,svisitor_stat,simple_feed_stats,itsec_log,relevanssi_log,blc_instances,wysija_email_user_stat,woocommerce_sessions,et_bloom_stats,redirection_404,iwp_backup_status,iwp_file_list');
 
@@ -23,7 +23,7 @@ if( !function_exists ( 'iwp_mmb_define_constant' )) {
 
 		if (!defined('IWP_SPLIT_MIN')) define('IWP_SPLIT_MIN', 200);
 
-		if (!defined('IWP_MAXBATCHFILES')) define('IWP_MAXBATCHFILES', 200);
+		if (!defined('IWP_MAXBATCHFILES')) define('IWP_MAXBATCHFILES', 500);
 
 		if (!defined('IWP_WARN_EMAIL_SIZE')) define('IWP_WARN_EMAIL_SIZE', 20*1048576);
 

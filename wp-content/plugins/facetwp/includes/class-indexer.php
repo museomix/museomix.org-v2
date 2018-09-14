@@ -319,6 +319,7 @@ class FacetWP_Indexer
 
         // Indexing complete
         if ( $this->index_all ) {
+            update_option( 'facetwp_last_indexed', time() );
             update_option( 'facetwp_transients', '' );
             update_option( 'facetwp_indexing', '' );
         }
@@ -387,7 +388,7 @@ class FacetWP_Indexer
                 $output[] = $params;
 
                 // Automatically index implicit parents
-                if ( 'hierarchy' == $facet['type'] || ( ! empty( $facet['hierarchical'] ) && 'yes' == $facet['hierarchical'] ) ) {
+                if ( 'hierarchy' == $facet['type'] || FWP()->helper->facet_is( $facet, 'hierarchical', 'yes' ) ) {
                     while ( $depth > 0 ) {
                         $term_id = $term_info['parent_id'];
                         $term_info = $hierarchy[ $term_id ];

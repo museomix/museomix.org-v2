@@ -61,14 +61,6 @@
                     <p class="extension__text">Standalone version of Flow-Flow app for PHP servers without WordPress CMS installed. Can be used on any PHP server but requires more coding knowledge. Provides same features as WordPress version</p>
                 </div>
             </div>
-            <div class="extension__item" id="plugin-stacks">
-                <div class="extension__image"></div>
-                <div class="extension__content">
-                    <a class="extension__cta" target="_blank" href="http://go.social-streams.com/get-stacks">Get</a>
-                    <h1 class="extension__title">WordPress Social Stacks — Responsive Slider</h1>
-                    <p class="extension__text">Social Stacks is a premium WordPress multipurpose plugin to aggregate and showcase social media posts on your WordPress website or blog. Stream content from multiple sources and display into one beautifully designed slider. Using handy shortcodes, embed it on WordPress pages or blog posts or choose to insert slider after posts with predefined categories.</p>
-                </div>
-            </div>
         </div>
     </div>
     <?php include($context['root']  . 'views/footer.php'); ?>

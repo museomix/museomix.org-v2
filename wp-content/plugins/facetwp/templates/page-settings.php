@@ -1,130 +1,168 @@
 <?php
 
-// Translations
-$i18n = array(
-    'All post types' => __( 'All post types', 'fwp' ),
-    'Indexing complete' => __( 'Indexing complete', 'fwp' ),
-    'Indexing' => __( 'Indexing', 'fwp' ),
-    'Saving' => __( 'Saving', 'fwp' ),
-    'Loading' => __( 'Loading', 'fwp' ),
-    'Importing' => __( 'Importing', 'fwp' ),
-    'Activating' => __( 'Activating', 'fwp' ),
-    'Are you sure?' => __( 'Are you sure?', 'fwp' ),
-    'Select some items' => __( 'Select some items', 'fwp' ),
-);
-
-// An array of facet type objects
-$facet_types = FWP()->helper->facet_types;
-
-// Clone facet settings HTML
-$facet_clone = array();
-foreach ( $facet_types as $name => $class ) {
-    $facet_clone[ $name ] = __( 'This facet type has no additional settings.', 'fwp' );
-    if ( method_exists( $class, 'settings_html' ) ) {
-        ob_start();
-        $class->settings_html();
-        $facet_clone[ $name ] = ob_get_clean();
-    }
-}
+// Support tab HTML
+include( FACETWP_DIR . '/templates/page-support.php' );
+$support_html = new FacetWP_Support();
+$support_html = $support_html->get_html();
 
 // Settings
 $settings_admin = new FacetWP_Settings_Admin();
 $settings_array = $settings_admin->get_settings();
-$builder = $settings_admin->get_query_builder_choices();
-$sources = FWP()->helper->get_data_sources();
+$i18n = $settings_admin->get_i18n_strings();
 
-?>
+// Useful data
+$data = FWP()->helper->settings;
+$facet_types = FWP()->helper->facet_types;
+$data_sources = FWP()->helper->get_data_sources();
+$layout_data = FWP()->builder->get_layout_data();
+$query_data = FWP()->builder->get_query_data();
 
-<script src="<?php echo FACETWP_URL; ?>/assets/js/src/event-manager.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
-<script src="<?php echo FACETWP_URL; ?>/assets/js/src/query-builder.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
-<script src="<?php echo FACETWP_URL; ?>/assets/vendor/fSelect/fSelect.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
-<?php
-foreach ( $facet_types as $class ) {
-    $class->admin_scripts();
+// Clone facet settings HTML
+$facet_clone = array();
+$admin_scripts = array();
+
+foreach ( $facet_types as $name => $class ) {
+    $facet_clone[ $name ] = '<div>' . __( 'This facet type has no additional settings.', 'fwp' ) . '</div>';
+    if ( method_exists( $class, 'settings_html' ) ) {
+        ob_start();
+        $class->settings_html();
+        $output = ob_get_clean();
+        $facet_clone[ $name ] = trim( $output );
+    }
+
+    if (method_exists( $class, 'admin_scripts' ) ) {
+        ob_start();
+        $class->admin_scripts();
+        $admin_scripts[] = ob_get_clean();
+    }
 }
+
 ?>
-<script src="<?php echo FACETWP_URL; ?>/assets/js/src/admin.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
+
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/vue/vue.min.js"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/vue/Sortable.min.js"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/vue/vuedraggable.js"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/vue/vue-clickaway.min.js"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/vue/vue-multiselect.min.js"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/font-awesome/fa-solid.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/font-awesome/fontawesome.min.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/js/src/event-manager.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/fSelect/fSelect.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
+<script src="<?php echo FACETWP_URL; ?>/assets/vendor/jquery-minicolors/jquery.minicolors.min.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
+<?php
+
+// Let add-ons register custom Vue components
+echo implode( '', $admin_scripts );
+
+?>
+<script src="<?php echo FACETWP_URL; ?>/assets/js/dist/admin.min.js?ver=<?php echo FACETWP_VERSION; ?>"></script>
 <script>
-FWP.i18n = <?php echo json_encode( $i18n ); ?>;
-FWP.nonce = '<?php echo wp_create_nonce( 'fwp_admin_nonce' ); ?>';
-FWP.settings = <?php echo json_encode( FWP()->helper->settings ); ?>;
-FWP.clone = <?php echo json_encode( $facet_clone ); ?>;
-FWP.builder = <?php echo json_encode( $builder ); ?>;
+
+window.FWP = {
+    __: function(str) {
+        return ('undefined' !== typeof FWP.i18n[str]) ? FWP.i18n[str] : str;
+    },
+    data: <?php echo json_encode( $data ); ?>,
+    i18n: <?php echo json_encode( $i18n ); ?>,
+    clone: <?php echo json_encode( $facet_clone ); ?>,
+    facet_types: <?php echo json_encode( $facet_types ); ?>,
+    data_sources: <?php echo json_encode( $data_sources ); ?>,
+    layout_data: <?php echo json_encode( $layout_data ); ?>,
+    query_data: <?php echo json_encode( $query_data ); ?>,
+    support_html: <?php echo json_encode( $support_html ); ?>,
+    nonce: '<?php echo wp_create_nonce( 'fwp_admin_nonce' ); ?>'
+};
+
+// Settings load hook
+FWP.data.settings = wp.hooks.applyFilters('facetwp/load_settings', FWP.data.settings);
+
 </script>
 <link href="<?php echo FACETWP_URL; ?>/assets/css/admin.css?ver=<?php echo FACETWP_VERSION; ?>" rel="stylesheet">
 <link href="<?php echo FACETWP_URL; ?>/assets/vendor/fSelect/fSelect.css?ver=<?php echo FACETWP_VERSION; ?>" rel="stylesheet">
+<link href="<?php echo FACETWP_URL; ?>/assets/vendor/jquery-minicolors/jquery.minicolors.css?ver=<?php echo FACETWP_VERSION; ?>" rel="stylesheet">
+<link href="<?php echo FACETWP_URL; ?>/assets/vendor/vue/vue-multiselect.min.css" rel="stylesheet">
 
-<div class="facetwp-header">
-    <span class="facetwp-logo" title="FacetWP">&nbsp;</span>
-    <span class="facetwp-version">v<?php echo FACETWP_VERSION; ?></span>
+<div id="app">
+    <div class="facetwp-header">
+        <span class="facetwp-logo" title="FacetWP">&nbsp;</span>
+        <span class="facetwp-version">v<?php echo FACETWP_VERSION; ?></span>
 
-    <span class="facetwp-header-nav">
-        <a class="facetwp-tab" rel="basics"><?php _e( 'Basics', 'fwp' ); ?></a>
-        <a class="facetwp-tab" rel="settings"><?php _e( 'Settings', 'fwp' ); ?></a>
-        <a class="facetwp-tab" rel="support"><?php _e( 'Support', 'fwp' ); ?></a>
-    </span>
+        <span class="facetwp-header-nav">
+            <a class="facetwp-tab" :class="{ active: active_tab == 'basics' }" @click="active_tab = 'basics'"><?php _e( 'Basics', 'fwp' ); ?></a>
+            <a class="facetwp-tab" :class="{ active: active_tab == 'settings' }" @click="active_tab = 'settings'"><?php _e( 'Settings', 'fwp' ); ?></a>
+            <a class="facetwp-tab" :class="{ active: active_tab == 'support' }" @click="active_tab = 'support'; is_support_loaded = true"><?php _e( 'Support', 'fwp' ); ?></a>
+        </span>
 
-    <span class="facetwp-actions">
+        <span class="facetwp-actions">
+            <div class="btn-split facetwp-rebuild">
+                <div class="btn-label" @click="rebuildAction" v-html="indexButtonLabel"></div>
+                <div class="btn-caret" @click="is_rebuild_open = !is_rebuild_open"><i class="fas fa-caret-down"></i></div>
+                <div class="btn-dropdown" v-cloak v-show="is_rebuild_open">
+                    <div class="dropdown-inner">
+                        <div @click="showIndexerStats"><?php _e( 'Show indexer stats', 'fwp' ); ?></div>
+                        <div @click="searchablePostTypes"><?php _e( 'Show indexable post types', 'fwp' ); ?></div>
+                        <div @click="purgeIndexTable"><?php _e( 'Purge the index table', 'fwp' ); ?></div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-normal" @click="saveChanges">
+                <?php _e( 'Save changes', 'fwp' ); ?>
+            </div>
+        </span>
+
         <span class="facetwp-response"></span>
-        <a class="button facetwp-rebuild"><?php _e( 'Re-index', 'fwp' ); ?></a>
-        <a class="button-primary facetwp-save"><?php _e( 'Save Changes', 'fwp' ); ?></a>
-    </span>
-</div>
-
-<div class="wrap">
-
-    <div class="facetwp-loading"></div>
-
-    <!-- Basics tab -->
-
-    <div class="facetwp-region facetwp-region-basics">
-        <div class="facetwp-subnav">
-            <span class="search-wrap">
-                <input type="text" class="facetwp-search" placeholder="Search for a facet or template" />
-            </span>
-            <span class="btn-wrap hidden">
-                <a class="button facetwp-back"><?php _e( 'Back', 'fwp' ); ?></a>
-            </span>
-        </div>
-
-        <div class="facetwp-grid">
-            <div class="facetwp-col content-facets">
-                <h3>
-                    Facets
-                    <span class="facetwp-btn facetwp-add">Add new</span>
-                    <a class="icon-question" href="https://facetwp.com/documentation/facet-configuration/" target="_blank">?</a>
-                </h3>
-                <ul class="facetwp-cards"></ul>
-            </div>
-
-            <div class="facetwp-col content-templates">
-                <h3>
-                    Templates
-                    <span class="facetwp-btn facetwp-add">Add new</span>
-                    <a class="icon-question" href="https://facetwp.com/documentation/template-configuration/" target="_blank">?</a>
-                </h3>
-                <ul class="facetwp-cards"></ul>
-            </div>
-        </div>
-
-        <div class="facetwp-content"></div>
     </div>
 
-    <!-- Settings tab -->
+    <div class="wrap">
+        <div class="facetwp-loading" :class="{ hidden: true }"></div>
 
-    <div class="facetwp-region facetwp-region-settings">
-        <div class="facetwp-subnav">
-            <?php foreach ( $settings_array as $key => $tab ) : ?>
-            <a data-tab="<?php echo $key; ?>"><?php echo $tab['label']; ?></a>
-            <?php endforeach; ?>
+        <!-- Basics tab -->
+
+        <div class="facetwp-region" :class="{ active: active_tab == 'basics' }">
+            <div class="facetwp-subnav">
+                <span class="search-wrap" v-show="!isEditing">
+                    <input type="text" class="facetwp-search" placeholder="Search for a facet or template" v-model="keywords" />
+                </span>
+                <span class="btn-wrap" v-show="isEditing">
+                    <div class="btn-normal btn-gray" @click="doneEditing"><?php _e( 'Back', 'fwp' ); ?></div>
+                </span>
+            </div>
+
+            <div class="facetwp-grid" v-show="!isEditing">
+                <div class="content-facets">
+                    <h3>
+                        <?php _e( 'Facets', 'fwp' ); ?>
+                        <span class="facetwp-btn facetwp-add" @click="addItem('facet')"><?php _e( 'Add new', 'fwp' ); ?></span>
+                    </h3>
+                    <facets :facets="app.facets"></facets>
+                </div>
+                <div class="content-templates">
+                    <h3>
+                        <?php _e( 'Templates', 'fwp' ); ?>
+                        <span class="facetwp-btn facetwp-add" @click="addItem('template')"><?php _e( 'Add new', 'fwp' ); ?></span>
+                    </h3>
+                    <templates :templates="app.templates"></templates>
+                </div>
+            </div>
+
+            <facet-edit v-if="editing_facet"></facet-edit>
+            <template-edit v-if="editing_template"></template-edit>
         </div>
 
-        <?php foreach ( $settings_array as $key => $tab ) : ?>
-        <div class="facetwp-settings-section" data-tab="<?php echo $key; ?>">
-            <?php foreach ( $tab['fields'] as $field_data ) : ?>
-            <table>
-                <tr>
-                    <td>
+        <!-- Settings tab -->
+
+        <div class="facetwp-region" :class="{ active: active_tab == 'settings' }">
+            <div class="facetwp-subnav">
+                <?php foreach ( $settings_array as $key => $tab ) : ?>
+                <a :class="{ active: active_subnav == '<?php echo $key; ?>' }" @click="active_subnav = '<?php echo $key; ?>'"><?php echo $tab['label']; ?></a>
+                <?php endforeach; ?>
+            </div>
+
+            <?php foreach ( $settings_array as $key => $tab ) : ?>
+            <div class="facetwp-settings-section" :class="{ active: active_subnav == '<?php echo $key; ?>' }">
+                <?php foreach ( $tab['fields'] as $field_data ) : ?>
+                <div class="facetwp-row">
+                    <div>
                         <?php echo $field_data['label']; ?>
                         <?php if ( isset( $field_data['notes'] ) ) : ?>
                         <div class="facetwp-tooltip">
@@ -132,126 +170,23 @@ FWP.builder = <?php echo json_encode( $builder ); ?>;
                             <div class="facetwp-tooltip-content"><?php echo $field_data['notes']; ?></div>
                         </div>
                         <?php endif; ?>
-                    </td>
-                    <td><?php echo $field_data['html']; ?></td>
-                </tr>
-            </table>
+                    </div>
+                    <div><?php echo $field_data['html']; ?></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
             <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
-    </div>
 
-    <!-- Support tab -->
+        <!-- Support tab -->
 
-    <div class="facetwp-region facetwp-region-support">
-        <?php include( FACETWP_DIR . '/templates/page-support.php' ); ?>
-    </div>
-
-    <!-- Hidden: clone settings -->
-
-    <div class="hidden clone-facet">
-        <div class="facetwp-row">
-            <div class="table-row code-unlock">
-                This facet is locked to prevent changes. <button class="unlock">Unlock now</button>
-            </div>
-            <table>
-                <tr>
-                    <td><?php _e( 'Label', 'fwp' ); ?>:</td>
-                    <td>
-                        <input type="text" class="facet-label" value="New facet" />
-                        &nbsp; &nbsp;
-                        <?php _e( 'Name', 'fwp' ); ?>: <span class="facet-name" contentEditable="true">new_facet</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><?php _e( 'Facet type', 'fwp' ); ?>:</td>
-                    <td>
-                        <select class="facet-type">
-                            <?php foreach ( $facet_types as $name => $class ) : ?>
-                            <option value="<?php echo $name; ?>"><?php echo $class->label; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        &nbsp; &nbsp;
-                        <span class="facetwp-btn copy-shortcode">Copy shortcode</span>
-                    </td>
-                </tr>
-                <tr class="facetwp-show name-source">
-                    <td>
-                        <?php _e( 'Data source', 'fwp' ); ?>:
-                    </td>
-                    <td>
-                        <select class="facet-source">
-                            <?php foreach ( $sources as $group ) : ?>
-                            <optgroup label="<?php echo $group['label']; ?>">
-                                <?php foreach ( $group['choices'] as $val => $label ) : ?>
-                                <option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $label ); ?></option>
-                                <?php endforeach; ?>
-                            </optgroup>
-                            <?php endforeach; ?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-            <hr />
-            <table class="facet-fields"></table>
+        <div class="facetwp-region" :class="{ active: active_tab == 'support' }">
+            <div v-if="is_support_loaded" v-html="support_html"></div>
         </div>
-    </div>
 
-    <div class="hidden clone-template">
-        <div class="facetwp-row">
-            <div class="table-row code-unlock">
-                This template is locked to prevent changes. <button class="unlock">Unlock now</button>
-            </div>
-            <div class="table-row">
-                <input type="text" class="template-label" value="New template" />
-                &nbsp; &nbsp;
-                <?php _e( 'Name', 'fwp' ); ?>: <span class="template-name" contentEditable="true">new_template</span>
-            </div>
-            <div class="table-row">
-                <div class="side-link open-builder"><?php _e( 'Open query builder', 'fwp' ); ?></div>
-                <div class="row-label"><?php _e( 'Query Arguments', 'fwp' ); ?></div>
-                <textarea class="template-query"></textarea>
-            </div>
-            <div class="table-row">
-                <div class="side-link"><a href="https://facetwp.com/documentation/template-configuration/#display-code" target="_blank"><?php _e( 'What goes here?', 'fwp' ); ?></a></div>
-                <div class="row-label"><?php _e( 'Display Code', 'fwp' ); ?></div>
-                <textarea class="template-template"></textarea>
-            </div>
-        </div>
-    </div>
+        <!-- Copy to clipboard -->
 
-    <!-- Copy to clipboard -->
+        <input class="facetwp-clipboard hidden" value="" />
 
-    <input class="hidden facetwp-clipboard" value="" />
-</div>
-
-<!-- Modal window -->
-
-<div class="media-modal">
-    <button class="button-link media-modal-close"><span class="media-modal-icon"></span></button>
-    <div class="media-modal-content">
-        <div class="media-frame">
-            <div class="media-frame-title">
-                <h1><?php _e( 'Query Builder', 'fwp' ); ?></h1>
-            </div>
-            <div class="media-frame-router">
-                <div class="media-router">
-                    <?php _e( 'Which posts would you like to use for the listing?', 'fwp' ); ?>
-                </div>
-            </div>
-            <div class="media-frame-content">
-                <div class="modal-content-wrap">
-                    <div class="facetwp-modal-grid">
-                        <div class="qb-area"></div>
-                        <div class="qb-area-results">
-                            <textarea class="qb-results" readonly></textarea>
-                            <button class="button qb-send"><?php _e( 'Send to editor', 'fwp' ); ?></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
-
-<div class="media-modal-backdrop"></div>

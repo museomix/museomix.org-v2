@@ -5,9 +5,8 @@ use flow\db\FFDB;
 use flow\db\FFDBManager;
 use flow\settings\FFSettingsUtils;
 use flow\social\FFBaseFeed;
-use flow\social\FFFeedUtils;
 use flow\settings\FFGeneralSettings;
-use la\core\social\LAFeedWithComments;
+use flow\social\LAFeedWithComments;
 
 /**
  * Flow-Flow.
@@ -280,13 +279,13 @@ class FFCacheManager implements FFCache{
 				$common = array(
 					'post_header' => @FFDB::conn()->conn->real_escape_string(trim($post->header)),
 					'post_text'   => $this->prepareText($post->text),
-					'post_timestamp' => FFFeedUtils::correctionTimeZone($post->system_timestamp),
+					'post_timestamp' => $this->correctionTimeZone($post->system_timestamp),
 					'post_additional' => json_encode($post->additional),
 					'carousel_size' => 0
 				);
 				
 				if (isset($post->carousel) && sizeof($post->carousel) > 1){
-					$this->db->deleteCarousel4Post($feed_id, $post->id, $post->type);
+					$this->db->deleteCarousel4Post($feed_id, $post->id);
 					foreach ($post->carousel as $media){
 						$mediaPartOfSql4carousel = FFDB::conn()->parse('`media_url`=?s, `media_width`=?i, `media_height`=?i, `media_type`=?s,', 
 							$media['url'], $media['width'], $media['height'], $media['type']);
@@ -304,6 +303,12 @@ class FFCacheManager implements FFCache{
 				$this->db->addOrUpdatePost($only4insertPartOfSql, $imagePartOfSql, $mediaPartOfSql, $common);
 			}
 		}
+	}
+
+	private function correctionTimeZone($date){
+		$dt = new \DateTime("@{$date}");
+		$dt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+		return $dt->getTimestamp();
 	}
 	
 	private function updateAdditionalInfo($posts){
@@ -336,7 +341,7 @@ class FFCacheManager implements FFCache{
 		$post->screenname = $row['screenname'];
 		$post->userpic = $row['userpic'];
 		$post->system_timestamp = $row['system_timestamp'];
-		$post->timestamp = FFFeedUtils::classicStyleDate($row['system_timestamp'], FFGeneralSettings::get()->dateStyle());
+		$post->timestamp = FFSettingsUtils::classicStyleDate($row['system_timestamp'], FFGeneralSettings::get()->dateStyle());
 		$post->text = stripslashes($row['text']);
 		$post->location = json_decode($row['location']);
 		$post->userlink = $row['userlink'];
@@ -354,8 +359,8 @@ class FFCacheManager implements FFCache{
 			$url = $row['image_url'];
 			$width = $row['image_width'];
 			$tWidth = $this->stream->getImageWidth();
-			$height = FFFeedUtils::getScaleHeight($tWidth, $width, $row['image_height']);
-			if (($post->type != 'posts') && $this->db->getGeneralSettings()->useProxyServer() && ($width + 50) > $tWidth) $url = FFFeedUtils::proxy($url, $tWidth);
+			$height = FFSettingsUtils::getScaleHeight($tWidth, $width, $row['image_height']);
+			if (($post->type != 'posts') && $this->db->getGeneralSettings()->useProxyServer() && ($width + 50) > $tWidth) $url = $this->proxy($url, $tWidth);
 			if (($row['image_width'] == '-1') && ($row['image_height'] == '-1')) {
 				$post->img = array('url' => $url, 'type' => 'image');
 			}
@@ -373,6 +378,22 @@ class FFCacheManager implements FFCache{
 		$post->additional = json_decode($row['post_additional']);
 		$post->carousel_size = $row['carousel_size'];
 		return $post;
+	}
+
+	/**
+	 * http://carlo.zottmann.org/2013/04/14/google-image-resizer/
+	 * @param string $url
+	 * @param string $width
+	 * @return string
+	 */
+	public static function proxy($url, $width){
+		if (strpos($url, '/www.', 10) > 10) return $url;
+		$query = http_build_query(array(
+			'container' => 'focus',
+			'resize_w' => $width,
+			'refresh' => 86400, //one day
+			'url' => $url));
+		return "https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?".$query;
 	}
 
 	/**

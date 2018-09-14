@@ -93,7 +93,7 @@ class IWP_MMB_BLC extends IWP_MMB_Core
     {
         if($this->_checkBLC()){
             global $wpdb;
-            $sql = "SELECT l.*,i.container_id,i.link_text FROM (SELECT link_id,url,redirect_count,http_code,status_text,broken,false_positive,dismissed FROM ".$wpdb->base_prefix."blc_links) AS l INNER JOIN (SELECT link_id,container_id,link_text FROM ".$wpdb->base_prefix."blc_instances) AS i  ON l.link_id=i.link_id";
+            $sql = "SELECT l.*,i.container_id,i.link_text FROM (SELECT link_id,url,redirect_count,http_code,status_text,broken,false_positive,dismissed FROM ".$wpdb->prefix."blc_links) AS l INNER JOIN (SELECT link_id,container_id,link_text FROM ".$wpdb->prefix."blc_instances) AS i  ON l.link_id=i.link_id";
             $success = $wpdb->get_results($sql);
              if(!empty($success)){
                 foreach ($success as $link) {
@@ -147,6 +147,7 @@ class IWP_MMB_BLC extends IWP_MMB_Core
             $link->broken = false;  
             $link->false_positive = true;
             $link->last_check_attempt = time();
+            $link->isOptionLinkChanged = true;
             $link->log = __("This link was manually marked as working by the user.", 'broken-link-checker');
             
             //Save the changes
@@ -176,6 +177,7 @@ class IWP_MMB_BLC extends IWP_MMB_Core
                 return "Oops, I can't find the link ". intval($params['linkID']) ;
             }
             $link->dismissed = $dismiss;
+            $link->isOptionLinkChanged = true;
             if ( $link->save() ){
                 $rez = array('old_link_id'=>$params['linkID'],'linkType'=>$params['linkType'],'dismissvalue_set'=>1);
             } else {

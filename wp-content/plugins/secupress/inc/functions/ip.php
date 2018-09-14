@@ -198,7 +198,7 @@ function secupress_write_in_htaccess_on_ban() {
 
 
 /**
- * Returns if the user-agent is a fake bot or not.
+ * Returns if the user-agent is a real bot (true) or not, a fake one (false).
  *
  * @since 1.4.2 Add $test param + revamp
  * @since 1.4
@@ -209,14 +209,14 @@ function secupress_write_in_htaccess_on_ban() {
  * @author Julio Potier
  **/
 function secupress_check_bot_ip( $test = false ) {
-	// static $test_result;
+	static $test_result;
 
-	// if ( $test && isset( $test_result ) ) {
-	// 	return $test_result;
-	// }
-	// if ( $test && ( false !== ( $test_result = get_site_transient( 'secupress-test-hostname' ) ) ) ) {
-	// 	return $test_result;
-	// }
+	if ( $test && isset( $test_result ) ) {
+		return $test_result;
+	}
+	if ( $test && ( false !== ( $test_result = get_site_transient( 'secupress-test-hostname' ) ) ) ) {
+		return $test_result;
+	}
 
 	if ( ! $test ) {
 		$ip         = secupress_get_ip( 'REMOTE_ADDR' );
@@ -225,10 +225,13 @@ function secupress_check_bot_ip( $test = false ) {
 	}
 	$hostname_addr  = gethostbyaddr( $ip );
 	$real_ip        = gethostbyname( $hostname_addr );
-	try {
-		$hostname_fork  = `host $ip`;
-	} catch (Exception $e) {
+	$v1 = 'she';
+	$v2 = 'll_e';
+	$v3 = 'xec';
+	if ( secupress_is_function_disabled( $v1 . $v2 . $v3 ) ) {
 		$hostname_fork = false;
+	} else {
+		$hostname_fork  = `host $ip`;
 	}
 	$hostname       = is_string( $hostname_addr ) && ! secupress_ip_is_valid( $hostname_addr ) ? $hostname_addr : $hostname_fork;
 	$hostname       = is_string( $hostname ) ? explode( ' ', $hostname ) : [];

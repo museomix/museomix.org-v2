@@ -10,7 +10,7 @@
 	<?php if ( !$admin->is_registered() ): ?>
 		<div class="updated">
 			<p>
-				<?php _e( '<b>The Pro version</b> of the plugin allows you to <b>rename based on the title of the post</b> (product or whatever else) you media is attached to, <b>rename manually</b>, use <b>numbered files</b> (by adding a counter if the filenames are similar), <b>sync the title with your ALT text</b>, UTF8 support (if you need it), a force rename (to repair a broken install), and, more importantly, <b>supports the developer</b> :) Thank you!<br /><br /><a class="button-primary" href="https://store.meowapps.com/" target="_blank">Get the Pro</a>', 'media-file-renamer' ); ?>
+				<?php _e( '<b>The Pro version</b> of the plugin allows you to <b>rename based on the title of the post</b> (product or whatever else) you media is attached to, <b>rename manually</b>, use <b>numbered files</b> (by adding a counter if the filenames are similar), <b>sync the title with your ALT text</b>, a force rename (to repair a broken install), and, more importantly, <b>supports the developer</b> :) Thank you!<br /><br /><a class="button-primary" href="https://store.meowapps.com/" target="_blank">Get the Pro</a>', 'media-file-renamer' ); ?>
 			</p>
 		</div>
 	<?php endif; ?>
@@ -18,7 +18,7 @@
 	<h2>Rename in Bulk</h2>
 
 	<p>
-		<?php _e( 'You might have noticed that some of your media are locked by the file renamer, others are unlocked. Automatically, the plugin locks the media you renamed manually. By default, they are unlocked. Here, you have the choice of rename all the media in your DB or only the ones which are unlocked (to keep the files you renamed manually). <span style="color: red; font-weight: bold;">Please backup your uploads folder + DB before using this.</span> If you don\'t know how, give a try to this: <a href="https://updraftplus.com/?afref=460" target="_blank">UpdraftPlus</a>.', 'media-file-renamer' ); ?>
+		<?php _e( 'You might have noticed that some of your media are locked by the file renamer, others are unlocked. Automatically, the plugin locks the media you renamed manually. By default, they are unlocked. Here, you have the choice of rename all the media in your DB or only the ones which are unlocked (to keep the files you renamed manually). <span style="color: red; font-weight: bold;">Please backup your uploads folder + DB before using this.</span> If you don\'t know how, give a try to this backup service: <a href="https://meow.click/blogvault" target="_blank">BlogVault</a>.', 'media-file-renamer' ); ?>
 	</p>
 
 	<div style='margin-top: 12px; background: #FFF; padding: 5px; border-radius: 4px; height: 28px; box-shadow: 0px 0px 6px #C2C2C2;'>
@@ -131,7 +131,7 @@
 						WHERE m.meta_key = '_original_filename'" );
 					foreach ( $results as $row ) {
 						$fullsize_path = wp_get_attachment_url( $row->ID );
-						$parts = pathinfo( $fullsize_path );
+						$parts = mfrh_pathinfo( $fullsize_path );
 						$shorten_url = trailingslashit( $parts['dirname'] ) . $row->original_filename;
 						if ( isset( $_GET['mfrh_beforeafter_filenames'] ) )
 							echo "<tr><td>{$shorten_url}</td><td>$fullsize_path</td></tr>";

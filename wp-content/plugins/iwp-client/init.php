@@ -4,7 +4,7 @@ Plugin Name: InfiniteWP - Client
 Plugin URI: http://infinitewp.com/
 Description: This is the client plugin of InfiniteWP that communicates with the InfiniteWP Admin panel.
 Author: Revmakx
-Version: 1.8.3
+Version: 1.8.5
 Author URI: http://www.revmakx.com
 */
 /************************************************************
@@ -28,7 +28,7 @@ if(basename($_SERVER['SCRIPT_FILENAME']) == "init.php"):
     exit;
 endif;
 if(!defined('IWP_MMB_CLIENT_VERSION'))
-	define('IWP_MMB_CLIENT_VERSION', '1.8.3');
+	define('IWP_MMB_CLIENT_VERSION', '1.8.5');
 
 
 
@@ -44,6 +44,18 @@ if (version_compare(PHP_VERSION, '5.0.0', '<')) // min version 5 supported
 $iwp_mmb_wp_version = $wp_version;
 $iwp_mmb_plugin_dir = WP_PLUGIN_DIR . '/' . basename(dirname(__FILE__));
 $iwp_mmb_plugin_url = WP_PLUGIN_URL . '/' . basename(dirname(__FILE__));
+
+if(!defined('IWP_BACKUP_DIR')){
+define('IWP_BACKUP_DIR', WP_CONTENT_DIR . '/infinitewp/backups');
+}
+
+if(!defined('IWP_DB_DIR')){
+define('IWP_DB_DIR', IWP_BACKUP_DIR . '/iwp_db');
+}
+
+if(!defined('IWP_PCLZIP_TEMPORARY_DIR')){
+define('IWP_PCLZIP_TEMPORARY_DIR', WP_CONTENT_DIR . '/infinitewp/temp/');
+}
 
 require_once("$iwp_mmb_plugin_dir/helper.class.php");
 require_once("$iwp_mmb_plugin_dir/backup/backup.options.php");
@@ -175,7 +187,7 @@ if( !function_exists ('iwp_mmb_parse_request')) {
 			
 			$auth = $iwp_mmb_core->authenticate_message($action . $id, $signature, $id);
 			if ($auth === true) {
-				if (!defined('WP_ADMIN') && $action == 'get_stats' || $action == 'do_upgrade' || $action == 'install_addon' || $action == 'edit_plugins_themes') {
+				if (!defined('WP_ADMIN') && $action == 'get_stats' || $action == 'do_upgrade' || $action == 'install_addon' || $action == 'edit_plugins_themes' || $action == 'bulk_actions_processor') {
 					define('WP_ADMIN', true);
 				}
 				if (is_multisite()) {
@@ -685,9 +697,9 @@ if( !function_exists ( 'iwp_mmb_new_scheduled_backup' )) {
 			$params['restrict_files_to_override']= explode(',', $params['args']['exclude']);
 		}
 		// return true;
-		//if (defined('IWP_PHOENIX_BACKUP_CRON_START') && IWP_PHOENIX_BACKUP_CRON_START) {
+		if (defined('IWP_PHOENIX_BACKUP_CRON_START') && IWP_PHOENIX_BACKUP_CRON_START) {
 			$params['cron_start'] = 1;
-		//}
+		}
 		$params['use_nonce'] = $backupId;
 		$params['label'] = $params['task_name'];
 		$params['backup_name'] = $params['args']['backup_name'];
@@ -803,9 +815,9 @@ if( !function_exists ( 'iwp_mmb_new_run_task_now' )) {
 			$params['restrict_files_to_override']= explode(',', $params['args']['exclude']);
 		}
 		// return true;
-		//if (defined('IWP_PHOENIX_BACKUP_CRON_START') && IWP_PHOENIX_BACKUP_CRON_START) {
+		if (defined('IWP_PHOENIX_BACKUP_CRON_START') && IWP_PHOENIX_BACKUP_CRON_START) {
 			$params['cron_start'] = 1;
-		//}
+		}
 		$params['use_nonce'] = $backupId;
 		$params['label'] = $params['task_name'];
 		$params['backup_name'] = $params['args']['backup_name'];
@@ -2179,7 +2191,7 @@ if (!function_exists('iwp_mmb_change_stausMsg_column_type_backup_status_table'))
 	function iwp_mmb_change_stausMsg_column_type_backup_status_table(){
 		global $wpdb;
 		$table_name = $wpdb->base_prefix . "iwp_backup_status";
-		$sql = "alter table " . $table_name . " change statusMsg statusMsg LONGTEXT;";
+		$sql = "alter table " . $table_name . " change statusMsg LONGTEXT;";
 		$isDone = $wpdb->query($sql);
 		if ($isDone) {
 			update_option( "iwp_backup_table_version", '1.1.4');
@@ -2209,6 +2221,7 @@ if(!function_exists('iwp_mmb_get_file_size')){
 			if(!$file)
 			{
 				echo 'iwp_mmb_get_file_size_error : realPath error';
+				echo  "File Name: $file";
 			}
 			$ch = curl_init("file://" . $file);
 			curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_FILE);
@@ -2224,6 +2237,7 @@ if(!function_exists('iwp_mmb_get_file_size')){
 			else
 			{
 				echo 'iwp_mmb_get_file_size_error : '.$curl_error;
+				echo "File Name: $file";
 				return $normal_file_size;
 			}
 		}
@@ -2615,14 +2629,14 @@ if (!function_exists('check_invalid_UTF8')) {
 	}
 }
 
-define('MAX_SERIALIZED_INPUT_LENGTH', 8192);
-define('MAX_SERIALIZED_ARRAY_LENGTH', 512);
-define('MAX_SERIALIZED_ARRAY_DEPTH', 20);
+define('IWP_MAX_SERIALIZED_INPUT_LENGTH', 8192);
+define('IWP_MAX_SERIALIZED_ARRAY_LENGTH', 512);
+define('IWP_MAX_SERIALIZED_ARRAY_DEPTH', 20);
 function _iwp_mmb_safe_unserialize($str)
 {
-	if(strlen($str) > MAX_SERIALIZED_INPUT_LENGTH)
+	if(strlen($str) > IWP_MAX_SERIALIZED_INPUT_LENGTH)
 	{
-		// input exceeds MAX_SERIALIZED_INPUT_LENGTH
+		// input exceeds IWP_MAX_SERIALIZED_INPUT_LENGTH
 		return false;
 	}
 	if(empty($str) || !is_string($str))
@@ -2671,7 +2685,7 @@ function _iwp_mmb_safe_unserialize($str)
 			$value = substr($matches[2], 0, (int)$matches[1]);
 			$str = substr($matches[2], (int)$matches[1] + 2);
 		}
-		else if($type == 'a' && preg_match('/^a:([0-9]+):{(.*)/s', $str, $matches) && $matches[1] < MAX_SERIALIZED_ARRAY_LENGTH)
+		else if($type == 'a' && preg_match('/^a:([0-9]+):{(.*)/s', $str, $matches) && $matches[1] < IWP_MAX_SERIALIZED_ARRAY_LENGTH)
 		{
 			$expectedLength = (int)$matches[1];
 			$str = $matches[2];
@@ -2686,9 +2700,9 @@ function _iwp_mmb_safe_unserialize($str)
 			case 3: // in array, expecting value or another array
 				if($type == 'a')
 				{
-					if(count($stack) >= MAX_SERIALIZED_ARRAY_DEPTH)
+					if(count($stack) >= IWP_MAX_SERIALIZED_ARRAY_DEPTH)
 					{
-						// array nesting exceeds MAX_SERIALIZED_ARRAY_DEPTH
+						// array nesting exceeds IWP_MAX_SERIALIZED_ARRAY_DEPTH
 						return false;
 					}
 					$stack[] = &$list;
@@ -2726,9 +2740,9 @@ function _iwp_mmb_safe_unserialize($str)
 				}
 				if($type == 'i' || $type == 's')
 				{
-					if(count($list) >= MAX_SERIALIZED_ARRAY_LENGTH)
+					if(count($list) >= IWP_MAX_SERIALIZED_ARRAY_LENGTH)
 					{
-						// array size exceeds MAX_SERIALIZED_ARRAY_LENGTH
+						// array size exceeds IWP_MAX_SERIALIZED_ARRAY_LENGTH
 						return false;
 					}
 					if(count($list) >= end($expected))
@@ -2745,9 +2759,9 @@ function _iwp_mmb_safe_unserialize($str)
 			case 0: // expecting array or value
 				if($type == 'a')
 				{
-					if(count($stack) >= MAX_SERIALIZED_ARRAY_DEPTH)
+					if(count($stack) >= IWP_MAX_SERIALIZED_ARRAY_DEPTH)
 					{
-						// array nesting exceeds MAX_SERIALIZED_ARRAY_DEPTH
+						// array nesting exceeds IWP_MAX_SERIALIZED_ARRAY_DEPTH
 						return false;
 					}
 					$data = array();

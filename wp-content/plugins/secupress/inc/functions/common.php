@@ -557,11 +557,10 @@ function secupress_get_main_url() {
 	}
 
 	if ( ! $current_network ) {
-		if ( ! function_exists( '__get_option' ) ) {
-			include( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		}
 		if ( function_exists( '__get_option' ) ) {
-			return __get_option( 'siteurl' );
+			if ( __get_option( 'siteurl' ) ) {
+				return __get_option( 'siteurl' );
+			}
 		} else {
 			return get_option( 'siteurl' );
 		}
@@ -1285,7 +1284,7 @@ function secupress_get_settings_errors( $setting = '', $sanitize = false ) {
 	}
 
 	// Check global in case errors have been added on this pageload.
-	if ( ! count( $wp_settings_errors ) ) {
+	if ( is_array( $wp_settings_errors ) && ! count( $wp_settings_errors ) ) {
 		return array();
 	}
 
@@ -1303,4 +1302,47 @@ function secupress_get_settings_errors( $setting = '', $sanitize = false ) {
 	}
 
 	return $wp_settings_errors;
+}
+
+/**
+ * Checks whether function is disabled.
+ *
+ * @since 1.4.5
+ * @author Grégory Viguier
+ *
+ * @param (string) $function Name of the function.
+ * @return (bool) Whether or not the function is disabled.
+ */
+function secupress_is_function_disabled( $function ) {
+	if ( ! function_exists( $function ) ) {
+		return true;
+	}
+
+	$disabled = explode( ',', @ini_get( 'disable_functions' ) );
+	$disabled = array_map( 'trim', $disabled );
+	$disabled = array_flip( $disabled );
+
+	return isset( $disabled[ $function ] );
+}
+
+/**
+ * Returns true if SECUPRESS_MODE is defined on "expert" or "dev" (if you are a dev, you're an expert, right?)
+ *
+ * @since 1.4.6
+ * @return (bool)
+ * @author Julio Potier
+ **/
+function secupress_is_expert_mode() {
+	return defined( 'SECUPRESS_MODE' ) && ( 'expert' === strtolower( SECUPRESS_MODE )|| 'dev' === strtolower( SECUPRESS_MODE ) );
+}
+
+/**
+ * Returns true if SECUPRESS_MODE is defined on "dev"
+ *
+ * @since 1.4.6
+ * @return (bool)
+ * @author Julio Potier
+ **/
+function secupress_is_dev_mode() {
+	return defined( 'SECUPRESS_MODE' ) && 'dev' === strtolower( SECUPRESS_MODE );
 }

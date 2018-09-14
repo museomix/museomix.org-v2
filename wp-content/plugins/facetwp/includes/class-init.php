@@ -5,7 +5,6 @@ class FacetWP_Init
 
     function __construct() {
         add_action( 'init', array( $this, 'init' ) );
-        add_action( 'admin_notices', array( $this, 'admin_notices' ) );
     }
 
 
@@ -24,12 +23,6 @@ class FacetWP_Init
         include( FACETWP_DIR . '/includes/api/fetch.php' );
         include( FACETWP_DIR . '/includes/api/refresh.php' );
 
-        // update checks
-        if ( is_admin() ) {
-            include( FACETWP_DIR . '/includes/class-updater.php' );
-            include( FACETWP_DIR . '/includes/libraries/github-updater.php' );
-        }
-
         // core
         include( FACETWP_DIR . '/includes/class-helper.php' );
         include( FACETWP_DIR . '/includes/class-ajax.php' );
@@ -37,6 +30,7 @@ class FacetWP_Init
         include( FACETWP_DIR . '/includes/class-diff.php' );
         include( FACETWP_DIR . '/includes/class-indexer.php' );
         include( FACETWP_DIR . '/includes/class-display.php' );
+        include( FACETWP_DIR . '/includes/class-builder.php' );
         include( FACETWP_DIR . '/includes/class-overrides.php' );
         include( FACETWP_DIR . '/includes/class-settings-admin.php' );
         include( FACETWP_DIR . '/includes/class-upgrade.php' );
@@ -51,6 +45,7 @@ class FacetWP_Init
         FWP()->diff         = new FacetWP_Diff();
         FWP()->indexer      = new FacetWP_Indexer();
         FWP()->display      = new FacetWP_Display();
+        FWP()->builder      = new FacetWP_Builder();
         FWP()->ajax         = new FacetWP_Ajax();
 
         // integrations
@@ -58,6 +53,10 @@ class FacetWP_Init
         include( FACETWP_DIR . '/includes/integrations/woocommerce/woocommerce.php' );
         include( FACETWP_DIR . '/includes/integrations/edd/edd.php' );
         include( FACETWP_DIR . '/includes/integrations/acf/acf.php' );
+
+        // update checks
+        include( FACETWP_DIR . '/includes/class-updater.php' );
+        include( FACETWP_DIR . '/includes/libraries/github-updater.php' );
 
         // hooks
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
@@ -106,7 +105,6 @@ class FacetWP_Init
     function admin_scripts( $hook ) {
         if ( 'settings_page_facetwp' == $hook ) {
             wp_enqueue_style( 'media-views' );
-            wp_enqueue_script( 'jquery-ui-sortable' );
             wp_enqueue_script( 'jquery-powertip', FACETWP_URL . '/assets/vendor/jquery-powertip/jquery.powertip.min.js', array( 'jquery' ), '1.2.0' );
         }
     }
@@ -139,44 +137,6 @@ class FacetWP_Init
         $settings_link = '<a href=" ' . $settings_link . '">' . __( 'Settings', 'fwp' )  . '</a>';
         array_unshift( $links, $settings_link );
         return $links;
-    }
-
-
-    /**
-     * Notify users to install necessary integrations
-     */
-    function admin_notices() {
-        if ( apply_filters( 'facetwp_dismiss_notices', false ) ) {
-            return;
-        }
-
-        $reqs = array(
-            'WPML' => array(
-                'is_active' => defined( 'ICL_SITEPRESS_VERSION' ),
-                'addon' => 'facetwp-wpml/facetwp-wpml.php',
-                'slug' => 'wpml'
-            ),
-            'Polylang' => array(
-                'is_active' => function_exists( 'pll_register_string' ),
-                'addon' => 'facetwp-polylang/index.php',
-                'slug' => 'polylang'
-            ),
-            'Relevanssi' => array(
-                'is_active' => function_exists( 'relevanssi_search' ),
-                'addon' => 'facetwp-relevanssi/facetwp-relevanssi.php',
-                'slug' => 'relevanssi'
-            )
-        );
-
-        $addon = __( 'integration add-on', 'fwp' );
-        $message = __( 'To use FacetWP with %s, please install the %s, then re-index.', 'fwp' );
-
-        foreach ( $reqs as $req_name => $req ) {
-            if ( $req['is_active'] && ! is_plugin_active( $req['addon'] ) ) {
-                $link = sprintf( '<a href="https://facetwp.com/add-ons/%s/" target="_blank">%s</a>', $req['slug'], $addon );
-                echo '<div class="error"><p>' . sprintf( $message, $req_name, $link ) . '</p></div>';
-            }
-        }
     }
 }
 

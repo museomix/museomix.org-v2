@@ -5,13 +5,13 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 	class MeowApps_Admin {
 
 		public static $loaded = false;
-		public static $admin_version = "1.4";
+		public static $admin_version = "1.6";
 
 		public $prefix; 		// prefix used for actions, filters (mfrh)
 		public $mainfile; 	// plugin main file (media-file-renamer.php)
 		public $domain; 		// domain used for translation (media-file-renamer)
 
-		public function __construct( $prefix, $mainfile, $domain ) {
+		public function __construct( $prefix, $mainfile, $domain, $disableReview = false ) {
 
 			// Core Admin (used by all Meow Apps plugins)
 			if ( !MeowApps_Admin::$loaded ) {
@@ -19,7 +19,6 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 					add_action( 'admin_menu', array( $this, 'admin_menu_start' ) );
 					add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 					add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
-					add_filter( 'updraftplus_com_link', array( $this, 'updraftplus_com_link' ) );
 				}
 				MeowApps_Admin::$loaded = true;
 			}
@@ -36,16 +35,13 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 				if ( ( !empty( $license ) ) && !file_exists( plugin_dir_path( $this->mainfile ) . 'common/meowapps/admin.php' ) ) {
 					add_action( 'admin_notices', array( $this, 'admin_notices_licensed_free' ) );
 				}
-				$rating_date = $this->create_rating_date();
-				if ( time() > $rating_date ) {
-					add_action( 'admin_notices', array( $this, 'admin_notices_rating' ) );
+				if ( !$disableReview ) {
+					$rating_date = $this->create_rating_date();
+					if ( time() > $rating_date ) {
+						add_action( 'admin_notices', array( $this, 'admin_notices_rating' ) );
+					}
 				}
 			}
-		}
-
-		function updraftplus_com_link( $url ) {
-			$url = $url . "?afref=460";
-			return $url;
 		}
 
 		function show_meowapps_create_rating_date() {
@@ -152,8 +148,6 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 			if ( !empty( $this->prefix ) )
 				$title = apply_filters( $this->prefix . '_plugin_title', $title );
 			if ( $this->display_ads() ) {
-				echo '<a class="meow-header-ad" target="_blank" href="http://www.shareasale.com/r.cfm?b=906810&u=767054&m=41388&urllink=&afftrack="">
-				<img src="' . $this->common_url( 'img/wpengine.png' ) . '" height="60" border="0" /></a>';
 			}
 			?>
 			<h1 style="line-height: 16px;">
@@ -400,7 +394,7 @@ if ( !class_exists( 'MeowApps_Admin' ) ) {
 					</div>
 				</div>
 
-			
+
 				<?php
 
 			}

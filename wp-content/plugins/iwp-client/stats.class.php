@@ -429,7 +429,9 @@ class IWP_MMB_Stats extends IWP_MMB_Core
         global $wpdb, $iwp_mmb_wp_version, $iwp_mmb_plugin_dir, $wp_version, $wp_local_package;
         
 		$current = get_site_transient( 'update_plugins' );
-		$r = $current->response['iwp-client/init.php'];
+        if (isset($current->response['iwp-client/init.php'])) {
+		  $r = $current->response['iwp-client/init.php'];
+        }
 		
 		//For WPE
 		$use_cookie = 0;
@@ -438,8 +440,10 @@ class IWP_MMB_Stats extends IWP_MMB_Core
         }
 		
         $stats['client_version']        = IWP_MMB_CLIENT_VERSION;
-        $stats['client_new_version']    = $r->new_version;
-        $stats['client_new_package']    = $r->package;
+        if (!empty($rs)) {
+            $stats['client_new_version']    = $r->new_version;
+            $stats['client_new_package']    = $r->package;
+        }
         $stats['wordpress_version']     = $wp_version;
         $stats['wordpress_locale_pckg'] = $wp_local_package;
         $stats['php_version']           = phpversion();

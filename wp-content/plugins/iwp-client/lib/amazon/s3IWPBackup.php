@@ -164,7 +164,7 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 					'Bucket'     => $as3_bucket,
 					'SourceFile' => $backup_file,
 					'Key'        => $as3_file,
-					'ACL' => 'authenticated-read'
+					'ACL' => 'private'
 					));
 					$current_file_num += 1;
 					$resArray = array (
@@ -217,7 +217,7 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 						$result = $s3->createMultipartUpload(array(
 						'Bucket'       => $as3_bucket,
 						'Key'          => $as3_file,
-						'ACL'          => 'authenticated-read',
+						'ACL'          => 'private',
 					
 						));
 					
@@ -659,7 +659,7 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
 						'Bucket'     => $as3_bucket,
 						'SourceFile' => $backup_file,
 						'Key'        => $as3_file,
-						'ACL' => 'authenticated-read'
+						'ACL' => 'private'
 					));
                    return true;
         }catch (Exception $e){
@@ -682,7 +682,7 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
 				$result = $s3->createMultipartUpload(array(
 					'Bucket'       => $as3_bucket,
 					'Key'          => $as3_file,
-					'ACL'          => 'authenticated-read',
+					'ACL'          => 'private',
 				  
 				));
 

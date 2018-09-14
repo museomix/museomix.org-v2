@@ -1,7 +1,8 @@
-import uglify from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
 import multiEntry from 'rollup-plugin-multi-entry';
+import buble from 'rollup-plugin-buble';
 
-export default {
+export default [{
     input: [
         'assets/js/src/event-manager.js',
         'assets/js/src/front.js',
@@ -9,7 +10,6 @@ export default {
     ],
     output: {
         file: 'assets/js/dist/front.min.js',
-        name: 'FWP_Build',
         format: 'iife'
     },
     watch: {
@@ -17,6 +17,19 @@ export default {
     },
     plugins: [
         multiEntry(),
-        uglify()
+        terser()
     ]
-}
+},
+{
+    input: 'assets/js/src/admin.js',
+    output: {
+        file: 'assets/js/dist/admin.min.js',
+        format: 'iife'
+    },
+    watch: {
+        include: 'assets/js/src/admin.js'
+    },
+    plugins: [
+        buble()
+    ]
+}]

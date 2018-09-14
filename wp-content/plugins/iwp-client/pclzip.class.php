@@ -3593,11 +3593,12 @@ endif;
 	//$timeTak = microtime(true) - $tempLoopStart;
 	
     // ----- Check the minimum file size
-    if (version_compare(phpversion(), '7','<')) {
-        $version_bytes = 18;
-    }else{
-        $version_bytes = 0;
-    }
+    // if (version_compare(phpversion(), '7','<')) {
+    //     $version_bytes = 18;
+    // }else{
+    //     $version_bytes = 0;
+    // }
+    $version_bytes = 0;
     if (iwp_mmb_get_file_size($v_gzip_temp_name) < $version_bytes) {
 	  echo "Check the minimum file size error".iwp_mmb_get_file_size($v_gzip_temp_name);
     echo "minimum file size".$version_bytes;
@@ -6514,6 +6515,7 @@ endif;
 			if(!$file)
 			{
 				echo 'iwp_mmb_get_file_size_error : realPath error';
+        echo  "File Name: $file";
 			}
 			$ch = curl_init("file://" . $file);
 			curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_FILE);
@@ -6529,6 +6531,7 @@ endif;
 			else
 			{
 				echo 'iwp_mmb_get_file_size_error : '.$curl_error;
+        echo  "File Name: $file";
 				return $normal_file_size;
 			}
 		}

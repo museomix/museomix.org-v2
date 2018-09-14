@@ -25,7 +25,14 @@ class LAClassLoader {
 	}
 
 	public function loadClass($className) {
-	    if (0 === strpos($className, 'flow\\')){
+		if (0 === strpos($className, 'flow\\social\\')){
+			$path = $this->root . 'libs/FlowSocial/src/flow';
+			$cls = str_replace('flow', $path, $className);
+			$path = str_replace('\\', DIRECTORY_SEPARATOR, $cls) . '.php';
+			/** @noinspection PhpIncludeInspection */
+			require_once($path);
+		}
+		else if (0 === strpos($className, 'flow\\')){
 			$path = $this->root . 'includes';
 			$cls = str_replace('flow', $path, $className);
 			$path = str_replace('\\', DIRECTORY_SEPARATOR, $cls) . '.php';

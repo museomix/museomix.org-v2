@@ -208,10 +208,10 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 		
 		if(!empty($params))
 		{
-			$disk_space = iwp_mmb_check_disk_space();
-			if ($disk_space != false) {
-				iwp_mmb_response(array('error' =>  'Your disk space is very low available space: '.$disk_space.'MB'), false);
-			}
+			// $disk_space = iwp_mmb_check_disk_space();
+			// if ($disk_space != false) {
+			// 	iwp_mmb_response(array('error' =>  'Your disk space is very low available space: '.$disk_space.'MB'), false);
+			// }
 			initialize_manual_debug();
 			$this->cleanup();
 			$initialize_result = refresh_iwp_files_db();
@@ -411,7 +411,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 		$temp_sql_file_name = $file.".sql";
 		$file   = $db_folder . $temp_sql_file_name;
         global $wpdb;
-        $paths   = $this->check_mysql_paths();
+        $paths   = $this->getMySQLPath();
         $brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
 		//$command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables "' . DB_NAME . '" > ' . $brace . $file . $brace;
         $command0 = $wpdb->get_col('SHOW TABLES LIKE "'.$wpdb->base_prefix.'%"');
@@ -445,6 +445,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			//$this->statusLog($historyID, "backupDB", true, "completed", $params, true);
 			//$this->statusLog($historyID, array('stage' => $backupStage, 'status' => 'completed', 'statusMsg' => 'backupDBCompleted'));
 			$db_final_response['success']['status'] = 'partiallyCompleted';
+			$backupStage = 'backupDBMultiCall';
 			$this->statusLog($historyID, array('stage' => $backupStage, 'status' => 'completed', 'statusMsg' => 'backupDBCompleted','nextFunc' => 'backupDBZip', 'responseParams' => $db_final_response['success']));
 			unset($db_final_response['success']['response_data']);
 			//to continue in the same call
@@ -494,6 +495,53 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
         
         return $paths;
     }
+
+    public function getMySQLPath(){
+    	global $wpdb;
+    	 $paths = array(
+            'mysql' => '',
+            'mysqldump' => ''
+        );
+    	if (substr(PHP_OS, 0, 3) == 'WIN') {
+            $mysql_install = $wpdb->get_row("SHOW VARIABLES LIKE 'basedir'");
+            if ($mysql_install) {
+                $install_path       = str_replace('\\', '/', $mysql_install->Value);
+                $paths['mysql']     = $install_path . '/bin/mysql.exe';
+                $paths['mysqldump'] = $install_path . '/bin/mysqldump.exe';
+            } else {
+                $paths['mysql']     = 'mysql.exe';
+                $paths['mysqldump'] = 'mysqldump.exe';
+            }
+        } else{
+	    	$mysqlPath = "/usr/bin/mysqldump,/bin/mysqldump,/usr/local/bin/mysqldump,/usr/sfw/bin/mysqldump,/usr/xdg4/bin/mysqldump,/opt/bin/mysqldump";
+			$bin = explode(',' , $mysqlPath);
+			$brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
+			$db_folder = IWP_DB_DIR . '/';
+			$temp_sql_file_name = "iwp_temp.sql";
+			$file   = $db_folder . $temp_sql_file_name;
+			foreach ($bin as $key => $value) {
+				$command = $brace . $value . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables --extended-insert=FALSE "' . DB_NAME . '" ""'.$wpdb->base_prefix.'options"" > ' . $brace . $file . $brace;
+				$result = $this->iwp_mmb_exec($command);
+				if (!$result) { 
+				   	continue;
+				}
+				
+				if (iwp_mmb_get_file_size($file) == 0 || !is_file($file) || !$result) {
+				    continue;
+				}
+				unlink($file);
+				 $paths = array(
+			        'mysql' => $value,
+			        'mysqldump' => $value
+			    );
+
+				 return $paths;
+			}
+			unlink($file);
+        }
+
+        return $paths;
+	}
 	
 	function backup_uploads($historyID)
 	{
@@ -613,14 +661,14 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 	{
 		manual_debug('', 'backupDBStart');
 		$this->statusLog($historyID, array('stage' => 'backupDB', 'status' => 'processing', 'statusMsg' => 'backupDBInitiated'));
-		
+		clearstatcache();
 		if(file_exists(IWP_DB_DIR) && is_dir(IWP_DB_DIR))
 		{
 			$this->statusLog($historyID, array('stage' => 'verification', 'status' => 'processing', 'statusMsg' => 'Directorywritable'));
 		}
 		else
 		{
-			$mkdir = @mkdir(IWP_DB_DIR, 0755, true);
+			$mkdir = mkdir(IWP_DB_DIR, 0755, true);
 			if(!$mkdir){
 				return $this->statusLog($historyID, array('stage' => 'verification', 'status' => 'error', 'statusMsg' => 'Error creating database backup folder (' . IWP_DB_DIR . '). Make sure you have corrrect write permissions.', 'statusCode' => 'error_creating_database_backup_folder'));
 			}
@@ -1421,10 +1469,13 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			$file_size_in_this_call = (iwp_mmb_get_file_size($backup_file)/1024/1024) - $initialFileSize;
 				echo "<br>iwpmsg file size in this call".$file_size_in_this_call;
 				echo "<br>iwpmsg Time taken in this call ".$fileNextTimeTaken."<br>";
-			if(($file_size_in_this_call == 0) && !(is_array($returnArr) && !empty($returnArr['error'])) && !(is_array($returnArr) && !empty($returnArr['isGetFileList'])))
+		/*	
+			//Some times the difference between intitial and this call may equal to 0 
+			if( !(($file_size_in_this_call == 0) && is_array($returnArr) && !empty($returnArr['error'])) && !(is_array($returnArr) && !empty($returnArr['isGetFileList'])))
 			{
 				return array( 'error' => 'Zip-error: Unable to zip', 'error_code' => 'zip_error_unable_to_zip');
 			}
+		*/
 			return $returnArr;
 		}
 		else
@@ -3999,7 +4050,7 @@ function ftp_backup($historyID,$args = '')
 			$backup_file_base_name = basename($backup_file);
 		}
 		
-		$upload = $this -> ftp_multi_upload($conn_id, $ftp_remote_folder . '/' . basename($backup_file_base_name), $backup_file, FTP_BINARY, $historyID, $tempArgs, $current_file_num);
+		$upload = $this -> ftp_multi_upload($conn_id, rtrim($ftp_remote_folder, '/') . '/' . basename($backup_file_base_name), $backup_file, FTP_BINARY, $historyID, $tempArgs, $current_file_num);
 		
         
         if ($upload === false) { //Try ascii
@@ -4082,6 +4133,7 @@ function ftp_backup($historyID,$args = '')
 		if(!$file_size)
 		$file_size = 0;
 		
+		$real_size = filesize($local_file_path);
 		//read the parts local file , if it is a second call start reading the file from the left out part which is at the offset of the remote file's filesize.
 		$fp = fopen($backup_file, 'r');
 		fseek($fp,$file_size);
@@ -4135,6 +4187,9 @@ function ftp_backup($historyID,$args = '')
 			{
 				@unlink($backup_file);
 			} */
+			echo "backup not yet finished";
+			echo "real file size $real_size";
+			echo "FTP file size $size";
 			return $resArray;
 		}
 		else
@@ -6163,8 +6218,8 @@ function ftp_backup($historyID,$args = '')
 			}
         $deleted = array();
         
+        $results = array();
         if (is_array($files) && count($files)) {
-            $results = array();
             $cloudFailedBackup = array();
             $failedBackupHisID = array();
             if (!empty($tasks)) {
@@ -6198,9 +6253,35 @@ function ftp_backup($historyID,$args = '')
                     }
                 }
             }
+
+            $pheonixBackup = $GLOBALS['iwp_backup_core']->get_backup_history();
+            if (!empty($pheonixBackup)) {
+            	foreach ($pheonixBackup as $timestamp => $backup) {
+            		if (!empty($backup['plugins'])) {
+            			$results = array_merge($results, $backup['plugins']);
+            		}
+            		if (!empty($backup['themes'])) {
+            			$results = array_merge($results, $backup['themes']);
+            		}
+            		if (!empty($backup['uploads'])) {
+            			$results = array_merge($results, $backup['uploads']);
+            		}
+            		if (!empty($backup['others'])) {
+            			$results = array_merge($results, $backup['others']);
+            		}
+            		if (!empty($backup['more'])) {
+            			$results = array_merge($results, $backup['more']);
+            		}
+            		if (!empty($backup['db'])) {
+            			$results[] = $backup['db'];
+            		}
+            		$results[] = $backup['backup_file_basename'];
+            	}
+            }
+
             $num_deleted = 0;
             foreach ($files as $file) {
-                if ((!in_array($file, $results) || in_array($file, $failedBackupHisID)) && basename($file) != 'index.php') {
+                if (((!in_array($file, $results) && !in_array(basename($file), $results)) || in_array($file, $failedBackupHisID)) && basename($file) != 'index.php') {
                     @unlink($file);
                     // $deleted[] = basename($file);
 					$deleted[] = $file;

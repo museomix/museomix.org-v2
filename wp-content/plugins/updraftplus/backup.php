@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('UPDRAFTPLUS_DIR')) die('No direct access allowed');
-if (!class_exists('UpdraftPlus_PclZip')) require_once(UPDRAFTPLUS_DIR.'/class-zip.php');
+if (!class_exists('UpdraftPlus_PclZip')) require_once(UPDRAFTPLUS_DIR.'/includes/class-zip.php');
 
 /**
  * This file contains functions that are only needed/loaded when a backup is running (reduces memory usage on other pages)
@@ -182,7 +182,7 @@ class UpdraftPlus_Backup {
 				if (!function_exists('get_mu_plugins')) include_once(ABSPATH.'wp-admin/includes/plugin.php');
 				$mu_plugins = get_mu_plugins();
 				if (count($mu_plugins) == 0) {
-					$updraftplus->log("There appear to be no mu-plugins to back up. Will not raise an error.");
+					$updraftplus->log("There appear to be no mu-plugins to backup. Will not raise an error.");
 					$flag_error = false;
 				}
 			}
@@ -362,8 +362,8 @@ class UpdraftPlus_Backup {
 
 		// We need to make sure that the loop below actually runs
 		if (empty($services)) $services = array('none');
-
-		$storage_objects_and_ids = $updraftplus->get_storage_objects_and_ids($services);
+		
+		$storage_objects_and_ids = $updraftplus->get_enabled_storage_objects_and_ids($services);
 
 		$total_instances_count = 0;
 
@@ -395,53 +395,65 @@ class UpdraftPlus_Backup {
 		$errors_before_uploads = $updraftplus->error_count();
 
 		foreach ($services as $ind => $service) {
-
-			$instance_id_count = 0;
-			$total_instance_ids = ('none' !== $service && '' !== $service && $storage_objects_and_ids[$service]['object']->supports_feature('multi_options')) ? count($storage_objects_and_ids[$service]['instance_settings']) : 1;
-
-			// Used for logging by record_upload_chunk()
-			$this->current_service = $service;
-
-			// Used when deciding whether to delete the local file
-			$this->last_service = ($ind+1 >= count($services) && $instance_id_count+1 >= $total_instance_ids && $errors_before_uploads == $updraftplus->error_count()) ? true : false;
-
-			$log_extra = $this->last_service ? ' (last)' : '';
-			$updraftplus->log("Cloud backup selection (".($ind+1)."/".count($services)."): ".$service." with instance (".($instance_id_count+1)."/".$total_instance_ids.")".$log_extra);
-			@set_time_limit(UPDRAFTPLUS_SET_TIME_LIMIT);
-
-			if ('none' == $service || '' == $service) {
-				$updraftplus->log("No remote despatch: user chose no remote backup service");
-				// Still want to mark as "uploaded", to signal that nothing more needs doing. (Important on incremental runs with no cloud storage).
-				foreach ($backup_array as $bind => $file) {
-					if ($updraftplus->is_uploaded($file)) {
-						$updraftplus->log("Already uploaded: $file");
-					} else {
-						$updraftplus->uploaded_file($file, true);
+			try {
+				$instance_id_count = 0;
+				$total_instance_ids = ('none' !== $service && '' !== $service && $storage_objects_and_ids[$service]['object']->supports_feature('multi_options')) ? count($storage_objects_and_ids[$service]['instance_settings']) : 1;
+	
+				// Used for logging by record_upload_chunk()
+				$this->current_service = $service;
+	
+				// Used when deciding whether to delete the local file
+				$this->last_service = ($ind+1 >= count($services) && $instance_id_count+1 >= $total_instance_ids && $errors_before_uploads == $updraftplus->error_count()) ? true : false;
+	
+				$log_extra = $this->last_service ? ' (last)' : '';
+				$updraftplus->log("Cloud backup selection (".($ind+1)."/".count($services)."): ".$service." with instance (".($instance_id_count+1)."/".$total_instance_ids.")".$log_extra);
+				@set_time_limit(UPDRAFTPLUS_SET_TIME_LIMIT);
+	
+				if ('none' == $service || '' == $service) {
+					$updraftplus->log("No remote despatch: user chose no remote backup service");
+					// Still want to mark as "uploaded", to signal that nothing more needs doing. (Important on incremental runs with no cloud storage).
+					foreach ($backup_array as $bind => $file) {
+						if ($updraftplus->is_uploaded($file)) {
+							$updraftplus->log("Already uploaded: $file");
+						} else {
+							$updraftplus->uploaded_file($file, true);
+						}
 					}
-				}
-				$this->prune_retained_backups(array('none' => array('all' => array(null, null))));
-			} elseif (!empty($storage_objects_and_ids[$service]['object']) && !$storage_objects_and_ids[$service]['object']->supports_feature('multi_options')) {
-				$remote_obj = $storage_objects_and_ids[$service]['object'];
-				
-				$do_prune = array_merge_recursive($do_prune, $this->upload_cloud($remote_obj, $service, $backup_array, ''));
-			} elseif (!empty($storage_objects_and_ids[$service]['instance_settings'])) {
-				foreach ($storage_objects_and_ids[$service]['instance_settings'] as $instance_id => $options) {
-					// Used for logging by record_upload_chunk()
-					$this->current_instance = $instance_id;
-
-					if (!isset($options['instance_enabled'])) $options['instance_enabled'] = 1;
-
-					if (1 == $options['instance_enabled']) {
-						$remote_obj = $storage_objects_and_ids[$service]['object'];
+					$this->prune_retained_backups(array('none' => array('all' => array(null, null))));
+				} elseif (!empty($storage_objects_and_ids[$service]['object']) && !$storage_objects_and_ids[$service]['object']->supports_feature('multi_options')) {
+					$remote_obj = $storage_objects_and_ids[$service]['object'];
 					
-						$remote_obj->set_options($options, true, $instance_id);
-						$do_prune = array_merge_recursive($do_prune, $this->upload_cloud($remote_obj, $service, $backup_array, $instance_id));
-					} else {
-						$updraftplus->log("This instance id ($instance_id) has been set to inactive.");
+					$do_prune = array_merge_recursive($do_prune, $this->upload_cloud($remote_obj, $service, $backup_array, ''));
+				} elseif (!empty($storage_objects_and_ids[$service]['instance_settings'])) {
+					foreach ($storage_objects_and_ids[$service]['instance_settings'] as $instance_id => $options) {
+						// Used for logging by record_upload_chunk()
+						$this->current_instance = $instance_id;
+	
+						if (!isset($options['instance_enabled'])) $options['instance_enabled'] = 1;
+	
+						if (1 == $options['instance_enabled']) {
+							$remote_obj = $storage_objects_and_ids[$service]['object'];
+						
+							$remote_obj->set_options($options, true, $instance_id);
+							$do_prune = array_merge_recursive($do_prune, $this->upload_cloud($remote_obj, $service, $backup_array, $instance_id));
+						} else {
+							$updraftplus->log("This instance id ($instance_id) has been set to inactive.");
+						}
+	
+						$instance_id_count++;
 					}
-
-					$instance_id_count++;
 				}
+			} catch (Exception $e) {
+				$log_message = 'Exception ('.get_class($e).') occurred during backup uploads to the '.$service.'. Exception Message: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
+				$updraftplus->log($log_message);
+				error_log($log_message);
+				$updraftplus->log(sprintf(__('A PHP exception (%s) has occurred: %s', 'updraftplus'), get_class($e), $e->getMessage()), 'error');
+			// @codingStandardsIgnoreLine
+			} catch (Error $e) {
+				$log_message = 'PHP Fatal error ('.get_class($e).') has occurred during backup uploads to the '.$service.'. Error Message: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
+				$updraftplus->log($log_message);
+				error_log($log_message);
+				$updraftplus->log(sprintf(__('A PHP fatal error (%s) has occurred: %s', 'updraftplus'), get_class($e), $e->getMessage()), 'error');
 			}
 		}
 
@@ -557,9 +569,7 @@ class UpdraftPlus_Backup {
 			return;
 		}
 
-// $updraftplus->jobdata_set('jobstatus', 'pruning');
-// $updraftplus->jobdata_set('prune', 'begun');
-		call_user_func_array(array($updraftplus, 'jobdata_set_multi'), array('jobstatus', 'pruning', 'prune', 'begun'));
+		call_user_func_array(array($updraftplus, 'jobdata_set_multi'), array('jobstatus' => 'pruning', 'prune' => 'begun'));
 
 		// Number of backups to retain - files
 		$updraft_retain = UpdraftPlus_Options::get_updraft_option('updraft_retain', 2);
@@ -589,7 +599,7 @@ class UpdraftPlus_Backup {
 		if (!empty($ignored_because_imported)) {
 			$updraftplus->log("These backup set(s) were imported from a remote location, so will not be counted or pruned. Skipping: ".implode(', ', $ignored_because_imported));
 		}
-
+		
 		$backupable_entities = $updraftplus->get_backupable_file_entities(true);
 
 		$database_backups_found = array();
@@ -627,10 +637,13 @@ class UpdraftPlus_Backup {
 				// $backup_to_examine is an array of file names, keyed on db/plugins/themes/uploads
 				// The new backup_history array is saved afterwards, so remember to unset the ones that are to be deleted
 				$this->log_with_db_occasionally(sprintf("Examining (for databases) backup set with group_id=$group_id, nonce=%s, datestamp=%s (%s)", $nonce, $backup_datestamp, gmdate('M d Y H:i:s', $backup_datestamp)));
-
+				
+				// "Always Keep" Backups should be counted in the count of how many have been retained for purposes of the "how many to retain" count... but if that count is already matched, it's not a problem
+				$is_always_keep = !empty($backup_to_examine['always_keep']);
+				
 				// Auto-backups are only counted or deleted once we have reached the retain limit - before that, they are skipped
 				$is_autobackup = !empty($backup_to_examine['autobackup']);
-
+				
 				$remote_sent = (!empty($backup_to_examine['service']) && ((is_array($backup_to_examine['service']) && in_array('remotesend', $backup_to_examine['service'])) || 'remotesend' === $backup_to_examine['service'])) ? true : false;
 
 				$any_deleted_via_filter_yet = false;
@@ -644,6 +657,16 @@ class UpdraftPlus_Backup {
 					if ($nonce == $updraftplus->nonce) {
 						$this->log_with_db_occasionally("This backup set is the backup set just made, so will not be deleted.");
 						$database_backups_found[$key]++;
+						continue;
+					}
+					
+					if ($is_always_keep) {
+						if ($database_backups_found[$key] < $updraft_retain) {
+							$this->log_with_db_occasionally("This backup set ($backup_datestamp) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.");
+							$database_backups_found[$key]++;
+						} else {
+							$this->log_with_db_occasionally("This backup set ($backup_datestamp) was an 'Always Keep' backup, so it will not be pruned. Skipping.");
+						}
 						continue;
 					}
 					
@@ -761,6 +784,9 @@ class UpdraftPlus_Backup {
 				// The new backup_history array is saved afterwards, so remember to unset the ones that are to be deleted
 				$this->log_with_db_occasionally(sprintf("Examining (for files) backup set with nonce=%s, datestamp=%s (%s)", $nonce, $backup_datestamp, gmdate('M d Y H:i:s', $backup_datestamp)));
 
+				// "Always Keep" Backups should be counted in the count of how many have been retained for purposes of the "how many to retain" count... but if that count is already matched, it's not a problem
+				$is_always_keep = !empty($backup_to_examine['always_keep']);
+				
 				// Auto-backups are only counted or deleted once we have reached the retain limit - before that, they are skipped
 				$is_autobackup = !empty($backup_to_examine['autobackup']);
 
@@ -781,6 +807,16 @@ class UpdraftPlus_Backup {
 							continue;
 						}
 
+						if ($is_always_keep) {
+							if ($file_entities_backups_found[$entity] < $updraft_retain) {
+								$this->log_with_db_occasionally("This backup set ($backup_datestamp) was an 'Always Keep' backup, and we have not yet reached any retain limits, so it should be counted in the count of how many have been retained for purposes of the 'how many to retain' count. It will not be pruned. Skipping.");
+								$file_entities_backups_found[$entity]++;
+							} else {
+								$this->log_with_db_occasionally("This backup set ($backup_datestamp) was an 'Always Keep' backup, so it will not be pruned. Skipping.");
+							}
+							continue;
+						}
+						
 						if ($is_autobackup) {
 							if ($any_deleted_via_filter_yet) {
 								$this->log_with_db_occasionally("This backup set was an automatic backup, but we have previously deleted a backup due to a limit, so it will be pruned (but not counted towards numerical limits).");
@@ -1436,7 +1472,7 @@ class UpdraftPlus_Backup {
 							// Now, store the results
 							if (!is_string($created) && !is_array($created)) $updraftplus->log("$youwhat: create_zip returned an error");
 						} else {
-							$updraftplus->log("No backup of $youwhat: there was nothing found to back up");
+							$updraftplus->log("No backup of $youwhat: there was nothing found to backup");
 						}
 					}
 
@@ -1550,7 +1586,7 @@ class UpdraftPlus_Backup {
 
 		if ('wp' == $this->whichdb) {
 			$this->wpdb_obj = $wpdb;
-			// The table prefix after being filtered - i.e. what filters what we'll actually back up
+			// The table prefix after being filtered - i.e. what filters what we'll actually backup
 			$this->table_prefix = $updraftplus->get_table_prefix(true);
 			// The unfiltered table prefix - i.e. the real prefix that things are relative to
 			$this->table_prefix_raw = $updraftplus->get_table_prefix(false);

@@ -117,7 +117,7 @@ class Loco_admin_init_InitPoController extends Loco_admin_bundle_BaseController 
         
         // default locale is a placeholder
         $locale = new Loco_Locale('zxx');
-        $content_dir = rtrim( loco_constant('WP_CONTENT_DIR'), '/' );
+        $content_dir = untrailingslashit( loco_constant('WP_CONTENT_DIR') );
         $copying = false;
         
         // Permit using any provided file a template instead of POT
@@ -235,13 +235,13 @@ class Loco_admin_init_InitPoController extends Loco_admin_bundle_BaseController 
         }
         $this->set( 'summary', $summary );
         
-        // group established locations into types (offical, etc..) 
+        // group established locations into types (official, etc..)
         // there is no point checking whether any of these file exist, because we don't know what language will be chosen yet.
         $sortable = array();
         $locations = array();
         $fs_protect = Loco_data_Settings::get()->fs_protect;
         $fs_failure = null;
-        /* @var $pofile Loco_fs_File */
+        /* @var Loco_fs_File $pofile */
         foreach( $filechoice as $pofile ){
             $parent = new Loco_fs_LocaleDirectory( $pofile->dirname() );
             $typeId = $parent->getTypeId();

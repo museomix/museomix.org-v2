@@ -60,7 +60,8 @@ final class FacetWP_Helper
             'date_range'    => 'Facetwp_Facet_Date_Range',
             'number_range'  => 'Facetwp_Facet_Number_Range',
             'proximity'     => 'Facetwp_Facet_Proximity_Core',
-            'radio'         => 'Facetwp_Facet_Radio_Core'
+            'radio'         => 'Facetwp_Facet_Radio_Core',
+            'rating'        => 'FacetWP_Facet_Rating'
         );
 
         $facet_types = array();

@@ -9,6 +9,9 @@ class FacetWP_Display
     /* (array) Facets being used on the page */
     public $active_facets = array();
 
+    /* (array) Saved shortcode attributes */
+    public $shortcode_atts = array();
+
     /* (boolean) Whether to enable FacetWP for the current page */
     public $load_assets = false;
 
@@ -42,6 +45,8 @@ class FacetWP_Display
      * Register shortcodes
      */
     function shortcode( $atts ) {
+        $this->shortcode_atts[] = $atts;
+
         $output = '';
         if ( isset( $atts['facet'] ) ) {
             $facet = FWP()->helper->get_facet_by_name( $atts['facet'] );
@@ -70,6 +75,10 @@ class FacetWP_Display
                 $output .= $preload_data['template'];
                 $output .= '</div>';
 
+                if ( apply_filters( 'facetwp_use_pager_seo', true ) ) {
+                    $output .= $this->get_pager_seo();
+                }
+
                 $this->load_assets = true;
             }
         }
@@ -94,6 +103,28 @@ class FacetWP_Display
         }
 
         $output = apply_filters( 'facetwp_shortcode_html', $output, $atts );
+
+        return $output;
+    }
+
+
+    /**
+     * Build a basic hidden pager for SEO purposes
+     */
+    function get_pager_seo() {
+        $page = FWP()->facet->pager_args['page'];
+        $total_pages = FWP()->facet->pager_args['total_pages'];
+        $url_var = FWP()->helper->get_setting( 'prefix' ) . 'paged';
+
+        $prev_link = ( 2 === $page ) ? remove_query_arg( $url_var ) : add_query_arg( $url_var, $page - 1 );
+        $next_link = add_query_arg( $url_var, $page + 1 );
+        $output = '';
+
+        if ( 1 < $total_pages ) {
+            $output .= ( 1 < $page ) ? '<a href="' . $prev_link . '">Prev</a>' : '';
+            $output .= ( $page < $total_pages ) ? '<a href="' . $next_link . '">Next</a>' : '';
+            $output = '<div class="facetwp-seo">' . $output . '</div>';
+        }
 
         return $output;
     }
@@ -163,6 +194,8 @@ class FacetWP_Display
                 if ( false !== strpos( $url, 'facetwp' ) ) {
                     $url .= '?ver=' . FACETWP_VERSION;
                 }
+
+                $html = apply_filters( 'facetwp_asset_html', $html, $url );
 
                 echo str_replace( '{url}', $url, $html ) . "\n";
             }

@@ -2129,8 +2129,7 @@ class IWP_MMB_Backup {
 				} else {
 
 					# Don't put this in the for loop, or the magic __get() method gets called and opens the zip file every time the loop goes round
-					$numfiles = $zip->z;
-
+					$numfiles = $zip->numFiles;
 					for ($i=0; $i < $numfiles; $i++) {
 						$si = $zip->statIndex($i);
 						$name = $si['name'];
@@ -2495,6 +2494,7 @@ class IWP_MMB_Backup {
 			# TODO: Test this new method for PclZip - are we still getting the performance gains? Test for ZipArchive too.
 			if ('IWP_MMB_PclZip' == $this->use_zip_object && ($this->makezip_recursive_batchedbytes < 512*1048576 || (defined('IWP_PCLZIP_FORCEALLINONE') && IWP_PCLZIP_FORCEALLINONE == true && 'IWP_MMB_PclZip' == $this->use_zip_object))) {
 				$iwp_backup_core->log("Only one archive required (".$this->use_zip_object.") - will attempt to do in single operation (data: ".round($this->makezip_recursive_batchedbytes/1024,1)." KB, split: ".round($this->zip_split_every/1024, 1)." KB)");
+				$force_allinone = true;
 			}
 		}
 

@@ -38,7 +38,7 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 		global $wpml_query_filter;
 
 		if ( $this->is_per_domain() ) {
-			add_filter( 'wpml_get_home_url', array( $this, 'get_home_url_filter' ), 10, 1 );
+			add_filter( 'wpml_get_home_url', array( $this, 'get_home_url_filter' ), 10, 4 );
 			add_filter( 'wpseo_posts_join', array( $wpml_query_filter, 'filter_single_type_join' ), 10, 2 );
 			add_filter( 'wpseo_posts_where', array( $wpml_query_filter, 'filter_single_type_where' ), 10, 2 );
 			add_filter( 'wpseo_typecount_join', array( $wpml_query_filter, 'filter_single_type_join' ), 10, 2 );
@@ -70,7 +70,7 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 		unset( $active_langs[ $default_lang ] );
 
 		foreach ( $active_langs as $lang_code => $lang_data ) {
-			$output .= $this->sitemap_url_filter( $this->wpml_url_converter->convert_url( home_url( '/' ), $lang_code ) );
+			$output .= $this->sitemap_url_filter( $this->wpml_url_converter->convert_url( home_url(), $lang_code ) );
 		}
 		return $output;
 	}
@@ -82,8 +82,11 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 	 *
 	 * @return bool|mixed|string
 	 */
-	public function get_home_url_filter( $home_url ) {
-		return $this->wpml_url_converter->convert_url( $home_url, $this->sitepress->get_current_language() );
+	public function get_home_url_filter( $home_url, $url, $path, $orig_scheme ) {
+		if( 'relative' !== $orig_scheme ){
+			$home_url = $this->wpml_url_converter->convert_url( $home_url, $this->sitepress->get_current_language() );
+		}
+		return $home_url;
 	}
 
 	public function list_domains() {
@@ -182,9 +185,9 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 		// Get language information for post.
 		$language_info = $this->sitepress->post_translations()->get_element_lang_code( $post->ID );
 
-		// If language code is one of the hidden languages return empty string to skip the post.
+		// If language code is one of the hidden languages return null to skip the post.
 		if ( in_array( $language_info, $hidden_languages, true ) ) {
-			return '';
+			return null;
 		}
 
 		return $url;
@@ -225,7 +228,7 @@ class WPML_WPSEO_XML_Sitemaps_Filter {
 		if ( $page_on_front ) {
 			$translations = $this->sitepress->post_translations()->get_element_translations( $page_on_front );
 			unset( $translations[ $this->sitepress->get_default_language() ] );
-			if ( in_array( $post_object->ID, $translations, true ) ) {
+			if ( in_array( $post_object->ID, $translations, false ) ) {
 				$url = false;
 			}
 		}

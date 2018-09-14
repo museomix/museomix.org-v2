@@ -16,11 +16,20 @@ class FacetWP_Facet_Number_Range extends FacetWP_Facet
         $output = '';
         $value = $params['selected_values'];
         $value = empty( $value ) ? array( '', '', ) : $value;
-        $output .= '<label>' . __( 'Min', 'fwp' ) . '</label>';
-        $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" />';
-        $output .= '<label>' . __( 'Max', 'fwp' ) . '</label>';
-        $output .= '<input type="text" class="facetwp-number facetwp-number-max" value="' . esc_attr( $value[1] ) . '" />';
-        $output .= '<input type="button" class="facetwp-submit" value="' . __( 'OK', 'fwp' ) . '" />';
+        $fields = empty( $params['facet']['fields'] ) ? 'both' : $params['facet']['fields'];
+
+        if ( 'exact' == $fields ) {
+            $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" placeholder="' . __( 'Number', 'fwp' ) . '" />';
+        }
+        if ( 'both' == $fields || 'min' == $fields ) {
+            $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" placeholder="' . __( 'Min', 'fwp' ) . '" />';
+        }
+        if ( 'both' == $fields || 'max' == $fields ) {
+            $output .= '<input type="text" class="facetwp-number facetwp-number-max" value="' . esc_attr( $value[1] ) . '" placeholder="' . __( 'Max', 'fwp' ) . '" />';
+        }
+
+        $output .= '<input type="button" class="facetwp-submit" value="' . __( 'Go', 'fwp' ) . '" />';
+
         return $output;
     }
 
@@ -35,29 +44,54 @@ class FacetWP_Facet_Number_Range extends FacetWP_Facet
         $values = $params['selected_values'];
         $where = '';
 
-        $start = ( '' == $values[0] ) ? false : FWP()->helper->format_number( $values[0] );
-        $end = ( '' == $values[1] ) ? false : FWP()->helper->format_number( $values[1] );
+        $min = ( '' == $values[0] ) ? false : FWP()->helper->format_number( $values[0] );
+        $max = ( '' == $values[1] ) ? false : FWP()->helper->format_number( $values[1] );
 
+        $fields = isset( $facet['fields'] ) ? $facet['fields'] : 'both';
+        $compare_type = isset( $facet['compare_type'] ) ? $facet['compare_type'] : '';
+        $compare_type = empty( $compare_type ) ? 'basic' : $compare_type;
         $is_dual = ! empty( $facet['source_other'] );
-        $is_intersect = FWP()->helper->facet_is( $facet, 'compare_type', 'intersect' );
+
+        if ( $is_dual && 'basic' != $compare_type ) {
+            if ( 'exact' == $fields ) {
+                $max = $min;
+            }
+
+            $min = ( false !== $min ) ? $min : -999999999999;
+            $max = ( false !== $max ) ? $max : 999999999999;
+
+            /**
+             * Enclose compare
+             * The post's range must surround the user-defined range
+             */
+            if ( 'enclose' == $compare_type ) {
+                $where .= " AND (facet_value + 0) <= '$min'";
+                $where .= " AND (facet_display_value + 0) >= '$max'";
+            }
+
+            /**
+             * Intersect compare
+             * @link http://stackoverflow.com/a/325964
+             */
+            if ( 'intersect' == $compare_type ) {
+                $where .= " AND (facet_value + 0) <= '$max'";
+                $where .= " AND (facet_display_value + 0) >= '$min'";
+            }
+        }
 
         /**
-         * Intersect compare
-         * @link http://stackoverflow.com/a/325964
+         * Basic compare
+         * The user-defined range must surround the post's range
          */
-        if ( $is_dual && $is_intersect ) {
-            $start = ( false !== $start ) ? $start : -999999999999;
-            $end = ( false !== $end ) ? $end : 999999999999;
-
-            $where .= " AND (facet_value + 0) <= '$end'";
-            $where .= " AND (facet_display_value + 0) >= '$start'";
-        }
         else {
-            if ( false !== $start ) {
-                $where .= " AND (facet_value + 0) >= '$start'";
+            if ( 'exact' == $fields ) {
+                $max = $min;
             }
-            if ( false !== $end ) {
-                $where .= " AND (facet_display_value + 0) <= '$end'";
+            if ( false !== $min ) {
+                $where .= " AND (facet_value + 0) >= '$min'";
+            }
+            if ( false !== $max ) {
+                $where .= " AND (facet_display_value + 0) <= '$max'";
             }
         }
 
@@ -69,70 +103,48 @@ class FacetWP_Facet_Number_Range extends FacetWP_Facet
 
 
     /**
-     * Output any admin scripts
-     */
-    function admin_scripts() {
-?>
-<script>
-(function($) {
-    wp.hooks.addAction('facetwp/load/number_range', function($this, obj) {
-        $this.find('.facet-source').val(obj.source);
-        $this.find('.facet-source-other').val(obj.source_other);
-        $this.find('.facet-compare-type').val(obj.compare_type);
-    });
-
-    wp.hooks.addFilter('facetwp/save/number_range', function(obj, $this) {
-        obj['source'] = $this.find('.facet-source').val();
-        obj['source_other'] = $this.find('.facet-source-other').val();
-        obj['compare_type'] = $this.find('.facet-compare-type').val();
-        return obj;
-    });
-
-    wp.hooks.addAction('facetwp/change/number_range', function($this) {
-        $this.closest('.facetwp-row').find('.facet-source-other').trigger('change');
-    });
-})(jQuery);
-</script>
-<?php
-    }
-
-
-    /**
      * (Admin) Output settings HTML
      */
     function settings_html() {
-        $sources = FWP()->helper->get_data_sources();
 ?>
-        <tr>
-            <td>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Other data source', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'Use a separate value for the upper limit?', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td>
-                <select class="facet-source-other">
-                    <option value=""><?php _e( 'None', 'fwp' ); ?></option>
-                    <?php foreach ( $sources as $group ) : ?>
-                    <optgroup label="<?php echo $group['label']; ?>">
-                        <?php foreach ( $group['choices'] as $val => $label ) : ?>
-                        <option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $label ); ?></option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                    <?php endforeach; ?>
+            </div>
+            <div>
+                <data-sources
+                    :facet="facet"
+                    :selected="facet.source_other"
+                    :sources="$root.data_sources"
+                    settingName="source_other">
+                </data-sources>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div><?php _e('Fields to show', 'fwp'); ?>:</div>
+            <div>
+                <select class="facet-fields">
+                    <option value="both"><?php _e( 'Min + Max', 'fwp' ); ?></option>
+                    <option value="exact"><?php _e( 'Exact', 'fwp' ); ?></option>
+                    <option value="min"><?php _e( 'Min', 'fwp' ); ?></option>
+                    <option value="max"><?php _e( 'Max', 'fwp' ); ?></option>
                 </select>
-            </td>
-        </tr>
-        <tr>
-            <td><?php _e('Compare type', 'fwp'); ?>:</td>
-            <td>
+            </div>
+        </div>
+        <div class="facetwp-row" v-show="facet.source_other">
+            <div><?php _e('Compare type', 'fwp'); ?>:</div>
+            <div>
                 <select class="facet-compare-type">
                     <option value=""><?php _e( 'Basic', 'fwp' ); ?></option>
+                    <option value="enclose"><?php _e( 'Enclose', 'fwp' ); ?></option>
                     <option value="intersect"><?php _e( 'Intersect', 'fwp' ); ?></option>
                 </select>
-            </td>
-        </tr>
+            </div>
+        </div>
 <?php
     }
 }

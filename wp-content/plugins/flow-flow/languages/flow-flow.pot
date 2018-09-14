@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Flow-Flow package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Flow-Flow 3.2.25\n"
+"Project-Id-Version: Flow-Flow 4.0.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/flow-flow\n"
-"POT-Creation-Date: 2018-05-24 11:46:08+00:00\n"
+"POT-Creation-Date: 2018-09-07 21:31:01+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,112 +13,140 @@ msgstr ""
 "Language-Team: Team Name <team@example.com>\n"
 "X-Generator: grunt-wp-i18n 0.4.9\n"
 
-#: includes/FlowFlow.php:76
+#: includes/FlowFlow.php:76 views/public.php:31
 msgid "All"
 msgstr ""
 
-#: includes/FlowFlow.php:77
+#: includes/FlowFlow.php:77 views/public.php:32
 msgid "Search"
 msgstr ""
 
-#: includes/FlowFlow.php:78
+#: includes/FlowFlow.php:78 views/public.php:33
 msgid "Expand"
 msgstr ""
 
-#: includes/FlowFlow.php:79
+#: includes/FlowFlow.php:79 views/public.php:34
 msgid "Collapse"
 msgstr ""
 
-#: includes/FlowFlow.php:80
+#: includes/FlowFlow.php:80 views/public.php:35
 msgid "Posted on"
 msgstr ""
 
-#: includes/FlowFlow.php:81
+#: includes/FlowFlow.php:81 views/public.php:36
 msgid "Followers"
 msgstr ""
 
-#: includes/FlowFlow.php:82
+#: includes/FlowFlow.php:82 views/public.php:37
 msgid "Following"
 msgstr ""
 
-#: includes/FlowFlow.php:83
+#: includes/FlowFlow.php:83 views/public.php:38
 msgid "Posts"
 msgstr ""
 
-#: includes/FlowFlow.php:84
+#: includes/FlowFlow.php:84 views/public.php:39
 msgid "Show more"
 msgstr ""
 
-#: includes/FlowFlow.php:87
+#: includes/FlowFlow.php:87 views/public.php:42
 msgid "Yesterday"
 msgstr ""
 
-#: includes/FlowFlow.php:88
+#: includes/FlowFlow.php:88 views/public.php:43
 msgid "s"
 msgstr ""
 
-#: includes/FlowFlow.php:89
+#: includes/FlowFlow.php:89 views/public.php:44
 msgid "m"
 msgstr ""
 
-#: includes/FlowFlow.php:90
+#: includes/FlowFlow.php:90 views/public.php:45
 msgid "h"
 msgstr ""
 
-#: includes/FlowFlow.php:91
+#: includes/FlowFlow.php:91 views/public.php:46
 msgid "ago"
 msgstr ""
 
-#: includes/FlowFlow.php:93
+#: includes/FlowFlow.php:93 views/public.php:48
 msgid "Jan"
 msgstr ""
 
-#: includes/FlowFlow.php:93
+#: includes/FlowFlow.php:93 views/public.php:48
 msgid "Feb"
 msgstr ""
 
-#: includes/FlowFlow.php:93
+#: includes/FlowFlow.php:93 views/public.php:48
 msgid "March"
 msgstr ""
 
-#: includes/FlowFlow.php:94
+#: includes/FlowFlow.php:94 views/public.php:49
 msgid "April"
 msgstr ""
 
-#: includes/FlowFlow.php:94
+#: includes/FlowFlow.php:94 views/public.php:49
 msgid "May"
 msgstr ""
 
-#: includes/FlowFlow.php:94
+#: includes/FlowFlow.php:94 views/public.php:49
 msgid "June"
 msgstr ""
 
-#: includes/FlowFlow.php:95
+#: includes/FlowFlow.php:95 views/public.php:50
 msgid "July"
 msgstr ""
 
-#: includes/FlowFlow.php:95
+#: includes/FlowFlow.php:95 views/public.php:50
 msgid "Aug"
 msgstr ""
 
-#: includes/FlowFlow.php:95
+#: includes/FlowFlow.php:95 views/public.php:50
 msgid "Sept"
 msgstr ""
 
-#: includes/FlowFlow.php:96
+#: includes/FlowFlow.php:96 views/public.php:51
 msgid "Oct"
 msgstr ""
 
-#: includes/FlowFlow.php:96
+#: includes/FlowFlow.php:96 views/public.php:51
 msgid "Nov"
 msgstr ""
 
-#: includes/FlowFlow.php:96
+#: includes/FlowFlow.php:96 views/public.php:51
 msgid "Dec"
 msgstr ""
 
-#: includes/FlowFlow.php:99
+#: includes/FlowFlow.php:99 views/public.php:54
 msgid "Navigate with arrow keys"
+msgstr ""
+
+#: includes/FlowFlow.php:100 views/public.php:55
+msgid "View on"
+msgstr ""
+
+#: includes/FlowFlow.php:101 views/public.php:56
+msgid "View on site"
+msgstr ""
+
+#: includes/FlowFlow.php:102 views/public.php:57
+msgid "View all"
+msgstr ""
+
+#: includes/FlowFlow.php:103 views/public.php:58
+msgid "comments"
+msgstr ""
+
+#: includes/FlowFlow.php:104 views/public.php:59
+msgid "Scroll for more"
+msgstr ""
+
+#: includes/FlowFlow.php:105 views/public.php:60
+msgid "No comments yet."
+msgstr ""
+
+#: includes/FlowFlow.php:106 views/public.php:61
+msgid "Be the first!"
 msgstr ""
 
 #: includes/FlowFlowActivator.php:43

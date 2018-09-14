@@ -1128,7 +1128,11 @@ abstract class SecuPress_Settings extends SecuPress_Singleton {
 						}
 					}
 
-					if ( $field['args']['description'] ) {
+					/**
+					* Filter used to print or not the descriptions during the "expert" mode
+					* @param (bool) true to display, false to hide
+					*/
+					if ( $field['args']['description'] && apply_filters( 'secupress.settings.description', true ) ) {
 						echo '<p class="description">' . $field['args']['description'] . '</p>';
 					}
 					unset( $field['args']['description'] );
@@ -1260,7 +1264,7 @@ abstract class SecuPress_Settings extends SecuPress_Singleton {
 	protected function print_section_description() {
 		$key = $this->modulenow . '|' . $this->sectionnow;
 
-		if ( ! empty( $this->section_descriptions[ $key ] ) ) {
+		if ( ! empty( $this->section_descriptions[ $key ] ) && apply_filters( 'secupress.settings.description', true ) ) {
 			echo '<div class="secupress-settings-section-description">';
 				echo $this->section_descriptions[ $key ];
 			echo '</div>';
@@ -1282,12 +1286,12 @@ abstract class SecuPress_Settings extends SecuPress_Singleton {
 	 * $echo             True if the button should be "echo"ed, false otherwise.
 	 * $label            The button label.
 	 * $before           What to print before the button
-	 * @param (array)    $args Optional.
+	 * @param (array) $args Optional.
 	 *
 	 * @return (string) Submit button HTML.
 	 */
 	protected static function submit_button( $args ) {
-		$defaults = ['label' => __( 'Save All Changes', 'secupress' ), 'before' => '', 'type' => 'primary large', 'name' => 'main_submit', 'wrap' => true, 'other_attributes' => null, 'echo' => true];
+		$defaults = [ 'label' => __( 'Save All Changes', 'secupress' ), 'before' => '', 'type' => 'primary large', 'name' => 'main_submit', 'wrap' => true, 'other_attributes' => null, 'echo' => true ];
 		$args     = wp_parse_args( $args, $defaults );
 
 		if ( true === $args['wrap'] ) {

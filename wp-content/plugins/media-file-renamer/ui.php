@@ -18,6 +18,7 @@ class Meow_MFRH_UI {
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_filter( 'media_send_to_editor', array( $this, 'media_send_to_editor' ), 20, 3 );
+		add_filter( 'option_active_plugins', array( $this, 'active_plugins' ) );
 
 		// Column for Media Library
 		$method = apply_filters( 'mfrh_method', 'media_title' );
@@ -29,6 +30,22 @@ class Meow_MFRH_UI {
 		// Media Library Bulk Actions
 		add_filter( 'bulk_actions-upload', array( $this, 'library_bulk_actions' ) );
 		add_filter( 'handle_bulk_actions-upload', array( $this, 'library_bulk_actions_handler' ), 10, 3 );
+	}
+
+	function active_plugins( $plugins ) {
+		if ( // Media File Renamer is doing Ajax
+			wp_doing_ajax() &&
+			isset( $_REQUEST['action'] ) &&
+			substr( $_REQUEST['action'], 0, 5 ) == 'mfrh_'
+		) {
+			// Remove the all active plugins except for this plugin itself and a few supported plugins
+			foreach ( $plugins as $i => $plugin ) {
+				if ( preg_match( '/\/media-file-renamer(-pro)?\.php$/', $plugin ) ) continue;
+				if ( preg_match( '/^polylang(-pro)\//', $plugin ) ) continue; // Polylang
+				unset( $plugins[$i] );
+			}
+		}
+		return $plugins;
 	}
 
 	/**
@@ -80,7 +97,7 @@ class Meow_MFRH_UI {
 			$this->core->rename( $mfrh_undo, $original_filename );
 
 			$fp = get_attached_file( $mfrh_undo );
-			$path_parts = pathinfo( $fp );
+			$path_parts = mfrh_pathinfo( $fp );
 			$basename = $path_parts['basename'];
 			if ( $basename == $original_filename )
 				delete_post_meta( $mfrh_undo, '_original_filename' );
@@ -142,7 +159,7 @@ class Meow_MFRH_UI {
 	}
 
 	function attachment_fields( $post ) {
-		$info = pathinfo( get_attached_file( $post->ID ) );
+		$info = mfrh_pathinfo( get_attached_file( $post->ID ) );
 		$basename = $info['basename'];
 		$is_manual = apply_filters( 'mfrh_manual', false );
 		$html = '<input type="text" readonly class="widefat" name="mfrh_new_filename" value="' . $basename. '" />';
@@ -173,12 +190,13 @@ class Meow_MFRH_UI {
 	 * @return string Rendered content
 	 */
 	function render_column( $id ) {
-		return $this->render_view( 'column', array(
+		$r = $this->render_view( 'column', array(
 			'ui'    => $this,
 			'core'  => $this->core,
 			'admin' => $this->admin,
 			'id'    => $id
 		) );
+		return $r;
 	}
 
 	function generate_explanation( $file ) {
@@ -298,7 +316,11 @@ class Meow_MFRH_UI {
 				}
 			}
 			$this->core->rename( $id, $newName );
-			wp_send_json_success( basename( get_attached_file( $id ) ) );
+			$file = get_attached_file( $id );
+			wp_send_json_success( array (
+				'filename' => mfrh_basename( $file ),
+				'ids' => $this->core->get_posts_by_attached_file( $file )
+			) );
 		}
 		echo 0;
 		die();
@@ -322,7 +344,11 @@ class Meow_MFRH_UI {
 			$original_filename = get_post_meta( $id, '_original_filename', true );
 			$this->core->rename( $id, $original_filename );
 			delete_post_meta( $id, '_original_filename' );
-			wp_send_json_success( basename( get_attached_file( $id ) ) );
+			$file = get_attached_file( $id );
+			wp_send_json_success( array (
+				'filename' => mfrh_basename( $file ),
+				'ids' => $this->core->get_posts_by_attached_file( $file )
+			) );
 		}
 		echo 0;
 		die();

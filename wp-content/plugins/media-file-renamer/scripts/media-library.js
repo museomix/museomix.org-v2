@@ -92,11 +92,24 @@
 						}
 
 					}).done(function(result) {
+						/**
+						 * Expected result format: {
+						 *   success: True or False
+						 *   data: {
+						 *     filename: New Filename
+						 *     ids: Affected Posts IDs
+						 *   }
+						 * }
+						 */
 						if (result.success === false) { // Rejected
 							alert(result.data);
 							return;
 						}
-						update(col, result.data);
+						// Update all the affected posts' columns
+						for (var i = 0; i < result.data.ids.length; i++) {
+							var id = result.data.ids[i];
+							update('#post-' + id + ' .mfrh_column', result.data.filename);
+						}
 					});
 				});
 			})();
@@ -204,11 +217,24 @@
 			data: data
 
 		}).done(function(result) {
+			/**
+			 * Expected result format: {
+			 *   success: True or False
+			 *   data: {
+			 *     filename: New Filename
+			 *     ids: Affected Posts IDs
+			 *   }
+			 * }
+			 */
 			if (result.success === false) { // Rejected
 				alert(result.data);
 				return;
 			}
-			update(col, result.data);
+			// Update all the affected posts' columns
+			for (var i = 0; i < result.data.ids.length; i++) {
+				var id = result.data.ids[i];
+				update('#post-' + id + ' .mfrh_column', result.data.filename);
+			}
 		});
 	}
 

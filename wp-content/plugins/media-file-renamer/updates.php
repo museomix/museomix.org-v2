@@ -17,9 +17,11 @@ class Meow_MFRH_Updates {
 		// Support for Beaver Builder
 		if ( class_exists( 'FLBuilderModel' ) )
 			require( 'plugins/beaverbuilder.php' );
-  }
+	}
 
 	function init_actions() {
+		add_action( 'mfrh_media_renamed', array( $this, 'action_update_media_file_references' ), 10, 3 );
+
 		if ( get_option( "mfrh_update_posts", true ) )
 			add_action( 'mfrh_url_renamed', array( $this, 'action_update_posts' ), 10, 3 );
 		if ( get_option( "mfrh_update_postmeta", true ) )
@@ -127,4 +129,52 @@ class Meow_MFRH_Updates {
 		$this->core->log( "GUID\t$old_guid -> $new_filepath." );
   }
 
+	/**
+	 * Updates renamed file references of all the duplicated media entries
+	 * @param array $post
+	 * @param string $old_filepath
+	 * @param string $new_filepath
+	 */
+	function action_update_media_file_references( $post, $old_filepath, $new_filepath ) {
+		global $wpdb;
+
+		// Source of sync on 'posts' table
+		$id = $post['ID'];
+		$src = $wpdb->get_row( "SELECT post_mime_type FROM {$wpdb->posts} WHERE ID = {$id}" );
+
+		// Source of sync on 'postmeta' table
+		$meta = array ( // Meta keys to sync
+			'_wp_attached_file' => null,
+			'_wp_attachment_metadata' => null
+		);
+		foreach ( array_keys( $meta ) as $i ) {
+			$meta[$i] = $wpdb->get_var( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = {$id} AND meta_key = '{$i}'" );
+		}
+
+		// Sync posts sharing the same attachment file
+		$dest = $this->core->get_posts_by_attached_file( $old_filepath, $id );
+		foreach ( $dest as $item ) {
+			if ( get_post_type( $item ) != 'attachment' ) continue;
+
+			// Set it as manual-renamed to avoid being marked as an issue
+			add_post_meta( $item, '_manual_file_renaming', true, true );
+
+			// Sync on 'posts' table
+			$wpdb->update( $wpdb->posts, array ( // Data
+				'post_mime_type' => $src->post_mime_type
+			), array ( // WHERE
+				'ID' => $item
+			) );
+
+			// Sync on 'postmeta' table
+			foreach ( $meta as $j => $jtem ) {
+				$wpdb->update( $wpdb->postmeta, array ( // Data
+					'meta_value' => $jtem
+				), array ( // WHERE
+					'post_id'  => $item, // AND
+					'meta_key' => $j
+				) );
+			}
+		}
+	}
 }

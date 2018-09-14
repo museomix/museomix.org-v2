@@ -1,3 +1,4 @@
+
 <?php
 
 /************************************************************
@@ -1078,7 +1079,7 @@ function delete_task_now($task_name){
     function backup_db_dump($file)
     {
         global $wpdb;
-        $paths   = $this->check_mysql_paths();
+        $paths   = $this->getMySQLPath();
         $brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
 		//$command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables "' . DB_NAME . '" > ' . $brace . $file . $brace;
         $command0 = $wpdb->get_col('SHOW TABLES LIKE "'.$wpdb->base_prefix.'%"');
@@ -1326,6 +1327,53 @@ function delete_task_now($task_name){
         }
         
         
+        return $paths;
+    }
+
+    public function getMySQLPath(){
+        global $wpdb;
+         $paths = array(
+            'mysql' => '',
+            'mysqldump' => ''
+        );
+        if (substr(PHP_OS, 0, 3) == 'WIN') {
+            $mysql_install = $wpdb->get_row("SHOW VARIABLES LIKE 'basedir'");
+            if ($mysql_install) {
+                $install_path       = str_replace('\\', '/', $mysql_install->Value);
+                $paths['mysql']     = $install_path . '/bin/mysql.exe';
+                $paths['mysqldump'] = $install_path . '/bin/mysqldump.exe';
+            } else {
+                $paths['mysql']     = 'mysql.exe';
+                $paths['mysqldump'] = 'mysqldump.exe';
+            }
+        } else{
+            $mysqlPath = "/usr/bin/mysqldump,/bin/mysqldump,/usr/local/bin/mysqldump,/usr/sfw/bin/mysqldump,/usr/xdg4/bin/mysqldump,/opt/bin/mysqldump";
+            $bin = explode(',' , $mysqlPath);
+            $brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
+            $db_folder = IWP_DB_DIR . '/';
+            $temp_sql_file_name = "iwp_temp.sql";
+            $file   = $db_folder . $temp_sql_file_name;
+            foreach ($bin as $key => $value) {
+                $command = $brace . $value . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables --extended-insert=FALSE "' . DB_NAME . '" ""'.$wpdb->base_prefix.'options"" > ' . $brace . $file . $brace;
+                $result = $this->iwp_mmb_exec($command);
+                if (!$result) { 
+                    continue;
+                }
+                
+                if (iwp_mmb_get_file_size($file) == 0 || !is_file($file) || !$result) {
+                    continue;
+                }
+                unlink($file);
+                 $paths = array(
+                    'mysql' => $value,
+                    'mysqldump' => $value
+                );
+
+                 return $paths;
+            }
+            unlink($file);
+        }
+
         return $paths;
     }
     
@@ -2675,6 +2723,13 @@ function ftp_backup($args)
         $deleteRes = $wpdb->query($delete_query);
     }
 
+    function remove_failed_backups_by_hisID($ID){
+        global $wpdb;
+        $table_name = $wpdb->base_prefix . "iwp_backup_status";
+        $delete_query = "DELETE FROM ".$table_name." WHERE historyID IN (".implode(', ', $ID).") ";
+        $deleteRes = $wpdb->query($delete_query);
+    }
+
 	function get_this_tasks($requestParams = ''){
 		$this->wpdb_reconnect();
 				
@@ -2978,13 +3033,15 @@ function ftp_backup($args)
 	
     function cleanup()
     {
-		$tasks = $this->get_all_tasks(); //all backups task results array.
+        $tasks = $this->get_all_tasks(); //all backups task results array.
+        $requestParams = $this->get_all_tasks(true);
+        $thisTask = $this->get_this_tasks();
         $backup_folder     = WP_CONTENT_DIR . '/' . md5('iwp_mmb-client') . '/iwp_backups/';
         $backup_folder_new = IWP_BACKUP_DIR . '/';
-		$backup_temp_folder = IWP_PCLZIP_TEMPORARY_DIR;
+        $backup_temp_folder = IWP_PCLZIP_TEMPORARY_DIR;
         $files             = glob($backup_folder . "*");
         $new               = glob($backup_folder_new . "*");
-		$new_temp               = glob($backup_temp_folder . "*");
+        $new_temp               = glob($backup_temp_folder . "*");
         
         //Failed db files first
         $db_folder = IWP_DB_DIR . '/';
@@ -2993,7 +3050,7 @@ function ftp_backup($args)
             foreach ($db_files as $file) {
                 @unlink($file);
             }
-			@unlink(IWP_BACKUP_DIR.'/iwp_db/index.php');
+            @unlink(IWP_BACKUP_DIR.'/iwp_db/index.php');
             @rmdir(IWP_DB_DIR);
         }
         
@@ -3008,52 +3065,90 @@ function ftp_backup($args)
         }
         
         if (!empty($new)) {
-	        foreach ($new as $b) {
-	            $files[] = $b;
-	        }
+            foreach ($new as $b) {
+                $files[] = $b;
+            }
         }
-			if (!empty($new_temp)) {
-				foreach ($new_temp as $c) {
-					$files[] = $c;
-				}
-			}
+            if (!empty($new_temp)) {
+                foreach ($new_temp as $c) {
+                    $files[] = $c;
+                }
+            }
         $deleted = array();
         
+        $results = array();
         if (is_array($files) && count($files)) {
-            $results = array();
+            $cloudFailedBackup = array();
+            $failedBackupHisID = array();
             if (!empty($tasks)) {
-                foreach ((array) $tasks as $task) {
+                foreach ((array) $tasks as $taskName => $task) {
                     //if (isset($task) && count($task)) {
                     //    foreach ($task as $backup) {
-					if (isset($task['task_results']) && count($task['task_results'])) {
-                        foreach ($task['task_results'] as $backup) {
+                    if (isset($task['task_results']) && count($task['task_results'])) {
+                        foreach ($task['task_results'] as $historyID => $backup) {
                             if (isset($backup['server'])) {
-								$this_backup_file = $backup['server']['file_path'];
-								if(is_array($this_backup_file))
-								{
-									foreach($this_backup_file as $single_backup_file)
-									{
-										$results[] = $single_backup_file;
-									}
-								}
-								else
-								{
-									$results[] = $this_backup_file;
-								}
+                                $this_backup_file = $backup['server']['file_path'];
+                                if(is_array($this_backup_file))
+                                {
+                                    foreach($this_backup_file as $single_backup_file)
+                                    {   if (!empty($requestParams[$taskName]['requestParams'][$historyID]['account_info']) && $thisTask['historyID'] != $historyID) {
+                                            $cloudFailedBackup[]= $single_backup_file;
+                                            $failedBackupHisID[$historyID]=$historyID;
+                                        }
+                                        $results[] = $single_backup_file;
+                                    }
+                                }
+                                else
+                                {
+                                    if (!empty($requestParams[$taskName]['requestParams'][$historyID]['account_info']) && $thisTask['historyID'] != $historyID) {
+                                        $cloudFailedBackup[]= $this_backup_file;
+                                        $failedBackupHisID[$historyID]=$historyID;
+                                    }
+                                    $results[] = $this_backup_file;
+                                }
                             }
                         }
                     }
                 }
             }
+
+            $pheonixBackup = $GLOBALS['iwp_backup_core']->get_backup_history();
+            if (!empty($pheonixBackup)) {
+                foreach ($pheonixBackup as $timestamp => $backup) {
+                    if (!empty($backup['plugins'])) {
+                        $results = array_merge($results, $backup['plugins']);
+                    }
+                    if (!empty($backup['themes'])) {
+                        $results = array_merge($results, $backup['themes']);
+                    }
+                    if (!empty($backup['uploads'])) {
+                        $results = array_merge($results, $backup['uploads']);
+                    }
+                    if (!empty($backup['others'])) {
+                        $results = array_merge($results, $backup['others']);
+                    }
+                    if (!empty($backup['more'])) {
+                        $results = array_merge($results, $backup['more']);
+                    }
+                    if (!empty($backup['db'])) {
+                        $results[] = $backup['db'];
+                    }
+                    $results[] = $backup['backup_file_basename'];
+                }
+            }
+
             $num_deleted = 0;
-            
             foreach ($files as $file) {
-                if ((!in_array($file, $results) && basename($file) != 'index.php')) {
+                if (((!in_array($file, $results) && !in_array(basename($file), $results)) || in_array($file, $failedBackupHisID)) && basename($file) != 'index.php') {
                     @unlink($file);
                     // $deleted[] = basename($file);
-					$deleted[] = $file;
+                    $deleted[] = $file;
                     $num_deleted++;
                 }
+            }
+
+            if (!empty($failedBackupHisID)) {
+                $this->remove_failed_backups_by_hisID($failedBackupHisID);
             }
         }
         return $deleted;

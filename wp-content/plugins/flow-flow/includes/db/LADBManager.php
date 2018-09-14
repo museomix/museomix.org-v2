@@ -652,9 +652,9 @@ abstract class LADBManager {
 		FFDB::conn()->query($sql_delete, $this->comments_table_name, $post_id);
 	}
 	
-	public function deleteCarousel4Post($feed_id, $post_id, $post_type){
-		$sql = "delete from ?n where feed_id = ?s and post_id = ?s and post_type = ?s";
-		if (false == FFDB::conn()->query($sql, $this->post_media_table_name, $feed_id, $post_id, $post_type)){
+	public function deleteCarousel4Post($feed_id, $post_id){
+		$sql = "delete from ?n where feed_id = ?s and post_id = ?s";
+		if (false == FFDB::conn()->query($sql, $this->post_media_table_name, $feed_id, $post_id)){
 			throw new \Exception(FFDB::conn()->conn->error);
 		}
 	}
@@ -772,6 +772,8 @@ abstract class LADBManager {
 					(time() > $registration_date + 604800)){
 						$ch = curl_init( 'http://flow.looks-awesome.com/wp-admin/admin-ajax.php?action=la_check&registration_id=' . $registration_id);
 						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+                        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 5000);
 						curl_setopt($ch, CURLOPT_POST, false);
 						$result = curl_exec( $ch );
 						curl_close( $ch );

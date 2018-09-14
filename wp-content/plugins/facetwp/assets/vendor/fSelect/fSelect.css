@@ -58,7 +58,7 @@
     border: none !important;
     box-shadow: none !important;
     outline: none;
-    padding: 4px 0;
+    padding: 6px 0;
     width: 100%;
 }
 
@@ -75,7 +75,11 @@
 }
 
 .fs-search {
-    padding: 0 4px;
+    padding: 0 8px;
+}
+
+.fs-no-results {
+    padding: 6px 8px;
 }
 
 .fs-option {

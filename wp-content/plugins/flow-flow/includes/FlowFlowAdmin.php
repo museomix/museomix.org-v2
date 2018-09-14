@@ -1,6 +1,6 @@
 <?php namespace flow;
 
-use flow\cache\LAFacebookCacheManager;
+use flow\social\cache\LAFacebookCacheManager;
 use flow\tabs\FFAddonsTab;
 use flow\tabs\FFBackupTab;
 use flow\tabs\FFModerationTab;

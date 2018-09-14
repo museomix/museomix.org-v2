@@ -19,13 +19,21 @@ jQuery(function($) {
 			});
 
 			this.scanningSection.section.on( 'click', '.header input:checkbox, .footer input:checkbox', {instance: this}, function (event){
-				event.data.instance.toggleCheckboxes( event.data.instance.scanningSection.section );
+				event.data.instance.toggleCheckboxes( event.data.instance.scanningSection.section, $(this) );
 			});
 
 			this.scanningSection.section.on( 'change', 'input:checkbox', {instance: this}, function(event) {
 				var checked = event.data.instance.scanningSection.section.find( '.item input:checkbox:checked' );
 				var disableScanButton = ! Boolean( checked.length );
 				$(event.data.instance.scanningSection.scanButton).prop('disabled', disableScanButton );
+			});
+
+			this.scanningSection.section.on( 'click', '.item input:checkbox', {instance: this}, function(event) {
+				var check_all_items = event.data.instance.scanningSection.section.find( '.header input:checkbox, .footer input:checkbox' );
+				var all_items = event.data.instance.scanningSection.section.find( '.item input:checkbox' );
+				var all_items_checked = event.data.instance.scanningSection.section.find( '.item input:checkbox:checked' );
+
+				check_all_items.prop( 'checked', all_items.length === all_items_checked.length );
 			});
 		},
 
@@ -47,15 +55,8 @@ jQuery(function($) {
 			}
 		},
 
-		toggleCheckboxes: function() {
-			var all_checkboxes = $( this.scanningSection.section ).find( '.item input:checkbox' );
-
-			if ( 'checked' === all_checkboxes.attr( 'checked' ) ) {
-				all_checkboxes.removeAttr( 'checked' );
-			} else {
-				all_checkboxes.attr( 'checked', 'checked' );
-			}
-
+		toggleCheckboxes: function (e, trigger) {
+			$(this.scanningSection.section).find('input:checkbox').prop('checked', trigger.prop('checked') );
 		}
 	};
 

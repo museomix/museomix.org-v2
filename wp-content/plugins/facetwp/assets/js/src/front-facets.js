@@ -11,6 +11,8 @@
 
     /* ======== Autocomplete ======== */
 
+    var ac_selected = false;
+
     wp.hooks.addAction('facetwp/refresh/autocomplete', function($this, facet_name) {
         var val = $this.find('.facetwp-autocomplete').val() || '';
         FWP.facets[facet_name] = val;
@@ -27,7 +29,12 @@
                 minChars: 3,
                 deferRequestBy: 200,
                 showNoSuggestionNotice: true,
+                triggerSelectOnValidInput: false,
                 noSuggestionNotice: FWP_JSON['no_results'],
+                onSelect: function() {
+                    ac_selected = true;
+                    FWP.autoload();
+                },
                 params: {
                     action: 'facetwp_autocomplete_load',
                     facet_name: facet_name,
@@ -40,8 +47,11 @@
     });
 
     $(document).on('keyup', '.facetwp-autocomplete', function(e) {
-        if (13 === e.which) {
+        if (13 === e.which && ! ac_selected) {
             FWP.autoload();
+        }
+        if (ac_selected) {
+            ac_selected = false;
         }
     });
 
@@ -77,7 +87,7 @@
         var $wrap = $(this).parent('.facetwp-checkbox').next('.facetwp-depth');
         $wrap.toggleClass('visible');
         var content = $wrap.hasClass('visible') ? FWP_JSON['collapse'] : FWP_JSON['expand'];
-        $(this).text(content);
+        $(this).html(content);
         e.stopPropagation();
     });
 
@@ -123,7 +133,7 @@
                 // un-hide groups with selected items
                 $facet.find('.facetwp-checkbox.checked').each(function() {
                     $(this).parents('.facetwp-depth').each(function() {
-                        $(this).prev('.facetwp-checkbox').find('.facetwp-expand').text(FWP_JSON['collapse']);
+                        $(this).prev('.facetwp-checkbox').find('.facetwp-expand').html(FWP_JSON['collapse']);
                         $(this).addClass('visible');
                     });
 
@@ -282,6 +292,7 @@
                 placeholder: settings.placeholder,
                 overflowText: settings.overflowText,
                 searchText: settings.searchText,
+                noResultsText: settings.noResultsText,
                 optionFormatter: function(row) {
                     row = row.replace(/{{/g, '<span class="facetwp-counter">');
                     row = row.replace(/}}/g, '<span>');
@@ -298,14 +309,18 @@
     });
 
     $(document).on('fs:changed', function(e, wrap) {
-        if (wrap.classList.contains('multiple')) {
+        var is_facet = $(wrap).closest('.facetwp-facet').length > 0;
+
+        if (is_facet && wrap.classList.contains('multiple')) {
             var facet_name = $(wrap).closest('.facetwp-facet').attr('data-name');
 
             if ('or' === FWP.settings[facet_name]['operator']) {
                 FWP.frozen_facets[facet_name] = 'soft';
 
                 // freeze choices
-                $(wrap).addClass('fs-disabled');
+                if (FWP.auto_refresh) {
+                    $(wrap).addClass('fs-disabled');
+                }
             }
 
             FWP.autoload();
@@ -313,7 +328,9 @@
     });
 
     $(document).on('fs:closed', function(e, wrap) {
-        if (! wrap.classList.contains('multiple')) {
+        var is_facet = $(wrap).closest('.facetwp-facet').length > 0;
+
+        if (is_facet && ! wrap.classList.contains('multiple')) {
             FWP.autoload();
         }
     });
@@ -332,7 +349,7 @@
         return params.el.find('.facetwp-link.checked').text();
     });
 
-    $(document).on('click', '.facetwp-facet .facetwp-link', function() {
+    $(document).on('click', '.facetwp-type-hierarchy .facetwp-link', function() {
         $(this).closest('.facetwp-facet').find('.facetwp-link').removeClass('checked');
         if ('' !== $(this).attr('data-value')) {
             $(this).addClass('checked');
@@ -505,10 +522,6 @@
     /* ======== Search ======== */
 
     FWP.logic.search = {
-        set_button: function($facet) {
-            var val = $facet.find('.facetwp-search').val();
-            $facet.find('.facetwp-btn').toggleClass('f-reset', ('' !== val));
-        },
         delay_refresh: FWP.helper.debounce(function(facet_name) {
             FWP.frozen_facets[facet_name] = 'soft';
             FWP.autoload();
@@ -520,45 +533,22 @@
         FWP.facets[facet_name] = val;
     });
 
-    $(document).on('facetwp-loaded', function() {
-        $('.facetwp-facet .facetwp-search').each(function() {
-            var $facet = $(this).closest('.facetwp-facet');
-            FWP.logic.search['set_button']($facet);
-        });
-    });
-
-    $(document).on('keyup', '.facetwp-facet .facetwp-search', function(e) {
+    $(document).on('keyup', '.facetwp-type-search .facetwp-search', function(e) {
         var $facet = $(this).closest('.facetwp-facet');
         var facet_name = $facet.attr('data-name');
-
-        FWP.logic.search['set_button']($facet);
 
         if ('undefined' !== typeof FWP.settings[facet_name]) {
             if ('yes' === FWP.settings[facet_name]['auto_refresh']) {
                 FWP.logic.search['delay_refresh'](facet_name);
             }
             else if (13 === e.keyCode) {
-                if ('' === $facet.find('.facetwp-search').val()) {
-                    $facet.find('.facetwp-btn').click();
-                }
-                else {
-                    FWP.autoload();
-                }
+                FWP.autoload();
             }
         }
     });
 
-    $(document).on('click', '.facetwp-type-search .facetwp-btn', function(e) {
-        var $this = $(this);
-        var $facet = $this.closest('.facetwp-facet');
-        var facet_name = $facet.attr('data-name');
-
-        if ($this.hasClass('f-reset') || '' === $facet.find('.facetwp-search').val()) {
-            $facet.find('.facetwp-search').val('');
-            FWP.facets[facet_name] = [];
-            FWP.set_hash();
-            FWP.fetch_data();
-        }
+    $(document).on('click', '.facetwp-type-search .facetwp-btn', function() {
+        FWP.autoload();
     });
 
     /* ======== Slider ======== */
@@ -606,7 +596,7 @@
     });
 
     $(document).on('facetwp-loaded', function() {
-        $('.facetwp-slider:not(.ready)').each(function() {
+        $('.facetwp-type-slider .facetwp-slider:not(.ready)').each(function() {
             var $parent = $(this).closest('.facetwp-facet');
             var facet_name = $parent.attr('data-name');
             var opts = FWP.settings[facet_name];
@@ -666,9 +656,51 @@
         });
     });
 
-    $(document).on('click', '.facetwp-slider-reset', function() {
+    $(document).on('click', '.facetwp-type-slider .facetwp-slider-reset', function() {
         var facet_name = $(this).closest('.facetwp-facet').attr('data-name');
         FWP.reset(facet_name);
+    });
+
+    /* ======== Rating ======== */
+
+    wp.hooks.addAction('facetwp/refresh/rating', function($this, facet_name) {
+        var selected_values = [];
+        $this.find('.facetwp-star.selected').each(function() {
+            var val = $(this).attr('data-value');
+            if ('' != val) {
+                selected_values.push(val);
+            }
+        });
+        FWP.facets[facet_name] = selected_values;
+    });
+
+    $(document).on('mouseover', '.facetwp-star', function() {
+        var $facet = $(this).closest('.facetwp-facet');
+
+        if ($(this).hasClass('selected')) {
+            $facet.find('.facetwp-star-label').text(FWP_JSON['rating']['Undo']);
+        }
+        else {
+            var label = ('5' == $(this).attr('data-value')) ? '' : FWP_JSON['rating']['& up'];
+            $facet.find('.facetwp-star-label').text(label);
+            $facet.find('.facetwp-counter').text('(' + $(this).data('counter') + ')');
+        }
+    });
+
+    $(document).on('mouseout', '.facetwp-star', function() {
+        var $facet = $(this).closest('.facetwp-facet');
+        $facet.find('.facetwp-star-label').text('');
+        $facet.find('.facetwp-counter').text('');
+    });
+
+    $(document).on('click', '.facetwp-star', function() {
+        var $facet = $(this).closest('.facetwp-facet');
+        var is_selected = $(this).hasClass('selected');
+        $facet.find('.facetwp-star').removeClass('selected');
+        if (! is_selected) {
+            $(this).addClass('selected');
+        }
+        FWP.autoload();
     });
 
 })(jQuery);

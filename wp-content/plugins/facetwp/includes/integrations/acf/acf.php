@@ -51,8 +51,11 @@ class FacetWP_Integration_ACF
         if ( isset( $facet['source'] ) && 'acf/' == substr( $facet['source'], 0, 4 ) ) {
             $hierarchy = explode( '/', substr( $facet['source'], 4 ) );
 
+            // Support "User Post Type" plugin
+            $object_id = apply_filters( 'facetwp_acf_object_id', $defaults['post_id'] );
+
             // get values (for sub-fields, use the parent repeater)
-            $value = get_field( $hierarchy[0], $defaults['post_id'], false );
+            $value = get_field( $hierarchy[0], $object_id, false );
 
             // handle repeater values
             if ( 1 < count( $hierarchy ) ) {
@@ -61,7 +64,7 @@ class FacetWP_Integration_ACF
                 $value = $this->process_field_value( $value, $hierarchy, $parent_field_key );
 
                 // get the sub-field properties
-                $sub_field = $this->get_field_object( $hierarchy[0], $defaults['post_id'] );
+                $sub_field = $this->get_field_object( $hierarchy[0], $object_id );
 
                 foreach ( $value as $key => $val ) {
                     $this->repeater_row = $key;
@@ -71,7 +74,7 @@ class FacetWP_Integration_ACF
             else {
 
                 // get the field properties
-                $field = $this->get_field_object( $hierarchy[0], $defaults['post_id'] );
+                $field = $this->get_field_object( $hierarchy[0], $object_id );
 
                 // index values
                 $this->index_field_value( $value, $field, $defaults );
@@ -276,7 +279,12 @@ class FacetWP_Integration_ACF
 
         if ( ! empty( $facet['source_other'] ) ) {
             $hierarchy = explode( '/', substr( $facet['source_other'], 4 ) );
-            $value = get_field( $hierarchy[0], $params['post_id'], false );
+
+            // Support "User Post Type" plugin
+            $object_id = apply_filters( 'facetwp_acf_object_id', $params['post_id'] );
+
+            // Get the value
+            $value = get_field( $hierarchy[0], $object_id, false );
 
             // handle repeater values
             if ( 1 < count( $hierarchy ) ) {

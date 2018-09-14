@@ -1,7 +1,6 @@
 <?php namespace flow\db;
-use flow\cache\LAFacebookCacheManager;
-use flow\FlowFlow;
 use flow\settings\FFSettingsUtils;
+use flow\social\cache\LAFacebookCacheManager;
 
 if ( ! defined( 'WPINC' ) ) die;
 

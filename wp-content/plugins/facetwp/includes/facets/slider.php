@@ -109,43 +109,6 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
 
 
     /**
-     * Output any admin scripts
-     */
-    function admin_scripts() {
-?>
-<script>
-(function($) {
-    wp.hooks.addAction('facetwp/load/slider', function($this, obj) {
-        $this.find('.facet-source').val(obj.source);
-        $this.find('.facet-source-other').val(obj.source_other);
-        $this.find('.facet-compare-type').val(obj.compare_type);
-        $this.find('.facet-prefix').val(obj.prefix);
-        $this.find('.facet-suffix').val(obj.suffix);
-        $this.find('.facet-format').val(obj.format);
-        $this.find('.facet-step').val(obj.step);
-    });
-
-    wp.hooks.addFilter('facetwp/save/slider', function(obj, $this) {
-        obj['source'] = $this.find('.facet-source').val();
-        obj['source_other'] = $this.find('.facet-source-other').val();
-        obj['compare_type'] = $this.find('.facet-compare-type').val();
-        obj['prefix'] = $this.find('.facet-prefix').val();
-        obj['suffix'] = $this.find('.facet-suffix').val();
-        obj['format'] = $this.find('.facet-format').val();
-        obj['step'] = $this.find('.facet-step').val();
-        return obj;
-    });
-
-    wp.hooks.addAction('facetwp/change/slider', function($this) {
-        $this.closest('.facetwp-row').find('.facet-source-other').trigger('change');
-    });
-})(jQuery);
-</script>
-<?php
-    }
-
-
-    /**
      * Output any front-end scripts
      */
     function front_scripts() {
@@ -161,67 +124,62 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
     function settings_html() {
         $thousands = FWP()->helper->get_setting( 'thousands_separator' );
         $decimal = FWP()->helper->get_setting( 'decimal_separator' );
-        $sources = FWP()->helper->get_data_sources();
 ?>
-        <tr>
-            <td>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Other data source', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'Use a separate value for the upper limit?', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td>
-                <select class="facet-source-other">
-                    <option value=""><?php _e( 'None', 'fwp' ); ?></option>
-                    <?php foreach ( $sources as $group ) : ?>
-                    <optgroup label="<?php echo $group['label']; ?>">
-                        <?php foreach ( $group['choices'] as $val => $label ) : ?>
-                        <option value="<?php echo esc_attr( $val ); ?>"><?php echo esc_html( $label ); ?></option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                    <?php endforeach; ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td><?php _e('Compare type', 'fwp'); ?>:</td>
-            <td>
+            </div>
+            <div>
+                <data-sources
+                    :facet="facet"
+                    :selected="facet.source_other"
+                    :sources="$root.data_sources"
+                    settingName="source_other">
+                </data-sources>
+            </div>
+        </div>
+        <div class="facetwp-row" v-show="facet.source_other">
+            <div><?php _e('Compare type', 'fwp'); ?>:</div>
+            <div>
                 <select class="facet-compare-type">
                     <option value=""><?php _e( 'Basic', 'fwp' ); ?></option>
                     <option value="intersect"><?php _e( 'Intersect', 'fwp' ); ?></option>
                 </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Prefix', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'Text that appears before each slider value', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td><input type="text" class="facet-prefix" value="" /></td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+            <div><input type="text" class="facet-prefix" /></div>
+        </div>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Suffix', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'Text that appears after each slider value', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td><input type="text" class="facet-suffix" value="" /></td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+            <div><input type="text" class="facet-suffix" /></div>
+        </div>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Format', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'The number format', 'fwp' ); ?></div>
                 </div>
-            </td>
-            <td>
+            </div>
+            <div>
                 <select class="facet-format">
                     <?php if ( '' != $thousands ) : ?>
                     <option value="0,0">5<?php echo $thousands; ?>280</option>
@@ -235,18 +193,18 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
                     <option value="0.0a">5<?php echo $decimal; ?>3k</option>
                     <option value="0.00a">5<?php echo $decimal; ?>28k</option>
                 </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
+            </div>
+        </div>
+        <div class="facetwp-row">
+            <div>
                 <?php _e('Step', 'fwp'); ?>:
                 <div class="facetwp-tooltip">
                     <span class="icon-question">?</span>
                     <div class="facetwp-tooltip-content"><?php _e( 'The amount of increase between intervals', 'fwp' ); ?> (default = 1)</div>
                 </div>
-            </td>
-            <td><input type="text" class="facet-step" value="1" /></td>
-        </tr>
+            </div>
+            <div><input type="text" class="facet-step" value="1" /></div>
+        </div>
 <?php
     }
 }

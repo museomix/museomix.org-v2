@@ -81,9 +81,14 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 				array( $this, 'admin_rename_slug_callback' ),
 				'mfrh_settings-menu', 'mfrh_settings' );
 
+			add_settings_field( 'mfrh_convert_to_ascii', "Transliteration<br /><i>To ASCII</i> (Pro)",
+				array( $this, 'admin_convert_to_ascii_callback' ),
+				'mfrh_settings-menu', 'mfrh_settings' );
+
 			register_setting( 'mfrh_settings', 'mfrh_auto_rename' );
 			register_setting( 'mfrh_settings', 'mfrh_on_upload' );
 			register_setting( 'mfrh_settings', 'mfrh_rename_slug' );
+			register_setting( 'mfrh_settings', 'mfrh_convert_to_ascii' );
 
 			// SUBMENU > Settings > Side Settings
 			add_settings_section( 'mfrh_side_settings', null, null, 'mfrh_side_settings-menu' );
@@ -128,9 +133,6 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 
 			// SUBMENU > Settings > Developer Settings
 			add_settings_section( 'mfrh_developer_settings', null, null, 'mfrh_developer_settings-menu' );
-			add_settings_field( 'mfrh_utf8_filename', __( 'UTF-8 Filename<br />(Pro)', 'media-file-renamer' ),
-				array( $this, 'admin_utf8_filename_callback' ),
-				'mfrh_developer_settings-menu', 'mfrh_developer_settings' );
 			add_settings_field( 'mfrh_force_rename', __( 'Force Rename<br />(Pro)', 'media-file-renamer' ),
 				array( $this, 'admin_force_rename_callback' ),
 				'mfrh_developer_settings-menu', 'mfrh_developer_settings' );
@@ -148,7 +150,6 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
 				'mfrh_developer_settings-menu', 'mfrh_developer_settings' );
 
 			register_setting( 'mfrh_developer_settings', 'mfrh_rename_guid' );
-			register_setting( 'mfrh_developer_settings', 'mfrh_utf8_filename' );
 			register_setting( 'mfrh_developer_settings', 'mfrh_force_rename' );
 			register_setting( 'mfrh_developer_settings', 'mfrh_log' );
 			register_setting( 'mfrh_developer_settings', 'mfrh_logsql' );
@@ -250,6 +251,13 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
     echo $html;
   }
 
+	function admin_convert_to_ascii_callback( $args ) {
+		$html = '<input ' . disabled( $this->is_registered(), false, false ) . ' type="checkbox" id="mfrh_convert_to_ascii" name="mfrh_convert_to_ascii" value="1" ' .
+			checked( 1, apply_filters( 'mfrh_converts', false ), false ) . '/>';
+		$html .= __( '<label>Enable</label><br /><small>Replace accents, umlauts, cyrillic, diacritics, by their ASCII equivalent.<br /><i>Examples: tête -> tete, schön -> schon, Добро -> dobro, etc.</i></small>', 'media-file-renamer' );
+		echo $html;
+	}
+
 	function admin_manual_rename_callback( $args ) {
 		$html = '<input ' . disabled( $this->is_registered(), false, false ) . ' type="checkbox" id="mfrh_manual_rename" name="mfrh_manual_rename" value="1" ' .
 			checked( 1, apply_filters( 'mfrh_manual', false ), false ) . '/>';
@@ -346,15 +354,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
     $value = get_option( 'mfrh_rename_on_save', null );
 		$html = '<input type="checkbox" id="mfrh_rename_on_save" name="mfrh_rename_on_save" value="1" ' .
 			checked( 1, get_option( 'mfrh_rename_on_save' ), false ) . '/>';
-    $html .= __( '<label>Enabled</label><br/><small>You can modify the titles of your media while editing a post but, of course, the plugin can\'t update the HTML at this stage. With this option, the plugin will update the filenames and HTML after that you saved the post. This option is <b>NOT RECOMMENDED.</b></small>', 'media-file-renamer' );
-    echo $html;
-  }
-
-	function admin_utf8_filename_callback( $args ) {
-		$html = '<input ' . disabled( $this->is_registered(), false, false ) . '
-			type="checkbox" id="mfrh_utf8_filename" name="mfrh_utf8_filename" value="1" ' .
-			checked( 1, apply_filters( 'mfrh_utf8', false ), false ) . '/>';
-    $html .= __( '<label>Allow non-ASCII filenames</label><br /><small>This usually doesn\'t work well on Windows installs.</small>', 'media-file-renamer' );
+    $html .= __( '<label>Enabled (NOT RECOMMENDED)</label><br/><small>You can modify the titles of your media while editing a post but, of course, the plugin can\'t update the HTML at this stage. With this option, the plugin will update the filenames and HTML after that you saved the post.', 'media-file-renamer' );
     echo $html;
   }
 
@@ -370,7 +370,7 @@ class Meow_MFRH_Admin extends MeowApps_Admin {
     $value = get_option( 'mfrh_log', null );
 		$html = '<input type="checkbox" id="mfrh_log" name="mfrh_log" value="1" ' .
 			checked( 1, get_option( 'mfrh_log' ), false ) . '/>';
-    $html .= __( '<label>Enabled</label><br/><small>Simple logging that explains which actions has been run. The file is <a target="_blank" href="' . plugin_dir_url( __FILE__ ) . 'media-file-renamer.log">media-file-renamer.log</a>.</small>', 'media-file-renamer' );
+    $html .= __( '<label>Enabled</label><br/><small>Simple logging that explains which actions has been run.<br />The file is <a target="_blank" href="' . plugin_dir_url( __FILE__ ) . 'media-file-renamer.log">media-file-renamer.log</a>.</small>', 'media-file-renamer' );
     echo $html;
   }
 

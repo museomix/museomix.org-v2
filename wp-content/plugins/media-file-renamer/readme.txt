@@ -1,9 +1,9 @@
 === Media File Renamer ===
-Contributors: TigrouMeow
+Contributors: TigrouMeow, amekusa
 Tags: rename, file, files, media, manager, image, renamer, wpml, optimization, seo, retina, gutenberg
-Requires at least: 4.6
-Tested up to: 4.9.6
-Stable tag: 4.2.1
+Requires at least: 4.8
+Tested up to: 4.9
+Stable tag: 4.2.7
 
 Automatically rename files depending on Media titles dynamically + update links. Pro version has many more options. Check the description :)
 
@@ -13,17 +13,17 @@ The Media File Auto Renamer is a WordPress plugin that physically renames media 
 
 **IMPORTANT**. This is originally an *automatic* renamer based on the Media title. This plugin features were all meant to be automatic depending on the title of the Media. Manual Rename (and a few more features) were added two years later, in a Pro version. I add complex features based on requests usually in the Pro to be able to maintain the quality of the plugin and its support.
 
-**HOW IT WORKS**. The plugin automatically renames your media filenames depending on their titles. When files are renamed, the references to it are also updated (posts, pages, custom types and their metadata). A new column in the Media Manager will display to you the new ideal filename and a button will allow you to rename it straight away. You can lock and unlock the renaming automatic process through little icons. There is also a little dashboard called File Renamer in Media that will help you rename all your files at once. Advanced users can change the way the files are renamed by using the plugin's filters (check the FAQ). There is also a LOCK option on every image to avoid the filename to be modified any further.
+**HOW IT WORKS**. The plugin automatically renames your media filenames depending on their titles. When files are renamed, the references to it are also updated (posts, pages, custom types and their metadata). A new column in the Media Library will display to you the new ideal filename and a button will allow you to rename it straight away. You can lock and unlock the renaming automatic process through little icons. There is also a little dashboard called File Renamer in Media that will help you rename all your files at once. Advanced users can change the way the files are renamed by using the plugin's filters (check the FAQ). There is also a LOCK option on every image to avoid the filename to be modified any further.
 
 **PRO VERSION**. The [Pro Version](https://meowapps.com/media-file-renamer/) gives a few more features like manual renaming, renaming depending on the post the media is attached to or the content of the alternative text (ALT), logging of SQL queries and a few more options. A good process is to actually let the plugin do the renaming automatically (like in the free version) and to do manual renaming for the files that require fine tuning.
 
-**BE CAREFUL**. File renaming is a dangerous process. Before renaming everything automatically, try to rename a few files first and check if all the references to those files have been properly updated on your website. WordPress has so many themes and plugins that this renaming process can't unfortunately cover all the cases, especially if other plugins are using unconventional ways. If references aren't updated properly, please write a nice post (not an angry one) in the support threads :) I will try my best to cover more and more special cases. In any case, always make a **backup** of your database and files before using a plugin that alter your install. For backup, you can use such a plugin as [UpdraftPlus](https://updraftplus.com/?afref=460). Also, it your website seems broken after a few renames, try to **clear your cache**. The cached HTML will indeed not be linked to the new filenames.
+**BE CAREFUL**. File renaming is a dangerous process. Before renaming everything automatically, try to rename a few files first and check carefully that all the references to those files have been properly updated on your website. WordPress has so many themes and plugins that this renaming process can't unfortunately cover all the cases, especially if other plugins are using unconventional ways. If references aren't updated properly, please write a nice post (not an angry one) in the support threads :) I will try my best to cover more and more special cases. In any case, always make a **backup** of your database and files before using a plugin that alter your install. For backup, I recommend use the excellent service called [BlogVault](https://meow.click/blogvault). Also, if your website seems broken after a few renames, try to **clear your cache**. The cached HTML will indeed not be linked to the new filenames.
 
 **FOR DEVELOPER**. The plugin can be tweaked and reference updates enhanced for your themes/plugins. Have a look [here](https://wordpress.org/plugins/media-file-renamer/faq/).
 
 **JUST TO MAKE SURE**. This plugin will not allow you to change the filename manually in its standard version. The [Pro Version](https://meowapps.com/media-file-renamer/) is required. If you are about to *write an angry review* because this feature is not available, please *mention that you read the whole description*.
 
-This plugin works perfectly with WP Retina 2x, WPML and many more. Is has been tested in Windows, Linux, BSD and OSX systems.
+This plugin works perfectly with WP Retina 2x, WPML and many more. Is has been tested in Windows, Linux, BSD and macOS systems.
 
 Languages: English, French.
 
@@ -47,10 +47,19 @@ Check the FAQ on the official website, [here](https://meowapps.com/media-file-re
 
 == Changelog ==
 
+= 4.2.7 =
+* Fix: Removed Updraft.
+* Update: UTF-8 is handled by default, no need to have an option for it.
+* Add: Option for transliteration (cyrillic, accents, umlauts).
+* Note: If you like it, please review the plugin here: https://wordpress.org/support/plugin/media-file-renamer/reviews/?rate=5#new-post. It's important for us :) Thank you!
+
+= 4.2.2 =
+* Add: Polylang compatibility.
+* Update: UI enhancements and attempt to make the renaming faster.
+
 = 4.2.1 =
 * Add: All the actions in the Media Library are now asynchronous. No more page reload!
 * Update: Many changes and little enhancements in the code, for speed, security and code-tidyness.
-* Note: If you like it, please review the plugin here: https://wordpress.org/support/plugin/media-file-renamer/reviews/?rate=5#new-post. It's important for us :) Thank you!
 
 = 4.0.4 =
 * Fix: Renaming using filters (work in progress).
@@ -170,7 +179,7 @@ Check the FAQ on the official website, [here](https://meowapps.com/media-file-re
 * Fix: Little naming issue when numbering + custom filter is used.
 
 = 2.6.0 =
-* Add: Lock/Unlock icons in the Media Manager.
+* Add: Lock/Unlock icons in the Media Library.
 * Add: Rename depending on the title of the post the media is attached to.
 
 = 2.5.0 =

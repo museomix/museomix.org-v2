@@ -300,15 +300,28 @@ class IWP_MMB_Backup_Core {
 				# Temporary files from the database dump process - not needed, as is caught by the catch-all
 				# $table_match = preg_match("/${match}-table-(.*)\.table(\.tmp)?\.gz$/i", $entry);
 				# The gz goes in with the txt, because we *don't* want to reap the raw .txt files
-				if ((preg_match("/$match\.(tmp|table|txt\.gz)(\.gz)?$/i", $entry) || $cachelist_match || $ziparchive_match || $binzip_match || $manifest_match || $browserlog_match) && is_file($iwp_backup_dir.'/'.$entry)) {
+				if ((preg_match("/$match\.(tmp|table|txt\.gz)(\.gz)?$/i", $entry) || $cachelist_match || $ziparchive_match || $binzip_match || $manifest_match || $browserlog_match) && is_file($iwp_backup_dir.'/'.$entry) && !strrpos($entry,'backup_meta')) {
 					// We delete if a parameter was specified (and either it is a ZipArchive match or an order to delete of whatever age), or if over 12 hours old
-					if (($match && ($ziparchive_match || $binzip_match || $cachelist_match || $manifest_match || 0 == $older_than) && $now_time-filemtime($iwp_backup_dir.'/'.$entry) >= $older_than) || $now_time-filemtime($iwp_backup_dir.'/'.$entry)>43200) {
+					if ((($match || $match == '') && ($ziparchive_match || $binzip_match || $cachelist_match || $manifest_match || 0 == $older_than) && $now_time-filemtime($iwp_backup_dir.'/'.$entry) >= $older_than) || $now_time-filemtime($iwp_backup_dir.'/'.$entry)>43200) {
 						$this->log("Deleting old temporary file: $entry");
 						@unlink($iwp_backup_dir.'/'.$entry);
 					}
 				}
 			}
 			@closedir($handle);
+		}
+
+		foreach (array(ABSPATH, ABSPATH.'wp-admin/', $iwp_backup_dir.'/') as $path) {
+			if ($handle = opendir($path)) {
+				while (false !== ($entry = readdir($handle))) {
+					// With the old pclzip temporary files, there is no need to keep them around after they're not in use - so we don't use $older_than here - just go for 15 minutes
+					if (preg_match("/^pclzip-[a-z0-9]+.tmp$/", $entry) && $now_time-filemtime($path.$entry) >= 900) {
+						$this->log("Deleting old PclZip temporary file: $entry");
+						@unlink($path.$entry);
+					}
+				}
+				@closedir($handle);
+			}
 		}
 	}
 
@@ -2182,6 +2195,7 @@ class IWP_MMB_Backup_Core {
 		// Array of backup times keyed by nonce
 		$known_nonces = array();
 		$changes = false;
+		$site_name = iwp_getSiteName();
 
 		$backupable_entities = $this->get_backupable_file_entities(true, false);
 
@@ -2201,7 +2215,7 @@ class IWP_MMB_Backup_Core {
 				if (!is_array($values)) $values=array($values);
 				foreach ($values as $val) {
 					if (!is_string($val)) continue;
-					if (preg_match('/^backup_([\-0-9]{15})_.*_([0-9a-f]{12})-[\-a-z]+([0-9]+)?+(\.(zip|gz|gz\.crypt))?$/i', $val, $matches)) {
+					if (preg_match('/^'.$site_name.'backup_([\-0-9]{15})_.*_([0-9a-f]{12})-[\-a-z]+([0-9]+)?+(\.(zip|gz|gz\.crypt))?$/i', $val, $matches)) {
 						$nonce = $matches[2];
 						if (isset($bdata['service']) && ($bdata['service'] === 'none' || (is_array($bdata['service']) && (array('none') === $bdata['service'] || (1 == count($bdata['service']) && isset($bdata['service'][0]) && empty($bdata['service'][0]))))) && !is_file($iwp_backup_dir.'/'.$val)) {
 							# File without remote storage is no longer present
@@ -2245,9 +2259,9 @@ class IWP_MMB_Backup_Core {
 			if ($only_add_this_file !== false && $entry != $only_add_this_file['file']) continue;
 
 			if ('.' == $entry || '..' == $entry) continue;
-
 			# TODO: Make compatible with Incremental naming
-			if (preg_match('/^backup_([\-0-9]{15})_.*_([0-9a-f]{12})-([\-a-z]+)([0-9]+)?(\.(zip|gz|gz\.crypt))?$/i', $entry, $matches)) {
+			if (preg_match('/^'.$site_name.'backup_([\-0-9]{15})_.*_([0-9a-f]{12})-([\-a-z]+)([0-9]+)?(\.(zip|gz|gz\.crypt))?$/i', $entry, $matches)) {
+
 				// Interpret the time as one from the blog's local timezone, rather than as UTC
 				# $matches[1] is YYYY-MM-DD-HHmm, to be interpreted as being the local timezone
 				$btime2 = strtotime($matches[1]);
@@ -2362,7 +2376,7 @@ class IWP_MMB_Backup_Core {
 
 			# $backup_history[$btime]['nonce'] = $nonce
 			foreach ($remotefiles as $file => $services) {
-				if (!preg_match('/^backup_([\-0-9]{15})_.*_([0-9a-f]{12})-([\-a-z]+)([0-9]+)?(\.(zip|gz|gz\.crypt))?$/i', $file, $matches)) continue;
+				if (!preg_match('/^'.$site_name.'backup_([\-0-9]{15})_.*_([0-9a-f]{12})-([\-a-z]+)([0-9]+)?(\.(zip|gz|gz\.crypt))?$/i', $file, $matches)) continue;
 				$nonce = $matches[2];
 				$type = $matches[3];
 				if ('db' == $type) {
@@ -3663,7 +3677,13 @@ CREATE TABLE $wpdb->signups (
 		$job_id = $params['params']['backup_id'];
 		$job_data = $this->jobdata_getarray($job_id);
 		if ($result == '1') {
-			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data));
+			$cron_disable = false;
+			$cron_params = array();
+			if (( defined('DISABLE_WP_CRON') && DISABLE_WP_CRON )) {
+				$cron_disable = true;
+				$cron_params = $this->get_cron($job_id);
+			}
+			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_disable' => $cron_disable, 'cron_params' =>$cron_params, 'wp_content_url' => content_url()));
 		} elseif ($result == '0') {
 			$cron = $this->get_cron($job_id);
 			if ($cron == false) {
@@ -3683,7 +3703,7 @@ CREATE TABLE $wpdb->signups (
 					wp_cron();
 				}
 			}
-			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_data' => $cron), 'wp_content_url' => content_url() );
+			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_data' => $cron, 'wp_content_url' => content_url()) );
 		}
 
 	}
@@ -4728,9 +4748,11 @@ CREATE TABLE $wpdb->signups (
 			
 		if (preg_match("/^[0-9a-f]{12}$/", $job_id)) {
 		
+			global $iwp_backup_core;
 			$cron = get_option('cron');
 			$found_it = false;
-			
+			$iwp_backup_dir = $iwp_backup_core->backups_dir_location();
+			if (file_exists($iwp_backup_dir.'/log.'.$job_id.'.txt')) touch($iwp_backup_dir.'/deleteflag-'.$job_id.'.txt');
 			foreach ($cron as $time => $job) {
 				if (isset($job['IWP_backup_resume'])) {
 					foreach ($job['IWP_backup_resume'] as $hook => $info) {
@@ -4752,6 +4774,7 @@ CREATE TABLE $wpdb->signups (
 	public function kill_new_backup($params){
 		$this->activejobs_delete($params['result_id']);
 		$backups = $this->get_backup_history();
+		$this->delete_backup_by_id($params['result_id']);
 		delete_option('IWP_jobdata_'.$params['result_id']);
 		delete_option('IWP_backup_status', '0');
 		delete_option('IWP_semaphore_fd');
@@ -4761,14 +4784,14 @@ CREATE TABLE $wpdb->signups (
 		delete_option('IWP_unlocked_d');
 		delete_option('IWP_locked_d');
 		wp_clear_scheduled_hook('IWP_backup_resume');
-		if (!empty($backups)) {
+		/*if (!empty($backups)) {
 			foreach ($backups as $key => $value) {
 				if ($value['nonce'] == $params['result_id']) {
 					$params['result_id'] = $key;
 				}
-			}
+			}*/
 			return $this->delete_backup($params);
-		}
+		//}
 
 		return true;
 	}
@@ -4874,6 +4897,19 @@ CREATE TABLE $wpdb->signups (
 					'ownername' => ''
 				);
 				IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_googledrive', $opts);
+			}
+		}
+	}
+
+	function delete_backup_by_id($backup_id){
+		$iwp_backup_dir = $this->backups_dir_location();
+
+		if (!$handle = opendir($iwp_backup_dir)) return;
+
+		// See if there are any more files in the local directory than the ones already known about
+		while (false !== ($entry = readdir($handle))) {
+			if (strrpos($entry, $backup_id) /*&& strrpos($entry, 'log.') === false*/ && strrpos($entry, 'deleteflag-') === false) {
+				@unlink($iwp_backup_dir.'/'.$entry);
 			}
 		}
 	}

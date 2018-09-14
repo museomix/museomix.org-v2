@@ -79,7 +79,7 @@ foreach ( $secupress_tests as $module_name => $class_name_parts ) {
 			continue;
 		}
 		// A "bad" scan status means the user didn't try to fix it.
-		if ( 'warning' !== $bad_scan_results[ $class_name_part_lower ] ) {
+		if ( secupress_is_pro() && 'warning' !== $bad_scan_results[ $class_name_part_lower ] ) {
 			// Excluded.
 			unset( $bad_scan_results[ $class_name_part_lower ] );
 			continue;
@@ -163,7 +163,6 @@ if ( ! $secupress_tests ) {
 		$is_fixable             = true === $current_test->is_fixable() || 'pro' === $current_test->is_fixable() && secupress_is_pro();
 		$not_fixable_by_sp      = false === $current_test->is_fixable();
 		$is_fixable_with_action = $is_fixable && $has_actions;
-
 		// Row css class.
 		$row_css_class  = 'secupress-item-' . $class_name_part;
 		$row_css_class .= ' status-' . sanitize_html_class( $scan_status );
@@ -269,12 +268,6 @@ if ( ! $secupress_tests ) {
 									</span>
 									<span class="text"><?php _e( 'Read the documentation', 'secupress' ); ?></span>
 								</a>
-								<a href="<?php echo esc_url( secupress_admin_url( 'modules', 'services' ) . '&scanner=' . $class_name_part_lower ); ?>" class="secupress-button secupress-button-mini secupress-button-support light shadow" target="_blank" title="<?php esc_attr_e( 'Open in a new window.', 'secupress' ); ?>">
-									<span class="icon">
-										<i class="secupress-icon-ask" aria-hidden="true"></i>
-									</span>
-									<span class="text"><?php _e( 'Ask for support', 'secupress' ); ?></span>
-								</a>
 							</p>
 						<?php } ?>
 						<p class="secupress-actions">
@@ -303,7 +296,7 @@ if ( ! $secupress_tests ) {
 									<span class="icon">
 										<i class="secupress-icon-check" aria-hidden="true"></i>
 									</span>
-									<span class="text"><?php _e( 'I did the requested work, continue', 'secupress' ); ?></span>
+									<span class="text"><?php _e( 'I did the job, continue', 'secupress' ); ?></span>
 								</a>
 							<?php } ?>
 						</p>
@@ -313,8 +306,10 @@ if ( ! $secupress_tests ) {
 				</form><!-- .secupress-item-content -->
 				<?php } else { ?>
 				</div><!-- .secupress-item-content -->
-				<?php } ?>
+				<?php }
 
+				if ( apply_filters( 'secupress.settings.help', true ) ) {
+				?>
 				<div class="secupress-item-details" id="details-<?php echo $class_name_part; ?>">
 					<div class="secupress-flex">
 						<span class="secupress-details-icon">
@@ -324,7 +319,7 @@ if ( ! $secupress_tests ) {
 						<span class="secupress-placeholder"></span>
 					</div>
 				</div>
-
+				<?php } ?>
 			</div><!-- .secupress-mf-content -->
 		</div><!-- .secupress-manual-fix -->
 		<?php

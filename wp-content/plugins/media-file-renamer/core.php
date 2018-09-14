@@ -36,7 +36,7 @@ class Meow_MFRH_Core {
 	// https://stackoverflow.com/questions/3964793/php-case-insensitive-version-of-file-exists
 	static function sensitive_file_exists( $filename, $fullpath = true, $caseInsensitive = true ) {
 		$output = false;
-		$directoryName = dirname( $filename );
+		$directoryName = mfrh_dirname( $filename );
 		$fileArray = glob( $directoryName . '/*', GLOB_NOSORT );
 		$i = ( $caseInsensitive ) ? "i" : "";
 
@@ -115,6 +115,36 @@ class Meow_MFRH_Core {
 		return get_post( $postid, OBJECT );
 	}
 
+	/**
+	 * Returns all the media sharing the same file
+	 * @param string $file The attached file path
+	 * @param int|array $excludes The post ID(s) to exclude from the results
+	 * @return array An array of IDs
+	 */
+	function get_posts_by_attached_file( $file, $excludes = null ) {
+		global $wpdb;
+		$r = array ();
+		$q = <<< SQL
+SELECT post_id
+FROM {$wpdb->postmeta}
+WHERE meta_key = '%s'
+AND meta_value = '%s'
+SQL;
+		$rows = $wpdb->get_results( $wpdb->prepare( $q, '_wp_attached_file', _wp_relative_upload_path( $file ) ), OBJECT );
+		if ( $rows && is_array( $rows ) ) {
+			if ( !is_array( $excludes ) )
+				$excludes = $excludes ? array ( (int) $excludes ) : array ();
+
+			foreach ( $rows as $item ) {
+				$id = (int) $item->post_id;
+				if ( in_array( $id, $excludes ) ) continue;
+				$r[] = $id;
+			}
+			$r = array_unique( $r );
+		}
+		return $r;
+	}
+
 	/*****************************************************************************
 		RENAME ON UPLOAD
 	*****************************************************************************/
@@ -122,7 +152,7 @@ class Meow_MFRH_Core {
 	function wp_handle_upload_prefilter( $file ) {
 
 		$this->log( "** On Upload: " . $file['name'] );
-		$pp = pathinfo( $file['name'] );
+		$pp = mfrh_pathinfo( $file['name'] );
 
 		// If everything's fine, renames in based on the Title in the EXIF
 		$method = apply_filters( 'mfrh_method', 'media_title' );
@@ -152,7 +182,7 @@ class Meow_MFRH_Core {
 		add_filter( 'wp_read_image_metadata', array( $this, 'wp_read_image_metadata' ), 10, 2 );
 
 		// Modify the filename
-		$pp = pathinfo( $file['name'] );
+		$pp = mfrh_pathinfo( $file['name'] );
 		$file['name'] = $this->new_filename( null, $pp['basename'] );
 		return $file;
 	}
@@ -171,7 +201,7 @@ class Meow_MFRH_Core {
 		$id = $post['ID'];
 		$old_filepath = get_attached_file( $id );
 		$old_filepath = Meow_MFRH_Core::sensitive_file_exists( $old_filepath );
-		$path_parts = pathinfo( $old_filepath );
+		$path_parts = mfrh_pathinfo( $old_filepath );
 		//print_r( $path_parts );
 		$directory = $path_parts['dirname'];
 		$old_filename = $path_parts['basename'];
@@ -361,16 +391,84 @@ class Meow_MFRH_Core {
 	 *
 	 */
 
- 	static function replace_special_chars( $str ) {
-		$special_chars = array(
-			"å" => "a", "Å" => "a",
-			"ä" => "ae", "Ä" => "ae",
-			"ö" => "oe", "Ö" => "oe",
-			"ü" => "ue", "Ü" => "ue",
-			"ß" => "ss", "ẞ" => "ss"
-		);
-		foreach ( $special_chars as $key => $value )
-			$str = str_replace( $key, $value, $str );
+	/**
+	 * Performs transliteration
+	 * @param string $str The string to transliterate
+	 * @return string
+	 */
+	function transliterate( $str ) {
+		// Conversion table
+		static $chars = null;
+
+		if ( is_null($chars) ) {
+			$chars = array (
+				/** Cyrillics **/
+				'А' => 'A',    'Б' => 'B',    'В' => 'V',    'Г' => 'G',
+				'Д' => 'D',    'Е' => 'E',    'Ё' => 'E',    'Ж' => 'Zh',
+				'З' => 'Z',    'И' => 'I',    'Й' => 'I',    'К' => 'K',
+				'Л' => 'L',    'М' => 'M',    'Н' => 'N',    'О' => 'O',
+				'П' => 'P',    'Р' => 'R',    'С' => 'S',    'Т' => 'T',
+				'У' => 'U',    'Ф' => 'F',    'Х' => 'Kh',   'Ц' => 'Ts',
+				'Ч' => 'Ch',   'Ш' => 'Sh',   'Щ' => 'Shch', 'Ъ' => 'Ie',
+				'Ы' => 'Y',    'Ь' => '',     'Э' => 'E',    'Ю' => 'Iu',
+				'Я' => 'Ia',
+				'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',
+				'д' => 'd',    'е' => 'e',    'ё' => 'e',    'ж' => 'zh',
+				'з' => 'z',    'и' => 'i',    'й' => 'i',    'к' => 'k',
+				'л' => 'l',    'м' => 'm',    'н' => 'n',    'о' => 'o',
+				'п' => 'p',    'р' => 'r',    'с' => 's',    'т' => 't',
+				'у' => 'u',    'ф' => 'f',    'х' => 'kh',   'ц' => 'ts',
+				'ч' => 'ch',   'ш' => 'sh',   'щ' => 'shch', 'ъ' => 'ie',
+				'ы' => 'y',    'ь' => '',     'э' => 'e',    'ю' => 'iu',
+				'я' => 'ia'
+			);
+		}
+		// Preform conversion
+		foreach ( $chars as $from => $to )
+			$str = str_replace( $from, $to, $str );
+
+		return $str;
+	}
+
+	/**
+	 * Removes some unicode puncuation characters from a string.
+	 * The conversion table derived from `sanitize_title_with_dashes()`
+	 * @param string $str The string to remove from
+	 * @return string
+	 * @see sanitize_title_with_dashes()
+	 */
+	function remove_special_chars( $str ) {
+		// Conversion table
+		static $chars = null;
+
+		if ( is_null($chars) ) {
+			$chars = array (
+				// iexcl and iquest
+				'%c2%a1', '%c2%bf',
+				// angle quotes
+				'%c2%ab', '%c2%bb', '%e2%80%b9', '%e2%80%ba',
+				// curly quotes
+				'%e2%80%98', '%e2%80%99', '%e2%80%9c', '%e2%80%9d',
+				'%e2%80%9a', '%e2%80%9b', '%e2%80%9e', '%e2%80%9f',
+				// copy, reg, deg, hellip and trade
+				'%c2%a9', '%c2%ae', '%c2%b0', '%e2%80%a6', '%e2%84%a2',
+				// acute accents
+				'%c2%b4', '%cb%8a', '%cc%81', '%cd%81',
+				// grave accent, macron, caron
+				'%cc%80', '%cc%84', '%cc%8c',
+
+				/** Extras **/
+				// circumflex
+				'%5e', '%cc%82', '%cb%86', '%ef%bc%be',
+				// low circumflex
+				'%cc%ad', '%ea%9e%88'
+			);
+			$chars = array_map( 'urldecode', $chars );
+		}
+		// Preform conversion
+		foreach ( $chars as $char )
+			$str = str_replace( $char, '', $str );
+
 		return $str;
 	}
 
@@ -393,14 +491,14 @@ class Meow_MFRH_Core {
 		if ( !empty( $media ) ) {
 			// Media already exists (not a fresh upload). Gets filename and ext.
 			$old_filepath = get_attached_file( $media['ID'] );
-			$pp = pathinfo( $old_filepath );
+			$pp = mfrh_pathinfo( $old_filepath );
 			$new_ext = empty( $pp['extension'] ) ? "" : $pp['extension'];
 			$old_filename = $pp['basename'];
 			$old_filename_no_ext = $pp['filename'];
 		}
 		else {
 			// It's an upload, let's check if the extension is provided in the text
-			$pp = pathinfo( $text );
+			$pp = mfrh_pathinfo( $text );
 			$new_ext = empty( $pp['extension'] ) ? "" : $pp['extension'];
 			$text = $pp['filename'];
 		}
@@ -408,7 +506,7 @@ class Meow_MFRH_Core {
 		// Generate the new filename.
 		if ( !empty( $manual_filename ) ) {
 			// Filename is forced. Strip the extension. Keeps this extension in $new_ext.
-			$pp = pathinfo( $manual_filename );
+			$pp = mfrh_pathinfo( $manual_filename );
 			$manual_filename = $pp['filename'];
 			$new_ext = empty( $pp['extension'] ) ? $new_ext : $pp['extension'];
 			$new_filename = $manual_filename;
@@ -418,17 +516,18 @@ class Meow_MFRH_Core {
 			$text = str_replace( ".jpg", "", $text );
 			$text = str_replace( ".png", "", $text );
 			$text = str_replace( "'", "-", $text );
-			$text = strtolower( Meow_MFRH_Core::replace_chars( $text ) );
-			$utf8_filename = apply_filters( 'mfrh_utf8', false );
-			if ( $utf8_filename )
-				$new_filename = sanitize_file_name( $text );
-			else {
-				// Remove non-ASCII characters
-				$text = Meow_MFRH_Core::replace_special_chars( $text );
-				$text = preg_replace( '/[[:^print:]]/', '', $text );
-				$new_filename = str_replace( "%", "-", sanitize_title( $text ) );
-			}
+			$text = strtolower( $this->replace_chars( $text ) );
+			$new_filename = sanitize_file_name( $text );
 		}
+
+		// Convert all accent characters to ASCII characters
+		if ( apply_filters( 'mfrh_converts', false ) ) {
+			$new_filename = remove_accents( $new_filename );
+			$new_filename = $this->remove_special_chars( $new_filename );
+			$new_filename = $this->transliterate( $new_filename );
+			$new_filename = strtolower( $new_filename );
+		}
+
 		if ( empty( $new_filename ) )
 			$new_filename = "empty";
 
@@ -503,7 +602,7 @@ class Meow_MFRH_Core {
 
 		// Prepare the variables
 		$old_filepath = get_attached_file( $id );
-		$path_parts = pathinfo( $old_filepath );
+		$path_parts = mfrh_pathinfo( $old_filepath );
 		$old_ext = $path_parts['extension'];
 		$upload_dir = wp_upload_dir();
 		$old_directory = trim( str_replace( $upload_dir['basedir'], '', $path_parts['dirname'] ), '/' ); // '2011/01'
@@ -512,11 +611,11 @@ class Meow_MFRH_Core {
 		$new_filepath = trailingslashit( trailingslashit( $upload_dir['basedir'] ) . $new_directory ) . $filename;
 
 		$this->log( "** Move Media: " . $filename );
-		$this->log( "The new directory will be: " . dirname( $new_filepath ) );
+		$this->log( "The new directory will be: " . mfrh_dirname( $new_filepath ) );
 
 		// Create the directory if it does not exist
-		if ( !file_exists( dirname( $new_filepath ) ) ) {
-			mkdir( dirname( $new_filepath ), 0777, true );
+		if ( !file_exists( mfrh_dirname( $new_filepath ) ) ) {
+			mkdir( mfrh_dirname( $new_filepath ), 0777, true );
 		}
 
 		// There is no support for UNDO (as the current process of Media File Renamer doesn't keep the path for the undo, only the filename... so the move breaks this - let's deal with this later).
@@ -658,7 +757,7 @@ class Meow_MFRH_Core {
 		$new_filepath = $output['desired_filepath'];
 		$new_filename = $output['desired_filename'];
 		$manual = $output['manual'] || !empty( $manual_filename );
-		$path_parts = pathinfo( $old_filepath );
+		$path_parts = mfrh_pathinfo( $old_filepath );
 		$directory = $path_parts['dirname']; // '2011/01'
 		$old_filename = $path_parts['basename']; // 'whatever.jpeg'
 
@@ -692,7 +791,7 @@ class Meow_MFRH_Core {
 		$old_ext = $path_parts['extension'];
 		$new_ext = $old_ext;
 		if ( $manual_filename ) {
-			$pp = pathinfo( $manual_filename );
+			$pp = mfrh_pathinfo( $manual_filename );
 			$new_ext = $pp['extension'];
 		}
 
@@ -706,7 +805,7 @@ class Meow_MFRH_Core {
 		if ( $meta ) {
 			if ( isset( $meta['file'] ) && !empty( $meta['file'] ) )
 				$meta['file'] = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta['file'] );
-			if ( isset( $meta['url'] ) && !empty( $meta['url'] ) && count( $meta['url'] ) > 4 )
+			if ( isset( $meta['url'] ) && !empty( $meta['url'] ) && strlen( $meta['url'] ) > 4 )
 				$meta['url'] = $this->str_replace( $noext_old_filename, $noext_new_filename, $meta['url'] );
 			else
 				$meta['url'] = $noext_new_filename . '.' . $old_ext;
@@ -738,8 +837,14 @@ class Meow_MFRH_Core {
 				$orig_image_urls[$size] = $orig_image_data[0];
 
 				// Double check files exist before trying to rename.
-				if ( $force_rename || ( file_exists( $meta_old_filepath ) 
-						&& ( ( !file_exists( $meta_new_filepath ) ) || is_writable( $meta_new_filepath ) ) ) ) {
+				if (
+					$force_rename || (
+						file_exists( $meta_old_filepath ) && (
+							( !file_exists( $meta_new_filepath ) ) ||
+							is_writable( $meta_new_filepath )
+						)
+					)
+				) {
 					// WP Retina 2x is detected, let's rename those files as well
 					if ( function_exists( 'wr2x_get_retina' ) ) {
 						$wr2x_old_filepath = $this->str_replace( '.' . $old_ext, '@2x.' . $old_ext, $meta_old_filepath );
@@ -804,7 +909,7 @@ class Meow_MFRH_Core {
 		// Rename slug/permalink
 		if ( get_option( "mfrh_rename_slug" ) ) {
 			$oldslug = $post['post_name'];
-			$info = pathinfo( $new_filepath );
+			$info = mfrh_pathinfo( $new_filepath );
 			$newslug = preg_replace( '/\\.[^.\\s]{3,4}$/', '', $info['basename'] );
 			$post['post_name'] = $newslug;
 			if ( wp_update_post( $post ) )

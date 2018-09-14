@@ -3,14 +3,17 @@
 class FacetWP_Renderer
 {
 
-    /* (array) Data for the currently-selected facets */
+    /* (array) Data for the current facets */
     public $facets;
 
-    /* (string) Template name */
+    /* (array) Data for the current template */
     public $template;
 
     /* (array) WP_Query arguments */
     public $query_args;
+
+    /* (array) Data used to build the pager */
+    public $pager_args;
 
     /* (string) MySQL WHERE clause passed to each facet */
     public $where_clause = '';
@@ -95,7 +98,7 @@ class FacetWP_Renderer
         // Get the template from $helper->settings
         if ( 'wp' == $params['template'] ) {
             $this->template = array( 'name' => 'wp' );
-            $query_args = FWP()->ajax->query_vars;
+            $query_args = isset( FWP()->ajax->query_vars ) ? FWP()->ajax->query_vars : array();
         }
         else {
             $this->template = FWP()->helper->get_template_by_name( $params['template'] );
@@ -110,14 +113,16 @@ class FacetWP_Renderer
         // Run the query once (prevent duplicate queries when preloading)
         if ( empty( $this->query_args ) ) {
 
-            // Pagination
-            $page = empty( $params['paged'] ) ? 1 : (int) $params['paged'];
+            // Support "post__in" arg
+            if ( empty( $query_args['post__in'] ) ) {
+                $query_args['post__in'] = array();
+            }
 
             // Get the template "query" field
             $this->query_args = apply_filters( 'facetwp_query_args', $query_args, $this );
 
-            $this->query_args['paged'] = $page;
-            $this->query_args['post__in'] = array();
+            // Pagination
+            $this->query_args['paged'] = empty( $params['paged'] ) ? 1 : (int) $params['paged'];
 
             // Narrow the posts based on the selected facets
             $post_ids = $this->get_filtered_post_ids();
@@ -193,11 +198,12 @@ class FacetWP_Renderer
             $pager_args['total_pages'] = ceil( $pager_args['total_rows'] / $pager_args['per_page'] );
         }
 
+        $pager_args = apply_filters( 'facetwp_pager_args', $pager_args, $this );
+
+        $this->pager_args = $pager_args;
+
         // Stick the pager args into the JSON response
         $output['settings']['pager'] = $pager_args;
-
-        // Set the num_choices array
-        $output['settings']['num_choices'] = array();
 
         // Display the pagination HTML
         if ( isset( $params['extras']['pager'] ) ) {
@@ -218,6 +224,9 @@ class FacetWP_Renderer
         if ( 0 < $params['soft_refresh'] ) {
             return apply_filters( 'facetwp_render_output', $output, $params );
         }
+
+        // Fill "num_choices" (intentionally added after soft_refresh)
+        $output['settings']['num_choices'] = array();
 
         // Display the sort control
         if ( isset( $params['extras']['sort'] ) ) {
@@ -341,9 +350,16 @@ class FacetWP_Renderer
             }
         }
 
-        // remove UTF-8 non-breaking spaces
-        $query_args = preg_replace( "/\xC2\xA0/", ' ', $this->template['query'] );
-        $query_args = (array) eval( '?>' . $query_args );
+        // Use the query builder
+        if ( isset( $this->template['modes'] ) && 'visual' == $this->template['modes']['query'] ) {
+            $query_args = FWP()->builder->parse_query_obj( $this->template['query_obj'] );
+        }
+        else {
+
+            // remove UTF-8 non-breaking spaces
+            $query_args = preg_replace( "/\xC2\xA0/", ' ', $this->template['query'] );
+            $query_args = (array) eval( '?>' . $query_args );
+        }
 
         // Merge the two arrays
         return array_merge( $defaults, $query_args );
@@ -467,11 +483,16 @@ class FacetWP_Renderer
             $query = $this->query;
             $wp_query = $query; // Make $query->blah() optional
 
-            // Remove UTF-8 non-breaking spaces
-            $display_code = $this->template['template'];
-            $display_code = preg_replace( "/\xC2\xA0/", ' ', $display_code );
+            if ( isset( $this->template['modes'] ) && 'visual' == $this->template['modes']['display'] ) {
+                echo FWP()->builder->render_layout( $this->template['layout'] );
+            }
+            else {
 
-            eval( '?>' . $display_code );
+                // Remove UTF-8 non-breaking spaces
+                $display_code = $this->template['template'];
+                $display_code = preg_replace( "/\xC2\xA0/", ' ', $display_code );
+                eval( '?>' . $display_code );
+            }
 
             // Reset globals
             $post = $temp_post;
