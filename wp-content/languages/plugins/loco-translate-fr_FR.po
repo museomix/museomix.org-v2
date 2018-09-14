@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Loco Translate - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2016-05-10 13:10:43+0000\n"
+"PO-Revision-Date: 2018-08-29 14:12:35+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,589 +11,1749 @@ msgstr ""
 "Language: fr\n"
 "Project-Id-Version: Plugins - Loco Translate - Stable (latest release)\n"
 
+#: src/js/Strings.php:96
+msgctxt "Editor"
+msgid "Translated"
+msgstr "Traduit"
+
+#: src/js/Strings.php:93
+msgctxt "Editor"
+msgid "Untranslated"
+msgstr "Non traduit"
+
+#: src/hooks/AdminHooks.php:69
+msgid "Administrators and auditors may wish to review Loco's <a href=\"%s\">plugin privacy notice</a>."
+msgstr "Les administrateurs et les auditeurs peuvent consulter la <a href=\"%s\">politique de confidentialité</a> de Loco Translate."
+
+#: src/hooks/AdminHooks.php:68
+msgid "This plugin doesn't collect any data from public website visitors."
+msgstr "Cette extension ne collecte pas de données de vos visiteurs."
+
+#: tpl/admin/bundle/inc-po-table.php:50 tpl/admin/bundle/locale.php:66
+msgid "View"
+msgstr "Voir"
+
+#: tpl/admin/root.php:14
+msgid "Your admin language is %s."
+msgstr "Votre langue d’administration est %s."
+
+#: tpl/admin/root.php:12
+msgid "The language of this site is %s."
+msgstr "La langue de ce site est %s."
+
+#: tpl/admin/list/locales.php:25
+msgid "Site language"
+msgstr "Langue du site"
+
+#: tpl/admin/list/locales.php:22
+msgid "Files found"
+msgstr "Fichiers trouvés"
+
+#: tpl/admin/list/locales.php:16
+msgid "Locale code"
+msgstr "Code de locale"
+
+#: tpl/admin/list/locales.php:13
+msgid "Locale name"
+msgstr "Nom de locale"
+
+#: tpl/admin/file/info.php:110
+msgid "Files in this location can be modified or deleted by WordPress automatic updates"
+msgstr "Les fichiers à cet emplacement peuvent être modifiés ou supprimés par les mises à jour automatiques de WordPress"
+
+#: tpl/admin/file/info.php:107
+msgid "WordPress updates"
+msgstr "Mises à jour WordPress"
+
+#: tpl/admin/file/info-mo.php:18 tpl/admin/file/info-po.php:17
+#: tpl/admin/file/info-pot.php:12
+msgid "File size"
+msgstr "Taille de fichier"
+
+#: tpl/admin/file/diff.php:83
+msgid "Restore selected"
+msgstr "Restaurer la sélection"
+
+#: tpl/admin/file/diff.php:59
+msgid "Revision saved"
+msgstr "Révision enregistrée"
+
+#: tpl/admin/file/diff.php:16
+msgctxt "Button label for a next revision"
+msgid "Next"
+msgstr "Suivante"
+
+#: tpl/admin/file/diff.php:13
+msgctxt "Button label for a previous revision"
+msgid "Previous"
+msgstr "Précedente"
+
+#: tpl/admin/file/diff.php:6
+msgctxt "revision date short format"
+msgid "j M @ H:i"
+msgstr "j M @ H:i"
+
+#: tpl/admin/errors/no-locale.php:11
+msgid "No files found for this language"
+msgstr "Aucun fichier trouvé pour cette langue"
+
+#: tpl/admin/errors/no-backups.php:18
+msgid "File backups are disabled in your plugin settings"
+msgstr "Les sauvegardes de fichier sont désactivées dans les réglages de votre extension"
+
+#: tpl/admin/errors/no-backups.php:16
+msgid "Backup files will be written when you save translations from Loco Translate editor"
+msgstr "Les fichiers de sauvegarde seront écrits lorsque vous enregistrerez les traductions à partir de l’éditeur Loco Translate"
+
+#: tpl/admin/errors/no-backups.php:12
+msgid "No previous file revisions"
+msgstr "Aucune précédente révision de fichier"
+
+#: tpl/admin/config/settings.php:130
+msgid "About file system access"
+msgstr "À propos de l’accès au système de fichiers"
+
+#: tpl/admin/config/settings.php:123
+msgid "Disallow"
+msgstr "Refuser"
+
+#: tpl/admin/config/settings.php:120
+msgid "Allow (with warning)"
+msgstr "Autoriser (avec avertissement)"
+
+#: tpl/admin/config/settings.php:117
+msgid "Allow"
+msgstr "Autoriser"
+
+#: tpl/admin/config/settings.php:114
+msgid "Modification of installed files"
+msgstr "Modification des fichiers installés"
+
+#: tpl/admin/config/settings.php:109
+msgid "Save credentials in session"
+msgstr "Enregistrer les informations d’identification dans la session"
+
+#: tpl/admin/config/settings.php:100 tpl/admin/config/settings.php:104
+msgid "File system access"
+msgstr "Accès au système de fichier"
+
+#: tpl/admin/common/inc-fsconn.php:50
+msgid "Click \"Connect\" to authenticate with the server"
+msgstr "Cliquez sur « Se connecter » pour vous authentifier avec le serveur"
+
+#. translators: Page title for installed languages page
+#: src/mvc/AdminRouter.php:61
+msgid "Languages &lsaquo; Loco"
+msgstr "Langues &lsaquo; Loco"
+
+#: src/mvc/AdminRouter.php:59
+msgid "Languages"
+msgstr "Langues"
+
+#: src/fs/FileWriter.php:244
+msgid "Modification of installed files is disallowed by the plugin settings"
+msgstr "La modification des fichiers installés est interdite par les réglages de l’extension"
+
+#. translators: Where %s is a file name
+#: src/ajax/DiffController.php:47
+msgid "Revisions are identical, you can delete %s"
+msgstr "Les révisions sont identiques, vous pouvez supprimer %s"
+
+#. translators: Where %s is the name of the invalid POT file
+#: src/admin/file/EditController.php:99 src/ajax/SyncController.php:48
+msgid "Translation template is invalid (%s)"
+msgstr "Le modèle de traduction n’est pas valide (%s)"
+
+#: src/admin/file/DiffController.php:74 src/admin/file/DiffController.php:92
+msgid "Restore %s"
+msgstr "Restaurer %s"
+
+#: src/admin/file/DiffController.php:50
+msgid "File restored"
+msgstr "Fichier restauré"
+
+#: src/admin/file/BaseController.php:97 tpl/admin/file/diff.php:30
+msgid "Restore"
+msgstr "Restaurer"
+
+#: src/admin/bundle/LocaleController.php:137
+msgid "See all core translations"
+msgstr "Voir toutes les traductions du cœur"
+
+#: src/admin/bundle/LocaleController.php:130 tpl/admin/common/inc-fsconn.php:16
+#: tpl/admin/common/inc-fsconn.php:33 tpl/admin/errors/no-backups.php:22
+msgid "Documentation"
+msgstr "Documentation"
+
+#: src/admin/bundle/LocaleController.php:129
+msgid "No core translation files are installed for this language"
+msgstr "Aucun fichier de traduction du cœur n'a été installé pour cette langue"
+
+#: src/admin/bundle/BaseController.php:174
+msgid "Changes to this file may be overwritten or deleted when you update WordPress"
+msgstr "Les modifications apportées à ce fichier peuvent être écrasées ou supprimées lors de la mise à jour de WordPress"
+
+#: src/admin/bundle/BaseController.php:171
+msgid "This directory is managed by WordPress, be careful what you delete"
+msgstr "Ce répertoire est géré par WordPress, faites attention à ce que vous effacez"
+
+#: src/admin/bundle/BaseController.php:168
+msgid "This file may be overwritten or deleted when you update WordPress"
+msgstr "Ce fichier peut être écrasé ou effacé si vous mettez WordPress à jour"
+
+#: src/admin/bundle/BaseController.php:154
+msgid "Saving this file requires permission"
+msgstr "Enregistrer ce fichier nécessite certains droits"
+
+#: src/admin/bundle/BaseController.php:151
+msgid "Deleting this file requires permission"
+msgstr "Supprimer ce fichier nécessite certains droits"
+
+#: src/admin/bundle/BaseController.php:148
+msgid "Creating this file requires permission"
+msgstr "Créer ce fichier nécessite certains droits"
+
+#. Translators: Plural category for zero quantity
+#: src/Locale.php:383
+msgctxt "Plural category"
+msgid "Zero"
+msgstr "Zéro"
+
+#: src/admin/init/InitPoController.php:318 tpl/admin/file/info.php:113
+msgid "What's this?"
+msgstr "Qu’est-ce que c’est ?"
+
+#. Translators: Where %s is the size of a file
+#: tpl/admin/init/init-pot.php:18
+msgid "largest is %s"
+msgstr "le plus grand est de %s"
+
+#: tpl/admin/config/settings.php:73
+msgid "Maximum line length (zero disables wrapping)"
+msgstr "Longueur de ligne maximale (zéro désactive la limite)"
+
+#. Translators: Where %2$s is the maximum size of a file that will be included
+#. and %3$s is the largest encountered
+#: src/ajax/SyncController.php:63
+msgid "One file has been skipped because it's %3$s. (Max is %2$s). Check all strings are present before saving."
+msgid_plural "%s files over %2$s have been skipped. (Largest is %3$s). Check all strings are present before saving."
+msgstr[0] "Un fichier a été ignoré car il pèse %3$s. (Le poids maximum est de %2$s). Vérifiez que toutes les chaînes sont présentes avant de sauvegarder."
+msgstr[1] "%s fichiers sur %2$s ont étés ignorés. (Le poids du plus large est de %3$s). Vérifiez que toutes les chaînes sont présentes avant de sauvegarder."
+
+#: src/admin/bundle/ConfController.php:95
+msgid "Child theme declares the same Text Domain as the parent theme"
+msgstr "Le thème enfant déclare le même Text Domain que le thème parent"
+
+#. Translators: General plural category not covered by other forms
+#: src/Locale.php:393
+msgctxt "Plural category"
+msgid "Other"
+msgstr "Autre"
+
+#. Translators: Plural category used in some multi-plural languages
+#: src/Locale.php:391
+msgctxt "Plural category"
+msgid "Many"
+msgstr "Beaucoup"
+
+#. Translators: Plural category used in some multi-plural languages
+#: src/Locale.php:389
+msgctxt "Plural category"
+msgid "Few"
+msgstr "Quelques"
+
+#. Translators: Plural category used in some multi-plural languages
+#: src/Locale.php:387
+msgctxt "Plural category"
+msgid "Two"
+msgstr "Deux"
+
+#. Translators: Plural category for singular quantity
+#: src/Locale.php:385
+msgctxt "Plural category"
+msgid "One"
+msgstr "Un"
+
+#. Translators: Plural category for languages that have no plurals
+#: src/Locale.php:375
+msgctxt "Plural category"
+msgid "All forms"
+msgstr "Toutes les formes"
+
+#: tpl/admin/config/version.php:28
+msgid "You're running a development snapshot of Loco Translate"
+msgstr "Vous utilisez une copie de développement de Loco Translate"
+
+#: tpl/admin/file/info-pot.php:22
+msgid "1 word"
+msgid_plural "%s words"
+msgstr[0] "1 mot"
+msgstr[1] "%s mots"
+
 #. Author URI of the plugin/theme
-msgid "https://localise.biz/help/wordpress/translate-plugin"
-msgstr "https://localise.biz/help/wordpress/translate-plugin"
+msgid "https://localise.biz/wordpress/plugin"
+msgstr "https://localise.biz/wordpress/plugin"
+
+#. Description of the plugin/theme
+msgid "Translate themes and plugins directly in WordPress"
+msgstr "Traduisez des thèmes et extensions directement dans WordPress"
+
+#: src/admin/bundle/LocaleController.php:147 tpl/admin/root.php:62
+msgid "See all plugins"
+msgstr "Voir toutes les extensions"
+
+#: tpl/admin/root.php:58
+msgid "These plugins have recently loaded translation files into the admin area"
+msgstr "Ces extensions ont récemment chargé des fichiers de traduction dans l’administration "
+
+#: tpl/admin/root.php:55
+msgid "Running plugins:"
+msgstr "Extensions actives :"
+
+#: src/admin/bundle/LocaleController.php:142 tpl/admin/root.php:47
+msgid "See all themes"
+msgstr "Voir tous les thèmes"
+
+#: tpl/admin/root.php:43
+msgid "Active theme:"
+msgstr "Thème actif :"
+
+#: tpl/admin/root.php:34
+msgid "Translations have been recently modified in the following bundles"
+msgstr "Les traductions ont été récemment modifiées dans les paquets suivants "
+
+#: tpl/admin/root.php:31
+msgid "Recently updated:"
+msgstr "Récemment mis à jour :"
+
+#. translators: 1: help URL, 2: forum URL; Must be HTML encoded
+#: tpl/admin/root.php:20
+msgid "If you have any questions, please try our <a href=\"%1$s\">help pages</a> or ask in the <a href=\"%2$s\">support forum</a>."
+msgstr "Si vous avez des interrogations, commencez par nos <a href=\"%1$s\">pages d'aide</a> ou posez vos questions dans le <a href=\"%2$s\">forum de support</a>."
+
+#: src/admin/RootController.php:84
+msgid "Welcome to Loco Translate"
+msgstr "Bienvenue dans Loco Translate"
+
+#: tpl/admin/list/inc-table.php:20
+msgid "Sets"
+msgstr "Jeux"
+
+#: tpl/admin/bundle/locale.php:32 tpl/admin/list/inc-table.php:11
+msgid "Bundle name"
+msgstr "Nom du paquet"
+
+#: tpl/admin/init/init-pot.php:42 tpl/admin/init/init-prompt.php:27
+msgid "About templates"
+msgstr "À propos des modèles"
+
+#: tpl/admin/init/init-prompt.php:22
+msgid "Loco can sync directly with the source code, but this can be slow if there are many files"
+msgstr "Loco peut se synchroniser directement avec le code source, mais cela peut être lent s’il y a beaucoup de fichiers"
+
+#: tpl/admin/init/init-prompt.php:18
+msgid "This bundle doesn't define a translations template file"
+msgstr "Ce paquet ne définit pas de modèle de traductions."
+
+#: tpl/admin/init/init-prompt.php:14
+msgid "This bundle's template file doesn't exist yet. We recommend you create it before adding languages"
+msgstr "Le modèle de traduction de ce paquet n’existe pas encore. Nous vous invitons à le créer avant d’ajouter des langues"
+
+#: tpl/admin/init/init-prompt.php:10
+msgid "Template missing"
+msgstr "Modèle manquant"
+
+#: tpl/admin/init/init-pot.php:30
+msgid "Strings will be extracted to:"
+msgstr "Les chaînes seront extraites à partir de :"
+
+#. Translators: Where %2$s is the size of a file
+#: tpl/admin/init/init-pot.php:24
+msgid "Excludes one file over %2$s"
+msgid_plural "Excludes %s files over %2$s"
+msgstr[0] "Exclut 1 fichier de plus de %2$s"
+msgstr[1] "Exclut %s fichiers de plus de %2$s"
+
+#. Translators: Where %s is the size of a file
+#: tpl/admin/init/init-pot.php:16
+msgid "%s on disk"
+msgstr "%s sur le disque"
+
+#: tpl/admin/init/init-pot.php:12
+msgid "Source files to scan:"
+msgstr "Fichiers source à analyser :"
+
+#: tpl/admin/init/init-po.php:176
+msgid "Start translating"
+msgstr "Commencer la traduction"
+
+#: tpl/admin/init/init-po.php:166
+msgid "Use \"%s\" as template when running Sync"
+msgstr "Utiliser « %s » comme modèle lors de la synchronisation"
+
+#: tpl/admin/init/init-po.php:156
+msgid "Just copy English source strings"
+msgstr "Il suffit de copier les chaînes sources anglaises"
+
+#: tpl/admin/init/init-po.php:150
+msgid "Copy target translations from \"%s\""
+msgstr "Copier les traductions cibles à partir de « %s »"
+
+#: tpl/admin/init/init-po.php:139
+msgid "Template options"
+msgstr "Options du modèle"
+
+#: tpl/admin/init/init-po.php:95
+msgid "Choose a location"
+msgstr "Choisissez un emplacement"
+
+#: tpl/admin/init/init-po.php:81
+msgid "Custom language"
+msgstr "Langue personnalisée"
+
+#: tpl/admin/init/init-po.php:69
+msgid "Available languages"
+msgstr "Langues disponibles"
+
+#: src/admin/bundle/LocaleController.php:116
+#: src/admin/list/LocalesController.php:35 tpl/admin/init/init-po.php:63
+msgid "Installed languages"
+msgstr "Langues installées"
+
+#: tpl/admin/init/init-po.php:62
+msgid "No language selected"
+msgstr "Aucune langue sélectionnée"
+
+#: tpl/admin/init/init-po.php:57
+msgid "WordPress language"
+msgstr "Langue de WordPress"
+
+#: tpl/admin/init/init-po.php:50
+msgid "Choose a language"
+msgstr "Choisissez une langue"
+
+#: tpl/admin/init/init-po.php:12
+msgid "Create template instead"
+msgstr "Créez un modèle à la place"
+
+#: tpl/admin/init/init-po.php:11
+msgid "You're creating translations directly from source code"
+msgstr "Vous êtes en train de créer des traductions directement depuis le code source"
+
+#: tpl/admin/help/tab-support.php:6
+msgid "Getting help with Loco Translate"
+msgstr "Obtenir de l’aide pour Loco Translate"
+
+#: tpl/admin/help/tab-settings.php:9
+msgid "Full documentation"
+msgstr "Documentation complète"
+
+#: tpl/admin/help/tab-settings.php:6
+msgid "User options apply to your WordPress login, across all sites"
+msgstr "Les options de l’utilisateur s’appliquent à votre profil WordPress, sur tous les sites"
+
+#: tpl/admin/help/tab-settings.php:5
+msgid "Site options apply to all users of Loco Translate across the current site"
+msgstr "Les options de site s’appliquent à tous les utilisateurs de Loco Translate sur ce site"
+
+#: tpl/admin/help/side-bar.php:15
+msgid "Support forum"
+msgstr "Forum de support"
+
+#: tpl/admin/help/side-bar.php:12
+msgid "Beginner's guide"
+msgstr "Guide de démarrage"
+
+#: tpl/admin/help/side-bar.php:9
+msgid "About Loco Translate"
+msgstr "À propos de Loco Translate"
+
+#: tpl/admin/help/side-bar.php:6
+msgid "For more information:"
+msgstr "Pour plus d’informations :"
+
+#: tpl/admin/file/view-mo.php:11
+msgid "File is in binary MO format"
+msgstr "Le fichier est en format MO binaire"
+
+#. Translators: Where %s is the name (or number) of an operating system user
+#: tpl/admin/file/info.php:96
+msgid "To create new files here you'll have to connect to the remote file system, or make the directory writeable by %s"
+msgstr "Pour créer de nouveaux fichiers ici, vous devez vous connecter au système de fichier distant ou en rendant le répertoire inscriptible par %s"
+
+#: tpl/admin/file/info.php:92
+msgid "This directory can't be written to directly by the web server"
+msgstr "Ce répertoire n’est pas inscriptible directement par le serveur web"
+
+#: tpl/admin/file/info.php:81
+msgid "Note that the file may not be deletable due to additional ownership permissions"
+msgstr "Notez que ce fichier n’est peut-être pas supprimé faute de droits supplémentaires"
+
+#. Translators: Where %s is the name (or number) of an operating system user
+#: tpl/admin/file/info.php:73
+msgid "The containing directory is writeable by %s, so you can add new files in the same location"
+msgstr "Le répertoire en question est inscriptible par %s, vous pouvez donc ajouter de nouveaux fichiers à cet emplacement"
+
+#: tpl/admin/file/info.php:69
+msgid "Directory is writeable"
+msgstr "Le répertoire est inscriptible"
+
+#. Translators: "either" meaning that the file itself can't exist without a
+#. containing directory
+#: tpl/admin/file/info.php:59
+msgid "The containing directory for this file doesn't exist either"
+msgstr "Le répertoire contenant ce fichier n’existe pas non plus"
+
+#: tpl/admin/file/info.php:55
+msgid "Directory doesn't exist"
+msgstr "Le répertoire n’existe pas"
+
+#. Translators: Where %s is the name (or number) of an operating system user
+#: tpl/admin/file/info.php:43
+msgid "To make changes you'll have to connect to the remote file system, or make the file writeable by %s"
+msgstr "Pour faire des changements, vous devez vous connecter au système de fichier distant ou en rendant le répertoire inscriptible par %s"
+
+#: tpl/admin/file/info.php:39
+msgid "This file can't be updated directly by the web server"
+msgstr "Ce fichier ne peut pas être mis à jour directement par le serveur web"
+
+#: tpl/admin/file/info.php:27
+msgid "You can update these translations directly from the editor to the file system"
+msgstr "Vous pouvez mettre à jour ces traductions directement depuis l’éditeur vers le système de fichier"
+
+#. Translators: Where %s is the type of file, e.g. "po"
+#: tpl/admin/file/info.php:24
+msgid "%s file is writeable"
+msgstr "Le fichier %s est inscriptible"
+
+#: tpl/admin/file/info.php:14
+msgid "File doesn't exist"
+msgstr "Le fichier n’existe pas"
+
+#: tpl/admin/file/info-pot.php:21
+msgid "Source text"
+msgstr "Texte source"
+
+#: tpl/admin/file/info-pot.php:18
+msgid "Last extracted"
+msgstr "Dernière extraction"
+
+#: tpl/admin/file/info-po.php:81
+msgid "These translations are not linked to a POT file. Sync operations will extract strings directly from source code."
+msgstr "Ces traductions ne sont pas liées à un fichier POT. Les opérations de synchronisation extrairont directement les chaînes depuis le code source."
+
+#: tpl/admin/file/info-po.php:77
+msgid "Missing template"
+msgstr "Modèle manquant"
+
+#. Translators: Where %s is the name of a template file
+#: tpl/admin/file/info-po.php:68
+msgid "PO file has different source strings to \"%s\". Try running Sync before making any changes."
+msgstr "Le fichier PO a des chaînes sources différentes de « %s ». Essayez de lancer une synchronisation avant de faire des changements."
+
+#: tpl/admin/file/info-po.php:64
+msgid "Out of sync with template"
+msgstr "Désynchronisé du modèle"
+
+#. Translators: Where %s is the name of a template file
+#: tpl/admin/file/info-po.php:57
+msgid "PO file has the same source strings as \"%s\""
+msgstr "Le fichier PO a les mêmes chaînes sources que « %s »"
+
+#: tpl/admin/file/info-po.php:53
+msgid "In sync with template"
+msgstr "Synchronisé avec le modèle"
+
+#: tpl/admin/file/info-po.php:43
+msgid "We can't find the binary MO file that belongs with these translations"
+msgstr "Nous ne pouvons pas trouver de fichier MO binaire qui appartienne à ces traductions"
+
+#: tpl/admin/file/info-po.php:40
+msgid "Binary file missing"
+msgstr "Fichier binaire manquant"
+
+#: tpl/admin/file/info-other.php:11
+msgid "Unexpected file type"
+msgstr "Type de fichier inattendu"
+
+#: tpl/admin/file/info-mo.php:41
+msgid "We can't find the original PO file from which this was compiled"
+msgstr "Nous ne pouvons pas trouver le fichier PO original qui a servi à la compilation"
+
+#: tpl/admin/file/info-mo.php:38
+msgid "PO file missing"
+msgstr "Fichier PO manquant"
+
+#: tpl/admin/file/info-mo.php:27
+msgid "Compiled translations"
+msgstr "Traductions compilées"
+
+#: tpl/admin/file/info-mo.php:24 tpl/admin/file/info-po.php:23
+msgid "Last translation"
+msgstr "Dernière traduction"
+
+#: tpl/admin/file/info-mo.php:21 tpl/admin/file/info-po.php:20
+#: tpl/admin/file/info-pot.php:15
+msgid "File modified"
+msgstr "Fichier modifié"
+
+#: tpl/admin/file/info-mo.php:15
+msgid "compiled"
+msgstr "compilée"
+
+#: tpl/admin/file/delete.php:30
+msgid "Delete Permanently"
+msgstr "Supprimer définitivement"
+
+#: tpl/admin/file/delete.php:16
+msgid "Are you sure you want to <strong>permanently</strong> delete the following file?"
+msgstr "Confirmez-vous la suppression <strong>définitive</strong> du fichier suivant ?"
+
+#: tpl/admin/file/delete.php:12
+msgid "Confirm delete"
+msgstr "Confirmer la suppression"
+
+#: tpl/admin/errors/no-tokenizer.php:19
+msgid "You can still translate any bundle that has a <a href=\"%s\" target=\"_blank\">template</a>"
+msgstr "Vous pouvez tout de même traduire tout paquet qui a un <a href=\"%s\" target=\"_blank\">modèle</a>"
+
+#. Translators: change "en" in the URL to your language if it's available at
+#. http://php.net/docs.php
+#: tpl/admin/errors/no-tokenizer.php:15
+msgid "Loco requires the <a href=\"http://php.net/manual/en/book.tokenizer.php\" target=\"_blank\">Tokenizer extension</a> to scan PHP source code for translatable strings"
+msgstr "Loco a besoin de <a href=\"http://php.net/manual/en/book.tokenizer.php\" target=\"_blank\">l’extension Tokenizer</a> pour scanner le code source PHP à la recherche de chaînes traduisibles"
+
+#: tpl/admin/errors/no-tokenizer.php:11
+msgid "About the Tokenizer"
+msgstr "À propos du Tokenizer"
+
+#: tpl/admin/errors/file-missing.php:14
+msgid "Either this file is missing or the server doesn't have permission to access it"
+msgstr "Soit le fichier est manquant, soit le serveur n’a pas les droits suffisants pour y accéder"
+
+#: tpl/admin/errors/file-missing.php:11
+msgid "File not found"
+msgstr "Fichier non trouvé"
+
+#: tpl/admin/errors/file-isdir.php:14
+msgid "This page was expecting a file, but the path is actually a directory"
+msgstr "Cette page attendait un fichier, mais le chemin est en fait un répertoire"
+
+#: tpl/admin/errors/file-isdir.php:11
+msgid "File is a directory"
+msgstr "Le fichier est un répertoire"
+
+#: tpl/admin/config/version.php:38
+msgid "You're running the latest version of Loco Translate"
+msgstr "Vous utilisez la dernière version de Loco Translate"
+
+#: tpl/admin/config/version.php:17
+msgid "Upgrade to %s"
+msgstr "Mettre à niveau vers %s"
+
+#: tpl/admin/config/version.php:11 tpl/admin/config/version.php:25
+#: tpl/admin/config/version.php:35
+msgid "Version %s"
+msgstr "Version %s"
+
+#: tpl/admin/config/settings.php:141
+msgid "Allow full access to these roles"
+msgstr "Autoriser l’accès complet à tous ces rôles"
+
+#: tpl/admin/config/settings.php:137
+msgid "Grant access to roles"
+msgstr "Accorder l’accès aux rôles"
+
+#: tpl/admin/config/settings.php:92
+msgid "Look for non-standard names:"
+msgstr "Chercher pour des noms non standards :"
+
+#: tpl/admin/config/settings.php:87
+msgid "POT template files"
+msgstr "Modèles POT"
+
+#: tpl/admin/config/settings.php:80 tpl/admin/config/settings.php:110
+msgid "Not recommended"
+msgstr "Non recommandé"
+
+#: tpl/admin/config/settings.php:80
+msgid "Add UTF-8 byte order mark"
+msgstr "Ajouter l’indicateur d’ordre des octets UTF-8"
+
+#: tpl/admin/config/settings.php:59 tpl/admin/config/settings.php:63
+msgid "Saving PO/POT files"
+msgstr "Enregistrement des fichiers PO/POT"
+
+#: tpl/admin/config/settings.php:51
+msgid "Scan PHP files with extensions:"
+msgstr "Scanner les fichiers PHP avec les extensions :"
+
+#: tpl/admin/config/settings.php:45
+msgid "Skip PHP files larger than:"
+msgstr "Ignorer les fichiers PHP dépassant :"
+
+#: tpl/admin/config/settings.php:37 tpl/admin/config/settings.php:41
+msgid "Extracting strings"
+msgstr "Extraction des chaînes"
+
+#: tpl/admin/config/prefs.php:13 tpl/admin/config/prefs.php:17
+msgid "Translator credit"
+msgstr "Crédit du traducteur"
+
+#. translators: text field placeholder
+#: tpl/admin/common/inc-table-filter.php:6
+msgid "Filter..."
+msgstr "Filtrer…"
+
+#: tpl/admin/common/inc-fsconn.php:55
+msgid "Connect"
+msgstr "Connecter"
+
+#. Translators: When a file or folder cannot be modified due to filesystem
+#. permissions
+#: tpl/admin/common/inc-fsconn.php:44 tpl/admin/file/info.php:36
+#: tpl/admin/file/info.php:89
+msgid "Write protected"
+msgstr "Protégé contre l’écriture"
+
+#: tpl/admin/bundle/view.php:50
+msgid "This bundle isn't automatically compatible and requires configuring before you can use all the functions of Loco Translate"
+msgstr "Ce paquet n’est pas automatiquement compatible et nécessite d’être configuré avant de pouvoir profiter de toutes les fonctionnalités de Loco Translate"
+
+#: tpl/admin/bundle/view.php:47
+msgid "unconfigured"
+msgstr "non configuré"
+
+#: tpl/admin/bundle/view.php:32 tpl/admin/bundle/view.php:51
+msgid "Click the <a href=\"%s\">setup</a> tab to complete the bundle configuration"
+msgstr "Cliquez l’onglet <a href=\"%s\">« Configuration »</a> pour terminer la configuration du paquet"
+
+#: tpl/admin/bundle/view.php:31
+msgid "This bundle isn't fully configured, so we don't know what the following files are for"
+msgstr "Ce paquet n’est pas entièrement configuré, nous ne savons donc pas à quoi servent les fichiers suivants"
+
+#: tpl/admin/bundle/view.php:28
+msgid "Additional files found"
+msgstr "Fichiers additionnels trouvés"
+
+#: tpl/admin/bundle/setup.php:15
+msgid "If you have trouble translating this bundle, consider asking the author for help"
+msgstr "Si vous avez du mal à traduire ce fichier, envisagez de demander de l’aide à son auteur"
+
+#: tpl/admin/bundle/setup.php:12
+msgid "Author details"
+msgstr "Détails de l’auteur"
+
+#: tpl/admin/bundle/setup/saved.php:19
+msgid "Edit config"
+msgstr "Modifier la configuration"
+
+#: tpl/admin/bundle/setup/saved.php:14
+msgid "This bundle's configuration is saved in the WordPress database"
+msgstr "La configuration de ce paquet est enregistrée dans la base de données WordPress"
+
+#: tpl/admin/bundle/setup/saved.php:11
+msgid "Bundle configuration saved"
+msgstr "Configuration du paquet sauvegardée"
+
+#: tpl/admin/bundle/setup/partial.php:14
+msgid "This bundle's configuration has been automatically detected, but isn't fully complete"
+msgstr "La configuration de ce paquet a été automatiquement détectée mais elle est incomplète"
+
+#: tpl/admin/bundle/setup/partial.php:11
+msgid "Partially configured bundle"
+msgstr "Paquet partiellement configuré"
+
+#: tpl/admin/bundle/setup/none.php:15
+msgid "It needs configuring before you can do any translations"
+msgstr "Il a besoin d’être configuré avant de pouvoir commencer à traduire"
+
+#: tpl/admin/bundle/setup/none.php:14
+msgid "This bundle isn't set up for translation in a way we understand"
+msgstr "Ce paquet n'est pas traduisible d’une façon que nous interprétons"
+
+#: tpl/admin/bundle/setup/none.php:11
+msgid "Unconfigured bundle"
+msgstr "Paquet non-configuré"
+
+#: tpl/admin/bundle/setup/meta.php:14
+msgid "This bundle's configuration has been automatically detected and seems to be fully compatible"
+msgstr "La configuration de ce paquet a été automatiquement détectée et semble parfaitement compatible."
+
+#: tpl/admin/bundle/setup/inc-nav.php:28
+msgid "Get help with this"
+msgstr "Obtenir de l’aide avec ce problème"
+
+#: tpl/admin/bundle/setup/inc-nav.php:22
+msgid "Import config from XML"
+msgstr "Importer une configuration XML"
+
+#: tpl/admin/bundle/setup/core.php:13
+msgid "This bundle's configuration is built into Loco"
+msgstr "La configuration de ce paquet est gérée par Loco"
+
+#: tpl/admin/bundle/setup/core.php:10 tpl/admin/bundle/setup/meta.php:11
+msgid "Bundle auto-configured"
+msgstr "Paquet auto-configuré"
+
+#: tpl/admin/bundle/setup/conf.php:55
+msgid "Load config"
+msgstr "Charger la configuration"
+
+#: tpl/admin/bundle/setup/conf.php:49
+msgid "If you've been given a configuration file by a developer, paste the XML code here"
+msgstr "Si un développeur vous a donné un fichier de configuration, collez le code XML ici"
+
+#: tpl/admin/bundle/setup/conf.php:46
+msgid "XML setup"
+msgstr "Configuration XML"
+
+#: tpl/admin/bundle/setup/conf.php:34
+msgid "OK, Load this config"
+msgstr "OK, charger cette configuration"
+
+#: tpl/admin/bundle/setup/conf.php:28 tpl/admin/bundle/setup/conf.php:35
+#: tpl/admin/bundle/setup/conf.php:56
+msgid "Cancel"
+msgstr "Annuler"
+
+#: tpl/admin/bundle/setup/conf.php:27
+msgid "Find config"
+msgstr "Trouver la configuration"
+
+#: tpl/admin/bundle/setup/conf.php:16
+msgid ""
+"We have a database of non-standard bundle configurations.\n"
+"If we know your bundle, we'll configure it for you automatically"
+msgstr ""
+"Nous avons une base de données de configurations non-standard.\n"
+"Si nous connaissons votre paquet, nous le configurerons automatiquement"
+
+#: tpl/admin/bundle/setup/conf.php:12 tpl/admin/bundle/setup/inc-nav.php:25
+msgid "Check config repository"
+msgstr "Vérifier le dépôt des configurations"
+
+#: tpl/admin/bundle/setup/author.php:15 tpl/admin/bundle/setup/core.php:14
+#: tpl/admin/bundle/setup/meta.php:15
+msgid "You can make changes in the Advanced tab if you need to override the current settings"
+msgstr "Vous pouvez opérer à des changements dans l’onglet « Avancé » si vous souhaitez écraser les réglages actuels"
+
+#: tpl/admin/bundle/setup/author.php:14
+msgid "This bundle's configuration is provided by the author"
+msgstr "La configuration de ce paquet est fournie par l’auteur"
+
+#: tpl/admin/bundle/setup/author.php:11
+msgid "Official configuration"
+msgstr "Configuration officielle"
+
+#: tpl/admin/bundle/inc-po-table.php:104
+msgid "No translations found for \"%s\""
+msgstr "Aucune chaîne traduisible n’a été trouvée pour « %s »"
+
+#: tpl/admin/bundle/inc-po-table.php:56 tpl/admin/bundle/locale.php:72
+msgid "Info"
+msgstr "Infos"
+
+#: tpl/admin/bundle/inc-po-table.php:53 tpl/admin/bundle/locale.php:69
+msgid "Copy"
+msgstr "Copier"
+
+#: tpl/admin/bundle/inc-po-table.php:47 tpl/admin/bundle/locale.php:63
+msgid "Edit"
+msgstr "﻿Modifier"
+
+#: tpl/admin/bundle/inc-po-table.php:26 tpl/admin/bundle/locale.php:49
+msgid "Folder"
+msgstr "Dossier"
+
+#: tpl/admin/bundle/inc-po-table.php:23 tpl/admin/bundle/locale.php:46
+#: tpl/admin/list/inc-table.php:17 tpl/admin/list/locales.php:19
+msgid "Last modified"
+msgstr "Dernière modification"
+
+#: tpl/admin/bundle/inc-po-table.php:17 tpl/admin/bundle/locale.php:39
+msgid "Pending"
+msgstr "Chaînes en attente"
+
+#: tpl/admin/bundle/inc-po-table.php:14 tpl/admin/bundle/locale.php:36
+#: tpl/admin/file/info-po.php:26
+msgid "Translation progress"
+msgstr "Progression de la traduction"
+
+#: tpl/admin/bundle/inc-po-table.php:11
+msgid "Language"
+msgstr "Langue"
+
+#: tpl/admin/bundle/debug.php:8
+msgid "This information is for developers to find problems in the bundle setup"
+msgstr "Cette information est pour les développeurs afin qu’ils identifient des problèmes dans la configuration de paquet"
+
+#: tpl/admin/bundle/conf.php:159 tpl/admin/bundle/setup/saved.php:18
+msgid "Reset config"
+msgstr "Mettre la configuration à zéro"
+
+#: tpl/admin/bundle/conf.php:146
+msgid "XML"
+msgstr "XML"
+
+#: tpl/admin/bundle/conf.php:144
+msgid "Parent theme"
+msgstr "Thème parent"
+
+#: tpl/admin/bundle/conf.php:142
+msgid "Add set"
+msgstr "Ajouter un jeu"
+
+#: tpl/admin/bundle/conf.php:141
+msgid "Save config"
+msgstr "Enregistrer la configuration"
+
+#. Translators: Help tip for "Blocked paths" field in advanced bundle config
+#: tpl/admin/bundle/conf.php:134
+msgid "Folders within the bundle that will never be searched for files"
+msgstr "Dossiers dans le paquet qui seront ignorés"
+
+#: tpl/admin/bundle/conf.php:128
+msgid "Blocked paths"
+msgstr "Chemins bloqués"
+
+#. Translators: Help tip for "Source file paths" field in advanced bundle
+#. config
+#: tpl/admin/bundle/conf.php:113
+msgid "Files and folders within the bundle that contain localized PHP code"
+msgstr "Fichiers et dossiers dans le paquet qui contiennent le code PHP localisé"
+
+#: tpl/admin/bundle/conf.php:100
+msgid "Source file paths"
+msgstr "Chemins de fichier source"
+
+#: tpl/admin/bundle/conf.php:94 tpl/admin/bundle/conf.php:113
+#: tpl/admin/bundle/conf.php:134
+msgid "no wildcards"
+msgstr "aucun caractère générique"
+
+#. Translators: Help tip for "Domain path" field in advanced bundle config
+#: tpl/admin/bundle/conf.php:94
+msgid "Folders within the bundle that contain author-supplied translations"
+msgstr "Dossiers dans le paquet qui contiennent des traductions fournies par les auteurs"
+
+#: tpl/admin/bundle/conf.php:89 tpl/admin/bundle/conf.php:108
+msgid "Exclude"
+msgstr "Exclure"
+
+#: tpl/admin/bundle/conf.php:85 tpl/admin/bundle/conf.php:104
+msgid "Include"
+msgstr "Inclure"
+
+#: tpl/admin/bundle/conf.php:81
+msgid "Domain path"
+msgstr "Chemin du domaine"
+
+#. Translators: Help tip for "Template file" field in advanced bundle config
+#: tpl/admin/bundle/conf.php:75
+msgid "Relative path from bundle root to the official POT file"
+msgstr "Chemin relative entre le paquet racine et le fichier POT officiel"
+
+#: tpl/admin/bundle/conf.php:71 tpl/admin/common/inc-fsconn.php:12
+msgid "Locked"
+msgstr "Verrouillé"
+
+#. Translators: Help tip for "File prefix" field in advanced bundle config
+#: tpl/admin/bundle/conf.php:59
+msgid "Usually the same as the text domain, but don't leave blank unless you mean to"
+msgstr "Normalement le même que le « Text Domain », mais ne laissez pas ce champ vide à moins de savoir ce que vous faites"
+
+#: tpl/admin/bundle/conf.php:53
+msgid "File prefix"
+msgstr "Préfixe du fichier"
+
+#. Translators: Help tip for "Text domain" field in advanced bundle config
+#: tpl/admin/bundle/conf.php:47
+msgid "The namespace into which WordPress will load translated strings"
+msgstr "Le « namespace » dans lequel WordPress chargera les chaînes traduites"
+
+#: tpl/admin/bundle/conf.php:41 tpl/admin/list/inc-table.php:14
+msgid "Text domain"
+msgstr "Text domain"
+
+#. Translators: Help tip for "Project name" field in advanced bundle config
+#: tpl/admin/bundle/conf.php:35
+msgid "Descriptive name for this set of translatable strings"
+msgstr "Un nom descriptif pour ce jeu de chaînes traduisibles"
+
+#: tpl/admin/bundle/conf.php:29
+msgid "Project name"
+msgstr "Nom du projet"
+
+#: tpl/admin/bundle/alias.php:17
+msgid "Go to WordPress Core"
+msgstr "Aller dans le noyau de WordPress"
+
+#: tpl/admin/bundle/alias.php:14
+msgid "This plugin doesn't have its own translation files, but its metadata can be translated in the core Admin bundle"
+msgstr "Cette extension ne dispose pas de fichiers de traduction mais ses métadonnées peuvent être traduites dans le paquet « Administration » du noyau"
+
+#: tpl/admin/bundle/alias.php:11
+msgid "\"Hello Dolly\" is part of the WordPress core"
+msgstr "« Hello Dolly » fait partie du noyau de WordPress"
+
+#: src/package/Plugin.php:203
+msgid "Plugin not found: %s"
+msgstr "Extension non trouvée : %s"
+
+#: src/package/Header.php:83
+msgid "Visit official site"
+msgstr "Visiter le site officiel"
+
+#. translators: Author credit: "<product>" <version> by <author>
+#: src/package/Header.php:80
+msgid "\"%s\" %s by %s"
+msgstr "« %s » %s par %s"
+
+#: src/package/Debugger.php:204
+msgid "Configured domain has no extractable strings"
+msgid_plural "%u configured domains have no extractable strings"
+msgstr[0] "Le domaine configuré n’a pas de chaîne extractibles"
+msgstr[1] "%u domaines configurés n’ont pas de chaîne extractibles"
+
+#: src/package/Debugger.php:186
+msgid "One string extracted from source code for \"%2$s\""
+msgid_plural "%s strings extracted from source code for \"%s\""
+msgstr[0] "1 chaîne a été extraite du code source de « %2$s »"
+msgstr[1] "%s chaînes ont été extraites du code source de « %s »"
+
+#: src/admin/bundle/LocaleController.php:136 src/package/Core.php:80
+msgid "WordPress Core"
+msgstr "Noyau WordPress"
+
+#: src/package/Core.php:29
+msgid "https://wordpress.org/"
+msgstr "https://wordpress.org/"
+
+#: src/package/Core.php:28
+msgid "The WordPress Team"
+msgstr "L’équipe WordPress"
+
+#: src/package/Core.php:26
+msgid "WordPress core"
+msgstr "Noyau WordPress"
+
+#: src/output/Buffer.php:129
+msgid "Loco interrupted by output from %s:%u"
+msgstr "Loco a été interrompu par un signal de %s:%u"
+
+#: src/mvc/FileParams.php:137
+msgid "%s ago"
+msgstr "il y a %s "
+
+#. translators: relative time when something happened in the last 30 seconds
+#: src/mvc/FileParams.php:135
+msgid "Just now"
+msgstr "À l’instant"
+
+#: src/mvc/FileParams.php:131
+msgid "Y/m/d"
+msgstr "d/m/Y "
+
+#: src/mvc/Controller.php:46
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Vous n’avez pas les droits suffisants pour accéder à cette page."
+
+#: src/mvc/AjaxRouter.php:204
+msgid "Download controller returned empty output"
+msgstr "Le téléchargement du contrôleur a généré un signal vide"
+
+#: src/mvc/AjaxRouter.php:199
+msgid "Download action not found"
+msgstr "Action de téléchargement non trouvée"
+
+#: src/mvc/AjaxRouter.php:176
+msgid "Ajax controller returned empty JSON"
+msgstr "Le contrôleur AJAX a généré un JSON vide"
+
+#: src/mvc/AjaxRouter.php:171
+msgid "Ajax route not found: \"%s\""
+msgstr "Route AJAX non trouvé : « %s »"
+
+#: src/mvc/AdminRouter.php:235
+msgid "Page not found"
+msgstr "Page non trouvée"
+
+#. translators: Page title for core WordPress translations
+#: src/mvc/AdminRouter.php:56
+msgid "Core translations &lsaquo; Loco"
+msgstr "Traductions du noyau &lsaquo; Loco"
+
+#: src/mvc/AdminRouter.php:54 tpl/admin/bundle/setup/conf.php:20
+msgid "WordPress"
+msgstr "WordPress"
+
+#. translators: Page title for plugin translations
+#: src/mvc/AdminRouter.php:51
+msgid "Plugin translations &lsaquo; Loco"
+msgstr "Traductions des extensions &lsaquo; Loco"
+
+#. translators: Page title for theme translations
+#: src/mvc/AdminRouter.php:46
+msgid "Theme translations &lsaquo; Loco"
+msgstr "Traductions des thèmes &lsaquo; Loco"
+
+#: src/mvc/AdminRouter.php:42
+msgid "Home"
+msgstr "Accueil"
+
+#: src/mvc/AdminController.php:109
+msgid "Loco Translate is powered by"
+msgstr "Loco Translate est propulsé par"
+
+#: src/mvc/AdminController.php:46
+msgid "Help & support"
+msgstr "Aide & support"
+
+#: src/js/Strings.php:111
+msgctxt "Editor"
+msgid "Translation"
+msgstr "Traduction"
+
+#: src/js/Strings.php:108
+msgctxt "Editor"
+msgid "Translation not loaded"
+msgstr "Traduction non chargée"
+
+#: src/js/Strings.php:105
+msgctxt "Editor"
+msgid "Context not loaded"
+msgstr "Contexte non chargé"
+
+#: src/js/Strings.php:102
+msgctxt "Editor"
+msgid "Source text not loaded"
+msgstr "Texte source non chargé"
+
+#: src/js/Strings.php:90
+msgctxt "Editor"
+msgid "Plural"
+msgstr "Pluriel"
+
+#: src/js/Strings.php:87
+msgctxt "Editor"
+msgid "Single"
+msgstr "Singulier"
+
+#: src/js/Strings.php:84
+msgctxt "Editor"
+msgid "Comments"
+msgstr "Commentaires "
+
+#: src/js/Strings.php:81
+msgctxt "Editor"
+msgid "Context"
+msgstr "Contexte"
+
+#: src/js/Strings.php:78
+msgctxt "Editor"
+msgid "%s translation"
+msgstr "Traduction de %s "
+
+#: src/js/Strings.php:75
+msgctxt "Editor"
+msgid "Source text"
+msgstr "Texte source "
+
+#: src/js/Strings.php:50
+msgid "Server returned invalid data"
+msgstr "Le serveur a généré des données non valides"
+
+#: src/js/Strings.php:53
+msgid "Check console output for debugging information"
+msgstr "Vérifiez la console pour des informations de débogage"
+
+#: src/js/Strings.php:56
+msgid "Provide the following text when reporting a problem"
+msgstr "Rappelez le texte suivant lorsque vous signalerez un problème"
+
+#: src/js/Strings.php:14
+msgid "Nothing matches the text filter"
+msgstr "Rien ne correspond au filtre"
+
+#: src/hooks/AdminHooks.php:97
+msgid "Translate"
+msgstr "Traduire"
+
+#. translators: Error thrown when attemping to parse a file that is not PO, POT
+#. or MO
+#: src/gettext/Data.php:20
+msgid "%s is not a Gettext file"
+msgstr "%s n’est pas un fichier Gettext"
+
+#. Translators: Refers to translation files in an alternative location that
+#. isn't Author, System or Custom.
+#: src/fs/LocaleDirectory.php:71
+msgctxt "File location"
+msgid "Other"
+msgstr "Autre"
+
+#. Translators: Refers to translation files in Loco's custom/protected
+#. directory
+#: src/fs/LocaleDirectory.php:68
+msgctxt "File location"
+msgid "Custom"
+msgstr "Personnalisé"
+
+#. Translators: Refers to system-installed translation files - i.e. those under
+#. WP_LANG_DIR
+#: src/fs/LocaleDirectory.php:65
+msgctxt "File location"
+msgid "System"
+msgstr "Système"
+
+#. Translators: Refers to bundled plugin or theme translation files - i.e.
+#. those supplied by the author
+#: src/fs/LocaleDirectory.php:62
+msgctxt "File location"
+msgid "Author"
+msgstr "Auteur"
+
+#: src/fs/FileWriter.php:240
+msgid "File modification is disallowed by your WordPress config"
+msgstr "La modification de fichier n’est pas autorisée par votre configuration WordPress"
+
+#: src/fs/FileWriter.php:228
+msgid "Failed to build directory path"
+msgstr "Échec de création du chemin de répertoire"
+
+#: src/fs/FileWriter.php:221
+msgid "Failed to create directory"
+msgstr "Échec de création du répertoire"
+
+#: src/fs/FileWriter.php:194
+msgid "Failed to save file"
+msgstr "Échec d’enregistrement de fichier"
+
+#: src/fs/FileWriter.php:191
+msgid "Parent directory doesn't exist"
+msgstr "Le répertoire parent n’existe pas"
+
+#: src/fs/FileWriter.php:187
+msgid "Permission denied to update file"
+msgstr "Droit de mise à jour du fichier refusé"
+
+#: src/fs/FileWriter.php:173
+msgid "\"%s\" is a directory, not a file"
+msgstr "« %s » est un répertoire, pas un fichier"
+
+#: src/fs/FileWriter.php:157
+msgid "Failed to delete %s"
+msgstr "Échec de la suppression de %s"
+
+#: src/fs/FileWriter.php:142
+msgid "Failed to copy %s to %s"
+msgstr "Impossible de copier %s vers %s"
+
+#: src/fs/FileWriter.php:139
+msgid "Refusing to copy over an existing file"
+msgstr "Refus de copier par dessus un fichier existant"
+
+#: src/fs/FileWriter.php:122
+msgid "Failed to chmod %s"
+msgstr "Échec de chmod %s"
+
+#: src/fs/FileWriter.php:46
+msgid "Failed to connect to remote server"
+msgstr "Impossible de se connecter au serveur distant"
+
+#: src/error/XmlParseException.php:8
+msgid "XML parse error"
+msgstr "Erreur d’analyse XML"
+
+#: src/error/Warning.php:19 src/js/Strings.php:65
+msgid "Warning"
+msgstr "Avertissement"
+
+#: src/error/Success.php:19 src/js/Strings.php:71
+msgid "OK"
+msgstr "Ok"
+
+#: src/error/Notice.php:20 src/js/Strings.php:68
+#: tpl/admin/common/inc-fsconn.php:29
+msgid "Notice"
+msgstr "Notification"
+
+#: src/error/Exception.php:92 src/js/Strings.php:62
+msgid "Error"
+msgstr "Erreur "
+
+#: src/data/Permissions.php:161
+msgctxt "User role"
+msgid "Translator"
+msgstr "Traducteur"
+
+#: src/config/XMLModel.php:42
+msgid "XML supplied is empty"
+msgstr "Le XML fourni est vide"
+
+#: src/config/FormModel.php:146
+msgid "Text Domain cannot be empty"
+msgstr "Le « Text Domain » ne peut pas être vide"
+
+#. translators: used when user name of web server process is unknown
+#: src/compat/PosixExtension.php:109
+msgid "the web server"
+msgstr "le serveur Web"
+
+#: src/api/WordPressFileSystem.php:84
+msgid "%s already exists in this folder"
+msgstr "%s existe déjà dans ce dossier"
+
+#: src/ajax/XgettextController.php:63
+msgid "Template file created"
+msgstr "Modèle créé"
+
+#: src/ajax/SaveController.php:103
+msgid "PO file saved, but MO file compilation failed"
+msgstr "Fichier PO enregistré, mais échec de la compilation du fichier MO"
+
+#: src/ajax/SaveController.php:99
+msgid "PO file saved and MO file compiled"
+msgstr "Fichier PO enregistré et fichier MO compilé"
+
+#: src/ajax/SaveController.php:108
+msgid "POT file saved"
+msgstr "Fichier POT enregistré"
+
+#: src/ajax/SaveController.php:66
+msgid "Failed to create backup file in \"%s\". Check file permissions or disable backups"
+msgstr "Échec de création de fichier de sauvegarde dans « %s ». Vérifiez les droits de fichier ou désactivez les sauvegardes"
+
+#: src/ajax/MsginitController.php:58
+msgid "MO file exists for this language already. Delete it first"
+msgstr "Un fichier MO existe déjà pour cette langue. Veuillez d’abord le supprimer"
+
+#: src/ajax/FsConnectController.php:86
+msgid "Connected to remote file system"
+msgstr "Connecté au système de fichier distant"
+
+#: src/admin/list/ThemesController.php:14
+msgid "Translate themes"
+msgstr "Traduire des thèmes"
+
+#: src/admin/list/PluginsController.php:12
+msgid "Translate plugins"
+msgstr "Traduire des extensions"
+
+#: src/admin/init/InitPotController.php:115
+msgid "New translations template for \"%s\""
+msgstr "Nouveau modèle de traduction pour « %s »"
+
+#: src/admin/init/InitPotController.php:114
+msgid "New template file"
+msgstr "Nouveau modèle"
+
+#: src/admin/init/InitPotController.php:68
+msgid "Template file already exists"
+msgstr "Le modèle existe déjà"
+
+#: src/admin/init/InitPotController.php:16
+msgid "New template"
+msgstr "Nouveau modèle"
+
+#: src/admin/init/InitPoController.php:227
+msgid "Skip template"
+msgstr "Ignorer le modèle"
+
+#: src/admin/init/InitPoController.php:221
+msgid "1 source file will be scanned for translatable strings"
+msgid_plural "%s source files will be scanned for translatable strings"
+msgstr[0] "1 fichier source peut être scanné à la recherche de chaînes traduisibles"
+msgstr[1] "%s fichiers sources peuvent être scannés à la recherche de chaînes traduisibles"
+
+#: src/admin/init/InitPoController.php:193
+msgid "One string found in %2$s"
+msgid_plural "%s strings found in %s"
+msgstr[0] "Une chaîne trouvée dans %2$s"
+msgstr[1] "%s chaînes trouvées dans %s"
+
+#: src/admin/init/InitPoController.php:108
+msgid "Initializing new translations in unknown set"
+msgstr "Initialisation de nouvelles traductions dans un jeu inconnu"
+
+#: src/admin/init/InitPoController.php:104
+msgid "Initializing new translations in \"%s\""
+msgstr "Initialisation de nouvelles traductions pour « %s »"
+
+#: src/admin/file/InfoController.php:168
+msgid "Language header is \"%s\" but file name contains \"%s\""
+msgstr "L'en-tête de langue contient « %s » mais le nom du fichier contient « %s »"
+
+#: src/admin/file/InfoController.php:161
+msgid "File does not have a valid header"
+msgstr "L'en-tête du fichier n’est pas valide"
+
+#: src/admin/file/InfoController.php:130 src/package/Header.php:77
+msgid "Unknown author"
+msgstr "Auteur inconnu"
+
+#. Translators: Button that toggles between "code" and regular text editing
+#. modes
+#: src/admin/file/EditController.php:172
+msgctxt "Editor"
+msgid "Toggle code view"
+msgstr "Afficher/Masquer la vue « code »"
+
+#. Translators: Button that toggles invisible characters
+#: src/admin/file/EditController.php:170
+msgctxt "Editor"
+msgid "Toggle invisibles"
+msgstr "Afficher/Masquer les caractères invisibles"
+
+#. Translators: Button for downloading a PO, MO or POT file
+#: src/admin/file/EditController.php:166
+msgctxt "Editor"
+msgid "Download"
+msgstr "Télécharger"
+
+#. Translators: Button that toggles a translation's Fuzzy flag
+#: src/admin/file/EditController.php:164 src/js/Strings.php:99
+msgctxt "Editor"
+msgid "Fuzzy"
+msgstr "Chaînes approximatives"
+
+#. Translators: Button that reloads current screen
+#: src/admin/file/EditController.php:162
+msgctxt "Editor"
+msgid "Revert"
+msgstr "Rétablir"
+
+#. Translators: Button that runs in-editor sync/operation
+#: src/admin/file/EditController.php:160
+msgctxt "Editor"
+msgid "Sync"
+msgstr "Synchroniser"
+
+#. Translators: Button that saves translations to disk
+#: src/admin/file/EditController.php:158
+msgctxt "Editor"
+msgid "Save"
+msgstr "Enregistrer"
+
+#: src/admin/file/EditController.php:156
+msgid "Help"
+msgstr "Aide"
+
+#. Translators: button for removing a string when manually editing a POT file
+#: src/admin/file/EditController.php:155
+msgctxt "Editor"
+msgid "Remove"
+msgstr "Retirer"
+
+#. Translators: button for adding a new string when manually editing a POT file
+#: src/admin/file/EditController.php:153
+msgctxt "Editor"
+msgid "Add"
+msgstr "Ajouter"
+
+#: src/admin/file/EditController.php:103
+msgid "Translations don't match template. Run sync to update from %s"
+msgstr "Les traductions ne correspondent pas au modèle. Veuillez lancer la synchronisation pour mettre à jour depuis %s"
+
+#. translators: %1$s is the file name, %2$s is the bundle name
+#: src/admin/file/EditController.php:18
+msgid "Editing %1$s in %2$s"
+msgstr "Modification de %1$s dans %2$s"
+
+#: src/admin/file/DeleteController.php:98
+msgid "One dependant file will also be deleted"
+msgid_plural "%u dependant files will also be deleted"
+msgstr[0] "Un fichier dépendant va également être supprimé"
+msgstr[1] "%u fichiers dépendants vont également être supprimés"
+
+#: src/admin/file/DeleteController.php:75
+#: src/admin/file/DeleteController.php:93
+msgid "Delete %s"
+msgstr "Supprimer %s"
+
+#: src/admin/file/DeleteController.php:56 src/admin/file/DiffController.php:61
+msgid "File deleted"
+msgid_plural "%u files deleted"
+msgstr[0] "Fichier supprimé"
+msgstr[1] "%u fichiers supprimés"
+
+#: src/admin/file/BaseController.php:98 tpl/admin/bundle/inc-po-table.php:59
+#: tpl/admin/bundle/locale.php:75 tpl/admin/file/diff.php:31
+msgid "Delete"
+msgstr "Supprimer"
+
+#: src/admin/file/BaseController.php:96 tpl/admin/bundle/inc-po-table.php:20
+#: tpl/admin/bundle/locale.php:43 tpl/admin/file/diff.php:62
+msgid "File info"
+msgstr "Info du fichier"
+
+#: src/admin/file/BaseController.php:95
+msgid "Source"
+msgstr "Source"
+
+#: src/admin/file/BaseController.php:94
+msgid "Editor"
+msgstr "Éditeur"
+
+#: src/admin/config/SettingsController.php:51
+msgid "Super Admin"
+msgstr "Super administrateur"
+
+#: src/admin/config/PrefsController.php:48
+#: src/admin/config/SettingsController.php:77
+#: src/admin/config/VersionController.php:22 src/mvc/AdminRouter.php:66
+#: tpl/admin/help/tab-settings.php:2
+msgid "Plugin settings"
+msgstr "Réglages de l’extension"
+
+#: src/admin/config/DebugController.php:47
+msgid "System diagnostics"
+msgstr "Diagnostics système"
+
+#: src/admin/config/BaseController.php:20
+#: src/admin/config/VersionController.php:13
+msgid "Version"
+msgstr "﻿Version"
+
+#: src/admin/config/BaseController.php:19
+#: src/admin/config/PrefsController.php:13 src/mvc/AdminRouter.php:71
+msgid "User options"
+msgstr "Options de l’utilisateur"
+
+#: src/admin/config/BaseController.php:18
+msgid "Site options"
+msgstr "Options de site"
+
+#: src/admin/bundle/ViewController.php:115
+#: src/admin/init/InitPoController.php:212 tpl/admin/init/init-pot.php:40
+msgid "Create template"
+msgstr "Créer un modèle"
+
+#: src/admin/bundle/ViewController.php:107
+msgid "Edit template"
+msgstr "Modifier le modèle"
+
+#: src/admin/bundle/ViewController.php:95 src/admin/file/BaseController.php:114
+#: src/admin/init/InitPoController.php:16
+#: src/admin/init/InitPoController.php:111
+msgid "New language"
+msgstr "Nouvelle langue"
+
+#: src/admin/bundle/SetupController.php:114
+msgid "One file can't be matched to a known set of strings"
+msgid_plural "%s files can't be matched to a known set of strings"
+msgstr[0] "Un fichier ne correspond à aucun jeu de chaînes connues"
+msgstr[1] "%s fichiers ne correspondent à aucun jeu de chaînes connues"
+
+#: src/admin/bundle/SetupController.php:35
+msgid "Bundle setup"
+msgstr "Configuration du paquet"
+
+#: src/admin/bundle/SetupController.php:25
+msgid "Setup tab"
+msgstr "Onglet de configuration"
+
+#. translators: where %s is a plugin or theme
+#: src/admin/bundle/SetupController.php:15
+msgid "Set up %s"
+msgstr "Configurer %s"
+
+#: src/admin/bundle/DebugController.php:24
+msgid "Bundle diagnostics"
+msgstr "Diagnostics du paquet"
+
+#: src/admin/bundle/ConfController.php:140 tpl/admin/bundle/setup/core.php:17
+#: tpl/admin/bundle/setup/inc-nav.php:19
+msgid "Advanced configuration"
+msgstr "Configuration avancée"
+
+#: src/admin/bundle/ConfController.php:55
+msgid "Advanced tab"
+msgstr "Onglet avancé"
+
+#. translators: where %s is a plugin or theme
+#: src/admin/bundle/ConfController.php:16
+msgid "Configure %s"
+msgstr "Configurer %s"
+
+#: src/admin/bundle/BaseController.php:104
+#: src/admin/config/BaseController.php:23
+#: src/admin/config/DebugController.php:12 src/error/Debug.php:19
+msgid "Debug"
+msgstr "Débogage"
+
+#: src/admin/bundle/BaseController.php:101
+msgid "Advanced"
+msgstr "Avancé"
+
+#: src/admin/bundle/BaseController.php:100
+msgid "Setup"
+msgstr "Configuration"
+
+#: src/admin/bundle/BaseController.php:55
+msgid "Configuration reset"
+msgstr "Réinitialiser la configuration"
+
+#: src/admin/bundle/BaseController.php:39
+msgid "Configuration saved"
+msgstr "Configuration enregistrée"
+
+#. translators: home screen title where %s is the version number
+#: src/admin/RootController.php:23
+msgid "Loco Translate %s"
+msgstr "Loco Translate %s"
+
+#: src/admin/RootController.php:12 src/admin/bundle/BaseController.php:99
+#: src/admin/bundle/LocaleController.php:34
+#: src/admin/bundle/ViewController.php:25
+#: src/admin/config/BaseController.php:40 src/admin/file/EditController.php:27
+#: src/admin/file/InfoController.php:26 src/admin/file/ViewController.php:26
+#: src/admin/init/InitPoController.php:26
+#: src/admin/init/InitPotController.php:25 src/admin/list/BaseController.php:50
+#: src/admin/list/LocalesController.php:24
+msgid "Overview"
+msgstr "Vue d’ensemble"
+
+#: src/admin/Navigation.php:44 src/admin/bundle/LocaleController.php:146
+#: src/mvc/AdminRouter.php:49
+msgid "Plugins"
+msgstr "Extensions"
+
+#: src/admin/Navigation.php:41 src/admin/bundle/LocaleController.php:141
+#: src/mvc/AdminRouter.php:44
+msgid "Themes"
+msgstr "Thèmes"
+
+#: src/Locale.php:296
+msgid "Invalid locale"
+msgstr "Locale non valide"
+
+#: loco.php:131
+msgid "Loco requires the \"%s\" PHP extension. Ask your hosting provider to install it"
+msgstr "Loco nécessite l'extension PHP « %s ». Demandez à votre hébergeur de l’installer"
 
 #. Author of the plugin/theme
 msgid "Tim Whitlock"
 msgstr "Tim Whitlock"
 
-#. Description of the plugin/theme
-msgid "Translate WordPress plugins and themes directly in your browser"
-msgstr "Traduisez directement des thèmes et extensions WordPress dans votre navigateur."
-
 #. Plugin URI of the plugin/theme
-msgid "http://wordpress.org/extend/plugins/loco-translate"
-msgstr "http://wordpress.org/extend/plugins/loco-translate"
+msgid "https://wordpress.org/plugins/loco-translate/"
+msgstr "https://fr.wordpress.org/plugins/loco-translate/"
 
-#: tpl/admin-root.tpl.php:74
-msgctxt "Package list header"
-msgid "Core"
-msgstr "Fichiers principaux"
-
-#: tpl/admin-root.tpl.php:61
-msgctxt "Package list header"
-msgid "Plugins"
-msgstr "Extensions"
-
-#: tpl/admin-root.tpl.php:48
-msgctxt "Package list header"
-msgid "Themes"
-msgstr "Thèmes"
-
-#: tpl/admin-root.tpl.php:39
-msgid "Select a plugin or theme to translate"
-msgstr "Choisissez une extension ou un thème à traduire"
-
-#: tpl/admin-root.tpl.php:21
-msgid "Upgrade to version %s of Loco Translate"
-msgstr "Passer à la version %s de Loco Translate"
-
-#: tpl/admin-root.tpl.php:18
-msgid "New version available"
-msgstr "Nouvelle version disponible"
-
-#: tpl/admin-poinit.tpl.php:71
-msgctxt "Submit button"
-msgid "Start translating"
-msgstr "Traduire"
-
-#: tpl/admin-poinit.tpl.php:64
-msgctxt "Form label"
-msgid "create in global languages directory"
-msgstr "créer dans le répertoire global des langues"
-
-#: tpl/admin-poinit.tpl.php:47
-msgctxt "Form label"
-msgid "or enter any language code"
-msgstr "ou choisir un code régional"
-
-#: tpl/admin-poinit.tpl.php:35
-msgid "Select from common languages"
-msgstr "Choisir parmi les langues courantes"
-
-#: tpl/admin-poinit.tpl.php:22
-msgid "Initialize new translations in %s"
-msgstr "Créer une nouvelle traduction pour %s"
-
-#: tpl/admin-poedit.tpl.php:145
-msgctxt "Editor button"
-msgid "Help"
-msgstr "Aide"
-
-#: tpl/admin-poedit.tpl.php:140
+#. Translators: Placeholder text for text filter above editor
+#: src/admin/file/EditController.php:168
 msgid "Filter translations"
 msgstr "Filtrer les traductions"
 
-#: tpl/admin-poedit.tpl.php:135
-msgctxt "Editor button"
-msgid "Fuzzy"
-msgstr "Flou"
-
-#: tpl/admin-poedit.tpl.php:130
-msgctxt "Editor button"
-msgid "Del"
-msgstr "Supprimer"
-
-#: tpl/admin-poedit.tpl.php:125
-msgctxt "Editor button"
-msgid "Add"
-msgstr "Ajouter"
-
-#: tpl/admin-poedit.tpl.php:120
-msgctxt "Editor button"
-msgid "Revert"
-msgstr "Rétablir"
-
-#: tpl/admin-poedit.tpl.php:115
-msgctxt "Editor button"
-msgid "Sync"
-msgstr "Synchro"
-
-#: tpl/admin-poedit.tpl.php:94 tpl/admin-poedit.tpl.php:103
-msgctxt "Editor button"
-msgid "Download"
-msgstr "Télécharger"
-
-#: tpl/admin-poedit.tpl.php:87
-msgctxt "Editor button"
-msgid "Save"
-msgstr "Sauvegarder"
-
-#: tpl/admin-poedit.tpl.php:62
-msgid "never"
-msgstr "jamais"
-
-#: tpl/admin-poedit.tpl.php:40
-msgctxt "Dropdown label"
-msgid "Switch to..."
-msgstr "Permuter avec…"
-
-#: tpl/admin-poedit.tpl.php:32
+#: tpl/admin/bundle/conf.php:65 tpl/admin/bundle/inc-po-table.php:41
+#: tpl/admin/file/edit-pot.php:10 tpl/admin/file/info-pot.php:10
+#: tpl/admin/file/view-pot.php:9
 msgid "Template file"
 msgstr "Modèle"
 
-#: tpl/admin-opts.tpl.php:101
+#: tpl/admin/config/prefs.php:28 tpl/admin/config/settings.php:158
 msgid "Save settings"
 msgstr "Enregistrer les réglages"
 
-#: tpl/admin-opts.tpl.php:92
-msgid "Enable WordPress core translations"
-msgstr "Activer la traduction des fichiers principaux de WordPress"
-
-#: tpl/admin-opts.tpl.php:83 tpl/admin-opts.tpl.php:87
-msgid "Experimental features"
-msgstr "Fonctionnalités expérimentales"
-
-#: tpl/admin-opts.tpl.php:75
+#: tpl/admin/config/settings.php:67
 msgid "Number of backups to keep of each file:"
-msgstr "Nombre de sauvegardes à conserver pour chaque fichier :"
+msgstr "Nombre de sauvegardes à conserver de chaque fichier :"
 
-#: tpl/admin-opts.tpl.php:67 tpl/admin-opts.tpl.php:71
-msgid "Backing up PO files"
-msgstr "Sauvegarde des fichiers de traduction (fichiers PO)"
-
-#: tpl/admin-opts.tpl.php:60
+#: tpl/admin/config/settings.php:30
 msgid "Include Fuzzy strings"
-msgstr "Inclure les chaînes floues"
+msgstr "Inclure les chaînes approximatives"
 
-#: tpl/admin-opts.tpl.php:54
+#: tpl/admin/config/settings.php:24
 msgid "Generate hash tables"
-msgstr "Générer les tables de hachage"
+msgstr "Générer des tables de hachage"
 
-#: tpl/admin-opts.tpl.php:47
-msgid "Enter path to msgfmt on server"
-msgstr "Entrez le chemin d'accès à msgfmt sur le serveur"
-
-#: tpl/admin-opts.tpl.php:42
-msgid "Use external command:"
-msgstr "Utiliser une commande personnalisée :"
-
-#: tpl/admin-opts.tpl.php:36
-msgid "Use built-in MO compiler."
-msgstr "Utiliser le compilateur intégré."
-
-#: tpl/admin-opts.tpl.php:27 tpl/admin-opts.tpl.php:31
+#: tpl/admin/config/settings.php:15 tpl/admin/config/settings.php:19
 msgid "Compiling MO files"
-msgstr "Compilation des fichiers binaires de traduction (fichiers MO)"
+msgstr "Compilation des fichiers MO"
 
-#: tpl/admin-opts.tpl.php:18
-msgid "Configure Loco Translate"
-msgstr "Paramétrez Loco Translate"
-
-#: tpl/admin-nav.tpl.php:32
-msgid "Loco may not work as expected"
-msgstr "Loco peut ne pas fonctionner correctement"
-
-#: tpl/admin-nav.tpl.php:26
-msgid "Powered by"
-msgstr "Propulsé par"
-
-#: tpl/admin-list.tpl.php:49 tpl/admin-poedit.tpl.php:57
+#: tpl/admin/bundle/locale.php:14 tpl/admin/common/inc-po-header.php:8
+#: tpl/admin/file/edit-pot.php:12 tpl/admin/file/view-pot.php:11
 msgctxt "Modified time"
 msgid "Updated"
-msgstr "Mise à jour"
+msgstr "Dernière mise à jour "
 
-#: tpl/admin-list.tpl.php:44
-msgid "1 language"
-msgid_plural "%u languages"
-msgstr[0] "1 langue"
-msgstr[1] "%u langues"
-
-#: tpl/admin-list.tpl.php:40
-msgid "Extends: %s"
-msgstr "Étend : %s"
-
-#: tpl/admin-list.tpl.php:20
-msgctxt "Table header"
-msgid "File permissions"
-msgstr "Droits d'accès"
-
-#: tpl/admin-list.tpl.php:17
-msgctxt "Table header"
-msgid "Template (POT)"
-msgstr "Modèles (POT)"
-
-#: tpl/admin-list.tpl.php:14
-msgctxt "Table header"
-msgid "Translations (PO)"
-msgstr "Traductions (PO)"
-
-#: tpl/admin-list.tpl.php:11
-msgctxt "Table header"
-msgid "Package details"
-msgstr "Détails du paquetage"
-
-#: tpl/admin-fscheck.tpl.php:58 tpl/admin-opts.tpl.php:102
-msgid "Get help"
-msgstr "Demander de l'aide"
-
-#: tpl/admin-fscheck.tpl.php:57
-msgid "Back"
-msgstr "Retour"
-
-#: tpl/admin-fscheck.tpl.php:43
-msgid "Other potential issues with %s"
-msgstr "Autres erreurs potentielles avec %s"
-
-#: tpl/admin-fscheck.tpl.php:19
-msgid "File system permissions for %s"
-msgstr "Droits d'accès de %s"
-
-#: tpl/admin-fscheck.tpl.php:10
-msgid "File check"
-msgstr "Vérification de fichier"
-
-#: tpl/admin-fscheck.tpl.php:7 tpl/admin-opts.tpl.php:6
-#: tpl/admin-poedit.tpl.php:6 tpl/admin-poinit.tpl.php:6
-#: tpl/admin-root.tpl.php:6
-msgid "Packages"
-msgstr "Paquetages"
-
-#: pub/js/lang/dummy.php:58 tpl/admin-poinit.tpl.php:59
-msgctxt "Form label"
-msgid "create in <code>%s</code>"
-msgstr "créer dans <code>%s</code>"
-
-#: pub/js/lang/dummy.php:56
-msgid "No strings could be extracted from source files"
-msgstr "Aucune chaîne de caractères n'a pu être extraite des fichiers sources"
-
-#: pub/js/lang/dummy.php:54
-msgid "No source files in this package, nothing to sync"
-msgstr "Aucun fichier source dans ce paquetage, il n'y a rien à synchroniser"
-
-#: pub/js/lang/dummy.php:52
-msgid "Translation"
-msgstr "Traduction"
-
-#: pub/js/lang/dummy.php:44
-msgctxt "Editor pane"
-msgid "Context"
-msgstr "Contexte"
-
-#: pub/js/lang/dummy.php:41
-msgctxt "Editor pane"
-msgid "Comments"
-msgstr "Commentaires"
-
-#: pub/js/lang/dummy.php:38
-msgctxt "Editor pane"
-msgid "%s translation"
-msgstr "%s traduction"
-
-#: pub/js/lang/dummy.php:35
-msgctxt "Editor pane"
-msgid "Source text"
-msgstr "Source"
-
-#: pub/js/lang/dummy.php:27
+#: src/js/Strings.php:35
 msgid "Your changes will be lost if you continue without saving"
-msgstr "Vos modifications seront perdues si vous ne sauvegardez pas avant de continuer"
+msgstr "Vos modifications seront perdues si vous poursuivez sans enregistrer"
 
-#: pub/js/lang/dummy.php:25
+#: src/js/Strings.php:26
 msgid "1 obsolete string removed"
 msgid_plural "%s obsolete strings removed"
-msgstr[0] "1 chaîne de caractères obsolète a été supprimée"
-msgstr[1] "%s chaînes de caractères obsolètes ont été supprimées"
+msgstr[0] "1 chaîne obsolète retirée"
+msgstr[1] "%s chaînes obsolètes retirées"
 
-#: pub/js/lang/dummy.php:23
+#: src/js/Strings.php:23
 msgid "1 new string added"
 msgid_plural "%s new strings added"
-msgstr[0] "1 nouvelle chaîne de caractères a été ajoutée"
-msgstr[1] "%s nouvelles chaînes de caractères ont été ajoutées"
+msgstr[0] "1 nouvelle chaîne ajoutée"
+msgstr[1] "%s nouvelles chaînes ajoutées"
 
-#: pub/js/lang/dummy.php:21
+#: src/js/Strings.php:32
 msgid "Already up to date with source code"
-msgstr "Déjà à jour avec le code source"
+msgstr "Déjà mis à jour avec le code source"
 
-#: pub/js/lang/dummy.php:19
+#: src/js/Strings.php:29
 msgid "Already up to date with %s"
-msgstr "Déjà à jour avec %s"
+msgstr "Déjà mis à jour avec %s"
 
-#: pub/js/lang/dummy.php:17
+#: src/js/Strings.php:20
 msgid "Merged from source code"
 msgstr "Fusionné depuis le code source"
 
-#. Translators: where %s is the path to a POT file
-#: pub/js/lang/dummy.php:15
+#: src/js/Strings.php:17
 msgid "Merged from %s"
-msgstr "Fusionné avec %s"
+msgstr "Fusionné depuis %s"
 
-#: pub/js/lang/dummy.php:12
-msgid "and MO file compiled"
-msgstr "et fichier binaire de traduction (fichier MO) compilé"
-
-#: pub/js/lang/dummy.php:10
-msgid "PO file saved"
-msgstr "Fichier de traduction (fichier PO) sauvegardé"
-
-#: pub/js/lang/dummy.php:8
+#: src/js/Strings.php:59
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
-#: php/loco-posave.php:131
-msgid "Failed to write MO file"
-msgstr "Impossible d'écrire dans le fichier binaire de traduction (fichier MO)"
-
-#: php/loco-posave.php:105
-msgid "Cannot overwrite MO file"
-msgstr "Impossible de réécrire le fichier binaire de traduction (fichier MO)"
-
-#: php/loco-posave.php:102
-msgid "Cannot create MO file"
-msgstr "Impossible de créer le fichier binaire de traduction (fichier MO)"
-
-#: php/loco-posave.php:81
-msgid "%s file is not writable by the web server. Fix file permissions or download and copy to \"%s/%s\"."
-msgstr "Le fichier %s n'est pas accessible en écriture par le serveur web. Résolvez les droits d'accès au fichier ou téléchargez puis copiez dans \"%s/%s\"."
-
-#: php/loco-posave.php:69
-msgid "Web server cannot create files in the \"%s\" directory. Fix file permissions or use the download function."
-msgstr "Le serveur web ne peut pas créer de fichiers dans \"%s\". Résolvez les droits d'accès au fichier ou utilisez la fonction Télécharger"
-
-#: php/loco-posave.php:66
-msgid "Web server cannot create \"%s\" directory in \"%s\". Fix file permissions or create it manually."
-msgstr "Le serveur web ne peut pas créer \"%s\" dans \"%s\". Résolvez les droits d'accès au fichier ou créez le manuellement."
-
-#: php/loco-posave.php:58
-msgid "Web server cannot create backups in \"%s\". Fix file permissions or disable backups in settings"
-msgstr "Le serveur web ne peut pas créer de sauvegardes dans « %s ». Corrigez les droits d’accès au fichier ou désactivez les sauvegardes dans les réglages."
-
-#: php/loco-posave.php:23 php/loco-posync.php:22
-msgid "Package not found called %s"
-msgstr "Le paquetage %s n'a pas été trouvé"
-
-#: php/loco-download.php:75 php/loco-posave.php:121
-msgid "Failed to compile MO file with %s, check your settings"
-msgstr "Impossible de compiler le fichier binaire de traduction (fichier MO) avec %s, vérifiez vos réglages."
-
-#: php/loco-data.php:21 php/loco-posave.php:10 php/loco-posync.php:9
-msgid "Invalid data posted to server"
-msgstr "Données non valides envoyées au serveur"
-
-#: php/loco-ajax.php:17 php/loco-download.php:21
-msgid "User does not have permission to manage translations"
-msgstr "L'utilisateur n'a pas les droits d'accès nécessaires pour gérer les traductions"
-
-#: lib/loco-packages.php:559
-msgid "%s has a strange POT file name (%s). A better name would be \"%s.pot\""
-msgstr "%s possède un nom de fichier POT étrange (%s). \"%s.pot\" serait un meilleur nom."
-
-#: lib/loco-packages.php:556
-msgid "%s has no POT file. Create one at \"%s/%s.pot\" if you need one."
-msgstr "%s ne possède pas de fichier POT. Créez un \"%s/%s.pot\" si vous en avez besoin."
-
-#: lib/loco-packages.php:551
-msgid "%s does not declare a \"Domain Path\""
-msgstr "%s ne décalre pas de \"Domain Path\""
-
-#: lib/loco-packages.php:546 lib/loco-packages.php:551
-msgid "Loco has guessed \"%s\""
-msgstr "Loco a supposé \"%s\""
-
-#: lib/loco-packages.php:546
-msgid "%s does not declare a \"Text Domain\""
-msgstr "%s ne déclare pas de \"Text Domain\""
-
-#: lib/loco-packages.php:527
-msgid "Folder not found"
-msgstr "Répertoire non trouvé"
-
-#: lib/loco-packages.php:527
-msgid "Folder not writable"
-msgstr "Répertoire non accessible en écriture"
-
-#: lib/loco-packages.php:522
-msgid "MO file not found"
-msgstr "Le fichier binaire de traduction (fichier MO) n'a pas été trouvé"
-
-#: lib/loco-packages.php:522
-msgid "MO file not writable"
-msgstr "Le fichier binaire de traduction (fichier MO) n'est pas accessible en écriture"
-
-#: lib/loco-packages.php:520
-msgid "PO file not writable"
-msgstr "Le fichier de traduction (fichier PO) n'est pas accessible en écriture"
-
-#: lib/loco-packages.php:515
-msgid "POT file not writable"
-msgstr "Le modèle (fichier POT) n'est pas accessible en écriture"
-
-#: lib/loco-packages.php:490 lib/loco-packages.php:494
-msgid "\"%s\" folder not writable"
-msgstr "Le répertoire \"%s\" n'est pas accessible en écriture"
-
-#: lib/loco-packages.php:484
-msgid "Some files missing"
-msgstr "Certains fichiers sont manquants"
-
-#: lib/loco-packages.php:474 lib/loco-packages.php:481
-msgid "Some files not writable"
-msgstr "Certains fichiers ne sont pas accessibles en écriture"
-
-#: lib/loco-locales.php:77
-msgid "Unknown language"
-msgstr "Région inconnue"
-
-#: lib/loco-admin.php:1159
-msgid "WPLANG is deprecated and should be removed from wp-config.php"
-msgstr "La constante WPLANG est dépréciée et devrait être supprimée de wp-config.php"
-
-#: lib/loco-admin.php:1149
-msgid "File download failed"
-msgstr "Le téléchargement du fichier a échoué"
-
-#: lib/loco-admin.php:1125 tpl/admin-fscheck.tpl.php:8 tpl/admin-opts.tpl.php:7
-#: tpl/admin-poedit.tpl.php:7 tpl/admin-poinit.tpl.php:7
-#: tpl/admin-root.tpl.php:7
+#: src/mvc/AdminRouter.php:67 src/mvc/AdminRouter.php:72
+#: tpl/admin/common/inc-fsconn.php:18 tpl/admin/common/inc-fsconn.php:35
+#: tpl/admin/errors/no-backups.php:24
 msgid "Settings"
 msgstr "Réglages"
 
-#. #-#-#-#-#  tmp-loco-translate.pot (Loco Translate 1.5.6)  #-#-#-#-#
+#. #-#-#-#-#  loco-translate-code.pot (Loco Translate 2.1.5)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: lib/loco-admin.php:1101
+#: src/hooks/AdminHooks.php:67 src/mvc/AdminRouter.php:37
 msgid "Loco Translate"
 msgstr "Loco Translate"
 
-#: lib/loco-admin.php:1094
-msgid "Translation options"
-msgstr "Paramètres"
-
-#: lib/loco-admin.php:1093 lib/loco-admin.php:1124
-msgid "Manage translations"
-msgstr "Traductions"
-
-#: lib/loco-admin.php:1092 tpl/admin-nav.tpl.php:27
+#. translators: Page title for plugin home screen
+#: src/mvc/AdminRouter.php:39
 msgid "Loco, Translation Management"
-msgstr "Loco, Gestionnaire de Traduction"
+msgstr "Loco, gestion de la traduction"
 
-#: lib/loco-admin.php:1044
-msgid "Failed to compile MO file with built-in compiler"
-msgstr "Impossible de compiler le fichier binaire de traduction (fichier MO) avec le compilateur intégré"
-
-#: lib/loco-admin.php:998
+#: src/gettext/Metadata.php:203 src/js/Strings.php:47
 msgid "%s untranslated"
 msgstr "%s non traduites"
 
-#: lib/loco-admin.php:995
+#: src/gettext/Metadata.php:200 src/js/Strings.php:44
 msgid "%s fuzzy"
-msgstr "%s floues"
+msgstr "%s approximatives"
 
-#: lib/loco-admin.php:992
+#: src/gettext/Metadata.php:188 src/js/Strings.php:38
 msgid "1 string"
 msgid_plural "%s strings"
-msgstr[0] "1 chaîne de caractères"
-msgstr[1] "%s chaînes de caractères"
+msgstr[0] "1 chaîne"
+msgstr[1] "%s chaînes"
 
-#: lib/loco-admin.php:992
+#: src/gettext/Metadata.php:198 src/js/Strings.php:41
 msgid "%s%% translated"
-msgstr "%s%% traduit"
+msgstr "%s%% chaînes traduites"
 
-#: lib/loco-admin.php:953
-msgctxt "Add button"
-msgid "New language"
-msgstr "Nouvelle langue"
-
-#: lib/loco-admin.php:934
-msgctxt "Add button"
-msgid "New template"
-msgstr "Nouveau modèle"
-
-#: lib/loco-admin.php:787
-msgid "%s file has no header"
-msgstr "Le fichier %s n'a pas d'en-têtes"
-
-#: lib/loco-admin.php:783
-msgid "Empty or invalid %s file"
-msgstr "Le fichier %s est vide ou non-valide"
-
-#: lib/loco-admin.php:536
-msgid "Bad file path"
-msgstr "Mauvais chemin de fichier"
-
-#: lib/loco-admin.php:440
-msgid "POT has been modified since PO file was saved, run Sync to update"
-msgstr "Le modèle (fichier POT) a été mis à jour depuis la dernière modification du fichier de traduction (fichier PO), exécutez Synchro pour mettre à jour ce dernier"
-
-#: lib/loco-admin.php:436
-msgid "Source code has been modified, run Sync to update POT"
-msgstr "Le code source a été modifié, exécutez Synchro pour mettre à jour le modèle (fichier POT)"
-
-#: lib/loco-admin.php:417
-msgid "Run Sync to update from %s"
-msgstr "Exécutez Synchro pour mettre à jour depuis %s"
-
-#: lib/loco-admin.php:410 php/loco-posync.php:52
-msgid "No strings could be extracted from source code"
-msgstr "Aucune chaîne de caractères n'a pu être extraire du code source"
-
-#: lib/loco-admin.php:406 lib/loco-admin.php:421
-msgid "Run Sync to update from source code"
-msgstr "Exécutez Synchro pour mettre à jour depuis le code source"
-
-#: lib/loco-admin.php:405 lib/loco-admin.php:414
-msgid "%s file is empty"
-msgstr "Le fichier %s est vide"
-
-#: lib/loco-admin.php:396
-msgid "File cannot be created automatically. Fix the file permissions or use Download instead of Save"
-msgstr "Le fichier ne peut pas être créé automatiquement. Fixez les autorisations du fichier ou utilisez la fonction Télécharger au lieu de Sauvegarder"
-
-#: lib/loco-admin.php:344
-msgid "PO file already exists with locale %s"
-msgstr "Le fichier de traduction (fichier PO) existe déjà pour la région %s"
-
-#: lib/loco-admin.php:337
-msgid "Cannot create a PO file."
-msgstr "Impossible de créer le fichier de traduction (fichier PO)."
-
-#: lib/loco-admin.php:337 lib/loco-admin.php:426
-msgid "No translatable strings found"
-msgstr "Aucune chaîne de caractères à traduire"
-
-#: lib/loco-admin.php:312
-msgid "You must specify a valid locale for a new PO file"
-msgstr "Vous devez indiquer une région valide pour le nouveau fichier de traduction (fichier PO)"
-
-#: lib/loco-admin.php:214
-msgid "PO file used as template. This will be renamed to %s on first save"
-msgstr "Fichier de traduction (fichier PO) utilisé comme modèle. Ce fichier sera renommé en %s au premier enregistrement"
-
-#: lib/loco-admin.php:199
-msgid "New PO file"
-msgstr "Nouveau fichier de traduction (fichier PO)"
-
-#: lib/loco-admin.php:126 lib/loco-packages.php:568
-msgid "%s is not an official WordPress language"
-msgstr "%s n'est pas un language WordPress officiel."
-
-#: lib/loco-admin.php:86
+#: src/admin/config/PrefsController.php:32
+#: src/admin/config/SettingsController.php:31
 msgid "Settings saved"
 msgstr "Réglages enregistrés"
 
-#: lib/loco-admin.php:63
+#: src/error/WriteException.php:13
 msgid "Permission denied"
-msgstr "Non autorisé"
-
-#: lib/loco-admin.php:54 tpl/admin-list.tpl.php:98
-msgctxt "Message label"
-msgid "OK"
-msgstr "Succès"
-
-#: lib/loco-admin.php:41
-msgctxt "Message label"
-msgid "Warning"
-msgstr "Avertissement"
-
-#. Translators: Bold text label in admin error messages
-#: lib/loco-admin.php:31
-msgctxt "Message label"
-msgid "Error"
-msgstr "Erreur"
-
-#: lib/compat/loco-iconv.php:13 lib/compat/loco-json.php:13
-#: lib/compat/loco-mbstring.php:13 lib/compat/loco-tokenizer.php:12
-msgid "PHP extension \"%s\" is not installed. If you experience problems you should install it"
-msgstr "L'extension PHP \"%s\" n'est pas installée. Si vous rencontrez des problèmes vous devriez l'installer."
+msgstr "Permission refusée"

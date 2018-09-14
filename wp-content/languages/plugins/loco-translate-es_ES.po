@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Loco Translate - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2018-05-29 19:02:50+0000\n"
+"PO-Revision-Date: 2018-08-14 09:48:23+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,16 @@ msgstr ""
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: es\n"
 "Project-Id-Version: Plugins - Loco Translate - Stable (latest release)\n"
+
+#: src/js/Strings.php:96
+msgctxt "Editor"
+msgid "Translated"
+msgstr "Traducido"
+
+#: src/js/Strings.php:93
+msgctxt "Editor"
+msgid "Untranslated"
+msgstr "Sin traducir"
 
 #: src/hooks/AdminHooks.php:69
 msgid "Administrators and auditors may wish to review Loco's <a href=\"%s\">plugin privacy notice</a>."
@@ -140,7 +150,7 @@ msgstr "Idiomas &lsaquo; Loco"
 msgid "Languages"
 msgstr "Idiomas"
 
-#: src/fs/FileWriter.php:246
+#: src/fs/FileWriter.php:244
 msgid "Modification of installed files is disallowed by the plugin settings"
 msgstr "La modificación de los archivos instalados no está permitida en los ajustes del plugin"
 
@@ -1028,7 +1038,7 @@ msgstr "El equipo de WordPress"
 msgid "WordPress core"
 msgstr "Núcleo de WordPress"
 
-#: src/output/Buffer.php:80
+#: src/output/Buffer.php:129
 msgid "Loco interrupted by output from %s:%u"
 msgstr "Se ha interrumpido Loco por la salida de %s:%u"
 
@@ -1049,19 +1059,19 @@ msgstr "Y/m/d"
 msgid "You do not have sufficient permissions to access this page."
 msgstr "No tienes suficientes permisos para ver esta página."
 
-#: src/mvc/AjaxRouter.php:198
+#: src/mvc/AjaxRouter.php:204
 msgid "Download controller returned empty output"
 msgstr "El controlador de descarga devolvió una salida vacía"
 
-#: src/mvc/AjaxRouter.php:193
+#: src/mvc/AjaxRouter.php:199
 msgid "Download action not found"
 msgstr "Acción de descarga no encontrada"
 
-#: src/mvc/AjaxRouter.php:166
+#: src/mvc/AjaxRouter.php:176
 msgid "Ajax controller returned empty JSON"
 msgstr "El controlador Ajax devolvió un JSON vacío"
 
-#: src/mvc/AjaxRouter.php:161
+#: src/mvc/AjaxRouter.php:171
 msgid "Ajax route not found: \"%s\""
 msgstr "Ruta Ajax no encontrada: \"%s\""
 
@@ -1100,22 +1110,22 @@ msgstr "Loco Translate funciona con"
 msgid "Help & support"
 msgstr "Ayuda & soporte"
 
-#: src/js/Strings.php:102
+#: src/js/Strings.php:111
 msgctxt "Editor"
 msgid "Translation"
 msgstr "Traducción"
 
-#: src/js/Strings.php:99
+#: src/js/Strings.php:108
 msgctxt "Editor"
 msgid "Translation not loaded"
 msgstr "Traducción no cargada"
 
-#: src/js/Strings.php:96
+#: src/js/Strings.php:105
 msgctxt "Editor"
 msgid "Context not loaded"
 msgstr "Contexto no cargado"
 
-#: src/js/Strings.php:93
+#: src/js/Strings.php:102
 msgctxt "Editor"
 msgid "Source text not loaded"
 msgstr "Texto de origen no cargado"
@@ -1172,7 +1182,7 @@ msgstr "Traducir"
 
 #. translators: Error thrown when attemping to parse a file that is not PO, POT
 #. or MO
-#: src/gettext/Data.php:21
+#: src/gettext/Data.php:20
 msgid "%s is not a Gettext file"
 msgstr "%s no es un archivo Gettext"
 
@@ -1204,51 +1214,51 @@ msgctxt "File location"
 msgid "Author"
 msgstr "Autor"
 
-#: src/fs/FileWriter.php:242
+#: src/fs/FileWriter.php:240
 msgid "File modification is disallowed by your WordPress config"
 msgstr "La modificación de archivos no está permitida por tu configuración de WordPress"
 
-#: src/fs/FileWriter.php:230
+#: src/fs/FileWriter.php:228
 msgid "Failed to build directory path"
 msgstr "Fallo al construir la ruta del directorio"
 
-#: src/fs/FileWriter.php:223
+#: src/fs/FileWriter.php:221
 msgid "Failed to create directory"
 msgstr "Fallo al crear el directorio"
 
-#: src/fs/FileWriter.php:196
+#: src/fs/FileWriter.php:194
 msgid "Failed to save file"
 msgstr "Fallo al guardar el archivo"
 
-#: src/fs/FileWriter.php:193
+#: src/fs/FileWriter.php:191
 msgid "Parent directory doesn't exist"
 msgstr "El directorio superior no existe"
 
-#: src/fs/FileWriter.php:189
+#: src/fs/FileWriter.php:187
 msgid "Permission denied to update file"
 msgstr "No tiene permiso para actualizar el fichero"
 
-#: src/fs/FileWriter.php:175
+#: src/fs/FileWriter.php:173
 msgid "\"%s\" is a directory, not a file"
 msgstr "\"%s\" es un directorio, no un archivo"
 
-#: src/fs/FileWriter.php:159
+#: src/fs/FileWriter.php:157
 msgid "Failed to delete %s"
 msgstr "Fallo al borrar %s"
 
-#: src/fs/FileWriter.php:144
+#: src/fs/FileWriter.php:142
 msgid "Failed to copy %s to %s"
 msgstr "Fallo al copiar %s en %s"
 
-#: src/fs/FileWriter.php:141
+#: src/fs/FileWriter.php:139
 msgid "Refusing to copy over an existing file"
 msgstr "Rechazada la copia sobre un archivo existente"
 
-#: src/fs/FileWriter.php:124
+#: src/fs/FileWriter.php:122
 msgid "Failed to chmod %s"
 msgstr "Falló al hacer chmod en %s"
 
-#: src/fs/FileWriter.php:47
+#: src/fs/FileWriter.php:46
 msgid "Failed to connect to remote server"
 msgstr "Fallo al conectar con el servidor remoto"
 
@@ -1269,7 +1279,7 @@ msgstr "OK"
 msgid "Notice"
 msgstr "Aviso"
 
-#: src/error/Exception.php:95 src/js/Strings.php:62
+#: src/error/Exception.php:92 src/js/Strings.php:62
 msgid "Error"
 msgstr "Error"
 
@@ -1299,19 +1309,19 @@ msgstr "%s ya existe en esta carpeta"
 msgid "Template file created"
 msgstr "Fichero de plantilla creado"
 
-#: src/ajax/SaveController.php:107
+#: src/ajax/SaveController.php:103
 msgid "PO file saved, but MO file compilation failed"
 msgstr "Fichero PO guardado, pero la compilación del fichero MO ha fallado"
 
-#: src/ajax/SaveController.php:103
+#: src/ajax/SaveController.php:99
 msgid "PO file saved and MO file compiled"
 msgstr "Fichero PO guardado y fichero MO compilado"
 
-#: src/ajax/SaveController.php:94 src/ajax/SaveController.php:112
+#: src/ajax/SaveController.php:108
 msgid "POT file saved"
 msgstr "Fichero POT guardado"
 
-#: src/ajax/SaveController.php:67
+#: src/ajax/SaveController.php:66
 msgid "Failed to create backup file in \"%s\". Check file permissions or disable backups"
 msgstr "Fallo al crear copia de seguridad del fichero en \"%s\". Compruebe los permisos del fichero o desactive las copias de seguridad."
 
@@ -1403,7 +1413,7 @@ msgid "Download"
 msgstr "Descargar"
 
 #. Translators: Button that toggles a translation's Fuzzy flag
-#: src/admin/file/EditController.php:164
+#: src/admin/file/EditController.php:164 src/js/Strings.php:99
 msgctxt "Editor"
 msgid "Fuzzy"
 msgstr "Dudoso"
@@ -1569,7 +1579,7 @@ msgstr "Configurar %s"
 
 #: src/admin/bundle/BaseController.php:104
 #: src/admin/config/BaseController.php:23
-#: src/admin/config/DebugController.php:13 src/error/Debug.php:19
+#: src/admin/config/DebugController.php:12 src/error/Debug.php:19
 msgid "Debug"
 msgstr "Depurar"
 
@@ -1705,10 +1715,6 @@ msgstr "Combinado desde el código fuente"
 msgid "Merged from %s"
 msgstr "Combinado desde %s"
 
-#: src/ajax/SaveController.php:94
-msgid "PO file saved"
-msgstr "Fichero PO guardado"
-
 #: src/js/Strings.php:59
 msgid "Unknown error"
 msgstr "Error desconocido"
@@ -1719,7 +1725,7 @@ msgstr "Error desconocido"
 msgid "Settings"
 msgstr "Configuración"
 
-#. #-#-#-#-#  loco-translate-code.pot (Loco Translate 2.1.4)  #-#-#-#-#
+#. #-#-#-#-#  loco-translate-code.pot (Loco Translate 2.1.5)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: src/hooks/AdminHooks.php:67 src/mvc/AdminRouter.php:37
 msgid "Loco Translate"
