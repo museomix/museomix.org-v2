@@ -23,10 +23,10 @@ function CommunitiesMapdoCustomModule() {
                 $this->name            = esc_html__( 'Communities map' );
                 $this->slug            = 'et_pb_communities_map_mc';
 
-                $this->whitelisted_fields = array();
-                foreach ( $this->get_fields() as $name => $field ) {
-                    $this->whitelisted_fields[] = $name;
-                }
+                // $this->whitelisted_fields = array();
+                // foreach ( $this->get_fields() as $name => $field ) {
+                    // $this->whitelisted_fields[] = $name;
+                // }
 
             }
 
@@ -40,9 +40,9 @@ function CommunitiesMapdoCustomModule() {
                 );
                 return $fields;
             }
-            function shortcode_callback( $atts, $content = null, $function_name ) {
+            function render( $atts, $content = null, $function_name ) {
 
-                $content = $this->shortcode_content;
+                $content = $this->content;
                 $communities = get_posts(
                     array(
                         'post_type' => 'community',
@@ -86,16 +86,16 @@ function CommunitiesMapdoCustomModule() {
                 //$this->fb_support = true; // Utilisable dans le Visual Builder
 
                 // Ici on déclare nos champs pour notre module en admin
-                $this->whitelisted_fields = array(
-                    'title',
-                    'include_country_list',
-                    'admin_label',
-                    'module_id',
-                    'module_class',
-                );
+                // $this->whitelisted_fields = array(
+                    // 'title',
+                    // 'include_country_list',
+                    // 'admin_label',
+                    // 'module_id',
+                    // 'module_class',
+                // );
 
                 // Ici on déclare nos différentes sections, et quels champs elles doivent contenir
-                $this->options_toggles = array(
+                $this->settings_modal_toggles = array(
                     // Dans la section "général" on affiche nos champs principaux (main_content)
                     'general'  => array(
                         'toggles' => array( // Les 'toggles' sont les titres des sections en admin, on les réutilise dans la fonction get_fields
@@ -116,7 +116,7 @@ function CommunitiesMapdoCustomModule() {
                 $this->main_css_element = '%%order_class%%';
 
                 // On définit le sélecteur css de notre module pour la partir "CSS personnalisé" en admin
-                $this->custom_css_options = array(
+                $this->custom_css_fields = array(
                     'main_element' => array(
                         'label'    => esc_html__( 'Main Element', 'et_builder' ),
                         'selector' => '.et_pb_communities_list.et_pb_module',
@@ -126,7 +126,7 @@ function CommunitiesMapdoCustomModule() {
 
                 // On déclare que l'on veut 2 options supplémentaires : background et custom margin et padding
                 // Ce sont deux options gérées nativement par Divi, nous n'avons pas besoin de les définir dans la fonction get_fields()
-                $this->advanced_options = array(
+                $this->advanced_fields = array(
                     'background' => array(
                         'settings' => array(
                             'color' => 'alpha',
@@ -197,15 +197,15 @@ function CommunitiesMapdoCustomModule() {
                 return $fields;
             }
 
-            // La fonction shortcode_callback nous sert à récupérer les arguments créés dans le shortcode
+            // La fonction render nous sert à récupérer les arguments créés dans le shortcode
             // Et d'en ressortir ce que l'on veut
-            function shortcode_callback( $atts, $content = null, $function_name ) {
+            function render( $atts, $content = null, $function_name ) {
 
                 // On récupère les valeurs via les identifiants de champs déclarés dans la fontion init()
-                $title             = $this->shortcode_atts['title'];
-                $country_list      = $this->shortcode_atts['include_country_list'];
-                $module_id         = $this->shortcode_atts['module_id'];
-                $module_class      = $this->shortcode_atts['module_class'];
+                $title             = $this->props['title'];
+                $country_list      = $this->props['include_country_list'];
+                $module_id         = $this->props['module_id'];
+                $module_class      = $this->props['module_class'];
 
                 // La fonction add_module_order_class sert à construire la classe CSS de notre module
                 $module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );

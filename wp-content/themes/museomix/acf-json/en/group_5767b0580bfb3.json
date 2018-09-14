@@ -1,13 +1,13 @@
 {
-    "key": "group_57266c256ac2e",
+    "key": "group_5767b0580bfb3",
     "title": "Infos Communauté",
     "fields": [
         {
-            "key": "field_58e4d691218e0",
+            "key": "field_5b389a8905f96",
             "label": "Introduction",
             "name": "introduction",
             "type": "wysiwyg",
-            "instructions": "Sera affichée en haut de la page",
+            "instructions": "",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -22,11 +22,11 @@
             "delay": 0
         },
         {
-            "key": "field_58e4d6c8218e1",
+            "key": "field_5b389af0d2a23",
             "label": "Présentation",
             "name": "presentation",
             "type": "wysiwyg",
-            "instructions": "Sera affichée sur la gauche des coordonnées",
+            "instructions": "Sera affiché sur la gauche des coordonnées",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -41,7 +41,7 @@
             "delay": 0
         },
         {
-            "key": "field_5763d528a1974",
+            "key": "field_5767b05818b9b",
             "label": "Pays",
             "name": "country",
             "type": "select",
@@ -54,22 +54,21 @@
                 "id": ""
             },
             "choices": {
-                "allemagne": "Allemagne",
-                "belgique": "Belgique",
+                "allemagne": "Germany",
+                "belgique": "Belgium",
                 "france": "France",
                 "canada": "Canada",
-                "italie": "Italie",
-                "suisse": "Suisse",
-                "bresil": "Brésil",
-                "espagne": "Espagne",
-                "royaume-uni": "Royaume-Uni",
-                "mexique": "Mexique",
-                "autriche": "Autriche",
-                "croatie": "Croatie",
+                "italie": "Italy",
+                "suisse": "Switzerland",
+                "bresil": "Brazil",
+                "espagne": "Spain",
+                "royaume-uni": "United Kingdom",
+                "mexique": "Mexico",
+                "autriche": "Austria",
+                "croatie": "Croatia",
                 "portugal": "Portugal",
-                "equateur": "Equateur",
-                "senegal": "Sénégal",
-                "monde": "Monde"
+                "equateur": "Ecuador",
+                "senegal": "Senegal"
             },
             "default_value": [],
             "allow_null": 0,
@@ -80,7 +79,7 @@
             "placeholder": ""
         },
         {
-            "key": "field_58e4e6807925f",
+            "key": "field_5b389c40a3411",
             "label": "Aire d'influence",
             "name": "sphere_of_influence",
             "type": "text",
@@ -99,7 +98,7 @@
             "maxlength": ""
         },
         {
-            "key": "field_58e3576510f7c",
+            "key": "field_5b389c732422e",
             "label": "Position géographique",
             "name": "geolocation",
             "type": "google_map",
@@ -117,7 +116,7 @@
             "height": ""
         },
         {
-            "key": "field_58e4dfaff96be",
+            "key": "field_5b389d088ce39",
             "label": "Visuels",
             "name": "",
             "type": "tab",
@@ -133,7 +132,7 @@
             "endpoint": 0
         },
         {
-            "key": "field_58e4e2cc8097e",
+            "key": "field_5b389d68ae424",
             "label": "Logo communauté",
             "name": "community_logo",
             "type": "image",
@@ -157,11 +156,11 @@
             "mime_types": ""
         },
         {
-            "key": "field_5763de6e77978",
+            "key": "field_5767b05818c1e",
             "label": "Logo rond",
             "name": "community_image",
             "type": "image",
-            "instructions": "Version locale du logo rond",
+            "instructions": "",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -181,7 +180,7 @@
             "mime_types": ""
         },
         {
-            "key": "field_58e4ba0bf94de",
+            "key": "field_5b389dcd40bf4",
             "label": "Bannière",
             "name": "banner",
             "type": "image",
@@ -205,8 +204,8 @@
             "mime_types": ""
         },
         {
-            "key": "field_58e4dff898fac",
-            "label": "Image presentation",
+            "key": "field_5b389e1eae193",
+            "label": "Image présentation",
             "name": "presentation_image",
             "type": "image",
             "instructions": "",
@@ -229,7 +228,7 @@
             "mime_types": ""
         },
         {
-            "key": "field_58e4e639a2c97",
+            "key": "field_5b389e562a18d",
             "label": "Liens",
             "name": "",
             "type": "tab",
@@ -245,7 +244,7 @@
             "endpoint": 0
         },
         {
-            "key": "field_55906300aeaad",
+            "key": "field_5767b05818b14",
             "label": "Site web",
             "name": "website",
             "type": "text",
@@ -267,7 +266,7 @@
             "disabled": 0
         },
         {
-            "key": "field_55905e4bad1d7",
+            "key": "field_5767b05817bef",
             "label": "Réseaux sociaux",
             "name": "social_networks",
             "type": "repeater",
@@ -286,7 +285,7 @@
             "button_label": "Ajouter",
             "sub_fields": [
                 {
-                    "key": "field_55905e67ad1d8",
+                    "key": "field_5767b05822655",
                     "label": "Réseau",
                     "name": "network",
                     "type": "select",
@@ -313,7 +312,7 @@
                     "placeholder": ""
                 },
                 {
-                    "key": "field_55905e7fad1d9",
+                    "key": "field_5767b058226e1",
                     "label": "URL",
                     "name": "url",
                     "type": "text",
@@ -337,7 +336,7 @@
             ]
         },
         {
-            "key": "field_58e4e654a2c98",
+            "key": "field_5b389ef11a418",
             "label": "Téléphone",
             "name": "phone",
             "type": "text",
@@ -356,7 +355,7 @@
             "maxlength": ""
         },
         {
-            "key": "field_58e4e8b9974cd",
+            "key": "field_5b389f0d50f01",
             "label": "Email",
             "name": "email",
             "type": "email",
@@ -391,5 +390,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1532261601
+    "modified": 1532263131
 }

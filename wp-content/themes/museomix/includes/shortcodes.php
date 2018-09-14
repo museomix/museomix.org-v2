@@ -76,7 +76,9 @@ function ListeLieux($atts) {
 		'meta_key' => 'edition',
 		'meta_value' => $editions_ids,
 		'meta_compare' => 'IN',
-		'posts_per_page' => $elements_number
+		'posts_per_page' => $elements_number,
+		'suppress_filters' => 0
+
 	);
 	$lieux = get_posts($args);
 	if(!count($lieux)){ return ''; }
