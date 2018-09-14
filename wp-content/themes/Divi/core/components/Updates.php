@@ -122,9 +122,13 @@ final class ET_Core_Updates {
 	 * @return void
 	 */
 	function get_options() {
-		$this->options = get_option( 'et_automatic_updates_options' );
+		if ( ! $this->options = get_site_option( 'et_automatic_updates_options' ) ) {
+			$this->options = get_option( 'et_automatic_updates_options' );
+		}
 
-		$this->account_status = get_option( 'et_account_status' );
+		if ( ! $this->account_status = get_site_option( 'et_account_status' ) ) {
+			$this->account_status = get_option( 'et_account_status' );
+		}
 	}
 
 	function load_scripts_styles( $hook ) {
@@ -141,7 +145,7 @@ final class ET_Core_Updates {
 	 * @return void
 	 */
 	function maybe_update_account_status() {
-		$last_checked = get_option( 'et_account_status_last_checked' );
+		$last_checked = get_site_option( 'et_account_status_last_checked' );
 
 		$timeout = 12 * HOUR_IN_SECONDS;
 
@@ -190,8 +194,8 @@ final class ET_Core_Updates {
 				if ( in_array( $response, array( 'expired', 'active', 'not_found' ) ) ) {
 					$this->account_status = $response;
 
-					update_option( 'et_account_status', $this->account_status );
-					update_option( 'et_account_status_last_checked', time() );
+					update_site_option( 'et_account_status', $this->account_status );
+					update_site_option( 'et_account_status_last_checked', time() );
 				}
 			}
 		}
@@ -343,7 +347,7 @@ final class ET_Core_Updates {
 						$this->account_status = 'active';
 					}
 
-					update_option( 'et_account_status', $this->account_status );
+					update_site_option( 'et_account_status', $this->account_status );
 
 					break;
 				}

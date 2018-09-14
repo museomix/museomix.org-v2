@@ -75,7 +75,7 @@ class ET_Builder_Settings {
 				'depends_show_if' => 'on',
 				'mobile_options'  => false,
 				'unitless'        => true,
-				'depends_to'      => array(
+				'depends_on'      => array(
 					'et_pb_enable_ab_testing',
 				),
 				'tab_slug'        => 'content',
@@ -91,7 +91,7 @@ class ET_Builder_Settings {
 					'hourly' => esc_html__( 'Hourly', 'et_builder' ),
 					'daily'  => esc_html__( 'Daily', 'et_builder' ),
 				),
-				'depends_to'      => array(
+				'depends_on'      => array(
 					'et_pb_enable_ab_testing',
 				),
 				'tab_slug'        => 'content',
@@ -109,7 +109,7 @@ class ET_Builder_Settings {
 				'affects'         => array(
 					'et_pb_ab_current_shortcode',
 				),
-				'depends_to'      => array(
+				'depends_on'      => array(
 					'et_pb_enable_ab_testing',
 				),
 				'tab_slug'        => 'content',
@@ -122,7 +122,7 @@ class ET_Builder_Settings {
 				'autoload'        => false,
 				'readonly'        => 'readonly',
 				'depends_show_if' => 'on',
-				'depends_to'      => array(
+				'depends_on'      => array(
 					'et_pb_enable_shortcode_tracking',
 				),
 				'tab_slug'        => 'content',
@@ -146,7 +146,7 @@ class ET_Builder_Settings {
 				'id'              => 'et_pb_css_in_footer',
 				'index'           => -1,
 				'label'           => esc_html__( 'Output Styles Inline', 'et_builder' ),
-				'description'     => esc_html__( 'With previous versions of the builder, css styles for the modules\' design settings were output inline in the footer. Enable this option to restore that behavior.' ),
+				'description'     => esc_html__( 'With previous versions of the builder, css styles for the modules\' design settings were output inline in the footer. Enable this option to restore that behavior.', 'et_builder' ),
 				'options'         => array(
 					'on'  => __( 'On', 'et_builder' ),
 					'off' => __( 'Off', 'et_builder' ),
@@ -171,6 +171,20 @@ class ET_Builder_Settings {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'product_tour',
 			),
+			'et_pb_post_type_integration' => array(
+				'type'            => 'checkbox_list',
+				'usefor'          => 'custom',
+				'id'              => 'et_pb_post_type_integration',
+				'index'           => -1,
+				'label'           => esc_html__( 'Enable Divi Builder On Post Types', 'et_builder' ),
+				'description'     => esc_html__( 'By default, the Divi Builder is only accessible on standard post types. This option lets you enable the builder on any custom post type currently registered on your website, however the builder may not be compatible with all custom post types.', 'et_builder' ),
+				'options'         => 'ET_Builder_Settings::get_registered_post_type_options',
+				'default'         => self::_get_post_type_options_defaults(),
+				'validation_type' => 'on_off_array',
+				'et_save_values'  => true,
+				'tab_slug'        => 'post_type_integration',
+				'toggle_slug'     => 'performance',
+			),
 		);
 	}
 
@@ -180,15 +194,13 @@ class ET_Builder_Settings {
 		$result = array();
 
 		$result[]    = array( 'name' => 'wrap-builder', 'type' => 'contenttab-wrapstart' );
+		$result[]    = array( 'type' => 'subnavtab-start' );
 		$tab_content = array();
 		$index       = 0;
 
 		foreach ( $tabs as $tab_slug => $tab_name ) {
 			$index++;
 			$tab_content_started = false;
-			$tab_content         = array();
-
-			$result[] = array( 'type' => 'subnavtab-start' );
 
 			foreach ( $fields as $field_name => $field_info ) {
 				if ( $field_info['tab_slug'] !== $tab_slug ) {
@@ -208,14 +220,14 @@ class ET_Builder_Settings {
 					$field_type = 'checkbox2';
 				}
 
-				$tab_content[] = array(
+				$tab_content[] = array_merge( $field_info, array(
 					'name'             => $field_info['label'],
 					'id'               => $field_name,
 					'type'             => $field_type,
 					'std'              => $field_info['default'],
 					'desc'             => $field_info['description'],
 					'is_builder_field' => true,
-				);
+				) );
 			}
 
 			if ( $tab_content_started ) {
@@ -246,8 +258,10 @@ class ET_Builder_Settings {
 
 		$fields = array_merge( $fields, array(
 			'et_pb_custom_css'                    => array(
-				'type'        => 'textarea',
+				'type'        => 'codemirror',
 				'id'          => 'et_pb_custom_css',
+				'mode'        => 'css',
+				'inline'      => false,
 				'label'       => esc_html__( 'Custom CSS', 'et_builder' ),
 				'tab_slug'    => 'advanced',
 				'toggle_slug' => 'custom_css',
@@ -292,6 +306,103 @@ class ET_Builder_Settings {
 				'tab_slug'    => 'design',
 				'toggle_slug' => 'text',
 			),
+			'et_pb_post_settings_title' => array(
+				'type'        => 'text',
+				'id'          => 'et_pb_post_settings_title',
+				'show_in_bb'  => false,
+				'post_field'  => 'post_title',
+				'label'       => esc_html__( 'Title', 'et_builder' ),
+				'default'     => '',
+				'tab_slug'    => 'content',
+				'toggle_slug' => 'main_content',
+			),
+			'et_pb_post_settings_excerpt' => array(
+				'type'        => 'textarea',
+				'id'          => 'et_pb_post_settings_excerpt',
+				'show_in_bb'  => false,
+				'post_field'  => 'post_excerpt',
+				'label'       => esc_html__( 'Excerpt', 'et_builder' ),
+				'default'     => '',
+				'tab_slug'    => 'content',
+				'toggle_slug' => 'main_content',
+			),
+			'et_pb_post_settings_image' => array(
+				'type'               => 'upload',
+				'id'                 => 'et_pb_post_settings_image',
+				'show_in_bb'         => false,
+				'meta_key'           => '_thumbnail_id',
+				// This meta must not be updated during save_post or it will overwrite
+				// the value set in the WP edit page....
+				'save_post'          => false,
+				'label'              => esc_html__( 'Featured Image', 'et_builder' ),
+				'embed'              => false,
+				'attachment_id'      => true,
+				'upload_button_text' => esc_attr__( 'Select', 'et_builder' ),
+				'choose_text'        => esc_attr__( 'Set featured image', 'et_builder' ),
+				'update_text'        => esc_attr__( 'Set As Image', 'et_builder' ),
+				'tab_slug'           => 'content',
+				'toggle_slug'        => 'main_content',
+			),
+			'et_pb_post_settings_categories' => array(
+				'id'                   => 'et_pb_post_settings_categories',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Categories', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'post',
+				'taxonomy_name'        => 'category',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'post' ),
+			),
+			'et_pb_post_settings_tags' => array(
+				'id'                   => 'et_pb_post_settings_tags',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Tags', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'post',
+				'taxonomy_name'        => 'post_tag',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'post' ),
+			),
+			'et_pb_post_settings_project_categories' => array(
+				'id'                   => 'et_pb_post_settings_project_categories',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Categories', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'project',
+				'taxonomy_name'        => 'project_category',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'project' ),
+			),
+			'et_pb_post_settings_project_tags' => array(
+				'id'                   => 'et_pb_post_settings_project_tags',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Tags', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'project',
+				'taxonomy_name'        => 'project_tag',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'project' ),
+			),
 			'et_pb_content_area_background_color' => array(
 				'type'        => 'color-alpha',
 				'id'          => 'et_pb_content_area_background_color',
@@ -299,6 +410,7 @@ class ET_Builder_Settings {
 				'default'     => 'rgba(255,255,255,0)',
 				'tab_slug'    => 'content',
 				'toggle_slug' => 'background',
+				'depends_on_post_type' => array( 'page' ),
 			),
 			'et_pb_section_background_color'      => array(
 				'type'        => 'color-alpha',
@@ -371,23 +483,30 @@ class ET_Builder_Settings {
 
 		self::$_PAGE_SETTINGS_IS_DEFAULT = $is_default;
 
+		$post = get_post( $post_id );
 		$values = array(
-			'et_pb_enable_ab_testing'             => et_is_ab_testing_active() ? 'on' : 'off',
-			'et_pb_ab_bounce_rate_limit'          => $et_pb_ab_bounce_rate_limit,
-			'et_pb_ab_stats_refresh_interval'     => et_pb_ab_get_refresh_interval( $post_id ),
-			'et_pb_ab_subjects'                   => et_pb_ab_get_subjects( $post_id ),
-			'et_pb_enable_shortcode_tracking'     => get_post_meta( $post_id, '_et_pb_enable_shortcode_tracking', true ),
-			'et_pb_ab_current_shortcode'          => '[et_pb_split_track id="' . $post_id . '" /]',
-			'et_pb_custom_css'                    => get_post_meta( $post_id, '_et_pb_custom_css', true ),
-			'et_pb_color_palette'                 => $et_pb_color_palette,
-			'et_pb_page_gutter_width'             => $et_pb_page_gutter_width,
-			'et_pb_light_text_color'              => strtolower( $et_pb_light_text_color ),
-			'et_pb_dark_text_color'               => strtolower( $et_pb_dark_text_color ),
-			'et_pb_content_area_background_color' => strtolower( $et_pb_content_area_background_color ),
-			'et_pb_section_background_color'      => strtolower( $et_pb_section_background_color ),
-			'et_pb_static_css_file'               => $et_pb_static_css_file,
+			'et_pb_enable_ab_testing'                => et_is_ab_testing_active() ? 'on' : 'off',
+			'et_pb_ab_bounce_rate_limit'             => $et_pb_ab_bounce_rate_limit,
+			'et_pb_ab_stats_refresh_interval'        => et_pb_ab_get_refresh_interval( $post_id ),
+			'et_pb_ab_subjects'                      => et_pb_ab_get_subjects( $post_id ),
+			'et_pb_enable_shortcode_tracking'        => get_post_meta( $post_id, '_et_pb_enable_shortcode_tracking', true ),
+			'et_pb_ab_current_shortcode'             => '[et_pb_split_track id="' . $post_id . '" /]',
+			'et_pb_custom_css'                       => get_post_meta( $post_id, '_et_pb_custom_css', true ),
+			'et_pb_color_palette'                    => $et_pb_color_palette,
+			'et_pb_page_gutter_width'                => $et_pb_page_gutter_width,
+			'et_pb_light_text_color'                 => strtolower( $et_pb_light_text_color ),
+			'et_pb_dark_text_color'                  => strtolower( $et_pb_dark_text_color ),
+			'et_pb_content_area_background_color'    => strtolower( $et_pb_content_area_background_color ),
+			'et_pb_section_background_color'         => strtolower( $et_pb_section_background_color ),
+			'et_pb_static_css_file'                  => $et_pb_static_css_file,
+			'et_pb_post_settings_title'              => $post->post_title,
+			'et_pb_post_settings_excerpt'            => $post->post_excerpt,
+			'et_pb_post_settings_image'              => get_post_thumbnail_id( $post_id ),
+			'et_pb_post_settings_categories'         => self::_get_object_terms( $post_id, 'category' ),
+			'et_pb_post_settings_tags'               => self::_get_object_terms( $post_id, 'post_tag' ),
+			'et_pb_post_settings_project_categories' => self::_get_object_terms( $post_id, 'project_category' ),
+			'et_pb_post_settings_project_tags'       => self::_get_object_terms( $post_id, 'project_tag' ),
 		);
-
 		/**
 		 * Filters Divi Builder page settings values.
 		 *
@@ -443,6 +562,73 @@ class ET_Builder_Settings {
 			'tab_slug'        => 'advanced',
 			'toggle_slug'     => 'performance',
 		);
+	}
+
+	protected static function _get_post_type_options_defaults() {
+		$post_types = et_builder_get_enabled_builder_post_types();
+		$post_type_options = array();
+
+		foreach ( $post_types as $post_type ) {
+			$post_type_options[ $post_type ] = 'on';
+		}
+
+		return $post_type_options;
+	}
+
+	/**
+	 * Returns all taxonomy terms for a given post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @param string $taxonomy Taxonomy name.
+	 *
+	 * @return string
+	 */
+	protected static function _get_object_terms( $post_id, $taxonomy ) {
+		$terms = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
+		return is_array( $terms ) ? implode( ',', $terms ) : '';
+	}
+
+	public static function get_registered_post_type_options() {
+		$blacklist      = et_builder_get_blacklisted_post_types();
+
+		// Extra and Library layouts shouldn't appear in Theme Options as configurable post types.
+		$blacklist      = array_merge( $blacklist, array( 'et_pb_layout', 'layout' ) );
+		$raw_post_types = get_post_types( array(
+			'show_ui' => true,
+		), 'objects' );
+		$post_types     = array();
+
+		foreach ( $raw_post_types as $post_type ) {
+			$is_explicitly_supported = in_array( $post_type->name, et_builder_get_third_party_post_types() );
+			$is_blacklisted          = in_array( $post_type->name, $blacklist );
+			$supports_editor         = post_type_supports( $post_type->name, 'editor' );
+			$is_public               = et_builder_is_post_type_public( $post_type->name );
+
+			if ( ! $is_explicitly_supported && ( $is_blacklisted || ! $supports_editor || ! $is_public ) ) {
+				continue;
+			}
+
+			$post_types[] = $post_type;
+		}
+
+		usort( $post_types, 'ET_Builder_Settings::sort_post_types' );
+
+		$post_type_options = array_combine(
+			wp_list_pluck( $post_types, 'name' ),
+			wp_list_pluck( $post_types, 'label' )
+		);
+
+		return $post_type_options;
+	}
+
+	public static function sort_post_types( $a, $b ) {
+		// ASCII has a total of 127 characters, so 500 as the interval
+		// should be a sufficiently high number.
+		$rank_priority = array( 'page' => 1500, 'post' => 1000, 'project' => 500 );
+		$a_rank = isset( $rank_priority[ $a->name ] ) ? $rank_priority[ $a->name ] : 0;
+		$b_rank = isset( $rank_priority[ $b->name ] ) ? $rank_priority[ $b->name ] : 0;
+
+		return strcasecmp( $a->label, $b->label ) - $a_rank + $b_rank;
 	}
 
 	protected function _initialize() {
@@ -692,6 +878,7 @@ class ET_Builder_Settings {
 	public static function get_tabs( $scope = 'page' ) {
 		$result   = array();
 		$advanced = esc_html_x( 'Advanced', 'Design Settings', 'et_builder' );
+		$post_type_integration = esc_html_x( 'Post Type Integration', 'Builder Settings', 'et_builder' );
 
 		if ( 'page' === $scope ) {
 			$result = array(
@@ -701,6 +888,7 @@ class ET_Builder_Settings {
 			);
 		} else if ( 'builder' === $scope ) {
 			$result = array(
+				'post_type_integration' => $post_type_integration,
 				'advanced' => $advanced,
 			);
 		}
@@ -753,7 +941,13 @@ class ET_Builder_Settings {
 	 * }
 	 */
 	public static function get_toggles() {
+
+		// Get current post type singular name and use it as toggle title.
+		$post_type = get_post_type( et_core_page_resource_get_the_ID() );
+		$post_type_obj = get_post_type_object( $post_type );
+
 		$toggles = array(
+			'main_content'  => $post_type_obj->labels->singular_name,
 			'background'    => esc_html__( 'Background', 'et_builder' ),
 			'color_palette' => esc_html__( 'Color Palette', 'et_builder' ),
 			'custom_css'    => esc_html__( 'Custom CSS', 'et_builder' ),
@@ -893,7 +1087,8 @@ function et_builder_settings_get( $setting, $post_id = '' ) {
 	$has_page   = isset( $page_fields[ $setting ] );
 	$has_global = isset( $builder_fields[ $setting ] );
 
-	$value = '';
+	$value = $global_value = '';
+	$global_is_default = false;
 
 	if ( ! $has_page && ! $has_global ) {
 		return $value;

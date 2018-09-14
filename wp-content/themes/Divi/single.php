@@ -14,7 +14,7 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 			// load fullwidth page in Product Tour mode
 			while ( have_posts() ): the_post(); ?>
 
-				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+				<article id="post-<?php the_ID(); ?>" <?php post_class( 'et_pb_post' ); ?>>
 					<div class="entry-content">
 					<?php
 						the_content();
@@ -158,4 +158,6 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 	<?php endif; ?>
 </div> <!-- #main-content -->
 
-<?php get_footer(); ?>
+<?php
+
+get_footer();

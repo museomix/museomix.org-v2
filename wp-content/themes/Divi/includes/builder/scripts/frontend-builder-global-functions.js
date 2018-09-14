@@ -248,56 +248,65 @@
 	}
 
 	window.et_pb_init_nav_menu = function($et_menus) {
-		$et_menus.each( function() {
-			var $et_menu = $( this );
+		$et_menus.each(function() {
+			var $et_menu = $(this);
 
 			// don't attach event handlers several times to the same menu
 			if ( $et_menu.data('et-is-menu-ready') ) {
 				return;
 			}
 
-			$et_menu.find( 'li' ).hover( function() {
-				window.et_pb_toggle_nav_menu( $( this ), 'open' );
+			$et_menu.find('li').hover(function() {
+				window.et_pb_toggle_nav_menu($(this), 'open');
 			}, function() {
-				window.et_pb_toggle_nav_menu( $( this ), 'close' );
+				window.et_pb_toggle_nav_menu($(this), 'close');
 			} );
 
 			// close all opened menus on touch outside the menu
-			$('body').on( 'touchend', function(event){
-				if ( $( event.target ).closest( 'ul.nav, ul.menu' ).length < 1 && $( '.et-hover' ).length > 0 ) {
-					window.et_pb_toggle_nav_menu( $( '.et-hover' ), 'close' );
+			$('body').on('touchend', function(event){
+				if ($(event.target).closest('ul.nav, ul.menu').length < 1 && $('.et-hover').length > 0) {
+					window.et_pb_toggle_nav_menu($('.et-hover'), 'close');
 				}
 			});
 
 			// Dropdown menu adjustment for touch screen
-			$et_menu.find( 'li.menu-item-has-children' ).on( 'touchend', function(event) {
-				var $closest_li = $( event.target ).closest( '.menu-item' );
+			$et_menu.find('li.menu-item-has-children').on('touchend', function(event) {
+				var $closest_li = $(event.target).closest('.menu-item');
 
 				// no need special processing if parent li doesn't have hidden child elements
-				if ( ! $closest_li.hasClass( 'menu-item-has-children' ) ) {
+				if (! $closest_li.hasClass('menu-item-has-children')) {
 					return;
 				}
 
-				var $this_el = $( this );
-				var is_mega_menu_opened = $closest_li.closest( '.mega-menu-parent.et-touch-hover' ).length > 0;
+				var $this_el = $(this);
+				var is_mega_menu_opened = $closest_li.closest('.mega-menu-parent.et-touch-hover').length > 0;
 
 				// open submenu on 1st tap
 				// open link on second tap
-				if ( $this_el.hasClass( 'et-touch-hover' ) || is_mega_menu_opened ) {
-					var href = $this_el.find( '>a' ).attr( 'href' );
+				if ($this_el.hasClass('et-touch-hover') || is_mega_menu_opened) {
+					var href = $this_el.find('>a').attr('href');
 
-					if ( typeof href !== 'undefined' ) {//if parent link is not empty then open the link
-						window.location = $this_el.find( '>a' ).attr( 'href' );
+					if (typeof href !== 'undefined') {//if parent link is not empty then open the link
+						window.location = $this_el.find('>a').attr('href');
 					}
 				} else {
+					var $opened_menu = $(event.target);
+					var $already_opened_menus = $opened_menu.closest('.menu-item').siblings('.et-touch-hover');
 					// close the menu before opening new one
-					if ( $( event.target ).closest( '.et-touch-hover' ).length < 1 ) {
-						window.et_pb_toggle_nav_menu( $( '.et-hover' ), 'close', 0 );
+					if ($opened_menu.closest('.et-touch-hover').length < 1) {
+						window.et_pb_toggle_nav_menu($('.et-hover'), 'close', 0);
 					}
 
-					$this_el.addClass( 'et-touch-hover' );
-					
-					window.et_pb_toggle_nav_menu( $this_el, 'open' );
+					$this_el.addClass('et-touch-hover');
+
+					if ($already_opened_menus.length > 0) {
+						var $submenus_in_already_opened = $already_opened_menus.find('.et-touch-hover');
+						// close already opened submenus to avoid overlaps
+						window.et_pb_toggle_nav_menu($already_opened_menus, 'close');
+						window.et_pb_toggle_nav_menu($submenus_in_already_opened, 'close');
+					}
+					// open new submenu
+					window.et_pb_toggle_nav_menu($this_el, 'open');
 				}
 
 				event.preventDefault();
@@ -335,6 +344,40 @@
 					$element.removeClass( 'et-hover' );
 				}
 			}, closeDelay );
+		}
+	}
+
+	window.et_pb_apply_sticky_image_effect = function($sticky_image_el) {
+		var $row                = $sticky_image_el.closest('.et_pb_row');
+		var $section            = $row.closest('.et_pb_section');
+		var $column             = $sticky_image_el.closest('.et_pb_column');
+		var sticky_class        = 'et_pb_section_sticky';
+		var sticky_mobile_class = 'et_pb_section_sticky_mobile';
+		var $lastRowInSection   = $section.children('.et_pb_row').last();
+		var $lastColumnInRow    = $row.children('.et_pb_column').last();
+		var $lastModuleInColumn = $column.children('.et_pb_module').last();
+
+		// If it is not in the last row, continue
+		if (! $row.is($lastRowInSection)) {
+			return true;
+		}
+
+		$lastRowInSection.addClass('et-last-child');
+
+		// Make sure sticky image is the last element in the column
+		if (! $sticky_image_el.is($lastModuleInColumn)) {
+			return true;
+		}
+
+		// If it is in the last row, find the parent section and attach new class to it
+		if (! $section.hasClass(sticky_class)) {
+			$section.addClass(sticky_class);
+		}
+
+		$column.addClass('et_pb_row_sticky');
+
+		if (! $section.hasClass(sticky_mobile_class) && $column.is($lastColumnInRow)) {
+			$section.addClass(sticky_mobile_class);
 		}
 	}
 })(jQuery);

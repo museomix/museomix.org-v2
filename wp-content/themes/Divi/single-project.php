@@ -58,7 +58,11 @@ $show_navigation = get_post_meta( get_the_ID(), '_et_pb_project_nav', true );
 
 				<?php if ( ! $is_page_builder_used ) : ?>
 
-					<?php if ( 'et_full_width_page' !== $page_layout ) et_pb_portfolio_meta_box(); ?>
+					<?php 
+						if ( in_array( $page_layout, array( 'et_full_width_page', 'et_no_sidebar' ) ) ) {
+							et_pb_portfolio_meta_box(); 
+						} 
+					?>
 
 				<?php endif; ?>
 
@@ -82,8 +86,12 @@ $show_navigation = get_post_meta( get_the_ID(), '_et_pb_project_nav', true );
 <?php if ( ! $is_page_builder_used ) : ?>
 
 			</div> <!-- #left-area -->
-
-			<?php if ( 'et_full_width_page' === $page_layout ) et_pb_portfolio_meta_box(); ?>
+			
+			<?php 
+				if ( in_array( $page_layout, array( 'et_full_width_page', 'et_no_sidebar' ) ) ) {
+					et_pb_portfolio_meta_box();
+				} 
+			?>
 
 			<?php get_sidebar(); ?>
 		</div> <!-- #content-area -->
@@ -93,4 +101,6 @@ $show_navigation = get_post_meta( get_the_ID(), '_et_pb_project_nav', true );
 
 </div> <!-- #main-content -->
 
-<?php get_footer(); ?>
+<?php
+
+get_footer();

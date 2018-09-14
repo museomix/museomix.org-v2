@@ -20,7 +20,7 @@
 		$et_main_content_first_row_meta_wrapper = $et_main_content_first_row.find('.et_post_meta_wrapper:first'),
 		$et_main_content_first_row_meta_wrapper_title = $et_main_content_first_row_meta_wrapper.find( 'h1.entry-title' ),
 		$et_main_content_first_row_content = $et_main_content_first_row.find('.entry-content:first'),
-		$et_single_post = $( 'body.single-post' ),
+		$et_single_post = $( 'body.single' ),
 		$et_window = $(window),
 		etRecalculateOffset = false,
 		et_header_height,
@@ -31,10 +31,18 @@
 		$et_top_navigation = $('#et-top-navigation'),
 		$logo = $('#logo'),
 		$et_pb_first_row = $( 'body.et_pb_pagebuilder_layout .et_pb_section:visible:first' ),
-		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints;
+		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints,
+		$et_top_cart = $('#et-secondary-menu a.et-cart-info');
+
+	function et_preload_image( src, callback ) {
+		var img = new Image();
+		img.onLoad = callback;
+		img.onload = callback;
+		img.src = src;
+	}
 
 	// We need to check first to see if we are on a woocommerce single product.
-	if ( $("body").hasClass("woocommerce") && $("body").hasClass("single-product") && $(".woocommerce-product-gallery").length > 0 ) {
+	if ( $(".woocommerce .woocommerce-product-gallery").length > 0 ) {
 		// get the gallery container.
 		var gal = $(".woocommerce-product-gallery")[0];
 
@@ -46,12 +54,34 @@
 		gal.outerHTML = newstr;
 	}
 
+	// update the cart item on the secondary menu.
+	if ( $et_top_cart.length > 0 && $('.shop_table.cart').length > 0 ) {
+		$( document.body ).on( 'updated_wc_div', function(){
+			var new_total = 0;
+			var new_text;
+			$('.shop_table.cart').find('.product-quantity input').each(function(){
+				new_total = new_total + parseInt( $(this).val() );
+			});
+
+			if ( new_total === 1 ) {
+				new_text  = DIVI.item_count;
+			} else {
+				new_text  = DIVI.items_count;
+			}
+
+			new_text = new_text.replace('%d', new_total);
+
+			$et_top_cart.find('span').text(new_text);
+		});
+	}
+
 	$(document).ready( function(){
 		var $et_top_menu = $( 'ul.nav, ul.menu' ),
 			$et_search_icon = $( '#et_search_icon' ),
 			et_parent_menu_longpress_limit = 300,
 			et_parent_menu_longpress_start,
-			et_parent_menu_click = true;
+			et_parent_menu_click = true,
+			is_customize_preview = $('body').hasClass('et_is_customize_preview');
 
 		window.et_pb_init_nav_menu( $et_top_menu );
 
@@ -60,7 +90,7 @@
 				$logo_container_splitted = $('.centered-inline-logo-wrap > .logo_container'),
 				et_top_navigation_li_size = $et_top_navigation.children('nav').children('ul').children('li').size(),
 				et_top_navigation_li_break_index = Math.round( et_top_navigation_li_size / 2 ) - 1,
-				window_width = $et_window.prop('outerWidth') || $et_window.width();
+				window_width = window.innerWidth || $et_window.width();
 
 			if ( window_width > 980 && $logo_container.length && $('body').hasClass('et_header_style_split') ) {
 				$('<li class="centered-inline-logo-wrap"></li>').insertAfter($et_top_navigation.find('nav > ul >li:nth('+et_top_navigation_li_break_index+')') );
@@ -84,7 +114,7 @@
 			}
 		}
 
-		if ( $et_header_style_split.length && ! window.et_is_vertical_nav ) {
+		if ( ( $et_header_style_split.length && ! window.et_is_vertical_nav ) || is_customize_preview ) {
 			et_header_menu_split();
 
 			$(window).resize(function(){
@@ -170,7 +200,7 @@
 			}, delay );
 		}
 
-		function et_hide_nav_transofrm( ) {
+		function et_hide_nav_transform( ) {
 			var $body = $( 'body' ),
 				$body_height = $( document ).height(),
 				$viewport_height = $( window ).height() + et_header_height + 200;
@@ -189,6 +219,10 @@
 					$body.removeClass( 'et_hide_nav' );
 					$body.addClass( 'et_hide_nav_disabled' );
 				}
+
+				// Run fix page container again, needed when body height is not tall enough and
+				// adjustment has been aded
+				et_fix_page_container_position();
 			}
 		}
 
@@ -254,7 +288,8 @@
 				$et_pb_first_row     = $( 'body.et_pb_pagebuilder_layout .et_pb_section:visible:first' ),
 				secondary_nav_height = $top_header.length && $top_header.is( ':visible' ) ? parseInt( $top_header.innerHeight() ) : 0,
 				main_header_fixed_height = 0,
-				header_height;
+				header_height,
+				et_pb_first_row_padding_top;
 
 			// Replace previous resize cycle's adjustment
 			$('*[data-fix-page-container="on"]').each(function(){
@@ -582,6 +617,48 @@
 						$et_pb_first_row_first_module.css({
 							'paddingTop' : header_height + 50
 						});
+					} else if ( ! $et_pb_first_row_first_module.length ) {
+						// Get current padding top
+						et_pb_first_row_padding_top = parseFloat($et_pb_first_row.css('paddingTop'));
+
+						// Save current styling for the next resize cycle
+						et_save_initial_page_container_style(
+							$et_pb_first_row,
+							'paddingTop'
+						);
+
+						// Keep the state of previous cycle. The padding top is reset to the first
+						// cycle by default (padding-top: 0px) so if previous cycle didn't hide the
+						// nav, automatically add the additional padding top
+						if ( ! $et_pb_first_row.data( 'is_hide_nav' ) ) {
+							$et_pb_first_row.css({
+								'paddingTop' : et_pb_first_row_padding_top + header_height
+							});
+						}
+
+						// Use timeout to avoid flickering padding top when window is resized vertically
+						// and hidden nav is transitioned to visible nav, vice versa.
+						clearTimeout(window.et_fallback_transparent_adjustment_timeout);
+						window.et_fallback_transparent_adjustment_timeout = setTimeout(function() {
+							// Hidden nav can be decided by the existance of et_hide_nav class AND
+							// the css transform attribute value because the visibility of nav is
+							// modified by CSS transition
+							var is_hide_nav = $('body').hasClass('et_hide_nav') && $('#main-header').css('transform') !== 'matrix(1, 0, 0, 1, 0, 0)';
+
+							// Add / remove additional top padding accordingly
+							if ( is_hide_nav ) {
+								$et_pb_first_row.css({
+									'paddingTop' : ''
+								});
+							} else {
+								$et_pb_first_row.css({
+									'paddingTop' : et_pb_first_row_padding_top + header_height
+								});
+							}
+
+							// Save current nav state for next cycle assessment
+							$et_pb_first_row.data( 'is_hide_nav', is_hide_nav );
+						}, 300)
 					}
 
 				} else if ( is_pb ) {
@@ -702,7 +779,7 @@
 			}
 
 			if ( et_hide_nav ) {
-				et_hide_nav_transofrm();
+				et_hide_nav_transform();
 			}
 
 			if ( $( '#wpadminbar' ).length && et_is_fixed_nav && window_width >= 740 && window_width <= 782 ) {
@@ -813,9 +890,17 @@
 
 						// Fullscreen section at the first row requires specific adjustment
 						if ( $et_pb_first_row.is( '.et_pb_fullwidth_section' ) ){
-							$waypoint_selector = $et_pb_first_row.children('.et_pb_module');
+							$waypoint_selector = $et_pb_first_row.children('.et_pb_module:visible:first');
 						} else {
-							$waypoint_selector = $et_pb_first_row.find('.et_pb_row');
+							$waypoint_selector = $et_pb_first_row.find('.et_pb_row:visible:first');
+						}
+
+						// Fallback for a less likely but possible scenario: a) fullwidth section
+						// has no module OR b) other section has no row. When this happened,
+						// the safest option is look for the first visible module and use it
+						// as waypoint selector
+						if ( ! $waypoint_selector.length ) {
+							$waypoint_selector = $( 'body.et_pb_pagebuilder_layout .et_pb_module:visible:first' );
 						}
 					} else if ( window.et_is_transparent_nav && ! window.et_is_vertical_nav && $et_main_content_first_row.length ) {
 						$waypoint_selector = $('#content-area');
@@ -897,7 +982,7 @@
 				}
 
 				if ( et_hide_nav ) {
-					et_hide_nav_transofrm();
+					et_hide_nav_transform();
 				}
 			}
 		}
@@ -1162,9 +1247,7 @@
 		if ( $('#logo').length ) {
 			// Wait until logo is loaded before performing logo dimension fix
 			// This comes handy when the page is heavy due to the use of images or other assets
-			$('#logo').attr( 'src', $('#logo').attr('src') ).load( function(){
-				et_define_logo_dimension();
-			} );
+			et_preload_image( $('#logo').attr('src'), et_define_logo_dimension );
 		}
 
 		// Set width for adsense in footer widget

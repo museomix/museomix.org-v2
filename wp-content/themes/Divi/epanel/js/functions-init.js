@@ -2,6 +2,49 @@
 	var clearpath = ePanelSettings.clearpath;
 
 	jQuery(document).ready(function($){
+		var editors = [];
+
+		function addEditorInstance(codeEditor, $element, config) {
+			if (!$element || $element.length === 0) {
+				return;
+			}
+			var instance = codeEditor.initialize( $element , {
+				codemirror: config,
+			} );
+			if (instance && instance.codemirror) {
+				editors.push(instance.codemirror);
+			}
+		}
+
+		// Use WP 4.9 CodeMirror Editor for Custom CSS
+		var codeEditor = window.wp && window.wp.codeEditor;
+		if (codeEditor && codeEditor.initialize && codeEditor.defaultSettings && codeEditor.defaultSettings.codemirror) {
+
+			// User ET CodeMirror theme
+			var configCSS = $.extend({}, codeEditor.defaultSettings.codemirror, {
+				theme: 'et',
+			});
+			var configHTML = $.extend({}, configCSS, {
+				mode: 'htmlmixed',
+			});
+
+			if ($('#divi_custom_css').length > 0) {
+				// Divi Theme
+				addEditorInstance(codeEditor, $('#divi_custom_css'), configCSS);
+				addEditorInstance(codeEditor, $('#divi_integration_head'), configHTML);
+				addEditorInstance(codeEditor, $('#divi_integration_body'), configHTML);
+				addEditorInstance(codeEditor, $('#divi_integration_single_top'), configHTML);
+				addEditorInstance(codeEditor, $('#divi_integration_single_bottom'), configHTML);
+			} else if ($('#extra_custom_css').length > 0) {
+				// Extra Theme
+				addEditorInstance(codeEditor, $('#extra_custom_css'), configCSS);
+				addEditorInstance(codeEditor, $('#extra_integration_head'), configHTML);
+				addEditorInstance(codeEditor, $('#extra_integration_body'), configHTML);
+				addEditorInstance(codeEditor, $('#extra_integration_single_top'), configHTML);
+				addEditorInstance(codeEditor, $('#extra_integration_single_bottom'), configHTML);
+			}
+		}
+
 		var $palette_inputs = $( '.et_color_palette_main_input' );
 
 		$('#epanel-content,#epanel-content > div').tabs({
@@ -81,9 +124,11 @@
 
 		$('.et-box-content').on( 'click', '.et_pb_yes_no_button', function(e){
 			e.preventDefault();
+			// Fix for nested .et-box-content triggering checkboxes multiple times.
+			e.stopPropagation();
 
 			var $click_area = $(this),
-				$box_content = $click_area.parents('.et-box-content'),
+				$box_content = $click_area.closest('.et-box-content'),
 				$checkbox    = $box_content.find('input[type="checkbox"]'),
 				$state       = $box_content.find('.et_pb_yes_no_button');
 
@@ -121,6 +166,17 @@
 		});
 
 		function epanel_save( callback, message ) {
+
+			// If CodeMirror is used
+			if (editors.length > 0) {
+				$.each(editors, function(i, editor) {
+					if (editor.save) {
+						// Make sure we store changes into original textarea
+						editor.save();
+					}
+				})
+			}
+
 			var options_fromform = $('#main_options_form').formSerialize(),
 				add_nonce = '&_ajax_nonce='+ePanelSettings.epanel_nonce;
 
@@ -216,10 +272,10 @@
 						width: 313,
 						palettes : false,
 						change : function( event, ui ) {
-							var $input     = $(this),
-								data_index = $input.attr( 'data-index'),
-								$preview   = $palette_wrapper.find( '.colorpalette-item-' + data_index ),
-								color      = ui.color.toString();
+							var $input     = $(this);
+							var data_index = $input.attr('data-index');
+							var $preview   = $palette_wrapper.find('.colorpalette-item-' + data_index + ' .color');
+							var color      = ui.color.toString();
 
 							$input.val( color );
 							$preview.css({ 'backgroundColor' : color });
@@ -265,5 +321,6 @@
 				marginTop : modal_height_adjustment
 			});
 		}
+
 	});
 /* ]]> */

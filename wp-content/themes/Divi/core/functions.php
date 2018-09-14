@@ -186,12 +186,20 @@ function et_core_get_ip_address() {
 }
 endif;
 
+if ( ! function_exists( 'et_core_use_google_fonts' ) ) :
+function et_core_use_google_fonts() {
+	$utils              = ET_Core_Data_Utils::instance();
+	$google_api_options = get_option( 'et_google_api_settings' );
+
+	return 'on' === $utils->array_get( $google_api_options, 'use_google_fonts', 'on' );
+}
+endif;
 
 if ( ! function_exists( 'et_core_get_main_fonts' ) ) :
 function et_core_get_main_fonts() {
 	global $wp_version;
 
-	if ( version_compare( $wp_version, '4.6', '<' ) ) {
+	if ( version_compare( $wp_version, '4.6', '<' ) || ( ! is_admin() && ! et_core_use_google_fonts() ) ) {
 		return '';
 	}
 
@@ -455,7 +463,7 @@ function et_core_register_admin_assets() {
 	wp_register_style( 'et-core-admin', ET_CORE_URL . 'admin/css/core.css', array(), ET_CORE_VERSION );
 	wp_register_script( 'et-core-admin', ET_CORE_URL . 'admin/js/core.js', array(), ET_CORE_VERSION );
 	wp_localize_script( 'et-core-admin', 'etCore', array(
-		'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		'ajaxurl' => is_ssl() ? admin_url( 'admin-ajax.php' ) : admin_url( 'admin-ajax.php', 'http' ),
 		'text'    => array(
 			'modalTempContentCheck' => esc_html__( 'Got it, thanks!', ET_CORE_TEXTDOMAIN ),
 		),
@@ -671,6 +679,80 @@ function et_new_core_setup() {
 }
 endif;
 
+
+if ( ! function_exists( 'et_core_add_crossorigin_attribute' ) ):
+function et_core_add_crossorigin_attribute( $tag, $handle, $src ) {
+	if ( ! $handle || ! in_array( $handle, array( 'react', 'react-dom' ) ) ) {
+		return $tag;
+	}
+
+	return sprintf( '<script src="%1$s" crossorigin></script>', esc_attr( $src ) );
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_get_version_from_filesystem' ) ):
+/**
+ * Get the core version from the filesystem.
+ * This is necessary in cases such as Version Rollback where you cannot use
+ * a constant from memory as it is outdated or you wish to get the version
+ * not from the active (latest) core but from a different one.
+ *
+ * @param string $core_directory
+ *
+ * @return string
+ */
+function et_core_get_version_from_filesystem( $core_directory ) {
+	$version_file = $core_directory . DIRECTORY_SEPARATOR . '_et_core_version.php';
+
+	if ( ! file_exists( $version_file ) ) {
+		return '';
+	}
+
+	include $version_file;
+
+	return $ET_CORE_VERSION;
+}
+endif;
+
+if ( ! function_exists( 'et_core_replace_enqueued_style' ) ):
+/**
+ * Replace a style's src if it is enqueued.
+ *
+ * @since 3.10
+ *
+ * @param string $old_src
+ * @param string $new_src
+ * @param boolean $regex Use regex to match and replace the style src.
+ *
+ * @return void
+ */
+function et_core_replace_enqueued_style( $old_src, $new_src, $regex = false ) {
+	$styles = wp_styles();
+
+	if ( empty( $styles->registered ) ) {
+		return;
+	}
+
+	foreach ( $styles->registered as $style_handle => $style ) {
+		$match = $regex ? preg_match( $old_src, $style->src ) : $old_src === $style->src;
+		if ( ! $match ) {
+			continue;
+		}
+
+		$style_src   = $regex ? preg_replace( $old_src, $new_src, $style->src ) : $new_src;
+		$style_deps  = isset( $style->deps ) ? $style->deps : array();
+		$style_ver   = isset( $style->ver ) ? $style->ver : false;
+		$style_media = isset( $style->args ) ? $style->args : 'all';
+
+		// Deregister first, so the handle can be re-enqueued.
+		wp_deregister_style( $style_handle );
+
+		// Enqueue the same handle with the new src.
+		wp_enqueue_style( $style_handle, $style_src, $style_deps, $style_ver, $style_media );
+	}
+}
+endif;
 
 if ( ! function_exists( 'et_core_load_component' ) ) :
 /**

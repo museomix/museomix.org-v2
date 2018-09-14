@@ -427,13 +427,18 @@
 							// trigger event to communicate with FB
 							window.dispatchEvent( event );
 
-							event.initEvent( 'et_fb_layout_import_finished', true, true );
+							// Allow some time for animations to animate
+							setTimeout( function() {
+								var event = document.createEvent( 'Event' );
 
-							// save the data into global variable for later use in FB
-							window.et_fb_import_layout_response = response;
+								event.initEvent( 'et_fb_layout_import_finished', true, true );
 
-							// trigger event to communicate with FB (again)
-							window.dispatchEvent( event );
+								// save the data into global variable for later use in FB
+								window.et_fb_import_layout_response = response;
+
+								// trigger event to communicate with FB (again)
+								window.dispatchEvent( event );
+							}, 1300 );
 						}
 					}
 				} );
@@ -567,7 +572,7 @@
 
 				$.each( ajax.data, function( name, value ) {
 					formData.append( name, value);
-				} )
+				} );
 
 				ajax = $.extend( ajax, {
 					data: formData,

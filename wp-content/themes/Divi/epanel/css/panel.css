@@ -442,6 +442,25 @@ h1#epanel-title {
 	width: 225px;
 }
 
+#epanel-content .et-box-content--list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+#epanel-content .et-box-content .et-box-content--list > * {
+	padding-left: 0;
+	flex-grow: 0;
+	flex-shrink: 0;
+	margin-bottom: 20px;
+}
+
+#epanel-content .et-panel-box__checkbox-list-label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
 #epanel-content .et-epanel-box .et-box-content input,
 #epanel-content .et-epanel-box .et-box-content .et-upload-buttons {
 	vertical-align: top;
@@ -940,7 +959,7 @@ input.et-checkbox.yes_no_button {
 
 #epanel-content .et-epanel-box .et-upload-image-button,
 #epanel-content .et-epanel-box .et-upload-image-reset,
-#epanel-content .et-epanel-box .et-button{
+#epanel-content .et-epanel-box .et-button {
 	float: left;
 	box-sizing: border-box;
 	color: #FFF;
@@ -966,6 +985,10 @@ input.et-checkbox.yes_no_button {
 	-webkit-transition: background .5s;
 	-moz-transition: background .5s;
 	transition: background .5s;
+}
+
+#epanel-content .et-epanel-box .et-button--simple:first-child {
+	margin-left: 0;
 }
 
 .rtl #epanel-content .et-panel-box .et-upload-image-button,
@@ -1434,7 +1457,36 @@ left: 0px;
 
 /* wp color picker option */
 .et-box-content .et_pb_colorpalette_overview { display: block; margin-bottom: 10px; }
-.et-box-content .colorpalette-item { display: inline-block; width: 32px; height: 32px; -moz-box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2); -webkit-box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2); box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2); margin-right: 8px; content: ''; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; cursor: pointer; }
+
+.et-box-content .colorpalette-item {
+	display: inline-block;
+	content: '';
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+	border-radius: 100%;
+	cursor: pointer;
+	position: relative;
+	width: 26px;
+	height: 26px;
+	margin-right: 5px;
+	vertical-align: middle;
+	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAAHnlligAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHJJREFUeNpi+P///4EDBxiAGMgCCCAGFB5AADGCRBgYDh48CCRZIJS9vT2QBAggFBkmBiSAogxFBiCAoHogAKIKAlBUYTELAiAmEtABEECk20G6BOmuIl0CIMBQ/IEMkO0myiSSraaaBhZcbkUOs0HuBwDplz5uFJ3Z4gAAAABJRU5ErkJggg==");
+	background-size: 40%;
+}
+.et-box-content .colorpalette-item .color {
+	position: absolute;
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+	border-radius: 100%;
+	-moz-box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2);
+	box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2);
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	transition: background-color 200ms ease;
+}
 .et-box-content .wp-color-result { display: none; }
 .et-box-content .iris-picker { display: block !important; }
 .et-box-content .colorpalette-item:last-child { margin-right: 0; }
@@ -1753,6 +1805,157 @@ Copyright (c) 2015 Daniel Eden
 		right: 0;
 		top: 49px;
 	}
+}
+
+#epanel .CodeMirror {
+	padding: 13px 13px 13px 0px;
+	border-radius: 4px;
+}
+
+#epanel .CodeMirror-dialog-top {
+  background: #F1F5F9;
+  border-bottom: none;
+  box-shadow: 0 0 50px rgba(0,0,0,.5);
+  height: 30px;
+}
+
+#epanel .CodeMirror-search-label {
+  color: rgb(190, 201, 214);
+  font-size: 0.875rem;
+  height: 30px;
+  line-height: 30px;
+}
+
+#epanel .CodeMirror-search-field {
+  color: #4C5866 !important;
+  font-size: 0.8rem !important;
+  height: 30px;
+  float: none !important;
+  background: none;
+}
+
+#epanel .CodeMirror-search-hint {
+  display: none;
+}
+
+#epanel .CodeMirror.cm-s-et {
+	/*
+		Based on CodeMirror Material Theme
+
+		MIT License
+		Copyright (C) 2017 by Marijn Haverbeke <marijnh@gmail.com> and others
+   */
+	background-color: #4C5866;
+	color: #ffffff;
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-gutters {
+	background: #4C5866;
+	color: #537f7e;
+	border: none;
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-guttermarker, #epanel .CodeMirror.cm-s-et .CodeMirror-guttermarker-subtle, #epanel .CodeMirror.cm-s-et .CodeMirror-linenumber {
+	color: #8393a5;
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-cursor {
+	border-left: 1px solid #fff;
+}
+#epanel .CodeMirror.cm-s-et div.CodeMirror-selected {
+	background: rgba(145, 203, 255, 0.2);
+}
+#epanel .CodeMirror.cm-s-et .cm-s-material.CodeMirror-focused div.CodeMirror-selected {
+	background: rgba(0, 0, 0, 0.1);
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-line::selection, #epanel .CodeMirror.cm-s-et .CodeMirror-line > span::selection, #epanel .CodeMirror.cm-s-et .CodeMirror-line > span > span::selection {
+	background: rgba(0, 0, 0, 0.1);
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-line::-moz-selection, #epanel .CodeMirror.cm-s-et .CodeMirror-line > span::-moz-selection, #epanel .CodeMirror.cm-s-et .CodeMirror-line > span > span::-moz-selection {
+	background: rgba(0, 0, 0, 0.1);
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-activeline-background {
+	background: rgba(0, 0, 0, 0.1);
+}
+#epanel .CodeMirror.cm-s-et .cm-keyword {
+	color: #88c2f8;
+}
+#epanel .CodeMirror.cm-s-et .cm-operator {
+	color: #ffffff;
+}
+#epanel .CodeMirror.cm-s-et .cm-variable-2,
+#epanel .CodeMirror.cm-s-et .cm-string-2,
+#epanel .CodeMirror.cm-s-et .cm-meta {
+	color: #fff;
+}
+#epanel .CodeMirror.cm-s-et .cm-variable-3, #epanel .CodeMirror.cm-s-et .cm-type {
+	color: #88c2f8;
+}
+#epanel .CodeMirror.cm-s-et .cm-builtin,
+#epanel .CodeMirror.cm-s-et .cm-qualifier,
+#epanel .CodeMirror.cm-s-et .cm-variable-3,
+#epanel .CodeMirror.cm-s-et .cm-type {
+	color: #fe9c47;
+}
+#epanel .CodeMirror.cm-s-et .cm-atom {
+	color: #88c2f8;
+}
+#epanel .CodeMirror.cm-s-et .cm-number {
+	color: #fe9c47;
+}
+#epanel .CodeMirror.cm-s-et .cm-def {
+	color: #ffffff;
+}
+#epanel .CodeMirror.cm-s-et .cm-string {
+	color: #fe9c47;
+}
+#epanel .CodeMirror.cm-s-et .cm-comment {
+	color: #8393a5;
+}
+#epanel .CodeMirror.cm-s-et .cm-variable {
+	color: #88c2f8;
+}
+#epanel .CodeMirror.cm-s-et .cm-attribute {
+	color: #88c2f8;
+}
+#epanel .CodeMirror.cm-s-et .cm-property {
+	color: #88dfbe;
+}
+#epanel .CodeMirror.cm-s-et .cm-tag {
+	color: #88dfbe;
+}
+#epanel .CodeMirror.cm-s-et .cm-searching {
+	background: none;
+	border-bottom: 1px solid white;
+	color: white;
+}
+#epanel .CodeMirror.cm-s-et .CodeMirror-matchingbracket {
+	text-decoration: underline;
+	color: white !important;
+}
+#epanel .CodeMirror .CodeMirror-matchingtag {
+	background: rgba(255, 255, 255, 0.15);
+}
+#epanel .CodeMirror .CodeMirror-linewidget {
+	width: 100% !important;
+}
+#epanel .CodeMirror .codemirror-lint-warning,
+#epanel .CodeMirror .codemirror-lint-error {
+	background-color: transparent;
+	color: #ff5758;
+	border: 2px solid #ff5758;
+	border-radius: 3px;
+	padding: 5px 10px;
+	margin: 5px 0;
+}
+#epanel .CodeMirror .codemirror-lint-warning {
+	color: #fe9c47;
+	border-color: #fe9c47;
+}
+#epanel .CodeMirror .codemirror-colorview {
+	border: 1px solid #fff;
+	border-radius: 10px;
+	margin: 0px 5px 0 0;
+}
+#epanel .CodeMirror .codemirror-colorview .codemirror-colorview-background {
+	border-radius: 10px;
 }
 
 @media only screen and ( max-width: 415px ) {

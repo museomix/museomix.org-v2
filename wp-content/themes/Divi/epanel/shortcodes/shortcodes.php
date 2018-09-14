@@ -10,8 +10,12 @@ function et_shortcodes_css_and_js(){
 	global $themename;
 	$shortcode_strings_handle = apply_filters( 'et_shortcodes_strings_handle', 'et-shortcodes-js' );
 
-	// Enqueue if script is being debugged. Otherwise, concatenated & minified version is being used
 	wp_register_script( 'et-shortcodes-js', ET_SHORTCODES_DIR . '/js/et_shortcodes_frontend.js', array('jquery'), ET_SHORTCODES_VERSION, false );
+
+	if ( ! defined( 'ET_BUILDER_THEME' ) ) {
+		// This is a legacy theme so we need to enqueue the shortcode styles.
+		wp_enqueue_style( 'et-shortcodes-css', ET_SHORTCODES_DIR . '/css/shortcodes-legacy.css', array(), ET_SHORTCODES_VERSION, 'all' );
+	}
 
 	wp_localize_script( $shortcode_strings_handle, 'et_shortcodes_strings', array(
 		'previous' => esc_html__( 'Previous', $themename ),
@@ -854,7 +858,17 @@ function et_testimonial($atts, $content = null) {
 }
 
 add_shortcode('quote','et_quote');
-function et_quote($atts, $content = null) {
+function et_quote( $atts, $content = null ) {
+	if ( function_exists( 'bbpress' ) && function_exists( 'gdbbx_render_the_bbcode' ) ) {
+		// compat for gdbbpress tools plugin.
+		if ( isset( $atts['quote'] ) && ! empty( $atts['quote'] ) ) {
+			$output = gdbbx_render_the_bbcode( 'quote', $atts, $content );
+			if ( $output !== false ) {
+				return $output;
+			}
+		}
+	}
+
 	extract(shortcode_atts(array(
 		'style' => '',
 		'id' => '',
@@ -1354,4 +1368,5 @@ function et_advanced_buttons(){
 			});
 		});
 	</script>
-<?php } ?>
+<?php
+}

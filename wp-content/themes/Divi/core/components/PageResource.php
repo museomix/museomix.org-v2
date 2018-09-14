@@ -845,17 +845,11 @@ class ET_Core_PageResource {
 	 * @param bool    $update
 	 */
 	public static function save_post_cb( $post_id, $post, $update ) {
-		if ( ! $update ) {
+		if ( ! $update || ! function_exists( 'et_builder_enabled_for_post' ) ) {
 			return;
 		}
 
-		$post_types = array( 'post', 'page', 'project' );
-
-		if ( function_exists( 'et_builder_get_builder_post_types' ) ) {
-			$post_types = array_merge( $post_types, et_builder_get_builder_post_types() );
-		}
-
-		if ( ! in_array( $post->post_type, $post_types ) ) {
+		if ( ! et_builder_enabled_for_post( $post_id ) ) {
 			return;
 		}
 
