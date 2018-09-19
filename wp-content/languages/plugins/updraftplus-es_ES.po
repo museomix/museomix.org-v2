@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - UpdraftPlus WordPress Backup Plugin - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2018-09-14 10:24:40+0000\n"
+"PO-Revision-Date: 2018-09-14 20:55:43+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,10 @@ msgstr ""
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: es\n"
 "Project-Id-Version: Plugins - UpdraftPlus WordPress Backup Plugin - Stable (latest release)\n"
+
+#: includes/class-commands.php:928
+msgid "The creation of your data for creating the clone should now begin. NB: if the clone fails to boot, your token will be refunded after an hour."
+msgstr "Va a empezar la creación de los natos necesarios para crear tu clon. Nota: si el clon no arranca, recibirás el rembolso de tu token al cabo de una hora."
 
 #: templates/wp-admin/settings/temporary-clone.php:46
 msgid "I accept the UpdraftClone terms and conditions"
@@ -44,16 +48,34 @@ msgid "Fast"
 msgstr "Rápido "
 
 #: templates/wp-admin/settings/temporary-clone.php:27
+msgid "One VPS (Virtual Private Server) per clone, shared with nobody."
+msgstr "Un VPS (Virtual Private Server) por clon, no compartido con nadie."
+
+#: templates/wp-admin/settings/temporary-clone.php:27
 msgid "Secure"
 msgstr "Seguro"
+
+#: templates/wp-admin/settings/temporary-clone.php:26
+msgid "Runs on capacity from a leading cloud computing provider."
+msgstr "Utiliza los recursos de un destacado proveedor de cloud computing."
 
 #: templates/wp-admin/settings/temporary-clone.php:26
 msgid "Reliable"
 msgstr "Fiable"
 
 #: templates/wp-admin/settings/temporary-clone.php:25
+msgid "Press the buttons... UpdraftClone does the work."
+msgstr "Pulsa los botones... UpdraftClone hace el resto."
+
+#: templates/wp-admin/settings/temporary-clone.php:25
 msgid "Easy"
 msgstr "Fácil"
+
+#: templates/wp-admin/settings/temporary-clone.php:22
+#: templates/wp-admin/settings/temporary-clone.php:38
+#: templates/wp-admin/settings/temporary-clone.php:44
+msgid "You can buy UpdraftClone tokens from our shop, here."
+msgstr "Puedes comprar tokens de UpdraftClone aquí en nuestra tienda."
 
 #: templates/wp-admin/settings/temporary-clone.php:22
 msgid "Read FAQs here."
@@ -63,9 +85,18 @@ msgstr "Lee las FAQ aquí."
 msgid "A temporary clone is an instant copy of this website, running on our servers. Rather than test  things on your live site, you can UpdraftClone it, and then throw away your clone when done."
 msgstr "Un clon temporal es una copia instantánea de este sitio web que corre en nuestros servidores. En vez de probar cosas en tu sitio en vivo puedes hacer un UpdraftClone, y entonces desecharlo cuando hayas terminado."
 
+#: templates/wp-admin/settings/temporary-clone.php:10
+#: templates/wp-admin/settings/temporary-clone.php:36
+msgid "Create a temporary clone on our servers (UpdraftClone)"
+msgstr "Crea un clon temporal en nuestros servidores (UpdraftClone)"
+
 #: templates/wp-admin/settings/migrator-no-migrator.php:6
 msgid "Migrate (create a copy of a site on hosting you control)"
 msgstr "Migrar (crear una copia de un sitio en un alojamiento que controlas)"
+
+#: templates/wp-admin/settings/existing-backups-table.php:158
+msgid "Use ctrl / cmd + press to select several items"
+msgstr "Usa ctrl / cmd + clic para seleccionar varios elementos"
 
 #: templates/wp-admin/settings/existing-backups-table.php:15
 #: templates/wp-admin/settings/existing-backups-table.php:61
@@ -75,6 +106,14 @@ msgstr "Seleccionar todo"
 #: templates/wp-admin/advanced/wipe-settings.php:13
 msgid "Reset tour"
 msgstr "Restablecer guía"
+
+#: methods/dropbox.php:305 methods/dropbox.php:321
+msgid "failed to upload file to %s (see log file for more)"
+msgstr "error al subir el fichero a %s (más información en el registro)"
+
+#: methods/dropbox.php:195
+msgid "error: %s (see log file for more)"
+msgstr "error: %s (más información en el registro)"
 
 #: methods/dreamobjects.php:20
 msgid "Closing 1st October 2018"
@@ -138,6 +177,10 @@ msgstr "Pulsa aquí para guardar tus ajustes."
 msgid "Save"
 msgstr "Guardar"
 
+#: includes/updraftplus-tour.php:131
+msgid "Look through the other settings here, making any changes you’d like."
+msgstr "Revisa estos ajustes y haz los cambios que quieras."
+
 #: includes/updraftplus-tour.php:130
 msgid "More settings"
 msgstr "Más ajustes"
@@ -146,6 +189,22 @@ msgstr "Más ajustes"
 #: templates/wp-admin/settings/temporary-clone.php:22
 msgid "Find out more here."
 msgstr "Averigua más aquí."
+
+#: includes/updraftplus-tour.php:125
+msgid "UpdraftVault is our remote storage which works seamlessly with UpdraftPlus."
+msgstr "UpdraftVault es nuestro almacenamiento remoto. Se integra nativamente con UpdraftPlus."
+
+#: includes/updraftplus-tour.php:124
+msgid "Try UpdraftVault!"
+msgstr "¡Prueba UpdraftVault!"
+
+#: includes/updraftplus-tour.php:122
+msgid "Now select a remote storage destination to protect against server-wide threats. If not, your backups remain on the same server as your site."
+msgstr "Selecciona un almacenamiento remoto para protegerte de amenazas al servidor. Si no, tus copias de seguridad seguirán en el mismo servidor que tu sitio."
+
+#: includes/updraftplus-tour.php:118
+msgid "Choose the schedule that you want your backups to run on."
+msgstr "Elige la frecuencia con la que quieres que se ejecuten tus copias de seguridad."
 
 #: includes/updraftplus-tour.php:117
 msgid "Choose your backup schedule"
@@ -158,6 +217,11 @@ msgstr "¡Felicidades! Tu primera copia de seguridad está corriendo."
 #: includes/updraftplus-tour.php:109 includes/updraftplus-tour.php:114
 msgid "Go to settings"
 msgstr "Ir a ajustes"
+
+#: includes/updraftplus-tour.php:108 includes/updraftplus-tour.php:113
+msgctxt "Translators: %s is a bold tag."
+msgid "But to avoid server-wide threats backup regularly to remote cloud storage in %s settings %s"
+msgstr "Pero para evitar amenazas al propio servidor es mejor que %s configures %s copias regulares a un almacenamiento remoto"
 
 #: includes/updraftplus-tour.php:108
 msgid "Press here to run a manual backup."
@@ -216,25 +280,69 @@ msgstr "Atrás"
 msgid "Manage your clones"
 msgstr "Gestiona tus clones"
 
+#: includes/updraftclone/updraftplus-temporary-clone-dash-notice.php:41
+msgid "You can shut this clone down using the following link. Each time your clone renews it costs 1 token, which lasts for 1 week."
+msgstr "Puedes cerrar el clon utilizando este enlace. Cada vez que se renueva el clon cueta un token que dura una semana."
+
+#: includes/updraftclone/updraftplus-temporary-clone-dash-notice.php:40
+msgid "Your clone will renew on:"
+msgstr "Tu clon se renovará:"
+
+#: includes/updraftclone/updraftplus-temporary-clone-dash-notice.php:32
+msgid "Unable to get renew date"
+msgstr "No se ha podido recuperar la fecha de renovación"
+
 #: includes/class-commands.php:922
 msgid "Dashboard:"
 msgstr "Escritorio:"
+
+#: includes/class-commands.php:921
+msgid "Front page:"
+msgstr "Portada:"
+
+#: includes/class-commands.php:920
+msgid "Your clone has started and will be available at the following URLs once it is ready."
+msgstr "Tu clon se ha iniciado y estará disponible en estas URLs cuando esté listo."
+
+#: includes/class-commands.php:888
+msgid "manage"
+msgstr "gestionar"
 
 #: includes/class-commands.php:888
 msgid "Current clones"
 msgstr "Clones actuales"
 
+#: includes/class-commands.php:875
+msgid "You can buy more temporary clone tokens here."
+msgstr "Puedes comprar más tokens temporales aquí."
+
+#: class-updraftplus.php:3172
+msgid "Your clone will now deploy this data to re-create your site."
+msgstr "Tu clon desplegará ahora estos datos para replicar tu sitio."
+
 #: admin.php:5492
 msgid "Forbid non-administrators to login to WordPress on your clone"
 msgstr "Prohíbe a los nueve administradores acceder a tu clon de WordPress"
+
+#: admin.php:1208
+msgid "The %s endpoint is scheduled to shut down on the 1st October 2018. You will need to switch to a different end-point and migrate your data before that date. %sPlease see this article for more information%s"
+msgstr "Está programado que se desconecte la conexión %s el 1 de octubre de 2018. Tendrás que cambiarte a otra conexión y migrar tus datos antes de esa fecha. %sTienes más información en este artículo%s"
 
 #: admin.php:947
 msgid "The backup for the clone has been aborted."
 msgstr "Se aportó la copia de seguridad del clon."
 
+#: admin.php:946
+msgid "The clone has been provisioned, and its data has been sent to it. Once the clone has finished deploying it, you will receive an email."
+msgstr "See he configurado el clon y se le han enviado los datos. Recibirás un correo electrónico en cuanto termine de desplegarse."
+
 #: admin.php:909
 msgid "The backup was aborted"
 msgstr "Se abortó la copia de seguridad"
+
+#: templates/wp-admin/advanced/wipe-settings.php:12
+msgid "Press this button to take a tour of the plugin."
+msgstr "Pulsa este botón para hacer una vista guiada del plugin."
 
 #: templates/wp-admin/settings/tab-addons.php:23
 msgid "WooCommerce plugins"
