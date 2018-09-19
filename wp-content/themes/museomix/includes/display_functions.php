@@ -32,10 +32,6 @@ function display_news($data, $link_text = null, $display = true) {
 			$post_thumbnail = get_the_post_thumbnail($item);
 		endif;
 		$link = get_the_permalink($item);
-		if ($item->post_type == 'museomix'):
-			$edition = get_field('edition', $item);
-			$link = icl_get_home_url().__('editions','edition slug', 'museomix').'/'.$edition->post_title.'/'.$item->post_name;
-		endif;
 		
 		$out .= '<div '.($item->post_type =='sponsor' ? ' style="min-height:300px" ' : '').' data-post_thumbnail='.$post_thumbnail.' class="et_pb_column et_pb_column_1_3  et_pb_column_'.$i.' et_pb_line_'.floor($i/3).' post_type-'.$item->post_type.'">
 			<div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left '.(!in_array($item->post_type, array('museomix', 'prototype')) ? ' link_text ' : '').'">
