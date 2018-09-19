@@ -190,10 +190,10 @@
         var out = '';
 
         if ('' !== vals[0]) {
-            out += ' from ' + $el.find('.facetwp-date-min').next().val();
+            out += ' ' + FWP_JSON.datepicker.fromText + ' ' + $el.find('.facetwp-date-min').next().val();
         }
         if ('' !== vals[1]) {
-            out += ' to ' + $el.find('.facetwp-date-max').next().val();
+            out += ' ' + FWP_JSON.datepicker.toText + ' ' + $el.find('.facetwp-date-max').next().val();
         }
         return out;
     });

@@ -111,6 +111,8 @@ class FacetWP_Facet_Date_Range extends FacetWP_Facet
         FWP()->display->json['datepicker'] = array(
             'locale'    => $locale,
             'clearText' => __( 'Clear', 'fwp' ),
+            'fromText'  => __( 'from', 'fwp' ),
+            'toText'    => __( 'to', 'fwp' )
         );
         FWP()->display->assets['flatpickr.css'] = FACETWP_URL . '/assets/vendor/flatpickr/flatpickr.css';
         FWP()->display->assets['flatpickr.js'] = FACETWP_URL . '/assets/vendor/flatpickr/flatpickr.min.js';

@@ -548,6 +548,10 @@ a:hover {
     font-size: 16px;
 }
 
+.qb-wrap .side-link {
+    font-size: 13px;
+}
+
 .qb-wrap .qb-condition {
     padding-top: 15px;
 }

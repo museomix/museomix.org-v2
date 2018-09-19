@@ -26,6 +26,9 @@ class FacetWP_Integration_WooCommerce
             add_filter( 'facetwp_filtered_post_ids', array( $this, 'process_variations' ) );
             add_filter( 'facetwp_facet_where', array( $this, 'facet_where' ), 10, 2 );
         }
+
+        // Prevent WC from removing its sort hooks
+        add_action( 'the_posts', array( $this, 'wc_preserve_sort' ), 8, 2 );
     }
 
 
@@ -425,6 +428,21 @@ class FacetWP_Integration_WooCommerce
         }
 
         return $return;
+    }
+
+
+    /**
+     * WooCommerce removes its custom sort queries after the main WC loop runs
+     * We need to prevent this for FacetWP's query to work
+     *
+     * @since 3.2.6
+     */
+    function wc_preserve_sort( $posts, $query ) {
+        if ( 'product_query' == $query->get( 'wc_query' ) && true === $query->get( 'facetwp' ) ) {
+            remove_filter( 'the_posts', array( wc()->query, 'remove_product_query_filters' ) );
+        }
+
+        return $posts;
     }
 }
 

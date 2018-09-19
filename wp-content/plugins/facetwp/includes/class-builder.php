@@ -451,6 +451,7 @@ class FacetWP_Builder
      * @since 3.2.0
      */
     function parse_query_obj( $query_obj ) {
+        $output = array();
         $tax_query = array();
         $meta_query = array();
         $date_query = array();
@@ -475,6 +476,9 @@ class FacetWP_Builder
             $value = $filter['value'];
             $compare = $filter['compare'];
             $type = $filter['type'];
+
+            // Cast as decimal for more accuracy
+            $type = ( 'NUMERIC' == $type ) ? 'DECIMAL(16,4)' : $type;
 
             $in_clause = in_array( $compare, array( 'IN', 'NOT IN' ) );
             $exists_clause = in_array( $compare, array( 'EXISTS', 'NOT EXISTS' ) );
@@ -550,9 +554,14 @@ class FacetWP_Builder
 
         foreach ( $query_obj['orderby'] as $index => $data ) {
             if ( 'cf/' == substr( $data['key'], 0, 3 ) ) {
+                $type = $data['type'];
+
+                // Cast as decimal for more accuracy
+                $type = ( 'NUMERIC' == $type ) ? 'DECIMAL(16,4)' : $type;
+
                 $meta_query['sort_' . $index] = array(
                     'key' => substr( $data['key'], 3 ),
-                    'type' => $data['type']
+                    'type' => $type
                 );
 
                 $orderby['sort_' . $index] = $data['order'];
@@ -562,19 +571,25 @@ class FacetWP_Builder
             }
         }
 
-        $output = array(
-            'tax_query' => $tax_query,
+        $temp = array(
+            'post_type' => $post_type,
+            'post_status' => $post_status,
             'meta_query' => $meta_query,
+            'tax_query' => $tax_query,
             'date_query' => $date_query,
-            'author__in' => $author_in,
-            'author__not_in' => $author_not_in,
             'post__in' => $post_in,
             'post__not_in' => $post_not_in,
-            'posts_per_page' => $query_obj['posts_per_page'],
-            'post_status' => $post_status,
-            'post_type' => $post_type,
-            'orderby' => $orderby
+            'author__in' => $author_in,
+            'author__not_in' => $author_not_in,
+            'orderby' => $orderby,
+            'posts_per_page' => $query_obj['posts_per_page']
         );
+
+        foreach ( $temp as $key => $val ) {
+            if ( ! empty( $val ) ) {
+                $output[ $key ] = $val;
+            }
+        }
 
         return $output;
     }

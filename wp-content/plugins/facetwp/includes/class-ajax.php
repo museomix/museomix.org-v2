@@ -24,6 +24,7 @@ class FacetWP_Ajax
                 add_action( 'wp_ajax_facetwp_save', array( $this, 'save_settings' ) );
                 add_action( 'wp_ajax_facetwp_rebuild_index', array( $this, 'rebuild_index' ) );
                 add_action( 'wp_ajax_facetwp_get_info', array( $this, 'get_info' ) );
+                add_action( 'wp_ajax_facetwp_get_query_args', array( $this, 'get_query_args' ) );
                 add_action( 'wp_ajax_facetwp_heartbeat', array( $this, 'heartbeat' ) );
                 add_action( 'wp_ajax_facetwp_license', array( $this, 'license' ) );
                 add_action( 'wp_ajax_facetwp_backup', array( $this, 'backup' ) );
@@ -333,6 +334,20 @@ class FacetWP_Ajax
         }
 
         wp_send_json( $response );
+    }
+
+
+    /**
+     * Return query arguments based on a Query Builder object
+     */
+    function get_query_args() {
+        $query_obj = $_POST['query_obj'];
+
+        if ( is_array( $query_obj ) ) {
+            $query_args = FWP()->builder->parse_query_obj( $query_obj );
+        }
+
+        wp_send_json( $query_args );
     }
 
 
