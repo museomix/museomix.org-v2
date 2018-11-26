@@ -767,10 +767,11 @@ a:hover {
     z-index: 10;
 }
 
-.builder-row-actions svg,
-.builder-col-actions svg,
-.builder-item-actions svg {
-    padding: 0 4px;
+.builder-row-actions span,
+.builder-col-actions span,
+.builder-item-actions span {
+    display: inline-block;
+    width: 20px;
 }
 
 .builder-col-actions:hover {

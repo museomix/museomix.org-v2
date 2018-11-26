@@ -4,24 +4,24 @@ class FacetWP_API_Fetch
 {
 
     function __construct() {
-        add_action( 'rest_api_init', array( $this, 'register' ) );
+        add_action( 'rest_api_init', [ $this, 'register' ] );
     }
 
 
     // PHP < 5.3
     function register() {
-        register_rest_route( 'facetwp/v1/', '/fetch', array(
+        register_rest_route( 'facetwp/v1/', '/fetch', [
             'methods' => 'POST',
-            'callback' => array( $this, 'callback' ),
-            'permission_callback' => array( $this, 'permission_callback' )
-        ) );
+            'callback' => [ $this, 'callback' ],
+            'permission_callback' => [ $this, 'permission_callback' ]
+        ] );
     }
 
 
     // PHP < 5.3
     function callback( $request ) {
         $data = $request->get_param( 'data' );
-        $params = empty( $data ) ? array() : json_decode( $data, true );
+        $params = empty( $data ) ? [] : json_decode( $data, true );
         return $this->process_request( $params );
     }
 
@@ -32,28 +32,28 @@ class FacetWP_API_Fetch
     }
 
 
-    function process_request( $params = array() ) {
+    function process_request( $params = [] ) {
         global $wpdb;
 
-        $defaults = array(
-            'facets' => array(
-                // 'category' => array( 'acf' )
-            ),
-            'query_args' => array(
+        $defaults = [
+            'facets' => [
+                // 'category' => [ 'acf' ]
+            ],
+            'query_args' => [
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'posts_per_page' => 10,
                 'paged' => 1,
-            ),
-            'settings' => array(
+            ],
+            'settings' => [
                 'first_load' => true
-            )
-        );
+            ]
+        ];
 
         $params = array_merge( $defaults, $params );
         $facet_types = FWP()->helper->facet_types;
-        $valid_facets = array();
-        $facets = array();
+        $valid_facets = [];
+        $facets = [];
 
         // Validate input
         $page = (int) $params['query_args']['paged'];
@@ -86,34 +86,34 @@ class FacetWP_API_Fetch
 
         // Check if empty
         if ( 0 === $post_ids[0] && 1 === count( $post_ids ) ) {
-            $post_ids = array();
+            $post_ids = [];
         }
 
         // Get valid facets and their values
         foreach ( $valid_facets as $facet_name => $facet ) {
-            $args = array(
+            $args = [
                 'facet' => $facet,
                 'where_clause' => $where_clause,
                 'selected_values' => $facet['selected_values'],
-            );
+            ];
 
-            $facet_data = array(
+            $facet_data = [
                 'name'          => $facet['name'],
                 'label'         => $facet['label'],
                 'type'          => $facet['type'],
                 'selected'      => $facet['selected_values'],
-            );
+            ];
 
             // Load facet choices if available
             if ( method_exists( $facet_types[ $facet['type'] ], 'load_values' ) ) {
                 $choices = $facet_types[ $facet['type'] ]->load_values( $args );
                 foreach ( $choices as $key => $choice ) {
-                    $choices[ $key ] = array(
+                    $choices[ $key ] = [
                         'value'     => $choice['facet_value'],
                         'label'     => $choice['facet_display_value'],
                         'depth'     => (int) $choice['depth'],
                         'count'     => (int) $choice['counter'],
-                    );
+                    ];
                 }
                 $facet_data['choices'] = $choices;
             }
@@ -133,7 +133,7 @@ class FacetWP_API_Fetch
             $total_pages = ceil( $total_rows / $per_page );
 
             if ( $page > $total_pages ) {
-                $post_ids = array();
+                $post_ids = [];
             }
             else {
                 $offset = ( $per_page * ( $page - 1 ) );
@@ -145,16 +145,16 @@ class FacetWP_API_Fetch
         }
 
         // Generate the output
-        $output = array(
+        $output = [
             'results' => $post_ids,
             'facets' => $facets,
-            'pager' => array(
+            'pager' => [
                 'page' => $page,
                 'per_page' => $per_page,
                 'total_rows' => $total_rows,
                 'total_pages' => $total_pages,
-            )
-        );
+            ]
+        ];
 
         return apply_filters( 'facetwp_api_output', $output );
     }

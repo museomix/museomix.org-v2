@@ -31,6 +31,7 @@ class LAGeneralTab implements LATab {
 	}
 
 	public function includeOnce( $context ) {
+		/** @noinspection PhpIncludeInspection */
 		include_once($context['root']  . 'views/general.php');
 	}
 }

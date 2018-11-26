@@ -97,8 +97,9 @@ class FFDB {
 	 * @return bool
 	 */
 	public static function rollback(){
-		return self::conn()->conn->rollback();
+		$result = self::conn()->conn->rollback();
 		self::$db->conn->autocommit(true);
+		return $result;
 	}
 
 	/**
@@ -327,8 +328,6 @@ class FFDB {
 		else{
 			$feeds = (array)$stream->feeds;
 		}
-		//$feeds = (is_array($stream->feeds) || is_object($stream->feeds)) ? serialize($stream->feeds) : stripslashes($stream->feeds);
-		//$feeds = json_decode($feeds);
 		unset($stream->feeds);
 		$serialized = serialize($stream);
 

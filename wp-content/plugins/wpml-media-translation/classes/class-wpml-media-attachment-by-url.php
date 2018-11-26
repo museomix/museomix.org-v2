@@ -17,6 +17,11 @@ class WPML_Media_Attachment_By_URL {
 
 	const SIZE_SUFFIX_REGEXP = '/-([0-9]+)x([0-9]+)\.([a-z]{3,4})$/';
 
+	const CACHE_KEY_PREFIX = 'attachment-id-from-guid-';
+	const CACHE_GROUP = 'wpml-media-setup';
+	const CACHE_EXPIRATION = 1800;
+
+	public $cache_hit_flag = null;
 
 	/**
 	 * WPML_Media_Attachment_By_URL constructor.
@@ -32,10 +37,16 @@ class WPML_Media_Attachment_By_URL {
 	}
 
 	public function get_id() {
+		$cache_key = self::CACHE_KEY_PREFIX . md5( $this->language . '#' . $this->url );
 
-		$attachment_id = $this->get_id_from_guid();
-		if ( ! $attachment_id ) {
-			$attachment_id = $this->get_id_from_meta();
+		$attachment_id = wp_cache_get( $cache_key, self::CACHE_GROUP, false, $this->cache_hit_flag );
+		if ( ! $this->cache_hit_flag ) {
+			$attachment_id = $this->get_id_from_guid();
+			if ( ! $attachment_id ) {
+				$attachment_id = $this->get_id_from_meta();
+			}
+
+			wp_cache_add( $cache_key, $attachment_id, self::CACHE_GROUP, self::CACHE_EXPIRATION );
 		}
 
 		return $attachment_id;
@@ -43,10 +54,10 @@ class WPML_Media_Attachment_By_URL {
 
 	private function get_id_from_guid() {
 		$attachment_id = $this->wpdb->get_var( $this->wpdb->prepare( "
-			SELECT ID FROM {$this->wpdb->posts} p
-			JOIN {$this->wpdb->prefix}icl_translations t ON t.element_id = p.ID
-			WHERE t.element_type='post_attachment' AND t.language_code=%s AND p.guid=%s
-			", $this->language, $this->url ) );
+		SELECT ID FROM {$this->wpdb->posts} p
+		JOIN {$this->wpdb->prefix}icl_translations t ON t.element_id = p.ID
+		WHERE t.element_type='post_attachment' AND t.language_code=%s AND p.guid=%s
+		", $this->language, $this->url ) );
 
 		return $attachment_id;
 	}
@@ -96,7 +107,7 @@ class WPML_Media_Attachment_By_URL {
 	}
 
 	private function validate_image_size( $path, $attachment_meta_data ) {
-		$valid           = false;
+		$valid     = false;
 		$file_name = basename( $path );
 
 		foreach ( $attachment_meta_data['sizes'] as $size ) {

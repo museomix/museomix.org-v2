@@ -63,7 +63,7 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
 
             // Keep the facet placement intact
             if ( FWP()->helper->facet_is( $facet, 'preserve_ghosts', 'yes' ) ) {
-                $tmp = array();
+                $tmp = [];
                 foreach ( $ghost_output as $row ) {
                     $tmp[ $row['facet_value'] . ' ' ] = $row;
                 }
@@ -76,7 +76,7 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
             }
             else {
                 // Make the array key equal to the facet_value (for easy lookup)
-                $tmp = array();
+                $tmp = [];
                 foreach ( $output as $row ) {
                     $tmp[ $row['facet_value'] . ' ' ] = $row; // Force a string array key
                 }
@@ -187,7 +187,7 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
     function filter_posts( $params ) {
         global $wpdb;
 
-        $output = array();
+        $output = [];
         $facet = $params['facet'];
         $selected_values = $params['selected_values'];
 
@@ -362,6 +362,6 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
      */
     function settings_js( $params ) {
         $expand = empty( $params['facet']['show_expanded'] ) ? 'no' : $params['facet']['show_expanded'];
-        return array( 'show_expanded' => $expand );
+        return [ 'show_expanded' => $expand ];
     }
 }

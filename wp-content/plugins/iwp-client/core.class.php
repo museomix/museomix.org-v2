@@ -203,8 +203,13 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 			'backup_downlaod' => 'iwp_mmb_backup_downlaod'
 		);
 		
-		add_action('rightnow_end', array( &$this, 'add_right_now_info' ));       
-		add_action('admin_menu', array($this,'iwp_admin_menu_actions'), 999, 1);
+		add_action('rightnow_end', array( &$this, 'add_right_now_info' )); 
+		if( $this->iwp_mmb_multisite ){
+			add_action('network_admin_menu', array($this,'iwp_admin_menu_actions'), 10, 1);
+		}else{
+			add_action('admin_menu', array($this,'iwp_admin_menu_actions'), 10, 1);
+		}      
+		add_action('init', array($this,'iwp_cpb_hide_updates'), 10, 1);
 		add_action('admin_init', array(&$this,'admin_actions'));   
 		add_filter('deprecated_function_trigger_error', '__return_false');
 		// add_action('wp_loaded', array( &$this, 'iwp_mmb_remote_action'), 2147483650);
@@ -1021,19 +1026,37 @@ class IWP_MMB_Core extends IWP_MMB_Helper
 	
 	function iwp_admin_menu_actions($args){
 		//to hide all updates
+		global $iwp_mmb_core;
 		$replace = get_option("iwp_client_brand");
-		if(!empty($replace)){
+		if(empty($iwp_mmb_core->request_params) && !empty($replace)){
 			if(!empty($replace['hideUpdatesCPB'])){
 				//add_filter('wp_get_update_data', array($this, 'iwp_wp_get_update_data'), 10, 2);
 				$page = remove_submenu_page( 'index.php', 'update-core.php' );
-				add_filter('site_transient_update_core', array($this, 'iwp_remove_core_updates'), 10, 1);
-				add_filter('site_transient_update_plugins', array($this, 'iwp_remove_core_updates'), 10, 1);
-				add_filter('site_transient_update_themes', array($this, 'iwp_remove_core_updates'), 10, 1);
+				add_filter('transient_update_plugins', array($this, 'iwp_remove_core_updates'), 999999, 1);
+				add_filter('site_transient_update_core', array($this, 'iwp_remove_core_updates'), 999999, 1);
+				add_filter('site_transient_update_plugins', array($this, 'iwp_remove_core_updates'), 999999, 1);
+				add_filter('site_transient_update_themes', array($this, 'iwp_remove_core_updates'), 999999, 1);
 			}
 			if(!empty($replace['hideFWPCPB'])){
-				remove_submenu_page('themes.php','theme-editor.php');
-				remove_submenu_page('plugins.php','plugin-editor.php');
+				// remove_submenu_page('themes.php','theme-editor.php');
+				// remove_submenu_page('plugins.php','plugin-editor.php'); // this is old method this allows editor in direct URL
+				if (!defined('DISALLOW_FILE_EDIT')) {
+					define('DISALLOW_FILE_EDIT', true);
+				}
 				add_filter('plugin_action_links', array($this, 'iwp_client_replace_action_links'), 10, 2);
+			}
+		}
+    }
+
+    function iwp_cpb_hide_updates($args){
+    	global $iwp_mmb_core;
+		$replace = get_option("iwp_client_brand");
+		if(empty($iwp_mmb_core->request_params) && !empty($replace)){
+			if(!empty($replace['hideUpdatesCPB'])){
+				add_filter('transient_update_plugins', array($this, 'iwp_remove_core_updates'), 999999, 1);
+				add_filter('site_transient_update_core', array($this, 'iwp_remove_core_updates'), 999999, 1);
+				add_filter('site_transient_update_plugins', array($this, 'iwp_remove_core_updates'), 999999, 1);
+				add_filter('site_transient_update_themes', array($this, 'iwp_remove_core_updates'), 999999, 1);
 			}
 		}
     }

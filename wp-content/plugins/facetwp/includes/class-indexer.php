@@ -29,13 +29,13 @@ class FacetWP_Indexer
      * @since 2.8.4
      */
     function run_hooks() {
-        add_action( 'save_post',                array( $this, 'save_post' ) );
-        add_action( 'delete_post',              array( $this, 'delete_post' ) );
-        add_action( 'edited_term',              array( $this, 'edit_term' ), 10, 3 );
-        add_action( 'delete_term',              array( $this, 'delete_term' ), 10, 4 );
-        add_action( 'set_object_terms',         array( $this, 'set_object_terms' ) );
-        add_action( 'facetwp_indexer_cron',     array( $this, 'get_progress' ) );
-        add_filter( 'wp_insert_post_parent',    array( $this, 'is_wp_insert_post' ) );
+        add_action( 'save_post',                [ $this, 'save_post' ] );
+        add_action( 'delete_post',              [ $this, 'delete_post' ] );
+        add_action( 'edited_term',              [ $this, 'edit_term' ], 10, 3 );
+        add_action( 'delete_term',              [ $this, 'delete_term' ], 10, 4 );
+        add_action( 'set_object_terms',         [ $this, 'set_object_terms' ] );
+        add_action( 'facetwp_indexer_cron',     [ $this, 'get_progress' ] );
+        add_filter( 'wp_insert_post_parent',    [ $this, 'is_wp_insert_post' ] );
     }
 
 
@@ -171,7 +171,7 @@ class FacetWP_Indexer
                 $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}facetwp_index" );
             }
 
-            $args = array(
+            $args = [
                 'post_type'         => 'any',
                 'post_status'       => 'publish',
                 'posts_per_page'    => -1,
@@ -179,17 +179,17 @@ class FacetWP_Indexer
                 'orderby'           => 'ID',
                 'cache_results'     => false,
                 'no_found_rows'     => true,
-            );
+            ];
         }
         // Index a single post
         elseif ( is_int( $post_id ) ) {
-            $args = array(
+            $args = [
                 'p'                 => $post_id,
                 'post_type'         => 'any',
                 'post_status'       => 'publish',
                 'posts_per_page'    => 1,
                 'fields'            => 'ids',
-            );
+            ];
 
             // Clear table values
             $wpdb->query( "DELETE FROM {$wpdb->prefix}facetwp_index WHERE post_id = $post_id" );
@@ -243,12 +243,12 @@ class FacetWP_Indexer
                         exit;
                     }
 
-                    $transients = array(
+                    $transients = [
                         'num_indexed'   => $counter,
                         'num_total'     => $num_total,
                         'retries'       => $attempt,
                         'touch'         => time(),
-                    );
+                    ];
                     update_option( 'facetwp_transients', json_encode( $transients ) );
                 }
             }
@@ -259,7 +259,7 @@ class FacetWP_Indexer
             }
 
             // Force WPML to change the language
-            do_action( 'facetwp_indexer_post', array( 'post_id' => $post_id ) );
+            do_action( 'facetwp_indexer_post', [ 'post_id' => $post_id ] );
 
             // Loop through all facets
             foreach ( $facets as $facet ) {
@@ -273,7 +273,7 @@ class FacetWP_Indexer
                 $source = isset( $facet['source'] ) ? $facet['source'] : '';
 
                 // Set default index_row() params
-                $defaults = array(
+                $defaults = [
                     'post_id'               => $post_id,
                     'facet_name'            => $facet['name'],
                     'facet_source'          => $source,
@@ -283,20 +283,20 @@ class FacetWP_Indexer
                     'parent_id'             => 0,
                     'depth'                 => 0,
                     'variation_id'          => 0,
-                );
+                ];
 
-                $defaults = apply_filters( 'facetwp_indexer_post_facet_defaults', $defaults, array(
+                $defaults = apply_filters( 'facetwp_indexer_post_facet_defaults', $defaults, [
                     'facet' => $facet
-                ) );
+                ] );
 
                 // Set flag for custom facet indexing
                 $this->is_overridden = true;
 
                 // Bypass default indexing
-                $bypass = apply_filters( 'facetwp_indexer_post_facet', false, array(
+                $bypass = apply_filters( 'facetwp_indexer_post_facet', false, [
                     'defaults'  => $defaults,
                     'facet'     => $facet
-                ) );
+                ] );
 
                 if ( $bypass ) {
                     continue;
@@ -306,10 +306,10 @@ class FacetWP_Indexer
 
                 // Get rows to insert
                 $rows = $this->get_row_data( $defaults );
-                $rows = apply_filters( 'facetwp_indexer_row_data', $rows, array(
+                $rows = apply_filters( 'facetwp_indexer_row_data', $rows, [
                     'defaults'  => $defaults,
                     'facet'     => $facet
-                ) );
+                ] );
 
                 foreach ( $rows as $row ) {
                     $this->index_row( $row );
@@ -331,14 +331,14 @@ class FacetWP_Indexer
      * @since 2.1.1
      */
     function get_row_data( $defaults ) {
-        $output = array();
+        $output = [];
 
         $facet = $this->facet;
         $post_id = $defaults['post_id'];
         $source = $defaults['facet_source'];
 
         if ( 'tax/' == substr( $source, 0, 4 ) ) {
-            $used_terms = array();
+            $used_terms = [];
             $taxonomy = substr( $source, 4 );
             $term_objects = wp_get_object_terms( $post_id, $taxonomy );
             if ( is_wp_error( $term_objects ) ) {
@@ -505,16 +505,16 @@ class FacetWP_Indexer
 
             // Resume a stalled indexer
             if ( 60 < ( time() - $touch ) ) {
-                $post_data = array(
+                $post_data = [
                     'blocking'  => false,
                     'timeout'   => 0.02,
-                    'body'      => array(
+                    'body'      => [
                         'action'    => 'facetwp_resume_index',
                         'offset'    => $num_indexed,
                         'retries'   => $retries + 1,
                         'touch'     => $touch
-                    )
-                );
+                    ]
+                ];
                 wp_remote_post( admin_url( 'admin-ajax.php' ), $post_data );
             }
 

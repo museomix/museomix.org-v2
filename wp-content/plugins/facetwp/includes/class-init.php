@@ -4,7 +4,7 @@ class FacetWP_Init
 {
 
     function __construct() {
-        add_action( 'init', array( $this, 'init' ) );
+        add_action( 'init', [ $this, 'init' ] );
     }
 
 
@@ -59,11 +59,11 @@ class FacetWP_Init
         include( FACETWP_DIR . '/includes/libraries/github-updater.php' );
 
         // hooks
-        add_action( 'admin_menu', array( $this, 'admin_menu' ) );
-        add_action( 'wp_enqueue_scripts', array( $this, 'front_scripts' ) );
-        add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
-        add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ), 10, 2 );
-        add_filter( 'plugin_action_links_facetwp/index.php', array( $this, 'plugin_action_links' ) );
+        add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'front_scripts' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
+        add_filter( 'redirect_canonical', [ $this, 'redirect_canonical' ], 10, 2 );
+        add_filter( 'plugin_action_links_facetwp/index.php', [ $this, 'plugin_action_links' ] );
     }
 
 
@@ -87,7 +87,7 @@ class FacetWP_Init
      * Register the FacetWP settings page
      */
     function admin_menu() {
-        add_options_page( 'FacetWP', 'FacetWP', 'manage_options', 'facetwp', array( $this, 'settings_page' ) );
+        add_options_page( 'FacetWP', 'FacetWP', 'manage_options', 'facetwp', [ $this, 'settings_page' ] );
     }
 
 
@@ -105,7 +105,7 @@ class FacetWP_Init
     function admin_scripts( $hook ) {
         if ( 'settings_page_facetwp' == $hook ) {
             wp_enqueue_style( 'media-views' );
-            wp_enqueue_script( 'jquery-powertip', FACETWP_URL . '/assets/vendor/jquery-powertip/jquery.powertip.min.js', array( 'jquery' ), '1.2.0' );
+            wp_enqueue_script( 'jquery-powertip', FACETWP_URL . '/assets/vendor/jquery-powertip/jquery.powertip.min.js', [ 'jquery' ], '1.2.0' );
         }
     }
 

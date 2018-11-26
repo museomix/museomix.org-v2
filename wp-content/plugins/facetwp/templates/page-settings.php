@@ -9,6 +9,7 @@ $support_html = $support_html->get_html();
 $settings_admin = new FacetWP_Settings_Admin();
 $settings_array = $settings_admin->get_settings();
 $i18n = $settings_admin->get_i18n_strings();
+$image_sizes = $settings_admin->get_image_size_labels();
 
 // Useful data
 $data = FWP()->helper->settings;
@@ -18,8 +19,8 @@ $layout_data = FWP()->builder->get_layout_data();
 $query_data = FWP()->builder->get_query_data();
 
 // Clone facet settings HTML
-$facet_clone = array();
-$admin_scripts = array();
+$facet_clone = [];
+$admin_scripts = [];
 
 foreach ( $facet_types as $name => $class ) {
     $facet_clone[ $name ] = '<div>' . __( 'This facet type has no additional settings.', 'fwp' ) . '</div>';
@@ -64,6 +65,7 @@ window.FWP = {
     },
     data: <?php echo json_encode( $data ); ?>,
     i18n: <?php echo json_encode( $i18n ); ?>,
+    image_sizes: <?php echo json_encode( $image_sizes ); ?>,
     clone: <?php echo json_encode( $facet_clone ); ?>,
     facet_types: <?php echo json_encode( $facet_types ); ?>,
     data_sources: <?php echo json_encode( $data_sources ); ?>,

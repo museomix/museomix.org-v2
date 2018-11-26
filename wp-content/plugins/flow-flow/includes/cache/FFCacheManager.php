@@ -331,7 +331,7 @@ class FFCacheManager implements FFCache{
 	 * @param array $row
 	 * @param bool $moderation
 	 *
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	protected function buildPost($row, $moderation = false){
 		$post = new \stdClass();

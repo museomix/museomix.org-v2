@@ -653,7 +653,7 @@ var FlowFlowApp = (function($){
       });
 
       this.$form.delegate('input', 'keydown', function (e){
-        var $t = $(this)
+        var $t = $(this);
         if ($t.is('.validation-error')) {
           $t.removeClass('validation-error');
         }
@@ -695,7 +695,7 @@ var FlowFlowApp = (function($){
     initFacebookAuth: function () {
       //https://www.facebook.com/dialog/oauth
 
-      var f = "http://flow.looks-awesome.com/service/auth/facebook2.php?" + $.param({
+      var f = "https://flow.looks-awesome.com/service/auth/facebook2.php?" + $.param({
             back: this.backUrl
           });
       $("#facebook-auth").click(function(){
@@ -1010,8 +1010,14 @@ var FlowFlowApp = (function($){
         "c-r-laptop":            "2",
         "c-r-tablet-l":          "2",
         "c-r-tablet-p":          "2",
-        "c-r-smart-l":           "2",
-        "c-r-smart-p":           "2",
+        "c-r-smart-l":           "1",
+        "c-r-smart-p":           "1",
+        "c-c-desktop":           "5",
+        "c-c-laptop":            "4",
+        "c-c-tablet-l":          "3",
+        "c-c-tablet-p":          "3",
+        "c-c-smart-l":           "3",
+        "c-c-smart-p":           "3",
         "c-s-desktop":           "0",
         "c-s-laptop":            "0",
         "c-s-tablet-l":          "0",
@@ -1019,6 +1025,10 @@ var FlowFlowApp = (function($){
         "c-s-smart-l":           "0",
         "c-s-smart-p":           "0",
         "c-autoplay":            "",
+        "c-arrows-always":       "yep",
+        "c-arrows-mob":          "nope",
+        "c-dots":                "yep",
+        "c-dots-mob":            "nope",
         "wallwidth":             "",
         "wallvm":                "20",
         "wallhm":                "0",

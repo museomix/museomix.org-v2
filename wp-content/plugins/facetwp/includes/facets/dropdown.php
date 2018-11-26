@@ -72,7 +72,7 @@ class FacetWP_Facet_Dropdown extends FacetWP_Facet
 
             // Determine whether to show counts
             $display_value .= esc_attr( $result['facet_display_value'] );
-            $show_counts = apply_filters( 'facetwp_facet_dropdown_show_counts', true, array( 'facet' => $facet ) );
+            $show_counts = apply_filters( 'facetwp_facet_dropdown_show_counts', true, [ 'facet' => $facet ] );
 
             if ( $show_counts ) {
                 $display_value .= ' (' . $result['counter'] . ')';

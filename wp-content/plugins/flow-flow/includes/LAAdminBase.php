@@ -28,7 +28,6 @@ abstract class LAAdminBase {
 		// Add the options page and menu item.
 		add_action( 'admin_menu', array( $this, 'add_social_stream_admin_menu' ) );
 
-		//$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->getPluginSlug() . '.php' );
 		$plugin_basename = $this->getPluginSlug() . '/' . $this->getPluginSlug() . '.php';
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 		
@@ -198,7 +197,7 @@ abstract class LAAdminBase {
 		}
 		
 		if ( empty ( $GLOBALS['admin_page_hooks']['flow-flow'] ) ){
-			return add_menu_page(
+			add_menu_page(
 				'Social Apps',
 				'Social Apps',
 				'manage_options',
@@ -219,6 +218,7 @@ abstract class LAAdminBase {
 		$activated = $this->db->registrationCheck();
 		$this->db->dataInit();
 		$context['activated'] = $activated;
+		/** @noinspection PhpIncludeInspection */
 		include_once($context['root']  . 'views/news.php');
 	}
 }

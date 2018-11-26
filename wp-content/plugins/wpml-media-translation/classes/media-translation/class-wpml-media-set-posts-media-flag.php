@@ -34,48 +34,59 @@ class WPML_Media_Set_Posts_Media_Flag implements IWPML_Action {
 	}
 
 	public function add_hooks() {
-		if ( ! WPML_Media::has_setup_run() ) {
-			add_action( 'wp_ajax_wpml_media_set_has_media_flag_prepare', array( $this, 'clear_flags' ) );
-			add_action( 'wp_ajax_wpml_media_set_has_media_flag', array( $this, 'process_batch' ) );
-		}
+		add_action( 'wp_ajax_' . WPML_Media_Posts_Media_Flag_Notice::PREPARE_ACTION, array( $this, 'clear_flags' ) );
+		add_action( 'wp_ajax_' . WPML_Media_Posts_Media_Flag_Notice::PROCESS_ACTION, array( $this, 'process_batch' ) );
 
 		add_action( 'save_post', array( $this, 'update_post_flag' ) );
 	}
 
 	public function clear_flags() {
-		$this->wpdb->query( $this->wpdb->prepare(
-			"DELETE FROM {$this->wpdb->postmeta} WHERE meta_key=%s",
-			self::HAS_MEDIA_POST_FLAG
-		) );
+		if ( $this->verify_nonce( WPML_Media_Posts_Media_Flag_Notice::PREPARE_ACTION ) ) {
 
-		wp_send_json_success( array( 'status' => __( 'Running setup...', 'wpml-media' ) ) );
+			if ( ! WPML_Media::has_setup_started() ) {
+				$this->wpdb->delete( $this->wpdb->postmeta, array( 'meta_key' => self::HAS_MEDIA_POST_FLAG ), array( '%s' ) );
+			}
+			wp_send_json_success( array( 'status' => __( 'Running setup...', 'wpml-media' ) ) );
+
+		} else {
+			wp_send_json_error( array( 'status' => 'Invalid nonce' ) );
+		}
 	}
 
 	public function process_batch() {
-		if ( isset( $_POST['nonce'] ) && ( $_POST['nonce'] === wp_create_nonce( WPML_Media_Posts_Media_Flag_Notice::NONCE ) ) ) {
-			$offset = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
+		if ( $this->verify_nonce( WPML_Media_Posts_Media_Flag_Notice::PROCESS_ACTION ) ) {
+			$this->mark_started();
 
-			$sql = $this->wpdb->prepare( "
+			$continue = false;
+			$status   = __( 'Setup complete!', 'wpml-media' );
+			$offset   = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
+
+			if ( ! WPML_Media::has_setup_run() ) {
+
+				$sql = $this->wpdb->prepare( "
 			SELECT SQL_CALC_FOUND_ROWS ID, post_content FROM {$this->wpdb->posts} p
 			JOIN {$this->wpdb->prefix}icl_translations t 
 				ON t.element_id = p.ID AND t.element_type LIKE 'post_%'
+			LEFT JOIN {$this->wpdb->prefix}postmeta m ON p.ID = m.post_id AND m.meta_key='%s'
 			WHERE p.post_type NOT IN ( 'auto-draft', 'attachment', 'revision' )
-				AND t.source_language_code IS NULL	
+				AND t.source_language_code IS NULL	AND m.meta_id IS NULL
 			ORDER BY ID ASC
 			LIMIT %d, %d
-		", $offset, self::BATCH_SIZE );
+		", self::HAS_MEDIA_POST_FLAG, $offset, self::BATCH_SIZE );
 
-			$posts = $this->wpdb->get_results( $sql );
+				$posts = $this->wpdb->get_results( $sql );
 
-			$total_posts_found = $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
+				$total_posts_found = $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
 
-			if ( $continue = ( count( $posts ) > 0 ) ) {
-				$this->flag_posts( $posts );
-				$this->record_media_usage( $posts );
-				$progress = round( 100 * min( $offset, $total_posts_found ) / $total_posts_found );
-				$status   = sprintf( __( 'Setup in progress: %d%% complete...', 'wpml-media' ), $progress );
-			} else {
-				$status = __( 'Setup complete!', 'wpml-media' );
+				if ( $continue = ( count( $posts ) > 0 ) ) {
+					$this->flag_posts( $posts );
+					$this->record_media_usage( $posts );
+					$progress = round( 100*min( $offset, $total_posts_found )/$total_posts_found );
+					$status   = sprintf( __( 'Setup in progress: %d%% complete...', 'wpml-media' ), $progress );
+				}
+			}
+
+			if ( ! $continue ) {
 				$this->mark_complete();
 			}
 
@@ -88,6 +99,10 @@ class WPML_Media_Set_Posts_Media_Flag implements IWPML_Action {
 		} else {
 			wp_send_json_error( array( 'status' => 'Invalid nonce' ) );
 		}
+	}
+
+	private function verify_nonce( $action ) {
+		return isset( $_POST['nonce'] ) && wp_verify_nonce( $_POST['nonce'], $action );
 	}
 
 	/**
@@ -125,6 +140,10 @@ class WPML_Media_Set_Posts_Media_Flag implements IWPML_Action {
 			WPML_Media_Posts_Media_Flag_Notice::NOTICE_GROUP,
 			WPML_Media_Posts_Media_Flag_Notice::NOTICE_ID
 		);
+	}
+
+	private function mark_started() {
+		WPML_Media::set_setup_started();
 	}
 
 

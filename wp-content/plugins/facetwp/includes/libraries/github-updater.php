@@ -5,16 +5,16 @@ defined( 'ABSPATH' ) or exit;
 if ( ! class_exists( 'GHU_Core' ) ) {
     class GHU_Core
     {
-        public $update_data = array();
-        public $active_plugins = array();
+        public $update_data = [];
+        public $active_plugins = [];
 
 
         function __construct() {
-            add_action( 'admin_init', array( $this, 'admin_init' ) );
-            add_filter( 'plugins_api', array( $this, 'plugins_api' ), 10, 3 );
-            add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'set_update_data' ) );
-            add_filter( 'upgrader_source_selection', array( $this, 'upgrader_source_selection' ), 10, 4 );
-            add_filter( 'extra_plugin_headers', array( $this, 'extra_plugin_headers' ) );
+            add_action( 'admin_init', [ $this, 'admin_init' ] );
+            add_filter( 'plugins_api', [ $this, 'plugins_api' ], 10, 3 );
+            add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'set_update_data' ] );
+            add_filter( 'upgrader_source_selection', [ $this, 'upgrader_source_selection' ], 10, 4 );
+            add_filter( 'extra_plugin_headers', [ $this, 'extra_plugin_headers' ] );
         }
 
 
@@ -43,17 +43,17 @@ if ( ! class_exists( 'GHU_Core' ) ) {
          * Fetch the latest GitHub tags and build the plugin data array
          */
         function get_github_updates() {
-            $output = array();
+            $output = [];
             $plugins = get_plugins();
             foreach ( $plugins as $plugin_path => $info ) {
                 if ( isset( $this->active_plugins[ $plugin_path ] ) && ! empty( $info['GitHub URI'] ) ) {
-                    $temp = array(
+                    $temp = [
                         'plugin'            => $plugin_path,
                         'slug'              => trim( dirname( $plugin_path ), '/' ),
                         'name'              => $info['Name'],
                         'github_repo'       => $info['GitHub URI'],
                         'description'       => $info['Description'],
-                    );
+                    ];
 
                     // get plugin tags
                     list( $owner, $repo ) = explode( '/', $temp['github_repo'] );
@@ -90,15 +90,15 @@ if ( ! class_exists( 'GHU_Core' ) ) {
             if ( 'plugin_information' == $action ) {
                 foreach ( $this->update_data as $plugin_path => $info ) {
                     if ( $info['slug'] == $args->slug ) {
-                        return (object) array(
+                        return (object) [
                             'name'          => $info['name'],
                             'slug'          => $info['slug'],
                             'version'       => $info['new_version'],
                             'download_link' => $info['package'],
-                            'sections' => array(
+                            'sections' => [
                                 'description' => $info['description']
-                            )
-                        );
+                            ]
+                        ];
                     }
                 }
             }

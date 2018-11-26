@@ -32,6 +32,7 @@ class FFBackupTab implements LATab {
 	public function includeOnce( $context ) {
 		$manager            = new FFSnapshotManager( $context );
 		$context['backups'] = $manager->getSnapshots();
+		/** @noinspection PhpIncludeInspection */
 		include_once($context['root']  . 'views/backup.php');
 	}
 }

@@ -15,7 +15,7 @@ class FacetWP_Facet_Number_Range extends FacetWP_Facet
 
         $output = '';
         $value = $params['selected_values'];
-        $value = empty( $value ) ? array( '', '', ) : $value;
+        $value = empty( $value ) ? [ '', '', ] : $value;
         $fields = empty( $params['facet']['fields'] ) ? 'both' : $params['facet']['fields'];
 
         if ( 'exact' == $fields ) {

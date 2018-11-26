@@ -349,6 +349,55 @@ class UpdraftPlus_Manipulation_Functions {
 		}
 		return $normalised_descrip_url;
 	}
+
+	/**
+	 * Normalize a filesystem path.
+	 *
+	 * On windows systems, replaces backslashes with forward slashes
+	 * and forces upper-case drive letters.
+	 * Allows for two leading slashes for Windows network shares, but
+	 * ensures that all other duplicate slashes are reduced to a single.
+	 *
+	 * @param string $path Path to normalize.
+	 * @return string Normalized path.
+	 */
+	public static function wp_normalize_path($path) {
+		// wp_normalize_path is not present before WP 3.9
+		if (function_exists('wp_normalize_path')) return wp_normalize_path($path);
+		// Taken from WP 4.6
+		$path = str_replace('\\', '/', $path);
+		$path = preg_replace('|(?<=.)/+|', '/', $path);
+		if (':' === substr($path, 1, 1)) {
+			$path = ucfirst($path);
+		}
+		return $path;
+	}
+
+	/**
+	 * Given a set of times, find details about the maximum
+	 *
+	 * @param Array	  $time_passed
+	 * @param Integer $upto
+	 * @param Integer $first_run
+	 *
+	 * @return Array
+	 */
+	public static function max_time_passed($time_passed, $upto, $first_run) {
+		$max_time = 0;
+		$timings_string = "";
+		$run_times_known=0;
+		for ($i=$first_run; $i<=$upto; $i++) {
+			$timings_string .= "$i:";
+			if (isset($time_passed[$i])) {
+				$timings_string .= round($time_passed[$i], 1).' ';
+				$run_times_known++;
+				if ($time_passed[$i] > $max_time) $max_time = round($time_passed[$i]);
+			} else {
+				$timings_string .= '? ';
+			}
+		}
+		return array($max_time, $timings_string, $run_times_known);
+	}
 	
 	/**
 	 * Determine if a given string ends with a given substring.
@@ -360,5 +409,21 @@ class UpdraftPlus_Manipulation_Functions {
 	public static function str_ends_with($haystack, $needle) {
 		if (substr($haystack, - strlen($needle)) == $needle) return true;
 		return false;
+	}
+
+	/**
+	 * Returns a random string of given length.
+	 *
+	 * @param  string $length integer
+	 * @return string random string
+	 */
+	public static function generate_random_string($length = 2) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+		$characters_length = strlen($characters);
+		$random_string = '';
+		for ($i = 0; $i < $length; $i++) {
+			$random_string .= $characters[rand(0, $characters_length - 1)];
+		}
+		return $random_string;
 	}
 }

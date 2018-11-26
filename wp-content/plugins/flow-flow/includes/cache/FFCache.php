@@ -11,7 +11,7 @@ if ( ! defined( 'WPINC' ) ) die;
  */
 interface FFCache {
 	/**
-	 * @param FFStreamSettings $stream
+	 * @param \flow\settings\FFStreamSettings $stream
 	 * @param bool $moderation
 	 *
 	 * @return void

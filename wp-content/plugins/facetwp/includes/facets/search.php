@@ -40,11 +40,11 @@ class FacetWP_Facet_Search extends FacetWP_Facet
         }
 
         // Default WP search
-        $search_args = array(
+        $search_args = [
             's' => $selected_values,
             'posts_per_page' => 200,
             'fields' => 'ids',
-        );
+        ];
 
         $search_args = apply_filters( 'facetwp_search_query_args', $search_args, $params );
 
@@ -58,7 +58,7 @@ class FacetWP_Facet_Search extends FacetWP_Facet
      * Output admin settings HTML
      */
     function settings_html() {
-        $engines = apply_filters( 'facetwp_facet_search_engines', array() );
+        $engines = apply_filters( 'facetwp_facet_search_engines', [] );
 ?>
         <div class="facetwp-row">
             <div><?php _e('Search engine', 'fwp'); ?>:</div>
@@ -99,6 +99,6 @@ class FacetWP_Facet_Search extends FacetWP_Facet
      */
     function settings_js( $params ) {
         $auto_refresh = empty( $params['facet']['auto_refresh'] ) ? 'no' : $params['facet']['auto_refresh'];
-        return array( 'auto_refresh' => $auto_refresh );
+        return [ 'auto_refresh' => $auto_refresh ];
     }
 }

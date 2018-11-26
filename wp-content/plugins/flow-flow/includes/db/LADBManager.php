@@ -110,7 +110,7 @@ abstract class LADBManager {
 		try{
 			FFDB::beginTransaction();
 			if (false !== ($max = FFDB::maxIdOfStreams($this->streams_table_name))){
-				$newId = (string) $max + 1;
+				$newId = (string) ($max + 1);
 				$stream->id = $newId;
 				$stream->feeds = isset($stream->feeds) ? $stream->feeds : json_encode(array());
 				$stream->name = isset($stream->name) ? $stream->name : '';
@@ -255,13 +255,13 @@ abstract class LADBManager {
 				$this->refreshCache(null, $force_load_cache);
 			}
 			
-			$responce = array(
+			$response = array(
 				'settings' => $settings, 
 				'activated' => $activated
 			);
-			$this->customizeResponce($responce);
+			$this->customizeResponse($response);
 			
-			echo json_encode( $responce );
+			echo json_encode( $response );
 		}catch (\Exception $e){
 			error_log('ff_save_settings_fn error:');
 			error_log($e->getMessage());
@@ -282,6 +282,7 @@ abstract class LADBManager {
 			$disabled_feeds = FFDB::conn()->getAll('SELECT * FROM ?n WHERE enabled = 1 AND system_enabled = 0 AND send_email = 0', $this->cache_table_name);
 			if (!empty($disabled_feeds)){
 				ob_start();
+				/** @noinspection PhpIncludeInspection */
 				include($this->context['root']  . 'views/email.php');
 				$message = ob_get_clean();
 
@@ -291,9 +292,9 @@ abstract class LADBManager {
 				$headers[] = 'X-Mailer: PHP/' . phpversion();
 //				$headers[] = 'To: ' . $admin_email;
 				$headers[] = 'From: Social Stream Apps <' . $admin_email . '>';
-				$blogname = htmlspecialchars_decode(get_bloginfo('name'));
+				$blog_name = htmlspecialchars_decode(get_bloginfo('name'));
 
-				$success = mail($admin_email, "[Flow-Flow] Broken feeds detected on " . $blogname, $message, implode("\r\n", $headers));
+				$success = mail($admin_email, "[Flow-Flow] Broken feeds detected on " . $blog_name, $message, implode("\r\n", $headers));
 				if ($success) {
 					try {
 						FFDB::beginTransaction();
@@ -452,6 +453,7 @@ abstract class LADBManager {
 			$filename = $dir . '/stream-id' . $stream->id . '-'. get_current_blog_id() . '.css';
 		}
 		ob_start();
+		/** @noinspection PhpIncludeInspection */
 		include($this->context['root']  . 'views/stream-template-css.php');
 		$output = ob_get_clean();
 		$a = fopen($filename, 'w');
@@ -473,7 +475,7 @@ abstract class LADBManager {
 		try{
 			FFDB::beginTransaction();
 			if (false !== ($count = FFDB::maxIdOfStreams($this->streams_table_name))) {
-				$newId = (string) $count + 1;
+				$newId = (string) ($count + 1);
 				$stream->id = $newId;
 				$stream->name = "{$stream->name} copy";
 				$stream->last_changes = time();
@@ -513,17 +515,17 @@ abstract class LADBManager {
 		return $settings;
 	}
 	
-	protected abstract function customizeResponce(&$responce);
+	protected abstract function customizeResponse(&$response);
 	
 	protected abstract function clean_cache($options);
 	
 	protected function refreshCache($streamId, $force_load_cache = false){
-		//TODO: anf: refact
+		//TODO: anf: refactor
 		LABase::get_instance($this->context)->refreshCache($streamId, $force_load_cache);
 	}
 
 	protected function refreshCache4Source($id, $force_load_cache = false){
-		//TODO: anf: refact
+		//TODO: anf: refactor
 		$_REQUEST['feed_id'] = $id;
 		LABase::get_instance($this->context)->processAjaxRequestBackground();
 	}
@@ -540,7 +542,7 @@ abstract class LADBManager {
 		throw new \Exception('Don`t init data manager');
 	}
 	
-	//TODO: refact posts table does not have field with name stream_id 
+	//TODO: refactor posts table does not have field with name stream_id
 	public function clean(array $streams = null){
 		$partOfSql = $streams == null ? '' : FFDB::conn()->parse('WHERE `stream_id` IN (?a)', $streams);
 		try{

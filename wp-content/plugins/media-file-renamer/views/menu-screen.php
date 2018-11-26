@@ -18,7 +18,7 @@
 	<h2>Rename in Bulk</h2>
 
 	<p>
-		<?php _e( 'You might have noticed that some of your media are locked by the file renamer, others are unlocked. Automatically, the plugin locks the media you renamed manually. By default, they are unlocked. Here, you have the choice of rename all the media in your DB or only the ones which are unlocked (to keep the files you renamed manually). <span style="color: red; font-weight: bold;">Please backup your uploads folder + DB before using this.</span> If you don\'t know how, give a try to this backup service: <a href="https://meow.click/blogvault" target="_blank">BlogVault</a>.', 'media-file-renamer' ); ?>
+		<?php _e( 'You might have noticed that some of your media are locked by the file renamer, others are unlocked. Automatically, the plugin locks the media you renamed manually. By default, they are unlocked. Here, you have the choice of rename all the media in your DB or only the ones which are unlocked (to keep the files you renamed manually). <span style="color: red; font-weight: bold;">Please backup your uploads folder + DB before using this.</span> If you don\'t know how, give a try to this: <a href="https://meow.click/blogvault" target="_blank">BlogVault</a>.', 'media-file-renamer' ); ?>
 	</p>
 
 	<div style='margin-top: 12px; background: #FFF; padding: 5px; border-radius: 4px; height: 28px; box-shadow: 0px 0px 6px #C2C2C2;'>
@@ -104,12 +104,12 @@
 
 		<a href="?page=rename_media_files&mfrh_beforeafter_filenames" class='button-primary' style='margin-right: 0px;'>
 			<span class="dashicons dashicons-media-spreadsheet" style="position: relative; top: 3px; left: -2px;"></span>
-			<?php echo _e( "Display Filenames", 'media-file-renamer' ); ?>
+			<?php esc_html_e( "Display Filenames", 'media-file-renamer' ); ?>
 		</a>
 
 		<a onclick="mfrh_export_table('#mfrh-before-after')" class='button-primary' style='margin-right: 0px; float: right;'>
 			<span class="dashicons dashicons-arrow-down-alt" style="position: relative; top: 3px; left: -2px;"></span>
-			<?php echo _e( "Export as CSV", 'media-file-renamer' ); ?>
+			<?php esc_html_e( "Export as CSV", 'media-file-renamer' ); ?>
 		</a>
 
 	</div>

@@ -172,18 +172,54 @@
 
 /* Proximity */
 
-.facetwp-location {
-    padding-right: 28px;
-}
-
 .location-wrap {
+    display: inline-block;
     position: relative;
 }
 
+input.facetwp-location {
+    padding-right: 28px;
+    min-width: 240px;
+}
+
+.location-results {
+    position: absolute;
+    background: #fff;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    overflow: hidden;
+    width: 100%;
+}
+
+.location-result {
+    font-size: 11px;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #888;
+}
+
+.location-result:hover {
+    background-color: #f8f8f8;
+}
+
+.location-result.active {
+    background-color: #EBF2FE;
+}
+
+.result-main {
+    font-size: 13px;
+    color: #222;
+}
+
 .locate-me {
-    top: 0;
+    top: 50%;
     right: 5px;
     line-height: 1;
+    transform: translateY(-50%);
     position: absolute;
     cursor: pointer;
     opacity: 0.5;

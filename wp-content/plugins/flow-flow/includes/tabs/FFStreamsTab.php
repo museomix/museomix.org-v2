@@ -57,13 +57,6 @@ class FFStreamsTab implements LATab{
 //		$export[0]['heading'] = '';
 		?>
 		<script>
-//			var str = '<?php //echo json_encode($export, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>//';
-			/*str = str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\\\'/g, "'")
-			var streams = JSON.parse(str, function(name, value) {
-				//if (name === 'css') debugger
-				return value
-			});
-			*/
 			var streams = <?php echo json_encode($export, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 		</script>
 		<div class="section-content" id="streams-cont" data-tab="streams-tab">

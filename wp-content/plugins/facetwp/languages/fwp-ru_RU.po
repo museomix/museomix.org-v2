@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: FacetWP\n"
-"POT-Creation-Date: 2018-08-08 09:59-0400\n"
-"PO-Revision-Date: 2018-08-08 09:59-0400\n"
+"POT-Creation-Date: 2018-11-14 09:27-0500\n"
+"PO-Revision-Date: 2018-11-14 09:27-0500\n"
 "Last-Translator: Matt Gibbs <hello@facetwp.com>\n"
 "Language-Team: VBurlak <vburlak.ru@gmail.com>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2\n"
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
@@ -58,12 +58,12 @@ msgstr ""
 msgid "Border style"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:127 assets/js/dist/admin.min.js:245
-#: assets/js/dist/admin.min.js:270 assets/js/dist/admin.min.js:321
-#: assets/js/src/admin.js:124 assets/js/src/admin.js:242
-#: assets/js/src/admin.js:267 assets/js/src/admin.js:318
+#: assets/js/dist/admin.min.js:127 assets/js/dist/admin.min.js:239
+#: assets/js/dist/admin.min.js:264 assets/js/dist/admin.min.js:315
+#: assets/js/src/admin.js:124 assets/js/src/admin.js:236
+#: assets/js/src/admin.js:261 assets/js/src/admin.js:312
 #: includes/class-settings-admin.php:31 includes/class-settings-admin.php:221
-#: includes/facets/proximity.php:222
+#: includes/facets/proximity.php:224
 msgid "None"
 msgstr "Ничего"
 
@@ -145,286 +145,292 @@ msgstr ""
 msgid "Image size"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:203 assets/js/src/admin.js:200
+#: assets/js/dist/admin.min.js:197 assets/js/src/admin.js:194
 #: includes/class-settings-admin.php:236
 #, fuzzy
 #| msgid "Custom Fields"
 msgid "Author field"
 msgstr "Произвольные поля"
 
-#: assets/js/dist/admin.min.js:206 assets/js/src/admin.js:203
+#: assets/js/dist/admin.min.js:200 assets/js/src/admin.js:197
 #: includes/class-settings-admin.php:237
 #, fuzzy
 #| msgid "Display Value"
 msgid "Display name"
 msgstr "Отображаемое Значение"
 
-#: assets/js/dist/admin.min.js:207 assets/js/src/admin.js:204
+#: assets/js/dist/admin.min.js:201 assets/js/src/admin.js:198
 #: includes/class-settings-admin.php:238
 msgid "User login"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:208 assets/js/src/admin.js:205
+#: assets/js/dist/admin.min.js:202 assets/js/src/admin.js:199
 #: includes/class-settings-admin.php:239
 msgid "User ID"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:213 assets/js/src/admin.js:210
+#: assets/js/dist/admin.min.js:207 assets/js/src/admin.js:204
 #: includes/class-settings-admin.php:240
 #, fuzzy
 #| msgid "Facet type"
 msgid "Field type"
 msgstr "Тип Фасета"
 
-#: assets/js/dist/admin.min.js:223 assets/js/src/admin.js:220
+#: assets/js/dist/admin.min.js:217 assets/js/src/admin.js:214
 #: includes/class-settings-admin.php:244
 #, fuzzy
 #| msgid "Display format"
 msgid "Date format"
 msgstr "Display Format"
 
-#: assets/js/dist/admin.min.js:233 assets/js/src/admin.js:230
+#: assets/js/dist/admin.min.js:227 assets/js/src/admin.js:224
 #: includes/class-settings-admin.php:245
 #, fuzzy
 #| msgid "The number format"
 msgid "Input format"
 msgstr "Числовой формат"
 
-#: assets/js/dist/admin.min.js:243 assets/js/src/admin.js:240
+#: assets/js/dist/admin.min.js:237 assets/js/src/admin.js:234
 #: includes/class-settings-admin.php:246
 #, fuzzy
 #| msgid "The number format"
 msgid "Number format"
 msgstr "Числовой формат"
 
-#: assets/js/dist/admin.min.js:259 assets/js/src/admin.js:256
+#: assets/js/dist/admin.min.js:253 assets/js/src/admin.js:250
 #: includes/class-settings-admin.php:247
 msgid "Link"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:268 assets/js/src/admin.js:265
+#: assets/js/dist/admin.min.js:262 assets/js/src/admin.js:259
 #: includes/class-settings-admin.php:248
 msgid "Link type"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:271 assets/js/src/admin.js:268
+#: assets/js/dist/admin.min.js:265 assets/js/src/admin.js:262
 #: includes/class-settings-admin.php:249
 #, fuzzy
 #| msgid "Posts"
 msgid "Post URL"
 msgstr "Записи"
 
-#: assets/js/dist/admin.min.js:272 assets/js/dist/admin.min.js:323
-#: assets/js/src/admin.js:269 assets/js/src/admin.js:320
+#: assets/js/dist/admin.min.js:266 assets/js/dist/admin.min.js:317
+#: assets/js/src/admin.js:263 assets/js/src/admin.js:314
 #: includes/class-settings-admin.php:250
 #, fuzzy
 #| msgid "Custom Fields"
 msgid "Custom URL"
 msgstr "Произвольные поля"
 
-#: assets/js/dist/admin.min.js:279 assets/js/src/admin.js:276
+#: assets/js/dist/admin.min.js:273 assets/js/src/admin.js:270
 #: includes/class-settings-admin.php:252 includes/facets/slider.php:156
 msgid "Prefix"
 msgstr "Префикс"
 
-#: assets/js/dist/admin.min.js:283 assets/js/src/admin.js:280
+#: assets/js/dist/admin.min.js:277 assets/js/src/admin.js:274
 #: includes/class-settings-admin.php:253 includes/facets/slider.php:166
 msgid "Suffix"
 msgstr "Суффикс"
 
-#: assets/js/dist/admin.min.js:288 assets/js/src/admin.js:285
+#: assets/js/dist/admin.min.js:282 assets/js/src/admin.js:279
 #: includes/class-settings-admin.php:254
 msgid "Hide item?"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:293 assets/js/src/admin.js:290
+#: assets/js/dist/admin.min.js:287 assets/js/src/admin.js:284
 #: includes/class-settings-admin.php:255
 #, fuzzy
 #| msgid "Loading"
 msgid "Padding"
 msgstr "Загрузка"
 
-#: assets/js/dist/admin.min.js:305 assets/js/src/admin.js:302
+#: assets/js/dist/admin.min.js:299 assets/js/src/admin.js:296
 #: includes/class-settings-admin.php:256
 msgid "Unique name"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:310 assets/js/src/admin.js:307
+#: assets/js/dist/admin.min.js:304 assets/js/src/admin.js:301
 #: includes/class-settings-admin.php:257
 msgid "CSS class"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:316 assets/js/src/admin.js:313
+#: assets/js/dist/admin.min.js:310 assets/js/src/admin.js:307
 #: includes/class-settings-admin.php:258
 msgid "Button border"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:322 assets/js/src/admin.js:319
+#: assets/js/dist/admin.min.js:316 assets/js/src/admin.js:313
 #: includes/class-settings-admin.php:259
 msgid "Term URL"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:412 includes/class-settings-admin.php:277
+#: assets/js/dist/admin.min.js:410 includes/class-settings-admin.php:277
 #, fuzzy
 #| msgid "Enter keywords"
 msgid "Enter term slugs"
 msgstr "Введите ключевые слова"
 
-#: assets/js/dist/admin.min.js:412 includes/class-settings-admin.php:278
+#: assets/js/dist/admin.min.js:410 includes/class-settings-admin.php:278
 #, fuzzy
 #| msgid "Enter keywords"
 msgid "Enter values"
 msgstr "Введите ключевые слова"
 
-#: assets/js/dist/admin.min.js:616 assets/js/src/admin.js:847
+#: assets/js/dist/admin.min.js:614 assets/js/src/admin.js:849
 #: includes/class-settings-admin.php:279
 msgid "Layout"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:647 assets/js/src/admin.js:876
+#: assets/js/dist/admin.min.js:645 assets/js/src/admin.js:878
 #: includes/class-settings-admin.php:283
 msgid "Row"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:656 assets/js/src/admin.js:883
+#: assets/js/dist/admin.min.js:654 assets/js/src/admin.js:885
 #: includes/class-settings-admin.php:284
 msgid "Column"
 msgstr ""
 
-#: assets/js/dist/admin.min.js:1172 assets/js/src/admin.js:1600
+#: assets/js/dist/admin.min.js:1170 assets/js/src/admin.js:1601
 #: includes/class-settings-admin.php:298
 msgid "Saving"
 msgstr "Сохраняется"
 
-#: assets/js/dist/admin.min.js:1213 assets/js/dist/admin.min.js:1258
-#: assets/js/src/admin.js:1636 assets/js/src/admin.js:1677
+#: assets/js/dist/admin.min.js:1211 assets/js/dist/admin.min.js:1256
+#: assets/js/src/admin.js:1637 assets/js/src/admin.js:1678
 #: includes/class-settings-admin.php:299
 msgid "Indexing"
 msgstr "Index"
 
-#: assets/js/dist/admin.min.js:1254 assets/js/src/admin.js:1673
+#: assets/js/dist/admin.min.js:1252 assets/js/src/admin.js:1674
 #: includes/class-settings-admin.php:300
 msgid "Indexing complete"
 msgstr "Индексирование полностью"
 
-#: assets/js/dist/admin.min.js:1316 assets/js/src/admin.js:1729
-#: includes/class-settings-admin.php:303
-msgid "Copied!"
-msgstr ""
-
-#: assets/js/dist/admin.min.js:1319 assets/js/src/admin.js:1732
-#: includes/class-settings-admin.php:304
-msgid "Press CTRL+C to copy"
-msgstr ""
-
-#: assets/js/dist/admin.min.js:1327 assets/js/src/admin.js:1740
-#: includes/class-settings-admin.php:305
-msgid "Activating"
-msgstr "Активация"
-
-#: assets/js/dist/admin.min.js:1384 assets/js/src/admin.js:1789
-#: includes/class-settings-admin.php:307
-msgid "Stop indexer"
-msgstr ""
-
-#: assets/js/dist/admin.min.js:1384 assets/js/src/admin.js:1789
-#: includes/class-settings-admin.php:306
-msgid "Re-index"
-msgstr "Повторное индексирование"
-
-#: assets/js/dist/admin.min.js:1400 assets/js/src/admin.js:1805
+#: assets/js/dist/admin.min.js:1295 assets/js/dist/admin.min.js:1416
+#: assets/js/src/admin.js:1714 assets/js/src/admin.js:1825
 #: includes/class-settings-admin.php:308
 msgid "Loading"
 msgstr "Загрузка"
 
-#: assets/js/dist/admin.min.js:1415 assets/js/src/admin.js:1820
+#: assets/js/dist/admin.min.js:1332 assets/js/src/admin.js:1749
+#: includes/class-settings-admin.php:303
+msgid "Copied!"
+msgstr ""
+
+#: assets/js/dist/admin.min.js:1335 assets/js/src/admin.js:1752
+#: includes/class-settings-admin.php:304
+msgid "Press CTRL+C to copy"
+msgstr ""
+
+#: assets/js/dist/admin.min.js:1343 assets/js/src/admin.js:1760
+#: includes/class-settings-admin.php:305
+msgid "Activating"
+msgstr "Активация"
+
+#: assets/js/dist/admin.min.js:1400 assets/js/src/admin.js:1809
+#: includes/class-settings-admin.php:307
+msgid "Stop indexer"
+msgstr ""
+
+#: assets/js/dist/admin.min.js:1400 assets/js/src/admin.js:1809
+#: includes/class-settings-admin.php:306
+msgid "Re-index"
+msgstr "Повторное индексирование"
+
+#: assets/js/dist/admin.min.js:1431 assets/js/src/admin.js:1840
 #: includes/class-settings-admin.php:309
 msgid "Importing"
 msgstr "Импорт"
 
-#: includes/class-ajax.php:224
+#: includes/class-ajax.php:225
 #, fuzzy
 msgid "FacetWP was unable to auto-detect the post listing"
 msgstr "FacetWP не удалось автоматически обнаружить список пост"
 
-#: includes/class-ajax.php:253
+#: includes/class-ajax.php:254
 msgid "Settings saved"
 msgstr "Настройки сохранены"
 
-#: includes/class-ajax.php:260
+#: includes/class-ajax.php:261
 msgid "Error: invalid JSON"
 msgstr "Ошибка: недопустимый JSON"
 
-#: includes/class-ajax.php:331
+#: includes/class-ajax.php:332
 msgid "Done, please re-index"
 msgstr ""
 
-#: includes/class-ajax.php:430
+#: includes/class-ajax.php:445
 msgid "Nothing to import"
 msgstr "Нечего импортировать"
 
-#: includes/class-ajax.php:466
+#: includes/class-ajax.php:481
 msgid "Imported"
 msgstr "Импортировано"
 
-#: includes/class-ajax.php:469
+#: includes/class-ajax.php:484
 msgid "Skipped"
 msgstr "Пропущено"
 
-#: includes/class-ajax.php:501
+#: includes/class-ajax.php:516
 msgid "Error"
 msgstr "Ошибка"
 
-#: includes/class-display.php:162
+#: includes/class-builder.php:201
+#: includes/integrations/woocommerce/woocommerce.php:407
+msgid "In Stock"
+msgstr "Есть в наличии"
+
+#: includes/class-builder.php:201
+#: includes/integrations/woocommerce/woocommerce.php:407
+msgid "Out of Stock"
+msgstr "Нет в наличии"
+
+#: includes/class-builder.php:206
+#: includes/integrations/woocommerce/woocommerce.php:59
+#: includes/integrations/woocommerce/woocommerce.php:415
+msgid "On Sale"
+msgstr "Распродажа"
+
+#: includes/class-display.php:167 includes/facets/fselect.php:200
 msgid "No results found"
 msgstr "Ничего не найдено!"
 
-#: includes/class-helper.php:435 includes/class-settings-admin.php:265
+#: includes/class-helper.php:449 includes/class-settings-admin.php:265
 msgid "Posts"
 msgstr "Записи"
 
-#: includes/class-helper.php:437 includes/class-settings-admin.php:268
+#: includes/class-helper.php:451 includes/class-settings-admin.php:268
 msgid "Post Type"
 msgstr "Тип Записи"
 
-#: includes/class-helper.php:438 includes/class-settings-admin.php:269
+#: includes/class-helper.php:452 includes/class-settings-admin.php:269
 msgid "Post Date"
 msgstr "Дата Записи"
 
-#: includes/class-helper.php:439 includes/class-settings-admin.php:270
+#: includes/class-helper.php:453 includes/class-settings-admin.php:270
 msgid "Post Modified"
 msgstr "Запись Изменена"
 
-#: includes/class-helper.php:440 includes/class-settings-admin.php:266
+#: includes/class-helper.php:454 includes/class-settings-admin.php:266
 msgid "Post Title"
 msgstr "Название записи"
 
-#: includes/class-helper.php:441
+#: includes/class-helper.php:455
 msgid "Post Author"
 msgstr "Автор Записи"
 
-#: includes/class-helper.php:446
+#: includes/class-helper.php:460
 msgid "Taxonomies"
 msgstr "Таксономии"
 
-#: includes/class-helper.php:451 includes/class-settings-admin.php:272
+#: includes/class-helper.php:465 includes/class-settings-admin.php:272
 msgid "Custom Fields"
 msgstr "Произвольные поля"
 
-#: includes/class-init.php:138 templates/page-settings.php:92
+#: includes/class-init.php:137 templates/page-settings.php:94
 msgid "Settings"
 msgstr "Настройки"
-
-#: includes/class-init.php:170
-msgid "integration add-on"
-msgstr "дополнение"
-
-#: includes/class-init.php:171
-#, fuzzy, php-format
-msgid "To use FacetWP with %s, please install the %s, then re-index."
-msgstr ""
-"Чтобы использовать FacetWP с %s, пожалуйста установки %s, а затем повторное "
-"индексирование."
 
 #: includes/class-renderer.php:516 includes/class-renderer.php:633
 msgid "of"
@@ -432,7 +438,7 @@ msgstr "из"
 
 #: includes/class-renderer.php:550 includes/class-settings-admin.php:264
 #: includes/facets/checkboxes.php:326 includes/facets/dropdown.php:141
-#: includes/facets/fselect.php:312 includes/facets/hierarchy.php:187
+#: includes/facets/fselect.php:313 includes/facets/hierarchy.php:187
 #: includes/facets/radio.php:190
 msgid "Sort by"
 msgstr "Сортировать по"
@@ -500,7 +506,7 @@ msgid "Debug Mode"
 msgstr "Режим отладки"
 
 #: includes/class-settings-admin.php:50
-#: includes/integrations/woocommerce/woocommerce.php:48
+#: includes/integrations/woocommerce/woocommerce.php:52
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
@@ -702,6 +708,14 @@ msgstr ""
 msgid "Purging"
 msgstr ""
 
+#: includes/class-settings-admin.php:310
+msgid "Convert to query args"
+msgstr ""
+
+#: includes/class-settings-admin.php:355
+msgid "full"
+msgstr ""
+
 #: includes/class-updater.php:107
 msgid "Please activate or renew your license for automatic updates."
 msgstr ""
@@ -736,17 +750,17 @@ msgid "See less"
 msgstr "показать меньше"
 
 #: includes/facets/checkboxes.php:237 includes/facets/dropdown.php:127
-#: includes/facets/fselect.php:227 includes/facets/radio.php:146
+#: includes/facets/fselect.php:228 includes/facets/radio.php:146
 msgid "Parent term"
 msgstr "Родительский элемент"
 
 #: includes/facets/checkboxes.php:252 includes/facets/dropdown.php:153
-#: includes/facets/fselect.php:253
+#: includes/facets/fselect.php:254
 msgid "Hierarchical"
 msgstr "По иерархии"
 
 #: includes/facets/checkboxes.php:255 includes/facets/dropdown.php:156
-#: includes/facets/fselect.php:256
+#: includes/facets/fselect.php:257
 msgid "Is this a hierarchical taxonomy?"
 msgstr "Это иерархической таксономии?"
 
@@ -759,74 +773,74 @@ msgstr "Показать расширенные"
 msgid "Should child terms be visible by default?"
 msgstr "Следует ли видимым по умолчанию дочерних терминов?"
 
-#: includes/facets/checkboxes.php:282 includes/facets/fselect.php:268
+#: includes/facets/checkboxes.php:282 includes/facets/fselect.php:269
 #: includes/facets/radio.php:161
 msgid "Show ghosts"
 msgstr "Показать призраков"
 
-#: includes/facets/checkboxes.php:285 includes/facets/fselect.php:271
+#: includes/facets/checkboxes.php:285 includes/facets/fselect.php:272
 #: includes/facets/radio.php:164
 msgid "Show choices that would return zero results?"
 msgstr "Показать варианты, которые будут возвращать нулевой результат?"
 
-#: includes/facets/checkboxes.php:297 includes/facets/fselect.php:283
+#: includes/facets/checkboxes.php:297 includes/facets/fselect.php:284
 #: includes/facets/radio.php:176
 msgid "Preserve ghost order"
 msgstr "Сохранять порядок призрак"
 
-#: includes/facets/checkboxes.php:300 includes/facets/fselect.php:286
+#: includes/facets/checkboxes.php:300 includes/facets/fselect.php:287
 #: includes/facets/radio.php:179
 msgid "Keep ghost choices in the same order?"
 msgstr "Держать в том же порядке призрак выбор?"
 
-#: includes/facets/checkboxes.php:312 includes/facets/fselect.php:298
+#: includes/facets/checkboxes.php:312 includes/facets/fselect.php:299
 msgid "Behavior"
 msgstr "Поведение"
 
-#: includes/facets/checkboxes.php:315 includes/facets/fselect.php:301
+#: includes/facets/checkboxes.php:315 includes/facets/fselect.php:302
 msgid "How should multiple selections affect the results?"
 msgstr "Как множественный выбор должен влиять на результаты?"
 
-#: includes/facets/checkboxes.php:320 includes/facets/fselect.php:306
+#: includes/facets/checkboxes.php:320 includes/facets/fselect.php:307
 msgid "Narrow the result set"
 msgstr "Ограниченный набор результатов"
 
-#: includes/facets/checkboxes.php:321 includes/facets/fselect.php:307
+#: includes/facets/checkboxes.php:321 includes/facets/fselect.php:308
 msgid "Widen the result set"
 msgstr "Расширенный набор результатов"
 
 #: includes/facets/checkboxes.php:329 includes/facets/dropdown.php:144
-#: includes/facets/fselect.php:315 includes/facets/hierarchy.php:190
+#: includes/facets/fselect.php:316 includes/facets/hierarchy.php:190
 #: includes/facets/radio.php:193
 msgid "Highest Count"
 msgstr "Высокий игр"
 
 #: includes/facets/checkboxes.php:330 includes/facets/dropdown.php:145
-#: includes/facets/fselect.php:316 includes/facets/hierarchy.php:191
+#: includes/facets/fselect.php:317 includes/facets/hierarchy.php:191
 #: includes/facets/radio.php:194
 msgid "Display Value"
 msgstr "Отображаемое Значение"
 
 #: includes/facets/checkboxes.php:331 includes/facets/dropdown.php:146
-#: includes/facets/fselect.php:317 includes/facets/hierarchy.php:192
+#: includes/facets/fselect.php:318 includes/facets/hierarchy.php:192
 #: includes/facets/radio.php:195
 msgid "Raw Value"
 msgstr "Необработанное Значение"
 
 #: includes/facets/checkboxes.php:332 includes/facets/dropdown.php:147
-#: includes/facets/fselect.php:318 includes/facets/hierarchy.php:193
+#: includes/facets/fselect.php:319 includes/facets/hierarchy.php:193
 #: includes/facets/radio.php:196
 msgid "Term Order"
 msgstr "Срок заказа"
 
 #: includes/facets/checkboxes.php:338 includes/facets/dropdown.php:168
-#: includes/facets/fselect.php:324 includes/facets/hierarchy.php:199
+#: includes/facets/fselect.php:325 includes/facets/hierarchy.php:199
 #: includes/facets/radio.php:202
 msgid "Count"
 msgstr "Сколько выводить"
 
 #: includes/facets/checkboxes.php:341 includes/facets/dropdown.php:171
-#: includes/facets/fselect.php:327 includes/facets/hierarchy.php:202
+#: includes/facets/fselect.php:328 includes/facets/hierarchy.php:202
 #: includes/facets/radio.php:205
 msgid "The maximum number of facet choices to show"
 msgstr ""
@@ -844,11 +858,11 @@ msgstr "Показать ссылку Переключение после это
 msgid "Date Range"
 msgstr "Выбор в диапазоне Дат"
 
-#: includes/facets/date_range.php:25 includes/facets/date_range.php:162
+#: includes/facets/date_range.php:25 includes/facets/date_range.php:164
 msgid "Start Date"
 msgstr "Дата с"
 
-#: includes/facets/date_range.php:28 includes/facets/date_range.php:163
+#: includes/facets/date_range.php:28 includes/facets/date_range.php:165
 msgid "End Date"
 msgstr "Дата по"
 
@@ -856,62 +870,70 @@ msgstr "Дата по"
 msgid "Clear"
 msgstr "Очистить"
 
-#: includes/facets/date_range.php:131 includes/facets/number_range.php:112
+#: includes/facets/date_range.php:114
+msgid "from"
+msgstr ""
+
+#: includes/facets/date_range.php:115
+msgid "to"
+msgstr ""
+
+#: includes/facets/date_range.php:133 includes/facets/number_range.php:112
 #: includes/facets/slider.php:130
 msgid "Other data source"
 msgstr "Другой источник данных"
 
-#: includes/facets/date_range.php:134 includes/facets/number_range.php:115
+#: includes/facets/date_range.php:136 includes/facets/number_range.php:115
 #: includes/facets/slider.php:133
 msgid "Use a separate value for the upper limit?"
 msgstr "Используйте отдельное значение для верхний предел?"
 
-#: includes/facets/date_range.php:147 includes/facets/number_range.php:139
+#: includes/facets/date_range.php:149 includes/facets/number_range.php:139
 #: includes/facets/slider.php:146
 msgid "Compare type"
 msgstr "Сравнить тип"
 
-#: includes/facets/date_range.php:150 includes/facets/number_range.php:142
+#: includes/facets/date_range.php:152 includes/facets/number_range.php:142
 #: includes/facets/slider.php:149
 msgid "Basic"
 msgstr "Основной"
 
-#: includes/facets/date_range.php:151 includes/facets/number_range.php:143
+#: includes/facets/date_range.php:153 includes/facets/number_range.php:143
 msgid "Enclose"
 msgstr "Заключать"
 
-#: includes/facets/date_range.php:152 includes/facets/number_range.php:144
+#: includes/facets/date_range.php:154 includes/facets/number_range.php:144
 #: includes/facets/slider.php:150
 msgid "Intersect"
 msgstr "пересекаться"
 
-#: includes/facets/date_range.php:157 includes/facets/number_range.php:128
+#: includes/facets/date_range.php:159 includes/facets/number_range.php:128
 msgid "Fields to show"
 msgstr "Поля, чтобы показать"
 
-#: includes/facets/date_range.php:160
+#: includes/facets/date_range.php:162
 msgid "Start + End Dates"
 msgstr "Даты начала и окончания"
 
-#: includes/facets/date_range.php:161
+#: includes/facets/date_range.php:163
 msgid "Exact Date"
 msgstr "Определенная дата"
 
-#: includes/facets/date_range.php:169
+#: includes/facets/date_range.php:171
 msgid "Display format"
 msgstr "Display Format"
 
-#: includes/facets/dropdown.php:7 includes/facets/proximity.php:220
+#: includes/facets/dropdown.php:7 includes/facets/proximity.php:222
 msgid "Dropdown"
 msgstr "Выпадающий список"
 
 #: includes/facets/dropdown.php:59 includes/facets/dropdown.php:122
 #: includes/facets/fselect.php:119 includes/facets/fselect.php:193
-#: includes/facets/fselect.php:222 includes/facets/hierarchy.php:67
+#: includes/facets/fselect.php:223 includes/facets/hierarchy.php:67
 msgid "Any"
 msgstr "Любой"
 
-#: includes/facets/dropdown.php:113 includes/facets/fselect.php:220
+#: includes/facets/dropdown.php:113 includes/facets/fselect.php:221
 msgid "Default label"
 msgstr "По умолчанию метка"
 
@@ -927,7 +949,7 @@ msgstr "{n} выбран"
 msgid "Search"
 msgstr "Поиск"
 
-#: includes/facets/fselect.php:242
+#: includes/facets/fselect.php:243
 msgid "Multi-select?"
 msgstr "Множественный выбор?"
 
@@ -973,52 +995,52 @@ msgstr "Введите Местоположение"
 msgid "Clear location"
 msgstr "Очистить местоположение"
 
-#: includes/facets/proximity.php:188
+#: includes/facets/proximity.php:190
 #, fuzzy
 msgid "Longitude"
 msgstr "Долгота (Longitude)"
 
-#: includes/facets/proximity.php:191
+#: includes/facets/proximity.php:193
 msgid "(Optional) use a separate longitude field"
 msgstr ""
 
-#: includes/facets/proximity.php:205
+#: includes/facets/proximity.php:207
 msgid "Unit of measurement"
 msgstr "Единица измерения"
 
-#: includes/facets/proximity.php:209
+#: includes/facets/proximity.php:211
 msgid "Miles"
 msgstr "мили"
 
-#: includes/facets/proximity.php:210
+#: includes/facets/proximity.php:212
 msgid "Kilometers"
 msgstr "Километров"
 
-#: includes/facets/proximity.php:216
+#: includes/facets/proximity.php:218
 msgid "Radius UI"
 msgstr ""
 
-#: includes/facets/proximity.php:221 includes/facets/slider.php:7
+#: includes/facets/proximity.php:223 includes/facets/slider.php:7
 msgid "Slider"
 msgstr "Слайдер"
 
-#: includes/facets/proximity.php:228
+#: includes/facets/proximity.php:230
 msgid "Radius options"
 msgstr ""
 
-#: includes/facets/proximity.php:242
+#: includes/facets/proximity.php:244
 #, fuzzy
 #| msgid "Slider"
 msgid "Slider range"
 msgstr "Слайдер"
 
-#: includes/facets/proximity.php:257
+#: includes/facets/proximity.php:259
 #, fuzzy
 #| msgid "Default label"
 msgid "Default radius"
 msgstr "По умолчанию"
 
-#: includes/facets/proximity.php:313
+#: includes/facets/proximity.php:315
 msgid "Distance"
 msgstr "Расстояние"
 
@@ -1089,11 +1111,11 @@ msgstr "Шаг"
 msgid "The amount of increase between intervals"
 msgstr "Размер увеличения между интервалами"
 
-#: includes/integrations/acf/acf.php:250
+#: includes/integrations/acf/acf.php:258
 msgid "Yes"
 msgstr "Да"
 
-#: includes/integrations/acf/acf.php:250
+#: includes/integrations/acf/acf.php:258
 msgid "No"
 msgstr "Нет"
 
@@ -1101,42 +1123,29 @@ msgstr "Нет"
 msgid "Default"
 msgstr "По умолчанию"
 
-#: includes/integrations/woocommerce/woocommerce.php:50
+#: includes/integrations/woocommerce/woocommerce.php:54
 msgid "Price"
 msgstr "Цена"
 
-#: includes/integrations/woocommerce/woocommerce.php:51
+#: includes/integrations/woocommerce/woocommerce.php:55
 msgid "Sale Price"
 msgstr "Выгодно!"
 
-#: includes/integrations/woocommerce/woocommerce.php:52
+#: includes/integrations/woocommerce/woocommerce.php:56
 msgid "Regular Price"
 msgstr "Цена"
 
-#: includes/integrations/woocommerce/woocommerce.php:53
+#: includes/integrations/woocommerce/woocommerce.php:57
 msgid "Average Rating"
 msgstr "Средний рейтинг"
 
-#: includes/integrations/woocommerce/woocommerce.php:54
+#: includes/integrations/woocommerce/woocommerce.php:58
 msgid "Stock Status"
 msgstr "Есть ли в наличии"
 
-#: includes/integrations/woocommerce/woocommerce.php:55
-#: includes/integrations/woocommerce/woocommerce.php:411
-msgid "On Sale"
-msgstr "Распродажа"
-
-#: includes/integrations/woocommerce/woocommerce.php:56
+#: includes/integrations/woocommerce/woocommerce.php:60
 msgid "Product Type"
 msgstr "Тип товара"
-
-#: includes/integrations/woocommerce/woocommerce.php:403
-msgid "In Stock"
-msgstr "Есть в наличии"
-
-#: includes/integrations/woocommerce/woocommerce.php:403
-msgid "Out of Stock"
-msgstr "Нет в наличии"
 
 #: index.php:72
 #, fuzzy, php-format
@@ -1147,55 +1156,64 @@ msgstr ""
 "FacetWP требует PHP %s или выше. Пожалуйста свяжитесь ваш хост и запросить "
 "обновление PHP."
 
-#: templates/page-settings.php:25
+#: templates/page-settings.php:26
 msgid "This facet type has no additional settings."
 msgstr "Этот тип facet имеет никаких дополнительных настроек."
 
-#: templates/page-settings.php:91
+#: templates/page-settings.php:93
 msgid "Basics"
 msgstr "Основы"
 
-#: templates/page-settings.php:93
+#: templates/page-settings.php:95
 msgid "Support"
 msgstr "Поддержка"
 
-#: templates/page-settings.php:102
+#: templates/page-settings.php:104
 msgid "Show indexer stats"
 msgstr ""
 
-#: templates/page-settings.php:103
+#: templates/page-settings.php:105
 #, fuzzy
 #| msgid "All post types"
 msgid "Show indexable post types"
 msgstr "Все типы советов"
 
-#: templates/page-settings.php:104
+#: templates/page-settings.php:106
 msgid "Purge the index table"
 msgstr ""
 
-#: templates/page-settings.php:109
+#: templates/page-settings.php:111
 #, fuzzy
 #| msgid "Save Changes"
 msgid "Save changes"
 msgstr "Сохранить изменения"
 
-#: templates/page-settings.php:127
+#: templates/page-settings.php:129
 msgid "Back"
 msgstr "Назад"
 
-#: templates/page-settings.php:134
+#: templates/page-settings.php:136
 msgid "Facets"
 msgstr "Фасеты"
 
-#: templates/page-settings.php:135 templates/page-settings.php:142
+#: templates/page-settings.php:137 templates/page-settings.php:144
 #, fuzzy
 #| msgid "Add New"
 msgid "Add new"
 msgstr "Добавить местоположение"
 
-#: templates/page-settings.php:141
+#: templates/page-settings.php:143
 msgid "Templates"
 msgstr "Шаблоны"
+
+#~ msgid "integration add-on"
+#~ msgstr "дополнение"
+
+#, fuzzy
+#~ msgid "To use FacetWP with %s, please install the %s, then re-index."
+#~ msgstr ""
+#~ "Чтобы использовать FacetWP с %s, пожалуйста установки %s, а затем "
+#~ "повторное индексирование."
 
 #~ msgid "Start typing..."
 #~ msgstr "Начните ввод"

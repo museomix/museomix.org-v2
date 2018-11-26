@@ -15,7 +15,7 @@ class FacetWP_Facet_Date_Range extends FacetWP_Facet
 
         $output = '';
         $value = $params['selected_values'];
-        $value = empty( $value ) ? array( '', '' ) : $value;
+        $value = empty( $value ) ? [ '', '' ] : $value;
         $fields = empty( $params['facet']['fields'] ) ? 'both' : $params['facet']['fields'];
 
         if ( 'exact' == $fields ) {
@@ -108,12 +108,12 @@ class FacetWP_Facet_Date_Range extends FacetWP_Facet
         $locale = empty( $locale ) ? 'en' : substr( $locale, 0, 2 );
         $locale = ( 'ca' == $locale ) ? 'cat' : $locale;
 
-        FWP()->display->json['datepicker'] = array(
+        FWP()->display->json['datepicker'] = [
             'locale'    => $locale,
             'clearText' => __( 'Clear', 'fwp' ),
             'fromText'  => __( 'from', 'fwp' ),
             'toText'    => __( 'to', 'fwp' )
-        );
+        ];
         FWP()->display->assets['flatpickr.css'] = FACETWP_URL . '/assets/vendor/flatpickr/flatpickr.css';
         FWP()->display->assets['flatpickr.js'] = FACETWP_URL . '/assets/vendor/flatpickr/flatpickr.min.js';
 
@@ -185,6 +185,6 @@ class FacetWP_Facet_Date_Range extends FacetWP_Facet
      */
     function settings_js( $params ) {
         $format = empty( $params['facet']['format'] ) ? 'Y-m-d' : $params['facet']['format'];
-        return array( 'format' => $format );
+        return [ 'format' => $format ];
     }
 }

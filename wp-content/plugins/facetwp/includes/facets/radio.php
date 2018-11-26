@@ -60,7 +60,7 @@ class FacetWP_Facet_Radio_Core extends FacetWP_Facet
 
             // Keep the facet placement intact
             if ( FWP()->helper->facet_is( $facet, 'preserve_ghosts', 'yes' ) ) {
-                $tmp = array();
+                $tmp = [];
                 foreach ( $ghost_output as $row ) {
                     $tmp[ $row['facet_value'] . ' ' ] = $row;
                 }
@@ -73,7 +73,7 @@ class FacetWP_Facet_Radio_Core extends FacetWP_Facet
             }
             else {
                 // Make the array key equal to the facet_value (for easy lookup)
-                $tmp = array();
+                $tmp = [];
                 foreach ( $output as $row ) {
                     $tmp[ $row['facet_value'] . ' ' ] = $row; // Force a string array key
                 }

@@ -16,6 +16,7 @@
  */
 session_start();
 
+/** @noinspection PhpIncludeInspection */
 require_once( dirname($_SERVER["SCRIPT_FILENAME"]) . '/LAClassLoader.php' );
 LAClassLoader::get(dirname($_SERVER["SCRIPT_FILENAME"]) . '/')->register(true);
 

@@ -76,12 +76,12 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
         $selected_values = $params['selected_values'];
 
         // Set default slider values
-        $defaults = array(
+        $defaults = [
             'format' => '',
             'prefix' => '',
             'suffix' => '',
             'step' => 1,
-        );
+        ];
         $facet = array_merge( $defaults, $facet );
 
         $sql = "
@@ -92,19 +92,19 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
         $selected_min = isset( $selected_values[0] ) ? $selected_values[0] : $row->min;
         $selected_max = isset( $selected_values[1] ) ? $selected_values[1] : $row->max;
 
-        return array(
-            'range' => array(
+        return [
+            'range' => [
                 'min' => (float) $selected_min,
                 'max' => (float) $selected_max
-            ),
+            ],
             'decimal_separator' => FWP()->helper->get_setting( 'decimal_separator' ),
             'thousands_separator' => FWP()->helper->get_setting( 'thousands_separator' ),
-            'start' => array( $row->min, $row->max ),
+            'start' => [ $row->min, $row->max ],
             'format' => $facet['format'],
             'prefix' => $facet['prefix'],
             'suffix' => $facet['suffix'],
             'step' => $facet['step']
-        );
+        ];
     }
 
 

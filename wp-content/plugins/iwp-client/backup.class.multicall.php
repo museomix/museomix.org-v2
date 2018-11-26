@@ -448,6 +448,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			$backupStage = 'backupDBMultiCall';
 			$this->statusLog($historyID, array('stage' => $backupStage, 'status' => 'completed', 'statusMsg' => 'backupDBCompleted','nextFunc' => 'backupDBZip', 'responseParams' => $db_final_response['success']));
 			unset($db_final_response['success']['response_data']);
+			delete_option('iwp_multical_db_dump_flag');
 			//to continue in the same call
 			if(($db_loop_break_time - $total_time_part) > 5)
 			{
@@ -455,6 +456,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			}
 			else
 			{
+				delete_option('iwp_multical_db_dump_flag');
 				$db_res_array = array();
 				$db_res_array['status'] = $db_final_response['success']['status'];
 				$db_res_array['backupParentHID'] = $db_final_response['success']['backupParentHID'];
@@ -625,7 +627,10 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 				$this->unlinkBackupFiles($backup_file);
 			}
 			
-			if (is_array($dropbox_result) && isset($dropbox_result['error'])) {
+			$dropbox_skip_errors = array('Failed to connect to content.dropboxapi.com port 443: Connection timed out',
+			                             'Could not resolve host: api.dropboxapi.com'
+										);
+			if (is_array($dropbox_result) && isset($dropbox_result['error']) && !in_array($dropbox_result['error'], $dropbox_skip_errors)) {
 				$this->unlinkBackupFiles($backup_file);
 			}
 			if($dropbox_result['status'] == 'partiallyCompleted')

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit3dc5ffd5745474345e011827300dfeb5
+class ComposerStaticInita01a463841f1dadd3058eaa88708f83a
 {
     public static $files = array (
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
@@ -436,6 +436,7 @@ class ComposerStaticInit3dc5ffd5745474345e011827300dfeb5
         'WPML_Compatibility_ElasticPress_Lang' => __DIR__ . '/../..' . '/compatibility/elastic-press/class-wpml-compatibility-elastic-press-lang.php',
         'WPML_Compatibility_Factory' => __DIR__ . '/../..' . '/compatibility/wpml-compatibility-factory.php',
         'WPML_Compatibility_Gutenberg' => __DIR__ . '/../..' . '/compatibility/gutenberg/wpml-compatibility-gutenberg.php',
+        'WPML_Compatibility_Jetpack' => __DIR__ . '/../..' . '/compatibility/jetpack/class-wpml-compatibility-jetpack.php',
         'WPML_Compatibility_Plugin_Fusion_Global_Element_Hooks' => __DIR__ . '/../..' . '/compatibility/fusion_builder/wpml-compatibility-plugin-fusion-global-element-hooks.php',
         'WPML_Compatibility_Plugin_Fusion_Hooks_Factory' => __DIR__ . '/../..' . '/compatibility/fusion_builder/wpml-compatibility-plugin-fusion-hooks-factory.php',
         'WPML_Compatibility_Plugin_Visual_Composer' => __DIR__ . '/../..' . '/compatibility/visual_composer/class-wpml-compatibility-plugin-visual-composer.php',
@@ -572,9 +573,13 @@ class ComposerStaticInit3dc5ffd5745474345e011827300dfeb5
         'WPML_Home_Url_Filter_Context' => __DIR__ . '/../..' . '/classes/url-handling/class-wpml-home-url-filter-context.php',
         'WPML_ICL_Client' => __DIR__ . '/../..' . '/classes/icl/class-wpml-icl-client.php',
         'WPML_ICL_Languages' => __DIR__ . '/../..' . '/classes/records/class-wpml-icl-languages.php',
+        'WPML_Inactive_Content' => __DIR__ . '/../..' . '/classes/utilities/class-wpml-inactive-content.php',
+        'WPML_Inactive_Content_Render' => __DIR__ . '/../..' . '/classes/menu-elements/class-wpml-inactive-content-render.php',
         'WPML_Include_Url' => __DIR__ . '/../..' . '/classes/url-handling/class-wpml-include-url.php',
         'WPML_Initialize_Language_For_Post_Type' => __DIR__ . '/../..' . '/classes/records/class-wpml-initialize-language-for-post-type.php',
         'WPML_Installation' => __DIR__ . '/../..' . '/inc/setup/wpml-installation.class.php',
+        'WPML_Installer_Domain_URL' => __DIR__ . '/../..' . '/classes/Installer/class-wpml-installer-domain-url.php',
+        'WPML_Installer_Domain_URL_Factory' => __DIR__ . '/../..' . '/classes/Installer/class-wpml-installer-domain-url-factory.php',
         'WPML_Installer_Gateway' => __DIR__ . '/../..' . '/classes/Installer/class-wpml-installer-gateway.php',
         'WPML_Integrations' => __DIR__ . '/../..' . '/classes/requirements/class-wpml-integrations.php',
         'WPML_Integrations_Requirements' => __DIR__ . '/../..' . '/classes/requirements/class-wpml-integrations-requirements.php',
@@ -912,6 +917,7 @@ class ComposerStaticInit3dc5ffd5745474345e011827300dfeb5
         'WPML_Upgrade' => __DIR__ . '/../..' . '/classes/upgrade/class-wpml-upgrade.php',
         'WPML_Upgrade_Add_Word_Count_Column_To_Strings' => __DIR__ . '/../..' . '/classes/upgrade/commands/class-wpml-upgrade-add-word-count-column-to-strings.php',
         'WPML_Upgrade_Admin_Users_Languages' => __DIR__ . '/../..' . '/classes/upgrade/commands/wpml-upgrade-admin-users-languages.php',
+        'WPML_Upgrade_Chinese_Flags' => __DIR__ . '/../..' . '/classes/upgrade/commands/wpml-upgrade-chinese-flags.php',
         'WPML_Upgrade_Command_Definition' => __DIR__ . '/../..' . '/classes/upgrade/class-wpml-upgrade-command-definition.php',
         'WPML_Upgrade_Command_Factory' => __DIR__ . '/../..' . '/classes/upgrade/class-wpml-upgrade-command-factory.php',
         'WPML_Upgrade_Display_Mode_For_Posts' => __DIR__ . '/../..' . '/classes/upgrade/commands/class-wpml-upgrade-display-mode-for-posts.php',
@@ -1010,10 +1016,10 @@ class ComposerStaticInit3dc5ffd5745474345e011827300dfeb5
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit3dc5ffd5745474345e011827300dfeb5::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit3dc5ffd5745474345e011827300dfeb5::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit3dc5ffd5745474345e011827300dfeb5::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit3dc5ffd5745474345e011827300dfeb5::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita01a463841f1dadd3058eaa88708f83a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita01a463841f1dadd3058eaa88708f83a::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita01a463841f1dadd3058eaa88708f83a::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInita01a463841f1dadd3058eaa88708f83a::$classMap;
 
         }, null, ClassLoader::class);
     }

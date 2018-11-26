@@ -9,9 +9,7 @@
  */
 function facetwp_display() {
     $args = func_get_args();
-    $atts = isset( $args[1] ) ?
-        array( $args[0] => $args[1] ) :
-        array( $args[0] => true );
+    $atts = isset( $args[1] ) ? [ $args[0] => $args[1] ] : [ $args[0] => true ];
 
     return FWP()->display->shortcode( $atts );
 }

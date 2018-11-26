@@ -5308,10 +5308,10 @@ endif;
 
     // ----- Go to the end of the zip file
     $v_size = iwp_mmb_get_file_size($this->zipname);
-    $disk_space = iwp_mmb_check_disk_space();
-    if ($disk_space != false) {
-      return array('error' => 'Your disk space is very low available space: '.$disk_space.'MB');
-    }
+    // $disk_space = iwp_mmb_check_disk_space();
+    // if ($disk_space != false) {
+    //   return array('error' => 'Your disk space is very low available space: '.$disk_space.'MB');
+    // }
 
 	if($v_size === false)
 	{

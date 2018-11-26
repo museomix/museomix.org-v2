@@ -3888,6 +3888,7 @@ CREATE TABLE $wpdb->signups (
 					'pass' => $ftp_details['ftp_password'],
 					'host' => $ftp_details['ftp_hostname'],
 					'path' => $ftp_details['ftp_remote_folder'],
+					'port' => $ftp_details['ftp_port'],
 					'ftp_site_folder' => $ftp_details['ftp_site_folder'],
 					'passive' => $ftp_details['ftp_passive']?true:false
 				);
@@ -3896,6 +3897,13 @@ CREATE TABLE $wpdb->signups (
 					IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_sftp', $opts);
 				}else{
 					update_option('IWP_service', 'ftp');
+					if(!empty($ftp_details['ftp_ssl'])){
+						$opts['host'] = $opts['host'].':'.$opts['port'];
+						unset($opts['port']);
+						IWP_MMB_Backup_Options::delete_iwp_backup_option('IWP_ssl_nossl');
+					}else{
+						IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_ssl_nossl', 1);
+					}
 					IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_ftp', $opts);
 				}
 			}elseif (!empty($params['account_info']['iwp_amazon_s3'])) {

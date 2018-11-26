@@ -3,7 +3,9 @@
 Plugin Name: Advanced Custom Fields Multilingual
 Description: This 'glue' plugin makes it easier to translate with WPML content provided in fields created with Advanced Custom Fields
 Author: OnTheGoSystems
-Version: 0.8
+Plugin URI: https://wpml.org/
+Author URI: http://www.onthegosystems.com/
+Version: 0.9
  */
 
 $autoloader_dir = __DIR__ . '/vendor';

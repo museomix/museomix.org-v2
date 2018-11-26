@@ -50,7 +50,9 @@ class LAClassLoader {
 
 	public function register($with_config = false) {
 		if ($with_config) {
+			/** @noinspection PhpIncludeInspection */
 			require_once($this->root . 'ff-config.php');
+			/** @noinspection PhpIncludeInspection */
 			require_once($this->root . 'ff-init.php');
 		}
 		spl_autoload_register(array(self::get(), 'loadClass'));

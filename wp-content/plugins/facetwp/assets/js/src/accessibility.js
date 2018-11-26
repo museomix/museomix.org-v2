@@ -6,6 +6,11 @@
             $(this).attr('tabindex', 0);
         });
 
+        $('.facetwp-pager .facetwp-page').each(function() {
+            $(this).attr('role', 'link');
+            $(this).attr('tabindex', 0);
+        });
+
         $('.facetwp-selections .facetwp-selection-value').each(function() {
             $(this).attr('role', 'link');
             $(this).attr('tabindex', 0);

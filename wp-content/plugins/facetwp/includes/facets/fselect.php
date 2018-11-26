@@ -66,7 +66,7 @@ class FacetWP_Facet_fSelect extends FacetWP_Facet
 
             // Keep the facet placement intact
             if ( FWP()->helper->facet_is( $facet, 'preserve_ghosts', 'yes' ) ) {
-                $tmp = array();
+                $tmp = [];
                 foreach ( $ghost_output as $row ) {
                     $tmp[ $row['facet_value'] . ' ' ] = $row;
                 }
@@ -79,7 +79,7 @@ class FacetWP_Facet_fSelect extends FacetWP_Facet
             }
             else {
                 // Make the array key equal to the facet_value (for easy lookup)
-                $tmp = array();
+                $tmp = [];
                 foreach ( $output as $row ) {
                     $tmp[ $row['facet_value'] . ' ' ] = $row; // Force a string array key
                 }
@@ -133,7 +133,7 @@ class FacetWP_Facet_fSelect extends FacetWP_Facet
 
             // Determine whether to show counts
             $display_value .= esc_html( $result['facet_display_value'] );
-            $show_counts = apply_filters( 'facetwp_facet_dropdown_show_counts', true, array( 'facet' => $facet ) );
+            $show_counts = apply_filters( 'facetwp_facet_dropdown_show_counts', true, [ 'facet' => $facet ] );
 
             if ( $show_counts ) {
                 $display_value .= ' {{(' . $result['counter'] . ')}}';
@@ -153,7 +153,7 @@ class FacetWP_Facet_fSelect extends FacetWP_Facet
     function filter_posts( $params ) {
         global $wpdb;
 
-        $output = array();
+        $output = [];
         $facet = $params['facet'];
         $selected_values = $params['selected_values'];
 
@@ -193,13 +193,13 @@ class FacetWP_Facet_fSelect extends FacetWP_Facet
         $label_any = empty( $facet['label_any'] ) ? __( 'Any', 'fwp' ) : $facet['label_any'];
         $label_any = facetwp_i18n( $label_any );
 
-        return array(
+        return [
             'placeholder'       => $label_any,
             'overflowText'      => __( '{n} selected', 'fwp' ),
             'searchText'        => __( 'Search', 'fwp' ),
             'noResultsText'     => __( 'No results found', 'fwp' ),
             'operator'          => $facet['operator']
-        );
+        ];
     }
 
 

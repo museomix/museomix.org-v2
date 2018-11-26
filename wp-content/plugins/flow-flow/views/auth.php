@@ -152,5 +152,8 @@ $auth['facebook_access_token'] = isset($auth['facebook_access_token']) ? $auth['
         </dl>
         <p class="button-wrapper"><span id="dribbble-auth-settings-sbmt" class='admin-button green-button submit-button'>Save Changes</span></p>
     </div>
-    <?php include($context['root']  . 'views/footer.php'); ?>
+	<?php
+		/** @noinspection PhpIncludeInspection */
+		include($context['root']  . 'views/footer.php');
+	?>
 </div>

@@ -193,10 +193,10 @@ final class IWP_MMB_IThemes_Security extends IWP_MMB_Core {
         $range_search = '';
         if (isset($datefrom) || isset($dateto)) {
             if (isset($datefrom)) {
-                $range_search .= $and . "`init_timestamp`>='" . esc_sql($datefrom) . "'";
+                $range_search .= $and . " `init_timestamp` between '" . esc_sql($datefrom) . "'";
             }
             if (isset($dateto)) {
-                $range_search .= $and . "`init_timestamp`<='" . esc_sql($dateto) . "'";
+                $range_search .= $and . " '" . esc_sql($dateto) . "'";
             }
         }
 

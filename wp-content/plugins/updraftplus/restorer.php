@@ -6,6 +6,7 @@ if (!class_exists('Updraft_Restorer_Skin')) require_once(UPDRAFTPLUS_DIR.'/inclu
 
 class Updraft_Restorer {
 
+	// This just stores the result of is_multisite()
 	private $is_multisite;
 
 	// This is just used so far for detecting whether we're on the second run for an entity or not.
@@ -24,6 +25,11 @@ class Updraft_Restorer {
 	private $ud_backup_info;
 
 	public $ud_foreign;
+
+	// store restored table names
+	public $restored_table_names = array();
+
+	public $is_dummy_db_restore = false;
 
 	// The default of false means "use the global $wpdb"
 	private $wpdb_obj = false;
@@ -208,7 +214,7 @@ class Updraft_Restorer {
 					continue;
 				}
 
-				if (!is_readable($fullpath) || 0 == filesize($fullpath)) $updraftplus->get_remote_file($services, $file, $timestamp, true);
+				if (!is_readable($fullpath) || 0 == filesize($fullpath)) UpdraftPlus_Storage_Methods_Interface::get_remote_file($services, $file, $timestamp, true);
 
 				$index = (0 == $ind) ? '' : $ind;
 				// If a file size is stored in the backup data, then verify correctness of the local file
@@ -314,7 +320,12 @@ class Updraft_Restorer {
 		$backupable_entities = $updraftplus->get_backupable_file_entities(true, true);
 		
 		$remove_zip = isset($restore_options['delete_during_restore']) ? $restore_options['delete_during_restore'] : false;
-		
+
+		if (!empty($restore_options['dummy_db_restore'])) {
+			$this->is_dummy_db_restore = true;
+			add_filter('updraftplus_restore_table_prefix', array($this, 'updraftplus_restore_table_prefix_dummy'));
+		}
+
 		// Allow add-ons to adjust the restore directory (but only in the case of restore - otherwise, they could just use the filter built into UpdraftPlus::get_backupable_file_entities)
 		$backupable_entities = apply_filters('updraft_backupable_file_entities_on_restore', $backupable_entities, $restore_options, $backup_set);
 
@@ -592,12 +603,12 @@ class Updraft_Restorer {
 				$extract_dir = $working_dir;
 			} else {
 				$updraft_dir = $updraftplus->backups_dir_location();
-				if (!$updraftplus->really_is_writable($updraft_dir)) {
+				if (!UpdraftPlus_Filesystem_Functions::really_is_writable($updraft_dir)) {
 					$updraftplus->log_e("Backup directory (%s) is not writable, or does not exist.", $updraft_dir);
 					$result = new WP_Error('unpack_failed', $this->strings['unpack_failed'], $tar->extract);
 				} else {
 					$extract_dir = $updraft_dir.'/'.basename($working_dir).'-old';
-					if (file_exists($extract_dir)) $updraftplus->remove_local_directory($extract_dir);
+					if (file_exists($extract_dir)) UpdraftPlus_Filesystem_Functions::remove_local_directory($extract_dir);
 					$updraftplus->log("Using a temporary folder to extract before moving over WPFS: $extract_dir");
 				}
 			}
@@ -612,7 +623,7 @@ class Updraft_Restorer {
 				add_filter('updraftplus_tar_wrote', array($this, 'tar_wrote'), 10, 2);
 				$tar = new UpdraftPlus_Archive_Tar($package, $p_compress);
 				$result = $tar->extract($extract_dir, false);
-				if (!is_a($wp_filesystem, 'WP_Filesystem_Direct')) $updraftplus->remove_local_directory($extract_dir);
+				if (!is_a($wp_filesystem, 'WP_Filesystem_Direct')) UpdraftPlus_Filesystem_Functions::remove_local_directory($extract_dir);
 				if (true != $result) {
 					$result = new WP_Error('unpack_failed', $this->strings['unpack_failed'], $result);
 				} else {
@@ -1531,7 +1542,7 @@ class Updraft_Restorer {
 		$old_dir = $updraft_dir.'/'.$type.'-old';
 		if (is_dir($old_dir)) {
 			$updraftplus->log_e('%s: This directory already exists, and will be replaced', $old_dir);
-			$updraftplus->remove_local_directory($old_dir);
+			UpdraftPlus_Filesystem_Functions::remove_local_directory($old_dir);
 		}
 
 		$move_old_destination = apply_filters('updraftplus_restore_move_old_mode', 0, $type, $this->restore_options);
@@ -2075,6 +2086,11 @@ ENDHERE;
 			$this->create_forbidden = true;
 			// If we can't create, then there's no point dropping
 			$this->drop_forbidden = true;
+
+			// abort dummy restore process
+			if ($this->is_dummy_db_restore) {
+				return new WP_Error('abort_dummy_restore', __('Your database user does not have permission to drop tables', 'updraftplus'));
+			}
 			
 			$updraftplus->log(__('Your database user does not have permission to create tables. We will attempt to restore by simply emptying the tables; this should work as long as a) you are restoring from a WordPress version with the same database structure, and b) Your imported database does not contain any tables which are not already present on the importing site.', 'updraftplus'), 'warning-restore');
 			
@@ -2113,6 +2129,11 @@ ENDHERE;
 			if (!$req && ($this->use_wpdb() || 1142 === $this->last_error_no)) {
 				$this->drop_forbidden = true;
 
+				// abort dummy restore process
+				if ($this->is_dummy_db_restore) {
+					return new WP_Error('abort_dummy_restore', __('Your database user does not have permission to drop tables', 'updraftplus'));
+				}
+
 				$updraftplus->log(sprintf('Your database user does not have permission to drop tables. We will attempt to restore by simply emptying the tables; this should work as long as you are restoring from a WordPress version with the same database structure (%s)', '('.$this->last_error.', '.$this->last_error_no.')'));
 				
 				$updraftplus->log(sprintf(__('Your database user does not have permission to drop tables. We will attempt to restore by simply emptying the tables; this should work as long as you are restoring from a WordPress version with the same database structure (%s)', 'updraftplus'), '('.$this->last_error.', '.$this->last_error_no.')'), 'warning-restore');
@@ -2122,7 +2143,7 @@ ENDHERE;
 
 		$restoring_table = '';
 
-		$this->max_allowed_packet = $updraftplus->get_max_packet_size();
+		$this->max_allowed_packet = $updraftplus->max_packet_size();
 
 		$updraftplus->log("Entering maintenance mode");
 		$this->wp_upgrader->maintenance_mode(true);
@@ -2436,6 +2457,8 @@ ENDHERE;
 						$logline .= ' - skipping';
 					}
 					$sql_line = UpdraftPlus_Manipulation_Functions::str_replace_once($this->old_table_prefix, $import_table_prefix, $sql_line);
+
+					$this->restored_table_names[] = $this->new_table_name;
 				}
 				$updraftplus->log($logline);
 				$updraftplus->log($print_line, 'notice-restore');
@@ -2461,9 +2484,15 @@ ENDHERE;
 			} elseif (preg_match('/^use /i', $sql_line)) {
 				// WPB2D produces these, as do some phpMyAdmin dumps
 				$sql_type = 7;
-			} elseif (preg_match('#/\*\!40\d+ (SET NAMES) (.*)\*\/#i', $sql_line, $smatches)) {
+			} elseif (preg_match('#^\s*/\*\!40\d+ (SET NAMES) (.*)\*\/#i', $sql_line, $smatches)) {
 				$sql_type = 8;
 				$charset = rtrim($smatches[2]);
+				$connection_charset = $updraftplus->get_connection_charset();
+				if ('utf8' === $charset && 'utf8mb4' === $connection_charset) {
+					$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace("SET NAMES $charset", "SET NAMES $connection_charset", $sql_line);
+					$updraftplus->log(sprintf(__('Found SET NAMES %s, but changing to %s as suggested by WPDB::determine_charset().', 'updraftplus'), $charset, $connection_charset), 'notice-restore');
+					$charset = $connection_charset;
+				}
 				$this->set_names = $charset;
 				if (!isset($supported_charsets[$charset])) {
 					$sql_line = UpdraftPlus_Manipulation_Functions::str_lreplace($smatches[1]." ".$charset, "SET NAMES ".$this->restore_options['updraft_restorer_charset'], $sql_line);
@@ -2487,6 +2516,14 @@ ENDHERE;
 
 		}
 
+		// Rescan storage, but only if there was remote storage and a database; otherwise just re-scan locally
+		if (!empty($this->ud_backup_info['db']) && !empty($this->ud_backup_info['service']) && ('none' !== $this->ud_backup_info['service'] && 'email' !== $this->ud_backup_info['service'] && array('') !== $this->ud_backup_info['service'] && array('none') !== $this->ud_backup_info['service'] && array('email') !== $this->ud_backup_info['service'])) {
+			$only_add_this_file = array('file' => $this->ud_backup_info['db']);
+			UpdraftPlus_Backup_History::rebuild(true, $only_add_this_file);
+		} else {
+			UpdraftPlus_Backup_History::rebuild();
+		}
+
 		if (!empty($this->lock_forbidden)) {
 			$updraftplus->log("Leaving maintenance mode");
 		} else {
@@ -2496,6 +2533,9 @@ ENDHERE;
 		$this->wp_upgrader->maintenance_mode(false);
 
 		if ($restoring_table) $this->restored_table($restoring_table, $import_table_prefix, $this->old_table_prefix);
+
+		// drop the dummy restored tables
+		if ($this->is_dummy_db_restore) $this->drop_tables($this->restored_table_names);
 
 		$time_taken = microtime(true) - $this->start_time;
 		$updraftplus->log_e('Finished: lines processed: %d in %.2f seconds', $this->line, $time_taken);
@@ -2594,6 +2634,11 @@ ENDHERE;
 		}
 	}
 
+	/**
+	 * Log the information that a particular SQL commandment is too long
+	 *
+	 * @param String $sql_line - the SQL
+	 */
 	private function log_oversized_packet($sql_line) {
 		global $updraftplus;
 		$logit = substr($sql_line, 0, 100);
@@ -2752,11 +2797,11 @@ ENDHERE;
 				// Decrease error counter again; otherwise, we'll cease if there are >=50 tables
 				if (!$ignore_errors) $this->errors--;
 			} elseif (8 == $sql_type && 1 == $this->errors) {
-				$updraftplus->log("Aborted: SET NAMES ".$this->set_names." failed: maintenance mode");
+				$updraftplus->log("Aborted: SET NAMES ".$this->set_names." failed: leaving maintenance mode");
 				$this->wp_upgrader->maintenance_mode(false);
 				$extra_msg = '';
 				$dbv = $wpdb->db_version();
-				if (strtolower($this->set_names) == 'utf8mb4' && $dbv && version_compare($dbv, '5.2.0', '<=')) {
+				if ('utf8mb4' == strtolower($this->set_names) && $dbv && version_compare($dbv, '5.2.0', '<=')) {
 					$extra_msg = ' '.__('This problem is caused by trying to restore a database on a very old MySQL version that is incompatible with the source database.', 'updraftplus').' '.sprintf(__('This database needs to be deployed on MySQL version %s or later.', 'updraftplus'), '5.5');
 				}
 				return new WP_Error('initial_db_error', sprintf(__('An error occurred on the first %s command - aborting run', 'updraftplus'), 'SET NAMES').'. '.sprintf(__('To use this backup, your database server needs to support the %s character set.', 'updraftplus'), $this->set_names).$extra_msg);
@@ -3034,8 +3079,10 @@ ENDHERE;
 		$plugins = maybe_unserialize($plugins);
 		
 		foreach ($plugins as $key => $path) {
-			if (!in_array($path, $installed_plugins)) {
-				$updraftplus->log_e('Plugin path %s not found: de-activating.', $path);
+			// Single site and multisite have a different array structure, in single site the path is the array value, in multisite the path is the array key.
+			if (!in_array($key, $installed_plugins) && !in_array($path, $installed_plugins)) {
+				$log_path = $this->is_multisite ? $key : $path;
+				$updraftplus->log_e('Plugin path %s not found: de-activating.', $log_path);
 				unset($plugins[$key]);
 			}
 		}
@@ -3043,6 +3090,32 @@ ENDHERE;
 		$plugins = serialize($plugins);
 
 		return $plugins;
+	}
+
+	/**
+	 * This function will return the prefix which will use as a dummy table prefix
+	 *
+	 * @param String $string - default prefix
+	 *
+	 * @return String - dummy prefix
+	 */
+	public function updraftplus_restore_table_prefix_dummy($string) {
+		global $wpdb;
+		while (true) {
+			$random_string = UpdraftPlus_Manipulation_Functions::generate_random_string(2). '_';
+			if ($string != $random_string) {
+				if (0 === $wpdb->query("SHOW TABLES LIKE '".$random_string."%'")) return $random_string;
+			}
+		}
+	}
+
+	/**
+	 * This function will drop all tables from the database
+	 *
+	 * @param Array $tables - list of table names
+	 */
+	private function drop_tables($tables) {
+		foreach ($tables as $table) $this->sql_exec('DROP TABLE IF EXISTS '.UpdraftPlus_Manipulation_Functions::backquote($table), 1, '', false);
 	}
 }
 

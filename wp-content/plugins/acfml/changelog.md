@@ -1,3 +1,12 @@
+# 0.9
+* field group display rules are correctly applied for translated posts now (wpmlbridge-125)
+* automatically set translation preferences for repeater subfields based on repeater main field (wpmlbridge-23)
+* display original field value during creation of translated post (wpmlbridge-144)
+* field set to copy-once is correctly synchronised between languages
+* fixed display of custom post types and taxonomies in relationship select boxes when posts and/or taxonomies are set to "display as translated" (acfml-95)
+* taxonomy fields inside repeater field are correctly copied now during post duplication (acfml-96)
+* ACF attachments fields (images, galleries, files...) has translated metadata on secondary language pages (acfml-88)
+
 # 0.8
 * added support for WPML "display translated" mode (wpmlbridge-131)
 * fixed issue with reordering repeater field (wpmlbridge-98)

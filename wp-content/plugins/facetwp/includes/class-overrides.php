@@ -7,9 +7,9 @@ class FacetWP_Overrides
 
 
     function __construct() {
-        add_filter( 'facetwp_index_row', array( $this, 'index_row' ), 5, 2 );
-        add_filter( 'facetwp_index_row', array( $this, 'format_numbers' ), 15, 2 );
-        add_filter( 'facetwp_is_main_query', array( $this, 'ignore_post_types' ), 10, 2 );
+        add_filter( 'facetwp_index_row', [ $this, 'index_row' ], 5, 2 );
+        add_filter( 'facetwp_index_row', [ $this, 'format_numbers' ], 15, 2 );
+        add_filter( 'facetwp_is_main_query', [ $this, 'ignore_post_types' ], 10, 2 );
     }
 
 
@@ -32,11 +32,11 @@ class FacetWP_Overrides
         }
 
         // Store raw numbers to format later, if needed
-        if ( in_array( $facet['type'], array( 'number_range', 'slider' ) ) ) {
-            $this->raw = array(
+        if ( in_array( $facet['type'], [ 'number_range', 'slider' ] ) ) {
+            $this->raw = [
                 'value' => $params['facet_value'],
                 'label' => $params['facet_display_value']
-            );
+            ];
         }
 
         return $params;
@@ -71,7 +71,7 @@ class FacetWP_Overrides
      * Ignore certain post types
      */
     function ignore_post_types( $is_main_query, $query ) {
-        $blacklist = array( 'carts', 'advanced_ads', 'ms_relationship', 'wc_user_membership', 'edd_wish_list' );
+        $blacklist = [ 'carts', 'advanced_ads', 'ms_relationship', 'wc_user_membership', 'edd_wish_list' ];
         $post_type = $query->get( 'post_type' );
 
         if ( is_string( $post_type ) && in_array( $post_type, $blacklist ) ) {

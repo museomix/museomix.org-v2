@@ -95,12 +95,7 @@ border-color: <?php echo $stream->headingcolor;?>;
 #ff-stream-<?php echo $id;?> .ff-controls-wrapper, #ff-stream-<?php echo $id;?> .ff-controls-wrapper > span {
 	color: <?php echo $stream->filtercolor;?>;
 }
-#ff-stream-<?php echo $id;?> .shuffle__sizer{
-<!--	width:  --><?php //echo $stream->width;?><!--px;-->
-}
-#ff-stream-<?php echo $id;?> .ff-item {
-<!--	margin-bottom: --><?php //echo $stream->margin;?><!--px !important;-->
-}
+
 #ff-stream-<?php echo $id;?> .shuffle__sizer {
 	margin-left: <?php echo $stream->margin;?>px !important;
 }

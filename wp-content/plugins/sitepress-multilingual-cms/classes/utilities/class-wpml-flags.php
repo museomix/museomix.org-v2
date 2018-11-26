@@ -26,6 +26,11 @@ class WPML_Flags {
 		$this->filesystem = $filesystem;
 	}
 
+	/**
+	 * @param $lang_code
+	 *
+	 * @return bool|object
+	 */
 	public function get_flag( $lang_code ) {
 		$flag = $this->cache->get( $lang_code );
 

@@ -215,9 +215,9 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'button_meta' => 'updraftplus',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'blackfridaysale2017',
-				'valid_from' => '2017-11-20 00:00:00',
-				'valid_to' => '2017-11-30 23:59:59',
+				'discount_code' => 'blackfridaysale2018',
+				'valid_from' => '2018-11-20 00:00:00',
+				'valid_to' => '2018-11-30 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 			),
 			'christmas' => array(
@@ -228,22 +228,22 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'button_meta' => 'updraftplus',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'christmassale2017',
-				'valid_from' => '2017-12-01 00:00:00',
-				'valid_to' => '2017-12-25 23:59:59',
+				'discount_code' => 'christmassale2018',
+				'valid_from' => '2018-12-01 00:00:00',
+				'valid_to' => '2018-12-25 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 			),
 			'newyear' => array(
 				'prefix' => '',
-				'title' => __('Happy New Year - 20% off UpdraftPlus Premium until January 1st', 'updraftplus'),
+				'title' => __('Happy New Year - 20% off UpdraftPlus Premium until January 14th', 'updraftplus'),
 				'text' => __('To benefit, use this discount code:', 'updraftplus').' ',
 				'image' => 'notices/new_year.png',
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'button_meta' => 'updraftplus',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'newyearsale2018',
-				'valid_from' => '2017-12-26 00:00:00',
-				'valid_to' => '2018-01-14 23:59:59',
+				'discount_code' => 'newyearsale2019',
+				'valid_from' => '2018-12-26 00:00:00',
+				'valid_to' => '2019-01-14 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 			),
 			'spring' => array(
@@ -254,9 +254,9 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'button_meta' => 'updraftplus',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'springsale2018',
-				'valid_from' => '2018-04-01 00:00:00',
-				'valid_to' => '2018-04-30 23:59:59',
+				'discount_code' => 'springsale2019',
+				'valid_from' => '2019-04-01 00:00:00',
+				'valid_to' => '2019-04-30 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 			),
 			'summer' => array(
@@ -267,9 +267,9 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 				'button_link' => 'https://updraftplus.com/landing/updraftplus-premium',
 				'button_meta' => 'updraftplus',
 				'dismiss_time' => 'dismiss_season',
-				'discount_code' => 'summersale2018',
-				'valid_from' => '2018-07-01 00:00:00',
-				'valid_to' => '2018-07-31 23:59:59',
+				'discount_code' => 'summersale2019',
+				'valid_from' => '2019-07-01 00:00:00',
+				'valid_to' => '2019-07-31 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
 			)
 		);
@@ -286,8 +286,8 @@ class UpdraftPlus_Notices extends Updraft_Notices {
 		// parent::notices_init();
 		$this->notices_content = (defined('UPDRAFTPLUS_NOADS_B') && UPDRAFTPLUS_NOADS_B) ? array() : $this->populate_notices_content();
 		global $updraftplus;
-		$enqueue_version = (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) ? $updraftplus->version.'.'.time() : $updraftplus->version;
-		$min_or_not = (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG) ? '' : '.min';
+		$enqueue_version = $updraftplus->use_unminified_scripts() ? $updraftplus->version.'.'.time() : $updraftplus->version;
+		$min_or_not = $updraftplus->use_unminified_scripts() ? '' : '.min';
 
 		wp_enqueue_style('updraftplus-notices-css',  UPDRAFTPLUS_URL.'/css/updraftplus-notices'.$min_or_not.'.css', array(), $enqueue_version);
 	}

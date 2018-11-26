@@ -4,6 +4,9 @@
  * Class WPML_Media
  */
 class WPML_Media implements IWPML_Action {
+	const SETUP_RUN     = 'setup_run';
+	const SETUP_STARTED = 'setup_started';
+
 	private static $settings;
 	private static $settings_option_key = '_wpml_media';
 	private static $default_settings = array(
@@ -14,7 +17,7 @@ class WPML_Media implements IWPML_Action {
 			'strings'       => true
 		),
 		'wpml_media_2_3_migration' => true,
-		'setup_run'                => false
+		self::SETUP_RUN            => false
 	);
 
 	public $languages;
@@ -30,8 +33,6 @@ class WPML_Media implements IWPML_Action {
 	 */
 	private $sitepress;
 
-	private $languages_to_clear = array();
-
 	/**
 	 * @var WPML_Media_Menus_Factory
 	 */
@@ -40,8 +41,8 @@ class WPML_Media implements IWPML_Action {
 	/**
 	 * WPML_Media constructor.
 	 *
-	 * @param SitePress $sitepress
-	 * @param wpdb $wpdb
+	 * @param SitePress                $sitepress
+	 * @param wpdb                     $wpdb
 	 * @param WPML_Media_Menus_Factory $menus_factory
 	 */
 	public function __construct( SitePress $sitepress, wpdb $wpdb, WPML_Media_Menus_Factory $menus_factory ) {
@@ -135,15 +136,23 @@ class WPML_Media implements IWPML_Action {
 			self::$settings = get_option( self::$settings_option_key, array() );
 		}
 
-		self::$settings = array_merge(self::$default_settings, self::$settings);
+		self::$settings = array_merge( self::$default_settings, self::$settings );
 	}
 
 	public static function has_setup_run() {
-		return self::get_setting( 'setup_run' );
+		return self::get_setting( self::SETUP_RUN );
 	}
 
 	public static function set_setup_run( $value = 1 ) {
-		return self::update_setting( 'setup_run', $value );
+		return self::update_setting( self::SETUP_RUN, $value );
+	}
+
+	public static function has_setup_started() {
+		return self::get_setting( self::SETUP_STARTED );
+	}
+
+	public static function set_setup_started( $value = 1 ) {
+		return self::update_setting( self::SETUP_STARTED, $value );
 	}
 
 	public static function get_setting( $name, $default = false ) {
@@ -224,9 +233,9 @@ class WPML_Media implements IWPML_Action {
 	/**
 	 * Synchronizes _wpml_media_* meta fields with all translations
 	 *
-	 * @param int $meta_id
-	 * @param int $object_id
-	 * @param string $meta_key
+	 * @param int          $meta_id
+	 * @param int          $object_id
+	 * @param string       $meta_key
 	 * @param string|mixed $meta_value
 	 */
 	function updated_postmeta( $meta_id, $object_id, $meta_key, $meta_value ) {

@@ -4,18 +4,18 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
 {
 
     /* (array) Ordered array of post IDs */
-    public $ordered_posts = array();
+    public $ordered_posts = [];
 
     /* (array) Associative array containing each post ID and its distance */
-    public $distance = array();
+    public $distance = [];
 
 
     function __construct() {
         $this->label = __( 'Proximity', 'fwp' );
 
-        add_filter( 'facetwp_index_row', array( $this, 'index_latlng' ), 1, 2 );
-        add_filter( 'facetwp_sort_options', array( $this, 'sort_options' ), 1, 2 );
-        add_filter( 'facetwp_filtered_post_ids', array( $this, 'sort_by_distance' ), 10, 2 );
+        add_filter( 'facetwp_index_row', [ $this, 'index_latlng' ], 1, 2 );
+        add_filter( 'facetwp_sort_options', [ $this, 'sort_options' ], 1, 2 );
+        add_filter( 'facetwp_filtered_post_ids', [ $this, 'sort_by_distance' ], 10, 2 );
     }
 
 
@@ -34,7 +34,7 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
         $chosen_radius = empty( $value[2] ) ? '' : (float) $value[2];
         $location_name = empty( $value[3] ) ? '' : urldecode( $value[3] );
 
-        $radius_options = array( 10, 25, 50, 100, 250 );
+        $radius_options = [ 10, 25, 50, 100, 250 ];
 
         // Grab the radius UI
         $radius_ui = empty( $facet['radius_ui'] ) ? 'dropdown' : $facet['radius_ui'];
@@ -134,8 +134,8 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
         HAVING distance < $radius
         ORDER BY distance";
 
-        $this->ordered_posts = array();
-        $this->distance = array();
+        $this->ordered_posts = [];
+        $this->distance = [];
 
         if ( apply_filters( 'facetwp_proximity_store_distance', false ) ) {
             $results = $wpdb->get_results( $sql );
@@ -172,9 +172,11 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
         }
 
         // Pass extra options into Places Autocomplete
-        $options = apply_filters( 'facetwp_proximity_autocomplete_options', array() );
+        $options = apply_filters( 'facetwp_proximity_autocomplete_options', [] );
         FWP()->display->json['proximity']['autocomplete_options'] = $options;
         FWP()->display->json['proximity']['clearText'] = __( 'Clear location', 'fwp' );
+        FWP()->display->json['proximity']['queryDelay'] = 250;
+        FWP()->display->json['proximity']['minLength'] = 3;
     }
 
 
@@ -309,13 +311,13 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
     function sort_options( $options, $params ) {
 
         if ( FWP()->helper->facet_setting_exists( 'type', 'proximity' ) ) {
-            $options['distance'] = array(
+            $options['distance'] = [
                 'label' => __( 'Distance', 'fwp' ),
-                'query_args' => array(
+                'query_args' => [
                     'orderby' => 'post__in',
                     'order' => 'ASC',
-                ),
-            );
+                ],
+            ];
         }
 
         return $options;
@@ -333,7 +335,7 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
         if ( ! empty( $ordered_posts ) ) {
 
             // Sort the post IDs according to distance
-            $intersected_ids = array( 0 );
+            $intersected_ids = [ 0 ];
 
             foreach ( $ordered_posts as $p ) {
                 if ( in_array( $p, $post_ids ) ) {

@@ -19,13 +19,10 @@ define('PFC_IGNORE_COMPOSER_WARNING', true);
 /**
  * Register Autoload
  */
+
 spl_autoload_register(function ($entity) {
     $module = explode('\\', $entity, 2);
     if (!in_array($module[ 0 ], ['phpFastCache', 'Psr'])) {
-        /**
-         * Not a part of phpFastCache file
-         * then we return here.
-         */
         return;
     } else if (strpos($entity, 'Psr\Cache') === 0) {
         $path = PFC_BIN_DIR . 'legacy/Psr/Cache/src/' . substr(strrchr($entity, '\\'), 1) . '.' . PFC_PHP_EXT;

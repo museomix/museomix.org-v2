@@ -65,7 +65,8 @@ class FlowFlowAdmin extends LAAdminBase{
 		
 		$context['buttons-after-tabs'] = '<li id="request-tab"><span>Save changes</span> <i class="flaticon-paperplane"></i></li>';
 		$context = apply_filters('ff_change_context', $context);
-		
+
+		/** @noinspection PhpIncludeInspection */
 		include_once($context['root']  . 'views/admin.php');
 	}
 	

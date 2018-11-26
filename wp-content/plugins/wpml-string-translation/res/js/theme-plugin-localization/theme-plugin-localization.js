@@ -18,7 +18,7 @@ jQuery(function($) {
 				event.data.instance.toggleItems( event.data.instance.scanningSection, $(this) );
 			});
 
-			this.scanningSection.section.on( 'click', '.header input:checkbox, .footer input:checkbox', {instance: this}, function (event){
+			this.scanningSection.section.on( 'click', 'thead input:checkbox, tfoot input:checkbox', {instance: this}, function (event){
 				event.data.instance.toggleCheckboxes( event.data.instance.scanningSection.section, $(this) );
 			});
 
@@ -29,7 +29,7 @@ jQuery(function($) {
 			});
 
 			this.scanningSection.section.on( 'click', '.item input:checkbox', {instance: this}, function(event) {
-				var check_all_items = event.data.instance.scanningSection.section.find( '.header input:checkbox, .footer input:checkbox' );
+				var check_all_items = event.data.instance.scanningSection.section.find( 'thead input:checkbox, tfoot input:checkbox' );
 				var all_items = event.data.instance.scanningSection.section.find( '.item input:checkbox' );
 				var all_items_checked = event.data.instance.scanningSection.section.find( '.item input:checkbox:checked' );
 
@@ -127,7 +127,7 @@ jQuery(function($) {
 		},
 
 		scan: function( sectionData ) {
-			var selectedItems = sectionData.section.find('table').find('input:checkbox:checked');
+			var selectedItems = sectionData.section.find('table').find('input:checkbox:checked[data-component-name]');
 			var itemsCount = 0;
 			var that = this;
 			var type = sectionData.type;
@@ -157,7 +157,7 @@ jQuery(function($) {
 					}
 
 					type = sectionData.type;
-					if ( -1 !== $( element ).data( 'attribute' ).search( 'mu-::-' ) ) {
+					if ( -1 !== $( element ).data( 'component-name' ).search( 'mu-::-' ) ) {
 						type = 'mu-plugin';
 					}
 
@@ -327,7 +327,7 @@ jQuery(function($) {
 		this.groups = groups;
 		this.scanningSections = scanningSections;
 	};
-	
+
 	WPML_ST.AutoScan.prototype = {
 		init: function() {
 			if ( this.shouldRunAutoScan() ) {

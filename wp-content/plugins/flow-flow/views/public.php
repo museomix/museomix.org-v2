@@ -86,7 +86,7 @@ $js_opts = array(
             styleDeferred:  $.Deferred(),
             scriptLoading: false,
             styleLoading: false
-        }
+        };
 
     if (!window.FF_resource) window.FF_resource = FF_resource;
     if (!window.FlowFlowOpts) window.FlowFlowOpts = opts;
@@ -106,25 +106,23 @@ $js_opts = array(
     streamOpts.plugin = 'flow_flow';
     streamOpts.trueLayout = streamOpts.layout;
 
-    // we will modify 'grid' layout to get 'carousel' layout
+    /*we will modify 'grid' layout to get 'carousel' layout*/
     if ( streamOpts.layout == 'carousel' ) {
-        streamOpts['layout'] = 'grid'
-        streamOpts['g-ratio-h'] = "1"
-        streamOpts['g-ratio-img'] = "1/2"
-        streamOpts['g-ratio-w'] = "1"
-        streamOpts['g-overlay'] = "yep"
-        streamOpts['c-overlay'] = "yep"
-        streamOpts['s-desktop'] = "0"
-        streamOpts['s-laptop'] = "0"
-        streamOpts['s-smart-l'] = "0"
-        streamOpts['s-smart-p'] = "0"
-        streamOpts['s-tablet-l'] = "0"
-        streamOpts['s-tablet-p'] = "0"
+        streamOpts['layout'] = 'grid';
+        streamOpts['g-ratio-h'] = "1";
+        streamOpts['g-ratio-img'] = "1/2";
+        streamOpts['g-ratio-w'] = "1";
+        streamOpts['g-overlay'] = "yep";
+        streamOpts['c-overlay'] = "yep";
+        streamOpts['s-desktop'] = "0";
+        streamOpts['s-laptop'] = "0";
+        streamOpts['s-smart-l'] = "0";
+        streamOpts['s-smart-p'] = "0";
+        streamOpts['s-tablet-l'] = "0";
+        streamOpts['s-tablet-p'] = "0";
     }
-    else if ( streamOpts.layout == 'list' ) { // the same with list, we only need news feed style
+    else if ( streamOpts.layout == 'list' ) {  /*the same with list, we only need news feed style*/
         streamOpts['layout'] = 'masonry';
-//                streamOpts['gallery'] = 'yep';
-//                streamOpts['gallery-type'] = 'news';
     }
 
     opts.streams['stream' + streamOpts.id] = streamOpts;
@@ -142,7 +140,7 @@ $js_opts = array(
             streamOpts.template.splice(0, 0, streamOpts.template.splice(imgIndex, 1)[0]);
         }
         streamOpts.isOverlay = true;
-    }
+    };
     if (FF_resource.scriptDeferred.state() === 'pending' && !FF_resource.scriptLoading) {
         script = document.createElement('script');
         script.src = "<?php echo $context['plugin_url'] . $context['slug'];?>/js/public.js";
@@ -151,7 +149,7 @@ $js_opts = array(
         };
         document.body.appendChild(script);
         FF_resource.scriptLoading = true;
-    }
+    };
     if (FF_resource.styleDeferred.state() === 'pending' && !FF_resource.styleLoading) {
         style = document.createElement('link');
         style.type = "text/css";
@@ -165,21 +163,22 @@ $js_opts = array(
         document.getElementsByTagName("head")[0].appendChild(style);
         FF_resource.styleLoading = true;
     }
-    $cont.addClass('ff-layout-' + streamOpts.layout);
-    if (!isMobile) $cont.css('minHeight', '1000px');
+    $cont.addClass('ff-layout-' + streamOpts.trueLayout);
+    if (!isMobile && streamOpts.trueLayout !== 'carousel') $cont.css('minHeight', '500px');
     ajaxDeferred = <?php if ($admin) {echo '$.get(opts.ajaxurl, data)';} else {echo 'isLS && sessionStorage.getItem(hash) ? {} : $.get(opts.ajaxurl, data)';} echo PHP_EOL; ?>;
     $.when( ajaxDeferred, FF_resource.scriptDeferred, FF_resource.styleDeferred ).done(function ( data ) {
         var response, $errCont, err;
         var moderation = <?php echo $moderation ? 1 : 0 ?>;
-        var original = <?php if ($admin) {echo 'data[0]';} else {echo '(isLS && sessionStorage.getItem(hash)) ? sessionStorage.getItem(hash) : data[0]';}?>;
+        var original = <?php if ($admin) {echo 'data[0]';} else {echo '(isLS && sessionStorage.getItem(hash)) ? JSON.parse( sessionStorage.getItem(hash) ) : data[0]';}?>;
         try {
-            response = JSON.parse(original);
+            // response = JSON.parse(original);
+            response = original; // since 4.1
         } catch (e) {
             window.console && window.console.log('Flow-Flow gets invalid data from server');
             if (opts.isAdmin || opts.isLog) {
                 $errCont = $('<div class="ff-errors" id="ff-errors-invalid-response"><div class="ff-disclaim">If you see this message then you have administrator permissions and Flow-Flow got invalid data from server. Please provide error message below if you are doing support request.<\/div><div class="ff-err-info"><\/div><\/div>');
                 $cont.before($errCont);
-                $errCont.find('.ff-err-info').html(original == '' ? 'Empty response from server' : original)
+                $errCont.find('.ff-err-info').html(original == '' ? 'Empty response from server' : original);
             }
             return;
         }
@@ -219,7 +218,7 @@ $js_opts = array(
 
             $stream = FlowFlow.buildStreamWith(response, streamOpts, moderation, FlowFlowOpts.dependencies);
 
-            <?php if (!$admin) {echo 'if (isLS && response.items.length > 0 && response.hash.length > 0) sessionStorage.setItem(response.hash, original);' . PHP_EOL;}?>
+            <?php if (!$admin) {echo 'if (isLS && response.items.length > 0 && response.hash.length > 0) sessionStorage.setItem( JSON.stringify( response.hash ), original);' . PHP_EOL;}?>
 
             var num = streamOpts.layout === 'compact' || (streamOpts.mobileslider === 'yep' && isMobile)? (streamOpts.mobileslider === 'yep' ? 3 : streamOpts['cards-num']) : false;
 
@@ -236,7 +235,7 @@ $js_opts = array(
             <?php do_action('ff_add_view_action', $stream);?>
 
         }).fail(function(){
-            console.log('Flow-Flow: resource loading failed')
+            console.log('Flow-Flow: resource loading failed');
         });
 
         var isErr = response.status === "errors";

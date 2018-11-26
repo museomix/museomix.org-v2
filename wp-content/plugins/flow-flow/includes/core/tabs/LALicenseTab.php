@@ -34,6 +34,7 @@ class LALicenseTab implements LATab{
 
 	public function includeOnce( $context ) {
 		$context['activated'] = $this->activated;
+		/** @noinspection PhpIncludeInspection */
 		include_once($context['root']  . 'views/license.php');
 	}
 }

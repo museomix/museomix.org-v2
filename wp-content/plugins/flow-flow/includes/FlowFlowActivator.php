@@ -54,7 +54,6 @@ class FlowFlowActivator extends LAActivatorBase{
 								'class' => '',
 								'admin_label' => true,
 								"holder" => "div",
-								"class" => "",
 								"heading" => __("Choose stream to place on page:" ),
 								"description" => "Please create and edit stream on plugin's page in admin.",
 								"param_name" => "id",
@@ -82,7 +81,7 @@ class FlowFlowActivator extends LAActivatorBase{
 				'plugin_url'        => plugin_dir_url(dirname($file).'/'),
 				'admin_url'         => admin_url('admin-ajax.php'),
 				'table_name_prefix' => $wpdb->prefix . 'ff_',
-				'version' 			=> '4.0.3',
+				'version' 			=> '4.1.2',
 				'faq_url' 			=> 'http://docs.social-streams.com/',
 				'count_posts_4init'	=> 30
 		);
@@ -94,9 +93,9 @@ class FlowFlowActivator extends LAActivatorBase{
 	}
 	
 	protected function checkEnvironment(){
-		if(version_compare(PHP_VERSION, '5.3.0') == -1){
+		if(version_compare(PHP_VERSION, '5.6.0') == -1){
 			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( '<b>Flow-Flow Social Stream</b> plugin requires PHP version 5.3.0 or higher. Pls update your PHP version or ask hosting support to do this for you, you are using old and unsecure one' );
+			wp_die( '<b>Flow-Flow Social Stream</b> plugin requires PHP version 5.6.0 or higher. Pls update your PHP version or ask hosting support to do this for you, you are using old and unsecure one' );
 		}
 		
 		if(!function_exists('curl_version')){
@@ -186,7 +185,7 @@ class FlowFlowActivator extends LAActivatorBase{
 		add_action('wp_ajax_' . $slug_down . '_clone_stream',			array( $dbm, 'clone_stream' ));
 		add_action('wp_ajax_' . $slug_down . '_delete_stream',			array( $dbm, 'delete_stream' ));
 		
-		new FFSnapshotManager($this->context, $dbm->snapshot_table_name);
+		new FFSnapshotManager($this->context);
 		
 		if (!FF_USE_WP_CRON){
 			add_action('wp_ajax_' . $slug_down . '_refresh_cache', array($ff, 'refreshCache'));

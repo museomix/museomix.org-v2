@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Flow-Flow package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Flow-Flow 4.0.3\n"
+"Project-Id-Version: Flow-Flow 4.1.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/flow-flow\n"
-"POT-Creation-Date: 2018-09-07 21:31:01+00:00\n"
+"POT-Creation-Date: 2018-11-23 16:35:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -161,7 +161,7 @@ msgstr ""
 msgid "Social"
 msgstr ""
 
-#: includes/FlowFlowActivator.php:58
+#: includes/FlowFlowActivator.php:57
 msgid "Choose stream to place on page:"
 msgstr ""
 
@@ -173,7 +173,7 @@ msgstr ""
 msgid "Stream:"
 msgstr ""
 
-#: includes/LAAdminBase.php:94 includes/LAAdminBase.php:215
+#: includes/LAAdminBase.php:93 includes/LAAdminBase.php:214
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 

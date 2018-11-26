@@ -26,7 +26,7 @@
 
                 <tr class="item{{ component_data.active ? ' active' }}">
                     <td>
-                        <input type="checkbox" name="{{ type }}[]" id="{{ type }}-{{ component_data.id }}" value="{{ dir_and_file }}" data-attribute="{{ component_data.component_name|replace(' ', '-')|lower }}">
+                        <input type="checkbox" name="{{ type }}[]" id="{{ type }}-{{ component_data.id }}" value="{{ dir_and_file }}" data-component-name="{{ component_data.component_name|replace(' ', '-')|lower }}">
                     </td>
                     <td>
                         <label for="{{ type }}-{{ component_data.id }}">{{ component_data.component_name }}</label>

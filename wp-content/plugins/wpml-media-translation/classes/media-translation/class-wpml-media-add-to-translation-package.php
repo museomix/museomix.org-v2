@@ -26,11 +26,23 @@ class WPML_Media_Add_To_Translation_Package implements IWPML_Action {
 
 			foreach ( $bundled_media_data as $attachment_id => $data ) {
 				foreach ( $data as $field => $value ) {
-					$package['contents'][ 'media_' . $attachment_id . '_' . $field ] = array(
-						'translate' => 1,
-						'data'      => base64_encode( $value ),
-						'format'    => 'base64'
-					);
+					if (
+						isset( $basket['post'][ $post->ID ]['media-translation'] ) &&
+						! in_array( $attachment_id, $basket['post'][ $post->ID ]['media-translation'] )
+					) {
+						$options = array(
+							'translate' => 0,
+							'data'      => true,
+							'format'    => ''
+						);
+					} else {
+						$options = array(
+							'translate' => 1,
+							'data'      => base64_encode( $value ),
+							'format'    => 'base64'
+						);
+					}
+					$package['contents']['media_' . $attachment_id . '_' . $field] = $options;
 				}
 
 				if (

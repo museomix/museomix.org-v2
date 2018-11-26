@@ -20,13 +20,13 @@ class FacetWP_Facet_Rating extends FacetWP_Facet
         // Facet in "OR" mode
         $where_clause = $this->get_where_clause( $facet );
 
-        $output = array(
+        $output = [
             1 => 0,
             2 => 0,
             3 => 0,
             4 => 0,
             5 => 0
-        );
+        ];
 
         $sql = "
         SELECT COUNT(*) AS `count`, FLOOR(f.facet_value) AS `rating`

@@ -57,7 +57,7 @@ class UpdraftPlus_Commands {
 	 *
 	 * @param Array $downloader_params - download parameters (findex, type, timestamp, stage)
 	 *
-	 * @return Array - as from UpdrafPlus_Admin::do_updraft_download_backup() (with 'request' key added, with value $downloader_params)
+	 * @return Array - as from UpdraftPlus_Admin::do_updraft_download_backup() (with 'request' key added, with value $downloader_params)
 	 */
 	public function downloader($downloader_params) {
 
@@ -209,19 +209,29 @@ class UpdraftPlus_Commands {
 	/**
 	 * Slightly misnamed - this doesn't always rescan, but it does always return the history status (possibly after a rescan)
 	 *
-	 * @param  string $what speific string to scan
-	 * @return array retuns an array of history statuses
+	 * @param  Array|String $data - with keys 'operation' and 'debug'; or, if a string (backwards compatibility), just the value of the 'operation' key (with debug assumed as 0)
+	 *
+	 * @return Array - returns an array of history statuses
 	 */
-	public function rescan($what) {
+	public function rescan($data) {
 
 		if (false === ($updraftplus_admin = $this->_load_ud_admin())) return new WP_Error('no_updraftplus');
 		
 		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
 		
-		$remotescan = ('remotescan' == $what);
-		$rescan = ($remotescan || 'rescan' == $what);
+		if (is_array($data)) {
+			$operation = empty($data['operation']) ? '' : $data['operation'];
+			$debug = !empty($data['debug']);
+		} else {
+			$operation = $data;
+			$debug = false;
+		}
+	
+		$remotescan = ('remotescan' == $operation);
+		$rescan = ($remotescan || 'rescan' == $operation);
 		
-		$history_status = $updraftplus_admin->get_history_status($rescan, $remotescan);
+		
+		$history_status = $updraftplus_admin->get_history_status($rescan, $remotescan, $debug);
 
 		return $history_status;
 		
@@ -238,7 +248,8 @@ class UpdraftPlus_Commands {
 		$output = ob_get_contents();
 		ob_end_clean();
 		
-		$remote_storage_options_and_templates = $updraftplus->get_remote_storage_options_and_templates();
+		$remote_storage_options_and_templates = UpdraftPlus_Storage_Methods_Interface::get_remote_storage_options_and_templates();
+		
 		return array(
 			'settings' => $output,
 			'remote_storage_options' => $remote_storage_options_and_templates['options'],
@@ -447,7 +458,7 @@ class UpdraftPlus_Commands {
 			
 			case 'backupnow_modal_contents':
 				$updraft_dir = $updraftplus->backups_dir_location();
-				if (!$updraftplus->really_is_writable($updraft_dir)) {
+				if (!UpdraftPlus_Filesystem_Functions::really_is_writable($updraft_dir)) {
 						$output = array('error' => true, 'html' => __("The 'Backup Now' button is disabled as your backup directory is not writable (go to the 'Settings' tab and find the relevant option).", 'updraftplus'));
 				} else {
 									$output = array('html' => $updraftplus_admin->backupnow_modal_contents());
@@ -460,7 +471,7 @@ class UpdraftPlus_Commands {
 				break;
 			
 			case 'disk_usage':
-				$output = $updraftplus_admin->get_disk_space_used($data);
+				$output = UpdraftPlus_Filesystem_Functions::get_disk_space_used($data);
 				break;
 			default:
 				// We just return a code - translation is done on the other side
@@ -779,6 +790,13 @@ class UpdraftPlus_Commands {
 			}
 			$result = false;
 		}
+		if ($result && isset($new_options['auto_update'])) {
+			if (1 == $new_options['auto_update']) {
+				UpdraftPlus_Options::update_updraft_option('updraft_auto_updates', 1);
+			} else {
+				UpdraftPlus_Options::update_updraft_option('updraft_auto_updates', 0);
+			}
+		}
 
 		if ($result) {
 			return array(
@@ -907,38 +925,53 @@ class UpdraftPlus_Commands {
 		
 		if (!isset($response['status']) && 'success' != $response['status']) return $response;
 
+		$content = '';
+		
 		if (isset($response['data'])) {
 			$tokens = isset($response['data']['tokens']) ? $response['data']['tokens'] : 0;
+			$url = isset($response['data']['url']) ? $response['data']['url'] : '';
 
-			$content = '<div class="updraftclone-main-row">';
+			$content .= '<div class="updraftclone-main-row">';
 
 			$content .= '<div class="updraftclone-tokens">';
 			$content .= '<p>' . __("Available temporary clone tokens:", "updraftplus") . ' <span class="tokens-number">' . esc_html($tokens) . '</span></p>';
 			$content .= '</div>';
 
 			$content .= '<div class="updraftclone_action_box">';
-			$content .= '<p>' . __('Your clone has started and will be available at the following URLs once it is ready.', 'updraftplus') . '</p>';
-			$content .= '<p><strong>'. __('Front page:', 'updraftplus') . '</strong> <a target="_blank" href="' . esc_html($response['data']['url']) . '">' . esc_html($response['data']['url']) . '</a></p>';
-			$content .= '<p><strong>'. __('Dashboard:', 'updraftplus') . '</strong> <a target="_blank" href="' . esc_html(trailingslashit($response['data']['url'])) . 'wp-admin">' . esc_html(trailingslashit($response['data']['url'])) . 'wp-admin</a></p>';
-			$content .= '<p><a target="_blank" href="'.$updraftplus->get_url('my-account').'">'.__('You can find your temporary clone information in your updraftplus.com account here.', 'updraftplus').'</a></p>';
+			
+			$content .= $updraftplus_admin->updraftplus_clone_info($url);
+
 			$content .= '</div>';
 
 			$content .= '</div>'; // end .updraftclone-main-row
-
-			$content .= '<p id="updraft_clone_progress">'. __('The creation of your data for creating the clone should now begin. NB: if the clone fails to boot, your token will be refunded after an hour.', 'updraftplus') .'<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
-			$content .= '<div id="updraft_clone_activejobsrow" style="display:none;"></div>';
-
-			$response['html'] = $content;
-			$response['url'] = $response['data']['url'];
-			$response['key'] = '';
-		} else {
-			$content = '<p id="updraft_clone_progress">'. __('The creation of your data for creating the clone should now begin:', 'updraftplus') .'<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
-			$content .= '<div id="updraft_clone_activejobsrow" style="display:none;"></div>';
-
-			$response['html'] = $content;
-			$response['url'] = '';
-			$response['key'] = '';
 		}
+
+		$content .= '<p id="updraft_clone_progress">' . __('The creation of your data for creating the clone should now begin. N.B. You will be charged one token once the clone is ready. If the clone fails to boot, then no token will be taken.', 'updraftplus') . '<span class="updraftplus_spinner spinner">' . __('Processing', 'updraftplus') . '...</span></p>';
+		$content .= '<div id="updraft_clone_activejobsrow" style="display:none;"></div>';
+
+		$response['html'] = $content;
+		$response['url'] = $url;
+		$response['key'] = '';
+
+		return $response;
+	}
+
+	/**
+	 * This function will get the clone netowrk info HTML for the passed in clone URL
+	 *
+	 * @param array $params - the parameters for the call
+	 *
+	 * @return array        - the response array that includes the network HTML
+	 */
+	public function get_clone_network_info($params) {
+		if (false === ($updraftplus_admin = $this->_load_ud_admin()) || false === ($updraftplus = $this->_load_ud())) return new WP_Error('no_updraftplus');
+		if (!UpdraftPlus_Options::user_can_manage()) return new WP_Error('updraftplus_permission_denied');
+		
+		$url = empty($params['clone_url']) ? '' : $params['clone_url'];
+
+		$response = array();
+
+		$response['html'] = $updraftplus_admin->updraftplus_clone_info($url);
 
 		return $response;
 	}

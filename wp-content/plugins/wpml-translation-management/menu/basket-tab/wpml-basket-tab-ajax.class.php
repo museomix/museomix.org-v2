@@ -74,7 +74,7 @@ class WPML_Basket_Tab_Ajax {
 	 * @uses \WPML_Basket_Tab_Ajax::create_remote_batch_message
 	 */
 	function begin_basket_commit() {
-		$basket_name = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING );
+		$basket_name = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES );
 
 		wp_send_json_success( $this->create_remote_batch_message( $basket_name ) );
 	}
@@ -127,7 +127,7 @@ class WPML_Basket_Tab_Ajax {
 	 * @uses \WPML_Translation_Basket::check_basket_name
 	 */
 	function check_basket_name() {
-		$basket_name            = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING );
+		$basket_name            = filter_input( INPUT_POST, 'basket_name', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES );
 		$basket_name_max_length = TranslationProxy::get_current_service_batch_name_max_length();
 
 		wp_send_json_success( $this->basket->check_basket_name( $basket_name, $basket_name_max_length ) );
@@ -172,7 +172,8 @@ class WPML_Basket_Tab_Ajax {
 		if ( ! empty( $errors ) ) {
 			$this->networking->rollback_basket_commit( filter_input( INPUT_POST,
 			                                                         'basket_name',
-			                                                         FILTER_SANITIZE_STRING ) );
+			                                                         FILTER_SANITIZE_STRING,
+			                                                         FILTER_FLAG_NO_ENCODE_QUOTES ) );
 			wp_send_json_error( self::sanitize_errors( $result ) );
 		} else {
 			$this->basket->delete_all_items();

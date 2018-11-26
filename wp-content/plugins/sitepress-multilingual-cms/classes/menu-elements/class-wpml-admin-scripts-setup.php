@@ -39,11 +39,8 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 
 
 	private function print_js_globals() {
-		$icl_ajax_url_root = rtrim( get_site_url(), '/' );
-		if ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
-			$icl_ajax_url_root = str_replace( 'http://', 'https://', $icl_ajax_url_root );
-		}
-		$icl_ajax_url = $icl_ajax_url_root . '/wp-admin/admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php';
+		$icl_ajax_url = wpml_get_admin_url( array( 'path' => 'admin.php', 'query' => array( 'page' => WPML_PLUGIN_FOLDER . '/menu/languages.php' ) ) );
+
 		?>
         <script type="text/javascript">
             // <![CDATA[

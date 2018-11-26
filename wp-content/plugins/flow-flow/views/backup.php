@@ -44,6 +44,9 @@ $backups = $context['backups'];
 
 		<span class='admin-button green-button create_backup'>Create new database snapshot</span>
 	</div>
-	<?php include($context['root']  . 'views/footer.php'); ?>
+	<?php
+		/** @noinspection PhpIncludeInspection */
+		include($context['root']  . 'views/footer.php');
+	?>
 
 </div>

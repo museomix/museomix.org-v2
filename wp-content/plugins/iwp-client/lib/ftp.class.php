@@ -13,7 +13,7 @@ class IWP_MMB_ftp_wrapper {
 	public  $timeout = 60;
 	public  $passive = true;
 	public  $system_type = '';
-	public $ssl = false;
+	public $ssl = true;
 	public $use_server_certs = false;
 	public $disable_verify = true;
 	public $login_type = 'non-encrypted';
@@ -28,7 +28,17 @@ class IWP_MMB_ftp_wrapper {
 	public function connect() {
 
 		$time_start = time();
-		$this->conn_id = ftp_connect($this->host, $this->port, 20);
+		if (function_exists('ftp_ssl_connect') && false !== $this->ssl) {
+			$this->conn_id = ftp_ssl_connect($this->host, $this->port, 15);
+			$attempting_ssl = true;
+		}
+
+		if ($this->conn_id) {
+			$this->login_type = 'encrypted';
+			$this->ssl = true;
+		} else {
+			$this->conn_id = ftp_connect($this->host, $this->port, 15);
+		}
 
 		if ($this->conn_id) $result = ftp_login($this->conn_id, $this->username, $this->password);
  
@@ -37,8 +47,24 @@ class IWP_MMB_ftp_wrapper {
  			ftp_pasv($this->conn_id, $this->passive);
 			$this->system_type = ftp_systype($this->conn_id);
 			return true;
+		} elseif (!empty($attempting_ssl)) {
+			$this->ssl = false;
+			$this->login_type = 'non-encrypted';
+			$time_start = time();
+			$this->conn_id = ftp_connect($this->host, $this->port, 15);
+			if ($this->conn_id) $result = ftp_login($this->conn_id, $this->username, $this->password);
+			if (!empty($result)) {
+				ftp_set_option($this->conn_id, FTP_TIMEOUT_SEC, $this->timeout);
+				ftp_pasv($this->conn_id, $this->passive);
+				$this->system_type = ftp_systype($this->conn_id);
+				return true;
+			} else {
+				// Add back the previous PHP messages
+				
+			}
 		}
 
+		// If we got here, then we failed
 		if (time() - $time_start > 19) {
 			global $iwp_backup_core;
 			$iwp_backup_core->log(sprintf(__('The %s connection timed out; if you entered the server correctly, then this is usually caused by a firewall blocking the connection - you should check with your web hosting company.', 'InfiniteWP'), 'FTP'), 'error');

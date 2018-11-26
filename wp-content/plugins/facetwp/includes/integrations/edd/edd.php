@@ -4,9 +4,9 @@ class FacetWP_Integration_EDD
 {
 
     function __construct() {
-        add_filter( 'facetwp_facet_sources', array( $this, 'exclude_data_sources' ) );
-        add_filter( 'edd_downloads_query', array( $this, 'edd_downloads_query' ) );
-        add_action( 'wp_enqueue_scripts', array( $this, 'front_scripts' ) );
+        add_filter( 'facetwp_facet_sources', [ $this, 'exclude_data_sources' ] );
+        add_filter( 'edd_downloads_query', [ $this, 'edd_downloads_query' ] );
+        add_action( 'wp_enqueue_scripts', [ $this, 'front_scripts' ] );
     }
 
 
@@ -37,7 +37,7 @@ class FacetWP_Integration_EDD
      * @since 2.4
      */
     function exclude_data_sources( $sources ) {
-        $prefixes = array( '_edd_discount', '_edd_log', '_edd_payment' );
+        $prefixes = [ '_edd_discount', '_edd_log', '_edd_payment' ];
         foreach ( $sources['custom_fields']['choices'] as $key => $val ) {
             foreach ( $prefixes as $prefix ) {
                 if ( 0 === strpos( $val, $prefix ) ) {

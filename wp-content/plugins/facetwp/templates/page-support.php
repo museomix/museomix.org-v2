@@ -35,7 +35,7 @@ class FacetWP_Support
 
     function get_sysinfo() {
         $plugins = get_plugins();
-        $active_plugins = get_option( 'active_plugins', array() );
+        $active_plugins = get_option( 'active_plugins', [] );
         $theme = wp_get_theme();
         $parent = $theme->parent();
 

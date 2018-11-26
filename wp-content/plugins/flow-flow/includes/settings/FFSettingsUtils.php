@@ -128,4 +128,54 @@ class FFSettingsUtils {
 		}
 		return '';
 	}
+
+	private static function curl_exec_follow($ch, &$maxRedirect = null) {
+		$mr = $maxRedirect === null ? 5 : intval($maxRedirect);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+
+		if ($mr > 0) {
+			$original_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+			$newUrl = $original_url;
+
+			$rch = curl_copy_handle($ch);
+
+			curl_setopt($rch, CURLOPT_HEADER, true);
+			curl_setopt($rch, CURLOPT_NOBODY, true);
+			curl_setopt($rch, CURLOPT_FORBID_REUSE, false);
+			do {
+				curl_setopt($rch, CURLOPT_URL, $newUrl);
+				$header = curl_exec($rch);
+				if (curl_errno($rch)) {
+					$code = 0;
+				} else {
+					$code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
+					if ($code == 301 || $code == 302) {
+						preg_match('/Location:(.*?)\n/i', $header, $matches);
+						$newUrl = trim(array_pop($matches));
+
+						// if no scheme is present then the new url is a
+						// relative path and thus needs some extra care
+						if(!preg_match("/^https?:/i", $newUrl)){
+							$newUrl = $original_url . $newUrl;
+						}
+					} else {
+						$code = 0;
+					}
+				}
+			} while ($code && --$mr);
+
+			curl_close($rch);
+
+			if (!$mr) {
+				if ($maxRedirect === null)
+					trigger_error('Too many redirects.', E_USER_WARNING);
+				else
+					$maxRedirect = 0;
+
+				return false;
+			}
+			curl_setopt($ch, CURLOPT_URL, $newUrl);
+		}
+		return curl_exec($ch);
+	}
 } 

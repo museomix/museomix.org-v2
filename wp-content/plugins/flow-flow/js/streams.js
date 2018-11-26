@@ -111,7 +111,7 @@ var ff_templates = {
         <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-grid-<%= id %>" type="radio" value="grid" /><label for="stream-layout-grid-<%= id %>"><span class="choose-button"><i class="sprite-grid"></i>Grid</span><br><span class="desc">Classic grid with posts of the same height. Recommended for posts of similar format.</span></label>\
         <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-justified-<%= id %>" type="radio" value="justified"/><label for="stream-layout-justified-<%= id %>"><span class="choose-button"><i class="sprite-justified"></i>Justified</span><br><span class="desc">One-height posts with fluid adjustable width. Only for image posts.</span></label>\
         <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-list-<%= id %>" type="radio" value="list"/><label for="stream-layout-list-<%= id %>"><span class="choose-button"><i class="sprite-list"></i>Wall</span><br><span class="desc"><span class="badge badge-new">New!</span> Classic news feed like layout. Easily integrates in any part of your site.</span></label>\
-        <input name="stream-<%= id %>-layout" class="clearcache" disabled id="stream-layout-carousel-<%= id %>" type="radio" value="carousel"/><label class="coming-soon" for="stream-layout-carousel-<%= id %>"><span class="choose-button"><i class="sprite-carousel"></i>Carousel</span><br><span class="desc"><span class="badge badge-coming-soon">Coming Soon</span> Slide photos in beautiful carousel of posts. All cards are same size. Supports dragging.</span></label>\
+        <input name="stream-<%= id %>-layout" class="clearcache" id="stream-layout-carousel-<%= id %>" type="radio" value="carousel"/><label for="stream-layout-carousel-<%= id %>"><span class="choose-button"><i class="sprite-carousel"></i>Carousel</span><br><span class="desc"><span class="badge badge-new">New!</span> Slide photos in beautiful carousel of posts. All cards are same size. Supports dragging.</span></label>\
         </div>\
     </div>\
     <dl class="section-settings settings-masonry">\
@@ -189,6 +189,24 @@ var ff_templates = {
     </dt>\
     <dd>\
         <label for="stream-<%= id %>-c-arrows-always"><input id="stream-<%= id %>-c-arrows-always" class="switcher" type="checkbox" name="stream-<%= id %>-c-arrows-always" value="yep"/><div><div></div></div></label>\
+    </dd>\
+    <dt class="multiline">Arrows Controls on mobiles\
+        <p class="desc">If set to NO visitor can only use drag gestures to slide.</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-c-arrows-mob"><input id="stream-<%= id %>-c-arrows-mob" class="switcher" type="checkbox" name="stream-<%= id %>-c-arrows-mob" value="yep"/><div><div></div></div></label>\
+    </dd>\
+     <dt class="multiline">Dots Controls\
+        <p class="desc">Show/hide dots sliding controls</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-c-dots"><input id="stream-<%= id %>-c-dots" class="switcher" type="checkbox" name="stream-<%= id %>-c-dots" value="yep"/><div><div></div></div></label>\
+    </dd>\
+     <dt class="multiline">Dots Controls on mobiles\
+        <p class="desc">Show/hide dots sliding controls</p>\
+    </dt>\
+    <dd>\
+        <label for="stream-<%= id %>-c-dots-mob"><input id="stream-<%= id %>-c-dots-mob" class="switcher" type="checkbox" name="stream-<%= id %>-c-dots-mob" value="yep"/><div><div></div></div></label>\
     </dd>\
     <dt class="multiline">Auto Play\
         <p class="desc">Set speed in seconds. Leave empty to disable.</p>\

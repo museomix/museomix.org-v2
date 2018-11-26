@@ -32,9 +32,6 @@ class FFSourcesTab implements LATab {
 	public function includeOnce( $context ) {
 		?>
 		<script>
-//			var feedStr = '<?php //echo json_encode($context['sources'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>//';
-//			feedStr = feedStr.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\\\'/g, "'")
-//			var feeds = JSON.parse(feedStr);
 			var feeds = <?php echo json_encode($context['sources'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 			if (_.isArray(feeds)) feeds = {};
 		</script>
@@ -260,7 +257,10 @@ class FFSourcesTab implements LATab {
 					</div>
 				</div>
 			</div>
-			<?php include($context['root']  . 'views/footer.php'); ?>
+			<?php
+				/** @noinspection PhpIncludeInspection */
+				include($context['root']  . 'views/footer.php');
+			?>
 		</div>
 	<?php
 	}

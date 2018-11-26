@@ -184,13 +184,7 @@
                             type: 'select',
                             title: FWP.__('Image size'),
                             defaultValue: 'thumbnail',
-                            choices: {
-                                'thumbnail': 'Thumbnail (150px)',
-                                'medium': 'Medium (300px)',
-                                'medium_large': 'Medium Large (768px)',
-                                'large': 'Large (1024px)',
-                                'full': 'Original'
-                            },
+                            choices: FWP.image_sizes,
                             v_show: [
                                 { type: 'source', value: 'featured_image' }
                             ]
@@ -914,10 +908,10 @@
             template: `
             <div class="builder-row">
                 <div class="builder-row-actions" :class="classIsChild">
-                    <span @click="editRow"><i class="fas fa-cog"></i></span>
-                    <span @click="addCol"><i class="fas fa-columns"></i></span>
-                    <span @click="addRow"><i class="fas fa-plus"></i></span>
-                    <span @click="deleteRow"><i class="fas fa-times"></i></span>
+                    <span @click="editRow" title="Edit row"><i class="fas fa-cog"></i></span>
+                    <span @click="addCol" title="Add columm"><i class="fas fa-columns"></i></span>
+                    <span @click="addRow" title="Add row"><i class="fas fa-plus"></i></span>
+                    <span @click="deleteRow" title="Delete row"><i class="fas fa-times"></i></span>
                 </div>
                 <div class="builder-row-inner" :style="{ gridTemplateColumns: row.settings.grid_template_columns }">
                     <builder-col
@@ -987,9 +981,8 @@
                 <col-resizer :cols="cols" :index="index" v-show="index < (cols.length - 1)"></col-resizer>
                 <popover :col="col" v-if="adding_item" v-on-clickaway="away"></popover>
                 <div class="builder-col-actions">
-                    <span @click="editCol"><i class="fas fa-cog"></i></span>
-                    <span @click="addItem"><i class="fas fa-plus"></i></span>
-                    <span @click="deleteCol"><i class="fas fa-times"></i></span>
+                    <span @click="editCol" title="Edit columm"><i class="fas fa-cog"></i></span>
+                    <span @click="deleteCol" title="Delete column"><i class="fas fa-times"></i></span>
                 </div>
                 <div class="builder-col-inner" :class="[ !col.items.length ? 'empty-col' : '' ]">
                     <draggable v-model="col.items" :options="{ group: 'builder-items', handle: '.item-drag' }" class="draggable">
@@ -1008,7 +1001,7 @@
                             :is_child="true">
                         </builder-row>
                         </div>
-                        <div class="builder-empty-view" @click="addItem" v-if="!col.items.length">
+                        <div class="builder-empty-view" @click="addItem">
                             <div class="builder-first-add">+</div>
                         </div>
                     </draggable>
@@ -1119,7 +1112,7 @@
             template: `
             <div class="builder-item">
                     <div class="builder-item-actions">
-                    <span @click="deleteItem"><i class="fas fa-times"></i></span>
+                    <span @click="deleteItem" title="Delete item"><i class="fas fa-times"></i></span>
                 </div>
                 <div class="builder-item-inner" @click="editItem" :class="[ item.settings.is_hidden ? 'is-hidden' : '' ]">
                     <span class="item-drag" v-html="$root.layout_data[item.source]"></span>

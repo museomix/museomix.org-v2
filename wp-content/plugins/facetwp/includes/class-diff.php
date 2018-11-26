@@ -18,7 +18,7 @@ class FacetWP_Diff
         }
 
         // Compare settings
-        $to_check = array( 'thousands_separator', 'decimal_separator', 'wc_enable_variations', 'wc_index_all' );
+        $to_check = [ 'thousands_separator', 'decimal_separator', 'wc_enable_variations', 'wc_index_all' ];
 
         foreach ( $to_check as $name ) {
             $attr1 = $this->get_attr( $name, $s1['settings'] );
@@ -41,7 +41,7 @@ class FacetWP_Diff
         });
 
         // Compare facet properties
-        $to_check = array( 'name', 'type', 'source', 'source_other', 'parent_term', 'hierarchical' );
+        $to_check = [ 'name', 'type', 'source', 'source_other', 'parent_term', 'hierarchical' ];
 
         foreach ( $f1 as $index => $facet ) {
             foreach ( $to_check as $attr ) {

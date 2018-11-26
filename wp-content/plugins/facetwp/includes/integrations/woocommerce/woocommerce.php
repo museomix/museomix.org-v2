@@ -3,32 +3,33 @@
 class FacetWP_Integration_WooCommerce
 {
 
-    public $cache = array();
-    public $lookup = array();
-    public $storage = array();
-    public $variations = array();
+    public $cache = [];
+    public $lookup = [];
+    public $storage = [];
+    public $variations = [];
+    public $post_clauses = false;
 
 
     function __construct() {
-        add_action( 'wp_enqueue_scripts', array( $this, 'front_scripts' ) );
-        add_filter( 'facetwp_facet_sources', array( $this, 'facet_sources' ) );
-        add_filter( 'facetwp_indexer_post_facet', array( $this, 'index_woo_values' ), 10, 2 );
+        add_action( 'wp_enqueue_scripts', [ $this, 'front_scripts' ] );
+        add_filter( 'facetwp_facet_sources', [ $this, 'facet_sources' ] );
+        add_filter( 'facetwp_indexer_post_facet', [ $this, 'index_woo_values' ], 10, 2 );
 
         // Support WooCommerce product variations
         $is_enabled = ( 'yes' === FWP()->helper->get_setting( 'wc_enable_variations', 'no' ) );
 
         if ( apply_filters( 'facetwp_enable_product_variations', $is_enabled ) ) {
-            add_filter( 'facetwp_indexer_post_facet_defaults', array( $this, 'force_taxonomy' ), 10, 2 );
-            add_filter( 'facetwp_indexer_query_args', array( $this, 'index_variations' ) );
-            add_filter( 'facetwp_index_row', array( $this, 'attribute_variations' ), 1 );
-            add_filter( 'facetwp_wpdb_sql', array( $this, 'wpdb_sql' ), 10, 2 );
-            add_filter( 'facetwp_wpdb_get_col', array( $this, 'wpdb_get_col' ), 10, 3 );
-            add_filter( 'facetwp_filtered_post_ids', array( $this, 'process_variations' ) );
-            add_filter( 'facetwp_facet_where', array( $this, 'facet_where' ), 10, 2 );
+            add_filter( 'facetwp_indexer_post_facet_defaults', [ $this, 'force_taxonomy' ], 10, 2 );
+            add_filter( 'facetwp_indexer_query_args', [ $this, 'index_variations' ] );
+            add_filter( 'facetwp_index_row', [ $this, 'attribute_variations' ], 1 );
+            add_filter( 'facetwp_wpdb_sql', [ $this, 'wpdb_sql' ], 10, 2 );
+            add_filter( 'facetwp_wpdb_get_col', [ $this, 'wpdb_get_col' ], 10, 3 );
+            add_filter( 'facetwp_filtered_post_ids', [ $this, 'process_variations' ] );
+            add_filter( 'facetwp_facet_where', [ $this, 'facet_where' ], 10, 2 );
         }
 
-        // Prevent WC from removing its sort hooks
-        add_action( 'the_posts', array( $this, 'wc_preserve_sort' ), 8, 2 );
+        // Preserve the WooCommerce sort
+        add_filter( 'posts_clauses', [ $this, 'wc_preserve_sort' ], 20, 2 );
     }
 
 
@@ -47,9 +48,9 @@ class FacetWP_Integration_WooCommerce
      * @since 2.1.4
      */
     function facet_sources( $sources ) {
-        $sources['woocommerce'] = array(
+        $sources['woocommerce'] = [
             'label' => __( 'WooCommerce', 'fwp' ),
-            'choices' => array(
+            'choices' => [
                 'woo/price'             => __( 'Price' ),
                 'woo/sale_price'        => __( 'Sale Price' ),
                 'woo/regular_price'     => __( 'Regular Price' ),
@@ -57,9 +58,9 @@ class FacetWP_Integration_WooCommerce
                 'woo/stock_status'      => __( 'Stock Status' ),
                 'woo/on_sale'           => __( 'On Sale' ),
                 'woo/product_type'      => __( 'Product Type' ),
-            ),
+            ],
             'weight' => 5
-        );
+        ];
 
         // Move WC taxonomy choices
         foreach ( $sources['taxonomies']['choices'] as $key => $label ) {
@@ -102,7 +103,7 @@ class FacetWP_Integration_WooCommerce
                 $product = wc_get_product( $args['p'] );
                 if ( 'variable' == $product->get_type() ) {
                     $children = $product->get_children();
-                    $args['post_type'] = array( 'product', 'product_variation' );
+                    $args['post_type'] = [ 'product', 'product_variation' ];
                     $args['post__in'] = $children;
                     $args['post__in'][] = $args['p'];
                     $args['posts_per_page'] = -1;
@@ -209,7 +210,7 @@ class FacetWP_Integration_WooCommerce
     function generate_lookup_array( $post_ids ) {
         global $wpdb;
 
-        $output = array();
+        $output = [];
 
         if ( ! empty( $post_ids ) ) {
             $sql = "
@@ -241,7 +242,7 @@ class FacetWP_Integration_WooCommerce
 
         // Loop through each facet's data
         foreach ( $this->cache as $facet_name => $groups ) {
-            $this->storage[ $facet_name ] = array();
+            $this->storage[ $facet_name ] = [];
 
             // Create an array of variation IDs
             foreach ( $groups as $type => $ids ) { // products or variations
@@ -261,7 +262,7 @@ class FacetWP_Integration_WooCommerce
         $result = $this->calculate_variations();
         $this->variations = $result['variations'];
         $post_ids = array_intersect( $post_ids, array_keys( $result['products'] ) );
-        $post_ids = empty( $post_ids ) ? array( 0 ) : $post_ids;
+        $post_ids = empty( $post_ids ) ? [ 0 ] : $post_ids;
         return $post_ids;
     }
 
@@ -275,8 +276,8 @@ class FacetWP_Integration_WooCommerce
     function calculate_variations( $facet_name = false ) {
 
         $new = true;
-        $final_products = array();
-        $final_variations = array();
+        $final_products = [];
+        $final_variations = [];
 
         // Intersect product + variation IDs across facets
         foreach ( $this->storage as $name => $variation_ids ) {
@@ -301,10 +302,10 @@ class FacetWP_Integration_WooCommerce
         $final_variations = array_merge( $final_variations, array_keys( $final_products ) );
         $final_variations = array_unique( $final_variations );
 
-        return array(
+        return [
             'products' => $final_products,
             'variations' => $final_variations
-        );
+        ];
     }
 
 
@@ -432,17 +433,32 @@ class FacetWP_Integration_WooCommerce
 
 
     /**
-     * WooCommerce removes its custom sort queries after the main WC loop runs
-     * We need to prevent this for FacetWP's query to work
+     * WooCommerce removes its sort hooks after the main product_query runs
+     * We need to preserve the sort for FacetWP to work
      *
-     * @since 3.2.6
+     * @since 3.2.8
      */
-    function wc_preserve_sort( $posts, $query ) {
+    function wc_preserve_sort( $clauses, $query ) {
         if ( 'product_query' == $query->get( 'wc_query' ) && true === $query->get( 'facetwp' ) ) {
-            remove_filter( 'the_posts', array( wc()->query, 'remove_product_query_filters' ) );
+            if ( false === $this->post_clauses ) {
+                $this->post_clauses = $clauses;
+            }
+            else {
+                $clauses['join'] = $this->post_clauses['join'];
+                $clauses['where'] = $this->post_clauses['where'];
+                $clauses['orderby'] = $this->post_clauses['orderby'];
+
+                // Narrow the main query results
+                $where_clause = FWP()->facet->where_clause;
+
+                if ( ! empty( $where_clause ) ) {
+                    $column = $GLOBALS['wpdb']->posts;
+                    $clauses['where'] .= str_replace( 'post_id', "$column.ID", $where_clause );
+                }
+            }
         }
 
-        return $posts;
+        return $clauses;
     }
 }
 

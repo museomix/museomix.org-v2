@@ -3313,44 +3313,6 @@ class SitePress extends WPML_WPDB_User implements
 		<div class="error"><?php echo __( 'WPML admin screens require JavaScript in order to display. JavaScript is currently off in your browser.', 'sitepress' ) ?></div></noscript><?php
 	}
 
-	function get_inactive_content() {
-		$inactive         = array();
-		$current_language = $this->get_current_language();
-		$res_p_prepared   = $this->wpdb->prepare( "
-				   SELECT COUNT(p.ID) AS c, p.post_type, lt.name AS language FROM {$this->wpdb->prefix}icl_translations t
-					JOIN {$this->wpdb->posts} p ON t.element_id=p.ID AND t.element_type LIKE %s
-					JOIN {$this->wpdb->prefix}icl_languages l ON t.language_code = l.code AND l.active = 0
-					JOIN {$this->wpdb->prefix}icl_languages_translations lt ON lt.language_code = l.code  AND lt.display_language_code=%s
-					GROUP BY p.post_type, t.language_code
-				", array( wpml_like_escape('post_') . '%', $current_language) );
-		$res_p            = $this->wpdb->get_results( $res_p_prepared );
-		if ($res_p) {
-			foreach ( $res_p as $r ) {
-				$inactive[ $r->language ][ $r->post_type ] = $r->c;
-			}
-		}
-		$res_t_query = "
-		   SELECT COUNT(p.term_taxonomy_id) AS c, p.taxonomy, lt.name AS language FROM {$this->wpdb->prefix}icl_translations t
-			JOIN {$this->wpdb->term_taxonomy} p ON t.element_id=p.term_taxonomy_id
-			JOIN {$this->wpdb->prefix}icl_languages l ON t.language_code = l.code AND l.active = 0
-			JOIN {$this->wpdb->prefix}icl_languages_translations lt ON lt.language_code = l.code  AND lt.display_language_code=%s
-			WHERE t.element_type LIKE %s
-			GROUP BY p.taxonomy, t.language_code
-		";
-		$res_t_query_prepared = $this->wpdb->prepare($res_t_query, $current_language, wpml_like_escape('tax_') . '%');
-		$res_t = $this->wpdb->get_results( $res_t_query_prepared );
-		if ($res_t) {
-			foreach ( $res_t as $r ) {
-				if ( $r->taxonomy === 'category' && $r->c == 1 ) {
-					continue; //ignore the case of just the default category that gets automatically created for a new language
-				}
-				$inactive[ $r->language ][ $r->taxonomy ] = $r->c;
-			}
-		}
-
-		return $inactive;
-	}
-
 	function  save_user_options() {
 		$user_id = $_POST[ 'user_id' ];
 		if ( $user_id ) {

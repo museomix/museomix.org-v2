@@ -30,6 +30,7 @@ class FFModerationTab implements LATab{
 	}
 
 	public function includeOnce( $context ) {
+		/** @noinspection PhpIncludeInspection */
 		include_once($context['root']  . 'views/moderation.php');
 	}
 }

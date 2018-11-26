@@ -49,7 +49,7 @@ final class FacetWP_Helper
 
         include( FACETWP_DIR . '/includes/facets/base.php' );
 
-        $types = array(
+        $types = [
             'checkboxes'    => 'Facetwp_Facet_Checkboxes',
             'dropdown'      => 'Facetwp_Facet_Dropdown',
             'fselect'       => 'Facetwp_Facet_fSelect',
@@ -62,9 +62,9 @@ final class FacetWP_Helper
             'proximity'     => 'Facetwp_Facet_Proximity_Core',
             'radio'         => 'Facetwp_Facet_Radio_Core',
             'rating'        => 'FacetWP_Facet_Rating'
-        );
+        ];
 
-        $facet_types = array();
+        $facet_types = [];
 
         foreach ( $types as $slug => $class_name ) {
             include( FACETWP_DIR . "/includes/facets/$slug.php" );
@@ -81,16 +81,16 @@ final class FacetWP_Helper
     function load_settings( $last_index = false ) {
         $name = $last_index ? 'facetwp_settings_last_index' : 'facetwp_settings';
         $option = get_option( $name );
-        $settings = ( false !== $option ) ? json_decode( $option, true ) : array();
+        $settings = ( false !== $option ) ? json_decode( $option, true ) : [];
 
         if ( empty( $settings['facets'] ) ) {
-            $settings['facets'] = array();
+            $settings['facets'] = [];
         }
         if ( empty( $settings['templates'] ) ) {
-            $settings['templates'] = array();
+            $settings['templates'] = [];
         }
         if ( empty( $settings['settings'] ) ) {
-            $settings['settings'] = array();
+            $settings['settings'] = [];
         }
         if ( ! isset( $settings['settings']['term_permalink'] ) ) {
             $settings['settings']['term_permalink'] = 'slug'; // Listify compat
@@ -105,46 +105,60 @@ final class FacetWP_Helper
             $settings['settings']['prefix'] = 'fwp_';
         }
 
-        // Store raw facet & template names
-        $raw_names = array();
+        // Store DB-based facet & template names
+        $db_names = [];
+        $array_indexes = [];
 
         foreach ( $settings['facets'] as $facet ) {
-            $raw_names[ 'facet-' . $facet['name'] ] = false;
+            $db_names[ 'facet-' . $facet['name'] ] = true;
         }
 
         foreach ( $settings['templates'] as $template ) {
-            $raw_names[ 'template-' . $template['name'] ] = false;
+            $db_names[ 'template-' . $template['name'] ] = true;
         }
 
         // Programmatically registered
         $facets = apply_filters( 'facetwp_facets', $settings['facets'] );
         $templates = apply_filters( 'facetwp_templates', $settings['templates'] );
-        $settings['facets'] = $settings['templates'] = array();
+
+        // Reset data
+        $settings['facets'] = [];
+        $settings['templates'] = [];
 
         // Distinguish between UI and programmatic
-        foreach ( $facets as $facet ) {
+        foreach ( $facets as $index => $facet ) {
             $name = 'facet-' . $facet['name'];
+            $is_db_based = isset( $db_names[ $name ] );
 
-            if ( ! isset( $raw_names[ $name ] ) ) {
+            if ( ! $is_db_based ) {
                 $facet['_code'] = true;
-                $settings['facets'][] = $facet;
             }
-            elseif ( false === $raw_names[ $name ] ) {
-                $raw_names[ $name ] = true;
-                $settings['facets'][] = $facet;
+
+            if ( ! isset( $array_indexes[ $name ] ) ) { // new entry
+                $array_indexes[ $name ] = $index;
+                $settings['facets'][ $index ] = $facet;
+            }
+            elseif ( ! $is_db_based ) { // code-based overrides DB settings
+                $prev_index = $array_indexes[ $name ];
+                $settings['facets'][ $prev_index ] = $facet;
             }
         }
 
-        foreach ( $templates as $template ) {
+        foreach ( $templates as $index => $template ) {
             $name = 'template-' . $template['name'];
+            $is_db_based = isset( $db_names[ $name ] );
 
-            if ( ! isset( $raw_names[ $name ] ) ) {
+            if ( ! $is_db_based ) {
                 $template['_code'] = true;
-                $settings['templates'][] = $template;
             }
-            elseif ( false === $raw_names[ $name ] ) {
-                $raw_names[ $name ] = true;
-                $settings['templates'][] = $template;
+
+            if ( ! isset( $array_indexes[ $name ] ) ) { // new entry
+                $array_indexes[ $name ] = $index;
+                $settings['templates'][ $index ] = $template;
+            }
+            elseif ( ! $is_db_based ) { // code-based overrides DB settings
+                $prev_index = $array_indexes[ $name ];
+                $settings['templates'][ $prev_index ] = $template;
             }
         }
 
@@ -228,10 +242,10 @@ final class FacetWP_Helper
      */
     function get_term_depths( $taxonomy ) {
 
-        $output = array();
-        $parents = array();
+        $output = [];
+        $parents = [];
 
-        $terms = get_terms( $taxonomy, array( 'hide_empty' => false ) );
+        $terms = get_terms( $taxonomy, [ 'hide_empty' => false ] );
         if ( is_wp_error( $terms ) ) {
             return $output;
         }
@@ -243,13 +257,13 @@ final class FacetWP_Helper
 
         // Build the term array
         foreach ( $terms as $term ) {
-            $output[ $term->term_id ] = array(
+            $output[ $term->term_id ] = [
                 'term_id'       => $term->term_id,
                 'name'          => $term->name,
                 'slug'          => $term->slug,
                 'parent_id'     => $term->parent,
                 'depth'         => 0
-            );
+            ];
 
             $current_parent = $term->parent;
             while ( 0 < (int) $current_parent ) {
@@ -272,10 +286,10 @@ final class FacetWP_Helper
      * The results are already sorted by depth and (name OR count), we just need
      * to move the children directly below their parents
      */
-    function sort_taxonomy_values( $values = array(), $orderby = 'count' ) {
+    function sort_taxonomy_values( $values = [], $orderby = 'count' ) {
 
         // Create an "order" sort value based on the top-level items
-        $cache = array();
+        $cache = [];
         foreach ( $values as $key => $val ) {
             if ( 0 == $val['depth'] ) {
                 $cache[ $val['term_id'] ] = $key;
@@ -307,7 +321,7 @@ final class FacetWP_Helper
         global $wpdb;
 
         if ( is_array( $input ) ) {
-            $output = array();
+            $output = [];
 
             foreach ( $input as $key => $val ) {
                 $output[ $key ] = $this->sanitize( $val );
@@ -418,41 +432,41 @@ final class FacetWP_Helper
         global $wpdb;
 
         // Get excluded meta keys
-        $excluded_fields = apply_filters( 'facetwp_excluded_custom_fields', array(
+        $excluded_fields = apply_filters( 'facetwp_excluded_custom_fields', [
             '_edit_last',
             '_edit_lock',
-        ) );
+        ] );
 
         // Get taxonomies
-        $taxonomies = get_taxonomies( array(), 'object' );
+        $taxonomies = get_taxonomies( [], 'object' );
 
         // Get custom fields
         $meta_keys = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->postmeta} ORDER BY meta_key" );
         $custom_fields = array_diff( $meta_keys, $excluded_fields );
 
-        $sources = array(
-            'posts' => array(
+        $sources = [
+            'posts' => [
                 'label' => __( 'Posts', 'fwp' ),
-                'choices' => array(
+                'choices' => [
                     'post_type'         => __( 'Post Type', 'fwp' ),
                     'post_date'         => __( 'Post Date', 'fwp' ),
                     'post_modified'     => __( 'Post Modified', 'fwp' ),
                     'post_title'        => __( 'Post Title', 'fwp' ),
                     'post_author'       => __( 'Post Author', 'fwp' )
-                ),
+                ],
                 'weight' => 10
-            ),
-            'taxonomies' => array(
+            ],
+            'taxonomies' => [
                 'label' => __( 'Taxonomies', 'fwp' ),
-                'choices' => array(),
+                'choices' => [],
                 'weight' => 20
-            ),
-            'custom_fields' => array(
+            ],
+            'custom_fields' => [
                 'label' => __( 'Custom Fields', 'fwp' ),
-                'choices' => array(),
+                'choices' => [],
                 'weight' => 30
-            )
-        );
+            ]
+        ];
 
         foreach ( $taxonomies as $tax ) {
             $sources['taxonomies']['choices'][ 'tax/' . $tax->name ] = $tax->labels->name;
@@ -466,7 +480,7 @@ final class FacetWP_Helper
 
         $sources = apply_filters( 'facetwp_facet_sources', $sources );
 
-        uasort( $sources, array( $this, 'sort_by_weight' ) );
+        uasort( $sources, [ $this, 'sort_by_weight' ] );
 
         $this->data_sources = $sources;
 

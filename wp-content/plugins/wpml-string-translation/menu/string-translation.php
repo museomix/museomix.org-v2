@@ -382,6 +382,7 @@ $po_importer = apply_filters( 'wpml_st_get_po_importer', null );
             <input type="button" class="button-secondary" id="icl_st_delete_selected"
                    value="<?php echo __( 'Delete selected strings', 'wpml-string-translation' ) ?>"
 									 data-confirm="<?php echo __( "Are you sure you want to delete these strings?\nTheir translations will be deleted too.", 'wpml-string-translation' ) ?>"
+									 data-error="<?php echo __( "WPML could not delete the strings", 'wpml-string-translation' ) ?>"
                    disabled="disabled"/>
 
             <?php

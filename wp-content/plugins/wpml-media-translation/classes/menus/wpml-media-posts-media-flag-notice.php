@@ -2,9 +2,12 @@
 
 class WPML_Media_Posts_Media_Flag_Notice implements IWPML_Action {
 
-	const NONCE = 'wpml-media-has-media-flag';
-	const NOTICE_ID = 'wpml-media-posts-media-flag';
+	const PREPARE_ACTION = 'wpml-media-has-media-flag-prepare';
+	const PROCESS_ACTION = 'wpml-media-has-media-flag';
+
+	const NOTICE_ID    = 'wpml-media-posts-media-flag';
 	const NOTICE_GROUP = 'wpml-media';
+
 	/**
 	 * @var SitePress
 	 */
@@ -32,6 +35,7 @@ class WPML_Media_Posts_Media_Flag_Notice implements IWPML_Action {
 
 	public function override_default_menu( $menu_elements ) {
 		$menu_elements[] = array( $this, 'render_menu' );
+
 		return $menu_elements;
 	}
 
@@ -47,7 +51,7 @@ class WPML_Media_Posts_Media_Flag_Notice implements IWPML_Action {
 	public function add_top_notice() {
 
 		/* translators: name ot WPML-Media plugin */
-		$wpml_media      = '<strong>' .  __( 'WPML Media Translation', 'wpml-media' ) . '</strong>';
+		$wpml_media = '<strong>' . __( 'WPML Media Translation', 'wpml-media' ) . '</strong>';
 
 		/* translators: used to build a link in the "Click here to finish the setup" */
 		$here_text = _x( 'here', 'Used to build a link in the "Click here to finish the setup"', 'wpml-media' );
@@ -78,15 +82,26 @@ class WPML_Media_Posts_Media_Flag_Notice implements IWPML_Action {
 		?>
 		<div class="wrap wpml-media-setup">
 			<h2><?php esc_html_e( 'Setup required', 'wpml-media' ) ?></h2>
-			<div id="wpml-media-posts-media-flag" class="notice notice-warning" style="padding-bottom:8px">
+			<div
+				id="wpml-media-posts-media-flag"
+				class="notice notice-warning"
+				style="padding-bottom:8px"
+
+				data-prepare-action="<?php echo esc_attr( self::PREPARE_ACTION ); ?>"
+				data-prepare-nonce="<?php echo wp_create_nonce( self::PREPARE_ACTION ); ?>"
+
+				data-process-action="<?php echo esc_attr( self::PROCESS_ACTION ); ?>"
+				data-process-nonce="<?php echo wp_create_nonce( self::PROCESS_ACTION ); ?>"
+
+			>
 				<p>
 					<?php esc_html_e( 'In order to get WPML Media Translation fully working, you need to run this set up which takes only a few moments depending on the total number of posts in your WordPress install.', 'wpml-media' ); ?>
 				</p>
 				<input type="button" class="button-primary alignright"
-				       value="<?php esc_attr_e( 'Finish setup', 'wpml-media' ) ?>"/>
-				<input type="hidden" name="nonce" value="<?php echo wp_create_nonce( self::NONCE ) ?>"/>
-				<span class="spinner"></span>
-				<p class="alitgnleft status description"></p>
+					   value="<?php esc_attr_e( 'Finish setup', 'wpml-media' ) ?>"/>
+
+				<span class="spinner"> </span>
+				<p class="alignleft status description"></p>
 				<br clear="all"/>
 			</div>
 		</div>

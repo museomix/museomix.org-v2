@@ -660,7 +660,13 @@ class TranslationManagement {
 	 * @return array
 	 */
 	public static function get_blog_translators( $args = array() ) {
-		return wpml_tm_load_blog_translators()->get_blog_translators( $args );
+		$translators = array();
+
+		if ( function_exists( 'wpml_tm_load_blog_translators' ) ) {
+			$translators = wpml_tm_load_blog_translators()->get_blog_translators( $args );
+		}
+		
+		return $translators;
 	}
 
 	/**

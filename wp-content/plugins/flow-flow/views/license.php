@@ -77,6 +77,9 @@ if ($activated) {
 } ?></dd>
         </dl>
     </div>
-    <?php include($context['root']  . 'views/footer.php'); ?>
+	<?php
+		/** @noinspection PhpIncludeInspection */
+		include($context['root']  . 'views/footer.php');
+	?>
 
 </div>
