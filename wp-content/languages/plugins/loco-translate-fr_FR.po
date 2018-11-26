@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Loco Translate - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2018-08-29 14:12:35+0000\n"
+"PO-Revision-Date: 2018-11-15 17:27:31+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,14 @@ msgstr ""
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: fr\n"
 "Project-Id-Version: Plugins - Loco Translate - Stable (latest release)\n"
+
+#: tpl/admin/config/settings.php:57
+msgid "Scan JavaScript files with extensions:"
+msgstr "Scanner les fichiers JavaScript avec des extensions :"
+
+#: src/admin/init/InitPoController.php:237
+msgid "Assign template"
+msgstr "Affecter un modèle"
 
 #: src/js/Strings.php:96
 msgctxt "Editor"
@@ -109,31 +117,31 @@ msgstr "Les fichiers de sauvegarde seront écrits lorsque vous enregistrerez les
 msgid "No previous file revisions"
 msgstr "Aucune précédente révision de fichier"
 
-#: tpl/admin/config/settings.php:130
+#: tpl/admin/config/settings.php:136
 msgid "About file system access"
 msgstr "À propos de l’accès au système de fichiers"
 
-#: tpl/admin/config/settings.php:123
+#: tpl/admin/config/settings.php:129
 msgid "Disallow"
 msgstr "Refuser"
 
-#: tpl/admin/config/settings.php:120
+#: tpl/admin/config/settings.php:126
 msgid "Allow (with warning)"
 msgstr "Autoriser (avec avertissement)"
 
-#: tpl/admin/config/settings.php:117
+#: tpl/admin/config/settings.php:123
 msgid "Allow"
 msgstr "Autoriser"
 
-#: tpl/admin/config/settings.php:114
+#: tpl/admin/config/settings.php:120
 msgid "Modification of installed files"
 msgstr "Modification des fichiers installés"
 
-#: tpl/admin/config/settings.php:109
+#: tpl/admin/config/settings.php:115
 msgid "Save credentials in session"
 msgstr "Enregistrer les informations d’identification dans la session"
 
-#: tpl/admin/config/settings.php:100 tpl/admin/config/settings.php:104
+#: tpl/admin/config/settings.php:106 tpl/admin/config/settings.php:110
 msgid "File system access"
 msgstr "Accès au système de fichier"
 
@@ -219,7 +227,7 @@ msgctxt "Plural category"
 msgid "Zero"
 msgstr "Zéro"
 
-#: src/admin/init/InitPoController.php:318 tpl/admin/file/info.php:113
+#: src/admin/init/InitPoController.php:325 tpl/admin/file/info.php:113
 msgid "What's this?"
 msgstr "Qu’est-ce que c’est ?"
 
@@ -228,7 +236,7 @@ msgstr "Qu’est-ce que c’est ?"
 msgid "largest is %s"
 msgstr "le plus grand est de %s"
 
-#: tpl/admin/config/settings.php:73
+#: tpl/admin/config/settings.php:79
 msgid "Maximum line length (zero disables wrapping)"
 msgstr "Longueur de ligne maximale (zéro désactive la limite)"
 
@@ -343,7 +351,7 @@ msgstr "Jeux"
 msgid "Bundle name"
 msgstr "Nom du paquet"
 
-#: tpl/admin/init/init-pot.php:42 tpl/admin/init/init-prompt.php:27
+#: tpl/admin/init/init-pot.php:42 tpl/admin/init/init-prompt.php:30
 msgid "About templates"
 msgstr "À propos des modèles"
 
@@ -656,31 +664,31 @@ msgstr "Mettre à niveau vers %s"
 msgid "Version %s"
 msgstr "Version %s"
 
-#: tpl/admin/config/settings.php:141
+#: tpl/admin/config/settings.php:147
 msgid "Allow full access to these roles"
 msgstr "Autoriser l’accès complet à tous ces rôles"
 
-#: tpl/admin/config/settings.php:137
+#: tpl/admin/config/settings.php:143
 msgid "Grant access to roles"
 msgstr "Accorder l’accès aux rôles"
 
-#: tpl/admin/config/settings.php:92
+#: tpl/admin/config/settings.php:98
 msgid "Look for non-standard names:"
 msgstr "Chercher pour des noms non standards :"
 
-#: tpl/admin/config/settings.php:87
+#: tpl/admin/config/settings.php:93
 msgid "POT template files"
 msgstr "Modèles POT"
 
-#: tpl/admin/config/settings.php:80 tpl/admin/config/settings.php:110
+#: tpl/admin/config/settings.php:86 tpl/admin/config/settings.php:116
 msgid "Not recommended"
 msgstr "Non recommandé"
 
-#: tpl/admin/config/settings.php:80
+#: tpl/admin/config/settings.php:86
 msgid "Add UTF-8 byte order mark"
 msgstr "Ajouter l’indicateur d’ordre des octets UTF-8"
 
-#: tpl/admin/config/settings.php:59 tpl/admin/config/settings.php:63
+#: tpl/admin/config/settings.php:65 tpl/admin/config/settings.php:69
 msgid "Saving PO/POT files"
 msgstr "Enregistrement des fichiers PO/POT"
 
@@ -778,7 +786,7 @@ msgstr "Paquet non-configuré"
 
 #: tpl/admin/bundle/setup/meta.php:14
 msgid "This bundle's configuration has been automatically detected and seems to be fully compatible"
-msgstr "La configuration de ce paquet a été automatiquement détectée et semble parfaitement compatible."
+msgstr "La configuration de ce lot a été automatiquement détectée et semble parfaitement compatible"
 
 #: tpl/admin/bundle/setup/inc-nav.php:28
 msgid "Get help with this"
@@ -1059,19 +1067,19 @@ msgstr "d/m/Y "
 msgid "You do not have sufficient permissions to access this page."
 msgstr "Vous n’avez pas les droits suffisants pour accéder à cette page."
 
-#: src/mvc/AjaxRouter.php:204
+#: src/mvc/AjaxRouter.php:205
 msgid "Download controller returned empty output"
 msgstr "Le téléchargement du contrôleur a généré un signal vide"
 
-#: src/mvc/AjaxRouter.php:199
+#: src/mvc/AjaxRouter.php:200
 msgid "Download action not found"
 msgstr "Action de téléchargement non trouvée"
 
-#: src/mvc/AjaxRouter.php:176
+#: src/mvc/AjaxRouter.php:177
 msgid "Ajax controller returned empty JSON"
 msgstr "Le contrôleur AJAX a généré un JSON vide"
 
-#: src/mvc/AjaxRouter.php:171
+#: src/mvc/AjaxRouter.php:172
 msgid "Ajax route not found: \"%s\""
 msgstr "Route AJAX non trouvé : « %s »"
 
@@ -1180,9 +1188,9 @@ msgstr "Rien ne correspond au filtre"
 msgid "Translate"
 msgstr "Traduire"
 
-#. translators: Error thrown when attemping to parse a file that is not PO, POT
-#. or MO
-#: src/gettext/Data.php:20
+#. translators: Error thrown when attempting to parse a file that is not PO,
+#. POT or MO
+#: src/gettext/Data.php:22
 msgid "%s is not a Gettext file"
 msgstr "%s n’est pas un fichier Gettext"
 
@@ -1395,59 +1403,59 @@ msgstr "Auteur inconnu"
 
 #. Translators: Button that toggles between "code" and regular text editing
 #. modes
-#: src/admin/file/EditController.php:172
+#: src/admin/file/EditController.php:177
 msgctxt "Editor"
 msgid "Toggle code view"
 msgstr "Afficher/Masquer la vue « code »"
 
 #. Translators: Button that toggles invisible characters
-#: src/admin/file/EditController.php:170
+#: src/admin/file/EditController.php:175
 msgctxt "Editor"
 msgid "Toggle invisibles"
 msgstr "Afficher/Masquer les caractères invisibles"
 
 #. Translators: Button for downloading a PO, MO or POT file
-#: src/admin/file/EditController.php:166
+#: src/admin/file/EditController.php:171
 msgctxt "Editor"
 msgid "Download"
 msgstr "Télécharger"
 
 #. Translators: Button that toggles a translation's Fuzzy flag
-#: src/admin/file/EditController.php:164 src/js/Strings.php:99
+#: src/admin/file/EditController.php:169 src/js/Strings.php:99
 msgctxt "Editor"
 msgid "Fuzzy"
 msgstr "Chaînes approximatives"
 
 #. Translators: Button that reloads current screen
-#: src/admin/file/EditController.php:162
+#: src/admin/file/EditController.php:167
 msgctxt "Editor"
 msgid "Revert"
 msgstr "Rétablir"
 
 #. Translators: Button that runs in-editor sync/operation
-#: src/admin/file/EditController.php:160
+#: src/admin/file/EditController.php:165
 msgctxt "Editor"
 msgid "Sync"
 msgstr "Synchroniser"
 
 #. Translators: Button that saves translations to disk
-#: src/admin/file/EditController.php:158
+#: src/admin/file/EditController.php:163
 msgctxt "Editor"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: src/admin/file/EditController.php:156
+#: src/admin/file/EditController.php:161
 msgid "Help"
 msgstr "Aide"
 
 #. Translators: button for removing a string when manually editing a POT file
-#: src/admin/file/EditController.php:155
+#: src/admin/file/EditController.php:160
 msgctxt "Editor"
 msgid "Remove"
 msgstr "Retirer"
 
 #. Translators: button for adding a new string when manually editing a POT file
-#: src/admin/file/EditController.php:153
+#: src/admin/file/EditController.php:158
 msgctxt "Editor"
 msgid "Add"
 msgstr "Ajouter"
@@ -1629,7 +1637,7 @@ msgstr "Thèmes"
 msgid "Invalid locale"
 msgstr "Locale non valide"
 
-#: loco.php:131
+#: loco.php:133
 msgid "Loco requires the \"%s\" PHP extension. Ask your hosting provider to install it"
 msgstr "Loco nécessite l'extension PHP « %s ». Demandez à votre hébergeur de l’installer"
 
@@ -1642,7 +1650,7 @@ msgid "https://wordpress.org/plugins/loco-translate/"
 msgstr "https://fr.wordpress.org/plugins/loco-translate/"
 
 #. Translators: Placeholder text for text filter above editor
-#: src/admin/file/EditController.php:168
+#: src/admin/file/EditController.php:173
 msgid "Filter translations"
 msgstr "Filtrer les traductions"
 
@@ -1652,11 +1660,11 @@ msgstr "Filtrer les traductions"
 msgid "Template file"
 msgstr "Modèle"
 
-#: tpl/admin/config/prefs.php:28 tpl/admin/config/settings.php:158
+#: tpl/admin/config/prefs.php:28 tpl/admin/config/settings.php:164
 msgid "Save settings"
 msgstr "Enregistrer les réglages"
 
-#: tpl/admin/config/settings.php:67
+#: tpl/admin/config/settings.php:73
 msgid "Number of backups to keep of each file:"
 msgstr "Nombre de sauvegardes à conserver de chaque fichier :"
 
@@ -1720,7 +1728,7 @@ msgstr "Erreur inconnue"
 msgid "Settings"
 msgstr "Réglages"
 
-#. #-#-#-#-#  loco-translate-code.pot (Loco Translate 2.1.5)  #-#-#-#-#
+#. #-#-#-#-#  loco-translate-code.pot (Loco Translate 2.2.0)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: src/hooks/AdminHooks.php:67 src/mvc/AdminRouter.php:37
 msgid "Loco Translate"

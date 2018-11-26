@@ -1,0 +1,32 @@
+# Translation of Plugins - Divi Lightbox for Images - Development (trunk) in Spanish (Spain)
+# This file is distributed under the same license as the Plugins - Divi Lightbox for Images - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2017-12-07 11:57:45+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: es\n"
+"Project-Id-Version: Plugins - Divi Lightbox for Images - Development (trunk)\n"
+
+#. Author URI of the plugin/theme
+msgid "https://tellado.es"
+msgstr "https://tellado.es"
+
+#. Author of the plugin/theme
+msgid "Fernando Tellado"
+msgstr "Fernando Tellado"
+
+#. Description of the plugin/theme
+msgid "Uses Divi's native lightbox effect to every self linked image, not only for galleries. This plugin only works with Divi theme or Divi builder installed & active."
+msgstr "Utiliza el efecto nativo de mesa de luz de Divi en cada imagen enlazada a sí misma, no solo en las galerías. Este plugin solo funciona con el tema Divi o el maquetador Divi instalado y activo."
+
+#. Plugin URI of the plugin/theme
+msgid "https://servicios.ayudawp.com"
+msgstr "https://servicios.ayudawp.com"
+
+#. Plugin Name of the plugin/theme
+msgid "Divi Lightbox for Images"
+msgstr "Mesa de luz de Divi para imágenes"
