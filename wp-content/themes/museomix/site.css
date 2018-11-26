@@ -166,19 +166,19 @@
 }
 
 /*    menu interne de page */
-[id^="menu-menu"].page_menu {
+[id^="menu-"].page_menu {
     margin: 32px 0 16px;
 }
-[id^="menu-menu"].page_menu li{
+[id^="menu-"].page_menu li{
     padding: 0;
     background: none;
 }
-[id^="menu-menu"].page_menu a{
+[id^="menu-"].page_menu a{
     font-size: 14px;
     padding: 6px 1em;
     background: #000;
 }
-[id^="menu-menu"].page_menu a:hover{
+[id^="menu-"].page_menu a:hover{
     background: #0bbbef;
 }
 

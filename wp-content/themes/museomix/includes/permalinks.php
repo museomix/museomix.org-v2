@@ -15,7 +15,7 @@ function alter_locations_permalinks( $url, $post ) {
 		if (!isset($edition->post_title)) {
 			// error_log('Post ID = '.$post->ID);
 		}
-        return icl_get_home_url().'editions/'.
+        return icl_get_home_url().'/editions/'.
 		($edition ? $edition->post_title.'/' : '').
 		$museomix->post_name.'/prototypes/'.
 		$post->post_name;

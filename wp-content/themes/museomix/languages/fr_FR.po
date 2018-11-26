@@ -2,198 +2,73 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Museomix\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-09 21:30+0000\n"
-"PO-Revision-Date: 2017-11-09 21:31+0000\n"
+"POT-Creation-Date: 2018-11-26 20:53+0000\n"
+"PO-Revision-Date: 2018-11-26 20:53+0000\n"
 "Last-Translator: samy <contact+msx@lahaut.info>\n"
-"Language-Team: French (France)\n"
-"Language: fr-FR\n"
-"Plural-Forms: nplurals=2; plural=n > 1\n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Loco - https://localise.biz/"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.2.0; wp-4.9.8"
 
 #: single-sponsor.php:55
 msgid "Site"
 msgstr "Site"
 
-#: includes/taxonomies.php:6
-msgctxt "taxonomy general name"
-msgid "Theme"
-msgstr "Thème"
-
-#: includes/taxonomies.php:7
-msgctxt "taxonomy singular name"
-msgid "Theme"
-msgstr ""
-
-#: includes/taxonomies.php:8
-msgid "Search Themes"
-msgstr ""
-
-#: includes/taxonomies.php:9
-msgid "All Themes"
-msgstr ""
-
-#: includes/taxonomies.php:10
-msgid "Parent Themes"
-msgstr ""
-
-#: includes/taxonomies.php:11
-msgid "Parent Themes:"
-msgstr ""
-
-#: includes/taxonomies.php:12
-msgid "Edit Theme"
-msgstr ""
-
-#: includes/taxonomies.php:13
-msgid "Update Theme"
-msgstr ""
-
-#: includes/taxonomies.php:14
-msgid "Add New Theme"
-msgstr ""
-
-#: includes/taxonomies.php:15
-msgid "New Theme Name"
-msgstr ""
-
-#: includes/taxonomies.php:16
-msgid "Themes"
-msgstr ""
-
-#: includes/taxonomies.php:31
-msgctxt "taxonomy general name"
-msgid "Technology"
-msgstr ""
-
-#: includes/taxonomies.php:32
-msgctxt "taxonomy singular name"
-msgid "Technology"
-msgstr ""
-
-#: includes/taxonomies.php:33
-msgid "Search Technology"
-msgstr ""
-
-#: includes/taxonomies.php:34
-msgid "All Technologies"
-msgstr ""
-
-#: includes/taxonomies.php:35
-msgid "Parent Technology"
-msgstr ""
-
-#: includes/taxonomies.php:36
-msgid "Parent Technology:"
-msgstr ""
-
-#: includes/taxonomies.php:37
-msgid "Edit Technology"
-msgstr ""
-
-#: includes/taxonomies.php:38
-msgid "Update Technology"
-msgstr ""
-
-#: includes/taxonomies.php:39
-msgid "Add New Technology"
-msgstr ""
-
-#: includes/taxonomies.php:40
-msgid "New Technology Name"
-msgstr ""
-
-#: includes/taxonomies.php:41
-msgid "Technologies"
-msgstr ""
-
-#: includes/taxonomies.php:56
-msgctxt "taxonomy general name"
-msgid "Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:57
-msgctxt "taxonomy singular name"
-msgid "Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:58
-msgid "Search Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:59
-msgid "All Perimeters"
-msgstr ""
-
-#: includes/taxonomies.php:60
-msgid "Parent Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:61
-msgid "Parent Perimeter:"
-msgstr ""
-
-#: includes/taxonomies.php:62
-msgid "Edit Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:63
-msgid "Update Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:64
-msgid "Add New Perimeter"
-msgstr ""
-
-#: includes/taxonomies.php:65
-msgid "New Perimeter Name"
-msgstr ""
-
-#: includes/taxonomies.php:66
-msgid "Perimeters"
-msgstr ""
-
-#: single-prototype.php:31 single-prototype.php:152
+#: single-prototype.php:38 single-prototype.php:158
 msgid "Scenario"
 msgstr "Scénario utilisateur"
 
-#: single-prototype.php:37
+#: single-prototype.php:44
 msgid "Intentions"
-msgstr "Objectifs"
+msgstr "Intentions & Processes"
 
-#: single-prototype.php:43 single-prototype.php:168
+#: single-prototype.php:50 single-prototype.php:174
 msgid "Hardware"
 msgstr "Outils et techniques"
 
-#: single-prototype.php:49 single-prototype.php:55 single-prototype.php:176
+#: single-prototype.php:56 single-prototype.php:182
 msgid "Experience"
 msgstr "Expérience"
 
-#: single-prototype.php:61 single-prototype.php:184
+#: single-prototype.php:62 single-prototype.php:190
 msgid "FAQ"
 msgstr "Foire aux questions"
 
-#: single-prototype.php:67 single-prototype.php:192 single-museomix.php:40
+#: single-prototype.php:68 single-prototype.php:198 single-museomix.php:42
 msgid "Team"
 msgstr "L'équipe"
 
-#: single-prototype.php:72 single-prototype.php:122 includes/menus.php:14
+#: single-prototype.php:74 single-prototype.php:223
+msgid "Gallery"
+msgstr "Galerie"
+
+#: single-prototype.php:78
+msgid "PrototypeMenu-EN"
+msgstr "PrototypeMenu-FR"
+
+#: single-prototype.php:128 includes/menus.php:14
 msgid "Prototype menu"
 msgstr "Menu prototype"
 
-#: single-prototype.php:160
-msgid "Objectives"
-msgstr "Objectifs"
+#: single-prototype.php:166
+msgid "Intentions & Processes"
+msgstr "Intentions & Processes"
 
-#: single-community.php:54 single-museomix.php:28
+#: single-prototype.php:215
+msgid "External link"
+msgstr "Lien externe"
+
+#: single-community.php:54 single-museomix.php:30
 msgid "Presentation"
 msgstr "Présentation"
 
-#: single-community.php:60 includes/custom_post_types.php:216
-#: includes/custom_post_types.php:225 includes/custom_post_types.php:226
-#: includes/custom_post_types.php:236
+#: single-community.php:60 includes/custom_post_types.php:217
+#: includes/custom_post_types.php:226 includes/custom_post_types.php:227
+#: includes/custom_post_types.php:237
 msgid "News"
 msgstr "Actualités"
 
@@ -205,23 +80,23 @@ msgstr "Musées remixés"
 msgid "Community menu"
 msgstr "Menu page communauté"
 
-#: single-community.php:141 single-museomix.php:198
+#: single-community.php:141 single-museomix.php:200
 msgid "Contacts"
 msgstr "Contacts"
 
-#: single-community.php:144 single-museomix.php:201
+#: single-community.php:144 single-museomix.php:203
 msgid "Phone :"
 msgstr "Tél. :"
 
-#: single-community.php:156 single-museomix.php:215
+#: single-community.php:156 single-museomix.php:217
 msgid "Facebook"
 msgstr "Facebook"
 
-#: single-community.php:160 single-museomix.php:219
+#: single-community.php:160 single-museomix.php:221
 msgid "Twitter"
 msgstr "Twitter"
 
-#: single-community.php:167 single-museomix.php:223
+#: single-community.php:167 single-museomix.php:225
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -239,46 +114,46 @@ msgstr "Actualités liées à %1$s"
 msgid "%1$s locations"
 msgstr "Lieux de l'édition %1$s"
 
-#: single-museomix.php:34 single-museomix.php:245
+#: single-museomix.php:36 single-museomix.php:247
 msgid "Playgrounds"
 msgstr "Terrains de jeu"
 
-#: single-museomix.php:46
+#: single-museomix.php:48
 msgid "Feedback"
 msgstr "Retour sur l'évènement"
 
-#: single-museomix.php:52 single-museomix.php:407
-#: includes/custom_post_types.php:162
+#: single-museomix.php:54 single-museomix.php:409
+#: includes/custom_post_types.php:163
 msgid "Partners"
 msgstr "Partenaires"
 
-#: single-museomix.php:75 single-museomix.php:398
+#: single-museomix.php:77 single-museomix.php:400
 #: includes/custom_post_types.php:132
 msgid "Prototypes"
 msgstr "Prototypes"
 
-#: single-museomix.php:79 single-museomix.php:126 includes/menus.php:10
+#: single-museomix.php:81 single-museomix.php:128 includes/menus.php:10
 msgid "Location menu"
 msgstr "Menu lieu"
 
-#: single-museomix.php:192
+#: single-museomix.php:194
 msgid "Opening hours"
 msgstr "Horaires d'ouverture"
 
-#: single-museomix.php:261
+#: single-museomix.php:263
 msgid "Problems"
 msgstr "Problèmatiques"
 
-#: single-museomix.php:281
+#: single-museomix.php:283
 #, php-format
 msgid "%1$s edition"
 msgstr "Édition %1$s"
 
-#: single-museomix.php:295
+#: single-museomix.php:297
 msgid "The team"
 msgstr "L'équipe"
 
-#: single-museomix.php:363
+#: single-museomix.php:365
 msgid "Feedback on event"
 msgstr "Retour sur l'évènement"
 
@@ -310,16 +185,154 @@ msgstr "Pied de page centre"
 msgid "Footer right sidebar"
 msgstr "Pied de page droite"
 
+#: includes/taxonomies.php:6
+msgctxt "taxonomy general name"
+msgid "Theme"
+msgstr "Thème"
+
+#: includes/taxonomies.php:7
+msgctxt "taxonomy singular name"
+msgid "Theme"
+msgstr "Thème"
+
+#: includes/taxonomies.php:8
+msgid "Search Themes"
+msgstr "Chercher dans les thèmes"
+
+#: includes/taxonomies.php:9
+msgid "All Themes"
+msgstr "Tous les thèmes"
+
+#: includes/taxonomies.php:10
+msgid "Parent Themes"
+msgstr "Thèmes parent"
+
+#: includes/taxonomies.php:11
+msgid "Parent Themes:"
+msgstr "Thèmes parents :"
+
+#: includes/taxonomies.php:12
+msgid "Edit Theme"
+msgstr "Modifier le thème"
+
+#: includes/taxonomies.php:13
+msgid "Update Theme"
+msgstr "Mettre à jour le thème"
+
+#: includes/taxonomies.php:14
+msgid "Add New Theme"
+msgstr "Ajouter un nouveau thème"
+
+#: includes/taxonomies.php:15
+msgid "New Theme Name"
+msgstr "Nom du nouveau thème"
+
+#: includes/taxonomies.php:16
+msgid "Themes"
+msgstr "Thèmes"
+
+#: includes/taxonomies.php:31
+msgctxt "taxonomy general name"
+msgid "Technology"
+msgstr "Technologie"
+
+#: includes/taxonomies.php:32
+msgctxt "taxonomy singular name"
+msgid "Technology"
+msgstr "Technologie"
+
+#: includes/taxonomies.php:33
+msgid "Search Technology"
+msgstr "Chercher dans les technologies"
+
+#: includes/taxonomies.php:34
+msgid "All Technologies"
+msgstr "Toutes les technologies"
+
+#: includes/taxonomies.php:35
+msgid "Parent Technology"
+msgstr "Technologie parente"
+
+#: includes/taxonomies.php:36
+msgid "Parent Technology:"
+msgstr "Technologie parente"
+
+#: includes/taxonomies.php:37
+msgid "Edit Technology"
+msgstr "Modifier la technologie"
+
+#: includes/taxonomies.php:38
+msgid "Update Technology"
+msgstr "Mettre à jour la technologie"
+
+#: includes/taxonomies.php:39
+msgid "Add New Technology"
+msgstr "Ajouter une nouvelle technologie"
+
+#: includes/taxonomies.php:40
+msgid "New Technology Name"
+msgstr "Nom de la nouvelle technologie"
+
+#: includes/taxonomies.php:41
+msgid "Technologies"
+msgstr "Technologies"
+
+#: includes/taxonomies.php:56
+msgctxt "taxonomy general name"
+msgid "Perimeter"
+msgstr "Périmètre"
+
+#: includes/taxonomies.php:57
+msgctxt "taxonomy singular name"
+msgid "Perimeter"
+msgstr "Périmètre"
+
+#: includes/taxonomies.php:58
+msgid "Search Perimeter"
+msgstr "Chercher dans les périmètres"
+
+#: includes/taxonomies.php:59
+msgid "All Perimeters"
+msgstr "Tous les périmètres"
+
+#: includes/taxonomies.php:60
+msgid "Parent Perimeter"
+msgstr "Périmètre parent"
+
+#: includes/taxonomies.php:61
+msgid "Parent Perimeter:"
+msgstr "Périmètre parent :"
+
+#: includes/taxonomies.php:62
+msgid "Edit Perimeter"
+msgstr "Modifier le périmètre"
+
+#: includes/taxonomies.php:63
+msgid "Update Perimeter"
+msgstr "Mettre à jour le périmètre"
+
+#: includes/taxonomies.php:64
+msgid "Add New Perimeter"
+msgstr "Ajouter un nouveau périmètre"
+
+#: includes/taxonomies.php:65
+msgid "New Perimeter Name"
+msgstr "Nom du nouveau périmètre"
+
+#: includes/taxonomies.php:66
+msgid "Perimeters"
+msgstr "Périmètres"
+
 #: includes/custom_post_types.php:21 includes/custom_post_types.php:22
-#: includes/display_functions.php:46
+#: includes/display_functions.php:42
 msgid "Edition"
 msgstr "Edition"
 
 #: includes/custom_post_types.php:23 includes/custom_post_types.php:56
 #: includes/custom_post_types.php:89 includes/custom_post_types.php:122
-#: includes/custom_post_types.php:152 includes/custom_post_types.php:182
-#: includes/custom_post_types.php:218 includes/custom_post_types.php:227
-#: includes/custom_post_types.php:228
+#: includes/custom_post_types.php:153 includes/custom_post_types.php:183
+#: includes/custom_post_types.php:219 includes/custom_post_types.php:228
+#: includes/custom_post_types.php:229
 msgid "Add"
 msgstr "Ajouter"
 
@@ -345,23 +358,23 @@ msgstr "Voir l'édition"
 
 #: includes/custom_post_types.php:29 includes/custom_post_types.php:62
 #: includes/custom_post_types.php:95 includes/custom_post_types.php:128
-#: includes/custom_post_types.php:158 includes/custom_post_types.php:188
-#: includes/custom_post_types.php:233
+#: includes/custom_post_types.php:159 includes/custom_post_types.php:189
+#: includes/custom_post_types.php:234
 msgid "Search"
 msgstr "Chercher"
 
 # A
 #: includes/custom_post_types.php:30 includes/custom_post_types.php:63
 #: includes/custom_post_types.php:96 includes/custom_post_types.php:129
-#: includes/custom_post_types.php:159 includes/custom_post_types.php:189
-#: includes/custom_post_types.php:234
+#: includes/custom_post_types.php:160 includes/custom_post_types.php:190
+#: includes/custom_post_types.php:235
 msgid "No element"
 msgstr "Aucun élément"
 
 #: includes/custom_post_types.php:31 includes/custom_post_types.php:64
 #: includes/custom_post_types.php:97 includes/custom_post_types.php:130
-#: includes/custom_post_types.php:160 includes/custom_post_types.php:190
-#: includes/custom_post_types.php:235
+#: includes/custom_post_types.php:161 includes/custom_post_types.php:191
+#: includes/custom_post_types.php:236
 msgid "No element in trash"
 msgstr "Aucun élément dans la corbeille"
 
@@ -386,8 +399,8 @@ msgid "Edit the location"
 msgstr "Modifier le lieu"
 
 #: includes/custom_post_types.php:59 includes/custom_post_types.php:92
-#: includes/custom_post_types.php:125 includes/custom_post_types.php:155
-#: includes/custom_post_types.php:230
+#: includes/custom_post_types.php:125 includes/custom_post_types.php:156
+#: includes/custom_post_types.php:231
 msgid "New"
 msgstr "Nouveau"
 
@@ -443,67 +456,67 @@ msgstr "Tous les prototypes"
 msgid "Show prototype"
 msgstr "Voir le prototype"
 
-#: includes/custom_post_types.php:150 includes/custom_post_types.php:151
+#: includes/custom_post_types.php:151 includes/custom_post_types.php:152
 msgid "Partner"
 msgstr "Partenaire"
 
-#: includes/custom_post_types.php:153
+#: includes/custom_post_types.php:154
 msgid "Add a partner"
 msgstr "Ajouter un partenaire"
 
-#: includes/custom_post_types.php:154
+#: includes/custom_post_types.php:155
 msgid "Edit partner"
 msgstr "Modifier le partenaire"
 
-#: includes/custom_post_types.php:156
+#: includes/custom_post_types.php:157
 msgid "All partners"
 msgstr "Tous les partenaires"
 
-#: includes/custom_post_types.php:157
+#: includes/custom_post_types.php:158
 msgid "Show partner"
 msgstr "Afficher le partenaire"
 
-#: includes/custom_post_types.php:180 includes/custom_post_types.php:192
+#: includes/custom_post_types.php:181 includes/custom_post_types.php:193
 msgid "Communities"
 msgstr "Communautés"
 
-#: includes/custom_post_types.php:181
+#: includes/custom_post_types.php:182
 msgid "Community"
 msgstr "Communauté"
 
-#: includes/custom_post_types.php:183
+#: includes/custom_post_types.php:184
 msgid "Add an community"
 msgstr "Ajouter une communauté"
 
-#: includes/custom_post_types.php:184
+#: includes/custom_post_types.php:185
 msgid "Edit community"
 msgstr "Modifier la communauté"
 
-#: includes/custom_post_types.php:185
+#: includes/custom_post_types.php:186
 msgid "New community"
 msgstr "Nouvelle communauté"
 
-#: includes/custom_post_types.php:186
+#: includes/custom_post_types.php:187
 msgid "All communities"
 msgstr "Toutes les communautés"
 
-#: includes/custom_post_types.php:187
+#: includes/custom_post_types.php:188
 msgid "Show community"
 msgstr "Afficher la communauté"
 
-#: includes/custom_post_types.php:217 includes/custom_post_types.php:231
+#: includes/custom_post_types.php:218 includes/custom_post_types.php:232
 msgid "All news"
 msgstr "Toutes les actualités"
 
-#: includes/custom_post_types.php:219
+#: includes/custom_post_types.php:220
 msgid "keywords"
 msgstr "mots-clés"
 
-#: includes/custom_post_types.php:229
+#: includes/custom_post_types.php:230
 msgid "Edit"
 msgstr "Modifier"
 
-#: includes/custom_post_types.php:232
+#: includes/custom_post_types.php:233
 msgid "Show"
 msgstr "Afficher"
 

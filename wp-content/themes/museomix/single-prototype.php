@@ -2,6 +2,7 @@
 global $post;
 get_header();
 
+
 /* We link prototype to a location (museum + edition) */
 $location = get_field('museomix');
 $museum_id = get_field('museum', $location->ID);
@@ -21,8 +22,14 @@ $prototype_scenario  = get_field('scenario');
 $prototype_intentions = get_field('intentions');
 $prototype_hardware = get_field('materiel');
 $prototype_experience = get_field('experience');
+$prototype_gallery = get_field('galerie');
 $prototype_faq = get_field('faq');
+$prototype_external_link = get_field('lien_externe');
+//
 $prototype_team_picture = get_field('photo_equipe');
+if (strpos($prototype_team_picture, 'http')!== false) {
+	$prototype_team_picture = get_image_id_from_url($prototype_team_picture);
+}
 $prototype_team_description = get_field('descriptif_equipe');
 
 /* Menu generation */
@@ -50,12 +57,6 @@ if ($prototype_experience):
 		'url' => get_the_permalink().'#experience'
 	);
 endif;
-if ($prototype_experience):
-	$items[] = array(
-		'text' => __('Experience', 'museomix'),
-		'url' => get_the_permalink().'#experience'
-	);
-endif;
 if ($prototype_faq):
 	$items[] = array(
 		'text' => __('FAQ', 'museomix'),
@@ -68,8 +69,13 @@ if ($prototype_team_picture ||$prototype_team_description):
 		'url' => get_the_permalink().'#team'
 	);
 endif;
-
-add_subitems_to_menu(__('Prototype menu','museomix'),0,  $items);
+if ($prototype_gallery):
+	$items[] = array(
+		'text' => __('Gallery', 'museomix'),
+		'url' => get_the_permalink().'#gallery'
+	);
+endif;
+add_subitems_to_menu(__('PrototypeMenu-EN','museomix'),0,  $items);
 
 /* Prototypes */
 $museum_prototypes = get_posts(
@@ -119,7 +125,7 @@ if ((bool)$top_banner && $museum): ?>
 			}
 			wp_nav_menu(
 				array(
-						'menu' => __('Prototype menu','museomix'),
+						'menu' => __('PrototypeMenu-EN','museomix'),
 						'menu_class' => 'page_menu'
 				)
 			);
@@ -157,7 +163,7 @@ if ((bool)$top_banner && $museum): ?>
 		<?php endif; ?>
 		<?php if ($prototype_intentions): ?>
 			<div class=" et_pb_row" id="intentions">
-				<h2 class="yellow_sub_title"><?php _e('Objectives','museomix') ?></h2>
+				<h2 class="yellow_sub_title"><?php _e('Intentions & Processes','museomix') ?></h2>
 				<div class="proto_text">
 					<?php echo $prototype_intentions; ?>
 				</div>
@@ -201,6 +207,22 @@ if ((bool)$top_banner && $museum): ?>
 					<?php if ($prototype_team_description): ?>
 						<?php echo $prototype_team_description; ?>
 					<?php endif; ?>
+				</div>
+			</div>
+		<?php endif; ?>
+		<?php if ($prototype_external_link) : ?>
+			<div class=" et_pb_row" id="external_link">
+				<h2 class="yellow_sub_title"><?php _e('External link','museomix') ?></h2>
+				<div class="proto_text">
+					<a href="<?php echo $prototype_external_link ?>" target="_blank"><?php echo $prototype_external_link; ?></a>
+				</div>
+			</div>
+		<?php endif; ?>
+		<?php if ($prototype_gallery && is_array($prototype_gallery)): ?>
+			<div class=" et_pb_row" id="gallery">
+				<h2 class="yellow_sub_title"><?php _e('Gallery','museomix') ?></h2>
+				<div class="proto_text">
+					<?php echo do_shortcode('[gallery ids="'.implode(',', wp_list_pluck($prototype_gallery, 'ID')).'" link="file"]'); ?>
 				</div>
 			</div>
 		<?php endif; ?>

@@ -1,0 +1,108 @@
+{
+    "key": "group_57266c276e37b",
+    "title": "Infos À PROPOS",
+    "fields": [
+        {
+            "key": "field_518fe1d2f24ed",
+            "label": "sous-titre",
+            "name": "sous-titre",
+            "type": "text",
+            "instructions": "Page's slogan",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "formatting": "none",
+            "maxlength": "",
+            "readonly": 0,
+            "disabled": 0
+        },
+        false,
+        {
+            "key": "field_51c41e0cffbb5",
+            "label": "langage",
+            "name": "langage",
+            "type": "radio",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "fr": "Français",
+                "en": "English"
+            },
+            "other_choice": 0,
+            "save_other_choice": 0,
+            "default_value": "fr",
+            "layout": "vertical",
+            "allow_null": 0,
+            "return_format": "value"
+        },
+        {
+            "key": "field_51c43e6982640",
+            "label": "version française de la page",
+            "name": "vf",
+            "type": "post_object",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_51c41e0cffbb5",
+                        "operator": "!=",
+                        "value": "fr"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "post_type": [
+                "page"
+            ],
+            "taxonomy": [],
+            "allow_null": 1,
+            "multiple": 0,
+            "return_format": "object",
+            "ui": 1
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "page"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "museomix"
+            }
+        ]
+    ],
+    "menu_order": 4,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": 1,
+    "description": "",
+    "modified": 1538217412
+}

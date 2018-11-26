@@ -1,3 +1,4 @@
+
 /* Fonction pour disable les facette facetWP lorsqu'elles sont vides */
 (function($) {
     $(document).on('facetwp-loaded', function() {
@@ -19,4 +20,7 @@
     $('.facet-reset').click(function(e) {
         e.preventDefault();
     })
+	
+	
 })(jQuery);
+

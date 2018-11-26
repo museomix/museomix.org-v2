@@ -149,3 +149,9 @@ function mysite_opengraph_content($val) {
     return preg_replace("/<img[^>]+\>/i", "", $val); 
  }
 add_filter('wpseo_pre_analysis_post_content', 'mysite_opengraph_content');
+
+function get_image_id_from_url($image_url) {
+	global $wpdb;
+	$attachment = $wpdb->get_col($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE guid='%s';", $image_url )); 
+    return $attachment[0]; 
+}

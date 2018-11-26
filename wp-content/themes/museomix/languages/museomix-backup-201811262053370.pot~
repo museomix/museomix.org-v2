@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Museomix 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/style\n"
-"POT-Creation-Date: 2018-11-26 20:53+0000\n"
+"POT-Creation-Date: 2018-11-26 20:35+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,7 +18,7 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
-#: single-prototype.php:38 single-prototype.php:158
+#: single-prototype.php:38 single-prototype.php:159
 msgid "Scenario"
 msgstr ""
 
@@ -26,39 +26,35 @@ msgstr ""
 msgid "Intentions"
 msgstr ""
 
-#: single-prototype.php:50 single-prototype.php:174
+#: single-prototype.php:50 single-prototype.php:175
 msgid "Hardware"
 msgstr ""
 
-#: single-prototype.php:56 single-prototype.php:182
+#: single-prototype.php:56 single-prototype.php:183
 msgid "Experience"
 msgstr ""
 
-#: single-prototype.php:62 single-prototype.php:190
+#: single-prototype.php:62 single-prototype.php:191
 msgid "FAQ"
 msgstr ""
 
-#: single-prototype.php:68 single-prototype.php:198 single-museomix.php:42
+#: single-prototype.php:68 single-prototype.php:199 single-museomix.php:42
 msgid "Team"
 msgstr ""
 
-#: single-prototype.php:74 single-prototype.php:223
+#: single-prototype.php:74 single-prototype.php:224
 msgid "Gallery"
 msgstr ""
 
-#: single-prototype.php:78
-msgid "PrototypeMenu-EN"
-msgstr ""
-
-#: single-prototype.php:128 includes/menus.php:14
+#: single-prototype.php:79 single-prototype.php:129 includes/menus.php:14
 msgid "Prototype menu"
 msgstr ""
 
-#: single-prototype.php:166
+#: single-prototype.php:167
 msgid "Intentions & Processes"
 msgstr ""
 
-#: single-prototype.php:215
+#: single-prototype.php:216
 msgid "External link"
 msgstr ""
 

@@ -34,3 +34,6 @@ ul.et_pb_communities_list li.et_pb_community span a {
 	height:200px;
 	width:346px;
 }
+.single-prototype #gallery .wp-caption-text {
+display:none;
+}
