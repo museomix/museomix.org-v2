@@ -137,7 +137,7 @@ class ET_Builder_Plugin_Compat_Gutenberg extends ET_Builder_Plugin_Compat_Base {
 			var menu = document.querySelector( '#split-page-title-action .dropdown' );
 
 			if ( menu ) {
-				menu.insertAdjacentHTML( 'afterbegin', '<?php echo et_esc_previously( $button ); ?>' );
+				menu.insertAdjacentHTML( 'afterbegin', '<?php echo et_core_esc_previously( $button ); ?>' );
 				return;
 			}
 
@@ -371,7 +371,7 @@ class ET_Builder_Plugin_Compat_Gutenberg extends ET_Builder_Plugin_Compat_Base {
 
 			// Only need to add this filter is the nonce is present in the url request
 			// nonce value will be checked in the filter itself.
-			if ( isset( $_GET['et_fb_new_vb_nonce'] ) ) {
+			if ( isset( $_GET['et_fb_new_vb_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 				add_action( 'new_to_auto-draft', array( $this, 'auto_draft' ), 1 );
 			}
 			add_filter( 'display_post_states', array( $this, 'display_post_states' ), 10, 2 );

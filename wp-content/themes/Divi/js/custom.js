@@ -205,19 +205,24 @@
 				$body_height = $( document ).height(),
 				$viewport_height = $( window ).height() + et_header_height + 200;
 
-			if ( $body.hasClass( 'et_hide_nav' ) ||  $body.hasClass( 'et_hide_nav_disabled' ) && ( $body.hasClass( 'et_fixed_nav' ) ) ) {
-				if ( $body_height > $viewport_height ) {
-					if ( $body.hasClass( 'et_hide_nav_disabled' ) ) {
-						$body.addClass( 'et_hide_nav' );
-						$body.removeClass( 'et_hide_nav_disabled' );
+			// Do nothing when Vertical Navigation is Enabled
+			if ($body.hasClass('et_vertical_nav')) {
+				return;
+			}
+
+			if ($body.hasClass('et_hide_nav') || $body.hasClass('et_hide_nav_disabled') && ($body.hasClass('et_fixed_nav'))) {
+				if ($body_height > $viewport_height) {
+					if ($body.hasClass('et_hide_nav_disabled')) {
+						$body.addClass('et_hide_nav');
+						$body.removeClass('et_hide_nav_disabled');
 					}
-					$('#main-header').css( 'transform', 'translateY(-' + et_header_height +'px)' );
-					$('#top-header').css( 'transform', 'translateY(-' + et_header_height +'px)' );
+					$('#main-header').css('transform', 'translateY(-' + et_header_height + 'px)');
+					$('#top-header').css('transform', 'translateY(-' + et_header_height + 'px)');
 				} else {
-					$('#main-header').css( { 'transform': 'translateY(0)', 'opacity': '1' } );
-					$('#top-header').css( { 'transform': 'translateY(0)', 'opacity': '1' } );
-					$body.removeClass( 'et_hide_nav' );
-					$body.addClass( 'et_hide_nav_disabled' );
+					$('#main-header').css({ 'transform': 'translateY(0)', 'opacity': '1' });
+					$('#top-header').css({ 'transform': 'translateY(0)', 'opacity': '1' });
+					$body.removeClass('et_hide_nav');
+					$body.addClass('et_hide_nav_disabled');
 				}
 
 				// Run fix page container again, needed when body height is not tall enough and
@@ -240,35 +245,37 @@
 		}
 
 		function et_page_load_scroll_to_anchor() {
-			if ( $( window.et_location_hash ).length === 0 ) {
+			var location_hash = window.et_location_hash.replace(/(\|)/g, "\\$1");
+
+			if ($(location_hash).length === 0) {
 				return;
 			}
 
-			var $map_container = $( window.et_location_hash + ' .et_pb_map_container' ),
-				$map = $map_container.children( '.et_pb_map' ),
-				$target = $( window.et_location_hash );
+			var $map_container = $(location_hash + ' .et_pb_map_container');
+			var $map           = $map_container.children('.et_pb_map');
+			var $target        = $(location_hash);
 
 			// Make the target element visible again
-			$target.css( 'display', window.et_location_hash_style );
+			$target.css('display', window.et_location_hash_style);
 
-			var distance = ( 'undefined' !== typeof( $target.offset().top ) ) ? $target.offset().top : 0,
-				speed = ( distance > 4000 ) ? 1600 : 800;
+			var distance = ('undefined' !== typeof($target.offset().top)) ? $target.offset().top : 0;
+			var speed    = (distance > 4000) ? 1600 : 800;
 
-			if ( $map_container.length ) {
-				google.maps.event.trigger( $map[0], 'resize' );
+			if ($map_container.length) {
+				google.maps.event.trigger($map[0], 'resize');
 			}
 
 			// Allow the header sizing functions enough time to finish before scrolling the page
-			setTimeout( function() {
-				et_pb_smooth_scroll( $target, false, speed, 'swing');
+			setTimeout(function() {
+				et_pb_smooth_scroll($target, false, speed, 'swing');
 
 				// During the page scroll animation, the header's height might change.
 				// Do the scroll animation again to ensure its accuracy.
-				setTimeout( function() {
-					et_pb_smooth_scroll( $target, false, 150, 'linear' );
-				}, speed + 25 );
+				setTimeout(function() {
+					et_pb_smooth_scroll($target, false, 150, 'linear');
+				}, speed + 25);
 
-			}, 700 );
+			}, 700);
 		}
 
 		// Retrieving padding/margin value based on formatted saved padding/margin strings
@@ -361,9 +368,10 @@
 					is_post_pb_full_layout_has_title = $et_pb_post_fullwidth.length && $et_main_content_first_row_meta_wrapper_title.length,
 					is_post_pb_full_layout_no_title  = $et_pb_post_fullwidth.length && 0 === $et_main_content_first_row_meta_wrapper_title.length,
 					is_pb_fullwidth_section_first    = $et_pb_first_row.is( '.et_pb_fullwidth_section' ),
-					is_no_pb_mobile                  = et_window_width <= 980 && $et_main_content_first_row.length;
+					is_no_pb_mobile                  = et_window_width <= 980 && $et_main_content_first_row.length,
+					isProject                        = $( 'body' ).hasClass( 'single-project' );
 
-				if ( is_post_pb && ! ( is_post_pb_full_layout_no_title && is_pb_fullwidth_section_first ) ) {
+				if ( is_post_pb && ! ( is_post_pb_full_layout_no_title && is_pb_fullwidth_section_first ) && !isProject ) {
 
 					/* Desktop / Mobile + Single Post */
 
@@ -886,10 +894,12 @@
 
 				if ( et_is_fixed_nav ) {
 
-					if ( window.et_is_transparent_nav && ! window.et_is_vertical_nav && $et_pb_first_row.length ){
+					// We don't want product pages with divi-builder to trigger fixed navigation
+					// based on builder row/module position
+					if (window.et_is_transparent_nav && ! (window.et_is_vertical_nav || $('body.woocommerce.single-product').length) && $et_pb_first_row.length) {
 
 						// Fullscreen section at the first row requires specific adjustment
-						if ( $et_pb_first_row.is( '.et_pb_fullwidth_section' ) ){
+						if ($et_pb_first_row.is('.et_pb_fullwidth_section')) {
 							$waypoint_selector = $et_pb_first_row.children('.et_pb_module:visible:first');
 						} else {
 							$waypoint_selector = $et_pb_first_row.find('.et_pb_row:visible:first');
@@ -899,10 +909,10 @@
 						// has no module OR b) other section has no row. When this happened,
 						// the safest option is look for the first visible module and use it
 						// as waypoint selector
-						if ( ! $waypoint_selector.length ) {
-							$waypoint_selector = $( 'body.et_pb_pagebuilder_layout .et_pb_module:visible:first' );
+						if (! $waypoint_selector.length) {
+							$waypoint_selector = $('body.et_pb_pagebuilder_layout .et_pb_module:visible:first');
 						}
-					} else if ( window.et_is_transparent_nav && ! window.et_is_vertical_nav && $et_main_content_first_row.length ) {
+					} else if (window.et_is_transparent_nav && ! window.et_is_vertical_nav && $et_main_content_first_row.length) {
 						$waypoint_selector = $('#content-area');
 					} else {
 						$waypoint_selector = $('#main-content');

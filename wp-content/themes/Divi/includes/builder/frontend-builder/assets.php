@@ -191,8 +191,11 @@ function et_fb_enqueue_assets() {
 		wp_enqueue_script( 'react-dom', 'https://cdn.jsdelivr.net/npm/react-dom@16.3.2/umd/react-dom.development.js', array( 'react' ), '16.3.2', true );
 		add_filter( 'script_loader_tag', 'et_core_add_crossorigin_attribute', 10, 3 );
 	} else {
-		wp_enqueue_script( 'react', "{$core_scripts}/react.production.min.js", array(), '16.3.2', true );
-		wp_enqueue_script( 'react-dom', "{$core_scripts}/react-dom.production.min.js", array( 'react' ), '16.3.2', true );
+		// We used to load outdated 16.2.0 bundles marked as 16.3.2 which is why we have the
+		// extra .0 in the version number to act as a cache breaker. Next time the version is
+		// updated the extra .0 should be removed.
+		wp_enqueue_script( 'react', "{$core_scripts}/react.production.min.js", array(), '16.3.2.0', true );
+		wp_enqueue_script( 'react-dom', "{$core_scripts}/react-dom.production.min.js", array( 'react' ), '16.3.2.0', true );
 	}
 
 	// Enqueue the appropriate bundle js (hot/start/build)
@@ -240,7 +243,7 @@ function et_fb_output_wp_auth_check_html() {
 		$output
 	);
 
-	echo $output;
+	echo et_core_intentionally_unescaped( $output, 'html' );
 }
 
 function et_fb_set_editor_available_cookie() {

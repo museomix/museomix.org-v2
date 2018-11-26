@@ -88,7 +88,7 @@ class ET_Builder_Plugin_Compat_The_Events_Calendar extends ET_Builder_Plugin_Com
 
 		$this->spoofed_post_query = $GLOBALS['post'];
 
-		$GLOBALS['post'] = $this->actual_post_query;
+		$GLOBALS['post'] = $this->actual_post_query; // phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 	}
 
 	/*
@@ -99,7 +99,7 @@ class ET_Builder_Plugin_Compat_The_Events_Calendar extends ET_Builder_Plugin_Com
 	 * @return void
 	 */
 	function respoofed_post_query() {
-		$GLOBALS['post'] = $this->spoofed_post_query;
+		$GLOBALS['post'] = $this->spoofed_post_query; // phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 	}
 }
 

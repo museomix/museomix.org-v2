@@ -265,6 +265,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 					),
 					'background_layout' => array(
 						'default' => 'light',
+						'hover'   => 'tabs',
 					),
 				),
 			),
@@ -291,6 +292,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Here you can create the content that will be used within the module.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'ul_type' => array(
 				'label'             => esc_html__( 'Unordered List Style Type', 'et_builder' ),
@@ -439,15 +441,17 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$background_layout    = $this->props['background_layout'];
-		$ul_type              = $this->props['ul_type'];
-		$ul_position          = $this->props['ul_position'];
-		$ul_item_indent       = $this->props['ul_item_indent'];
-		$ol_type              = $this->props['ol_type'];
-		$ol_position          = $this->props['ol_position'];
-		$ol_item_indent       = $this->props['ol_item_indent'];
-		$quote_border_weight  = $this->props['quote_border_weight'];
-		$quote_border_color   = $this->props['quote_border_color'];
+		$background_layout               = $this->props['background_layout'];
+		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
+		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
+		$ul_type                         = $this->props['ul_type'];
+		$ul_position                     = $this->props['ul_position'];
+		$ul_item_indent                  = $this->props['ul_item_indent'];
+		$ol_type                         = $this->props['ol_type'];
+		$ol_position                     = $this->props['ol_position'];
+		$ol_item_indent                  = $this->props['ol_item_indent'];
+		$quote_border_weight             = $this->props['quote_border_weight'];
+		$quote_border_color              = $this->props['quote_border_color'];
 
 		$this->content = et_builder_replace_code_content_entities( $this->content );
 
@@ -461,9 +465,9 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 					'%1$s
 					%2$s
 					%3$s',
-					'' !== $ul_type ? sprintf( 'list-style-type: %1$s;', esc_html( $ul_type ) ) : '',
+					'' !== $ul_type ? sprintf( 'list-style-type: %1$s !important;', esc_html( $ul_type ) ) : '',
 					'' !== $ul_position ? sprintf( 'list-style-position: %1$s;', esc_html( $ul_position ) ) : '',
-					'' !== $ul_item_indent ? sprintf( 'padding-left: %1$s;', esc_html( $ul_item_indent ) ) : ''
+					'' !== $ul_item_indent ? sprintf( 'padding-left: %1$s !important;', esc_html( $ul_item_indent ) ) : ''
 				),
 			) );
 		}
@@ -475,9 +479,9 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 					'%1$s
 					%2$s
 					%3$s',
-					'' !== $ol_type ? sprintf( 'list-style-type: %1$s;', esc_html( $ol_type ) ) : '',
-					'' !== $ol_position ? sprintf( 'list-style-position: %1$s;', esc_html( $ol_position ) ) : '',
-					'' !== $ol_item_indent ? sprintf( 'padding-left: %1$s;', esc_html( $ol_item_indent ) ) : ''
+					'' !== $ol_type ? sprintf( 'list-style-type: %1$s !important;', esc_html( $ol_type ) ) : '',
+					'' !== $ol_position ? sprintf( 'list-style-position: %1$s !important;', esc_html( $ol_position ) ) : '',
+					'' !== $ol_item_indent ? sprintf( 'padding-left: %1$s !important;', esc_html( $ol_item_indent ) ) : ''
 				),
 			) );
 		}
@@ -500,8 +504,23 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 			$this->get_text_orientation_classname(),
 		) );
 
+		$data_background_layout       = '';
+		$data_background_layout_hover = '';
+
+		if ( $background_layout_hover_enabled ) {
+			$data_background_layout = sprintf(
+				' data-background-layout="%1$s"',
+				esc_attr( $background_layout )
+			);
+
+			$data_background_layout_hover = sprintf(
+				' data-background-layout-hover="%1$s"',
+				esc_attr( $background_layout_hover )
+			);
+		}
+
 		$output = sprintf(
-			'<div%3$s class="%2$s">
+			'<div%3$s class="%2$s"%6$s%7$s>
 				%5$s
 				%4$s
 				<div class="et_pb_text_inner">
@@ -512,7 +531,9 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 			$this->module_classname( $render_slug ),
 			$this->module_id(),
 			$video_background,
-			$parallax_image_background
+			$parallax_image_background, // #5
+			et_core_esc_previously( $data_background_layout ),
+			et_core_esc_previously( $data_background_layout_hover )
 		);
 
 		return $output;

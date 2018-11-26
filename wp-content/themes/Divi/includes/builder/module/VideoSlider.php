@@ -58,6 +58,15 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 			'fonts'                 => false,
 			'text'                  => false,
 			'button'                => false,
+			'box_shadow'            => array(
+				'default' => array(
+					'css' => array(
+						'main' => '%%order_class%%>.et_pb_slider, %%order_class%%>.et_pb_carousel .et_pb_carousel_item',
+						'overlay' => 'inset',
+					),
+				),
+			),
+			'link_options'          => false,
 		);
 
 		$this->help_videos = array(
@@ -124,6 +133,7 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 				'custom_color'      => true,
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'colors',
+				'hover'             => 'tabs',
 			),
 			'thumbnail_overlay_color' => array(
 				'label'             => esc_html__( 'Thumbnail Overlay Color', 'et_builder' ),
@@ -133,6 +143,14 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 				'toggle_slug'       => 'colors',
 			),
 		);
+		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['play_icon_color'] = array( 'color' => '%%order_class%% .et_pb_video_play, %%order_class%% .et_pb_carousel .et_pb_video_play' );
+
 		return $fields;
 	}
 
@@ -146,10 +164,11 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$show_arrows        = $this->props['show_arrows'];
-		$show_thumbnails    = $this->props['show_thumbnails'];
-		$controls_color     = $this->props['controls_color'];
-		$play_icon_color = $this->props['play_icon_color'];
+		$show_arrows             = $this->props['show_arrows'];
+		$show_thumbnails         = $this->props['show_thumbnails'];
+		$controls_color          = $this->props['controls_color'];
+		$play_icon_color         = $this->props['play_icon_color'];
+		$play_icon_color_hover   = $this->get_hover_value( 'play_icon_color' );
 		$thumbnail_overlay_color = $this->props['thumbnail_overlay_color'];
 
 		global $et_pb_slider_image_overlay;
@@ -163,6 +182,16 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $play_icon_color )
+				),
+			) );
+		}
+
+		if ( et_builder_is_hover_enabled( 'play_icon_color', $this->props ) ) {
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '%%order_class%% .et_pb_video_play:hover, %%order_class%% .et_pb_carousel .et_pb_video_play:hover',
+				'declaration' => sprintf(
+					'color: %1$s !important;',
+					esc_html( $play_icon_color_hover )
 				),
 			) );
 		}
@@ -210,20 +239,6 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 		);
 
 		return $output;
-	}
-
-	public function process_box_shadow( $function_name ) {
-		/**
-		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
-		 */
-		$boxShadow        = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
-		$class            = '.' . self::get_module_order_class( $function_name );
-		$selector         = "$class>.et_pb_slider, $class>.et_pb_carousel .et_pb_carousel_item";
-		$box_shadow_style = $boxShadow->get_style( $selector, $this->props );
-
-		$this->has_box_shadow = isset( $box_shadow_style['declaration'] ) && '' !== trim( $box_shadow_style['declaration'] );
-
-		self::set_style( $function_name, $box_shadow_style );
 	}
 }
 

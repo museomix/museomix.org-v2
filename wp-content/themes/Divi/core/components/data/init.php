@@ -50,11 +50,140 @@ if ( ! function_exists( 'et_sanitized_previously' ) ):
 /**
  * Semantical previously sanitized acknowledgement
  *
+ * @deprecated {@see et_core_sanitized_previously()}
+ *
+ * @since 3.17.3 Deprecated
+ *
  * @param mixed $value The value being passed-through
  *
  * @return mixed
  */
 function et_sanitized_previously( $value ) {
+	et_debug( "You're Doing It Wrong! Attempted to call " . __FUNCTION__ . "(), use et_core_sanitized_previously() instead." );
 	return $value;
+}
+endif;
+
+if ( ! function_exists( 'et_core_sanitized_previously' ) ):
+/**
+ * Semantical previously sanitized acknowledgement
+ *
+ * @since 3.17.3
+ *
+ * @param mixed $value The value being passed-through
+ *
+ * @return mixed
+ */
+function et_core_sanitized_previously( $value ) {
+	return $value;
+}
+endif;
+
+/**
+ * Pass thru semantical previously escaped acknowledgement
+ *
+ * @since 3.17.3
+ *
+ * @param string value being passed through
+ * @return string
+ */
+if ( ! function_exists( 'et_core_esc_previously' ) ) :
+function et_core_esc_previously( $passthru ) {
+	return $passthru;
+}
+endif;
+
+/**
+ * Pass thru function used to pacfify phpcs sniff.
+ * Used when the nonce is checked elsewhere.
+ *
+ * @since 3.17.3
+ *
+ * @return void
+ */
+if ( ! function_exists( 'et_core_nonce_verified_previously' ) ) :
+function et_core_nonce_verified_previously() {
+	// :)
+}
+endif;
+
+/**
+ * Pass thru semantical escaped by WordPress core acknowledgement
+ *
+ * @since 3.17.3
+ *
+ * @param string value being passed through
+ * @return string
+ */
+if ( ! function_exists( 'et_core_esc_wp' ) ) :
+function et_core_esc_wp( $passthru ) {
+	return $passthru;
+}
+endif;
+
+/**
+ * Pass thru semantical intentionally unescaped acknowledgement
+ *
+ * @since 3.17.3
+ *
+ * @param string value being passed through
+ * @param string excuse the value is allowed to be unescaped
+ * @return string
+ */
+if ( ! function_exists( 'et_core_intentionally_unescaped' ) ) :
+function et_core_intentionally_unescaped( $passthru, $excuse ) {
+	// Add valid excuses as they arise
+	$valid_excuses = array(
+		'cap_based_sanitized',
+		'fixed_string',
+		'react_jsx',
+		'html',
+		'underscore_template',
+	);
+
+	if ( ! in_array( $excuse, $valid_excuses ) ) {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'This is not a valid excuse to not escape the passed value.', 'et_core' ), esc_html( et_get_theme_version() ) );
+	}
+
+	return $passthru;
+}
+endif;
+
+/**
+ * Sanitize value depending on user capability
+ *
+ * @since 3.17.3
+ *
+ * @return string value being passed through
+ */
+if ( ! function_exists( 'et_core_sanitize_value_by_cap' ) ) :
+function et_core_sanitize_value_by_cap( $passthru, $sanitize_function = 'et_sanitize_html_input_text', $cap = 'unfiltered_html' ) {
+	if ( ! current_user_can( $cap ) ) {
+		$passthru = $sanitize_function( $passthru );
+	}
+
+	return $passthru;
+}
+endif;
+
+/**
+ * Pass thru semantical intentionally unsanitized acknowledgement
+ *
+ * @since 3.17.3
+ *
+ * @param string value being passed through
+ * @param string excuse the value is allowed to be unsanitized
+ * @return string
+ */
+if ( ! function_exists( 'et_core_intentionally_unsanitized' ) ) :
+function et_core_intentionally_unsanitized( $passthru, $excuse ) {
+	// Add valid excuses as they arise
+	$valid_excuses = array();
+
+	if ( ! in_array( $excuse, $valid_excuses ) ) {
+		_doing_it_wrong( __FUNCTION__, esc_html__( 'This is not a valid excuse to not sanitize the passed value.', 'et_core' ), esc_html( et_get_theme_version() ) );
+	}
+
+	return $passthru;
 }
 endif;

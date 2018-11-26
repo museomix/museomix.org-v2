@@ -57,7 +57,7 @@ add_filter( 'et_pb_section_data_attributes', 'et_divi_section_data_attributes', 
 if ( ! function_exists( 'et_fb_set_builder_locale' ) ) :
 function et_fb_set_builder_locale() {
 	// apply translations inside VB only
-	if ( empty( $_GET['et_fb'] ) ) {
+	if ( empty( $_GET['et_fb'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		return;
 	}
 

@@ -169,6 +169,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 							'step' => 1,
 						),
 						'default'        => '100px',
+						'hover'          => 'tabs',
 						'default_unit'   => 'px',
 						'show_if_not'    => array(
 							"{$placement}_divider_style" => 'none',
@@ -291,6 +292,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 		$default_color    = ( 'top' === $placement ) ? $previous_section : $next_section;
 		$color            = ! empty( $atts[ "{$placement}_divider_color" ] ) ? $atts[ "{$placement}_divider_color" ] : $default_color;
 		$height           = ! empty( $atts[ "{$placement}_divider_height" ] ) ? $atts[ "{$placement}_divider_height" ] : '100px';
+		$height_hover     = et_pb_hover_options()->get_value( "{$placement}_divider_height", $atts, false );
 		$repeat           = ! empty( $atts[ "{$placement}_divider_repeat" ] ) ? floatval( $atts[ "{$placement}_divider_repeat" ] ) : 1;
 		$flip             = ( '' !== $atts[ "{$placement}_divider_flip" ] ) ? explode( '|', $atts[ "{$placement}_divider_flip" ] ) : array();
 		$arrangement      = ! empty( $atts[ "{$placement}_divider_arrangement" ] ) ? $atts[ "{$placement}_divider_arrangement" ] : 'below_content';
@@ -452,6 +454,35 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 				'declaration' => 'background-color: transparent;',
 			) );
 		}
+
+		if ( false !== $height_hover ) {
+			$css         = '';
+			$height      = $height_hover;
+			$selector    = sprintf(
+				'%%order_class%%:hover.section_has_divider.et_pb_%1$s_divider .et_pb_%1$s_inside_divider',
+				esc_attr( $placement )
+			);
+
+			$declaration = array(
+				'height' => $height,
+			);
+
+			// Adjusts for when percentages are being used.
+			if ( 0 < strpos( $height, '%' ) ) {
+				$declaration['background-size'] = sprintf( '%1$s%% 100%%', floatval( 100 / $repeat ) );
+			} else {
+				$declaration['background-size'] = sprintf( '%1$s%% %2$s', floatval( 100 / $repeat ), $height );
+			}
+
+			foreach ( $declaration as $rule => $value ) {
+				$css .= esc_html( "{$rule}:{$value};" );
+			}
+
+			ET_Builder_Element::set_style( 'et_pb_section', array(
+				'selector'    => "$selector",
+				'declaration' => $css,
+			) );
+		}
 	}
 
 	/**
@@ -461,7 +492,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 	 */
 	public function get_svg( $placement ) {
 		// we return a div to use for the divider
-		return sprintf( '<div class="et_pb_%s_inside_divider"></div>', esc_attr( $placement ) );
+		return sprintf( '<div class="et_pb_%s_inside_divider et-no-transition"></div>', esc_attr( $placement ) );
 	}
 }
 

@@ -15,7 +15,6 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'general'  => array(
 				'toggles' => array(
 					'elements'    => esc_html__( 'Elements', 'et_builder' ),
-					'background'  => esc_html__( 'Background', 'et_builder' ),
 				),
 			),
 			'advanced' => array(
@@ -64,7 +63,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),
@@ -72,6 +71,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
+						'main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
 						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
 						'alignment' => "{$this->main_css_element} .et_pb_button_wrapper",
 					),
@@ -274,6 +274,13 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'background_video_height'                    => $this->props['background_video_height'],
 			'header_level'                               => $this->props['header_level'],
 		);
+
+		// Hover Options attribute doesn't have field definition and rendered on the fly, thus the use of array_get()
+		$background_hover_enabled_key = et_pb_hover_options()->get_hover_enabled_field( 'background' );
+		$background_color_hover_key   = et_pb_hover_options()->get_hover_field( 'background_color' );
+
+		$et_pb_slider[ $background_hover_enabled_key ] = self::$_->array_get( $this->props, $background_hover_enabled_key, '' );
+		$et_pb_slider[ $background_color_hover_key ]   = self::$_->array_get( $this->props, $background_color_hover_key, '' );
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {

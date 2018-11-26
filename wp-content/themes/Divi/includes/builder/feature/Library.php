@@ -172,7 +172,7 @@ class ET_Builder_Library {
 
 		foreach ( $terms as $category ) {
 			$category_name = self::__( html_entity_decode( $category->name ), '@categories' );
-			$category_name = et_intentionally_unescaped( $category_name, 'react_jsx' );
+			$category_name = et_core_intentionally_unescaped( $category_name, 'react_jsx' );
 
 			if ( ! isset( $layout_categories[ $category->term_id ] ) ) {
 				$layout_categories[ $category->term_id ] = array(
@@ -194,7 +194,7 @@ class ET_Builder_Library {
 
 			if ( $id = get_post_meta( $post->ID, self::$_primary_category_key, true ) ) {
 				// $id is a string, $category->term_id is an int.
-				if ( $id == $category->term_id ) {
+				if ( $id === $category->term_id ) {
 					// This is the primary category (used in the layout URL)
 					$layout->category_slug = $category->slug;
 				}
@@ -219,7 +219,7 @@ class ET_Builder_Library {
 
 		$pack      = array_shift( $terms );
 		$pack_name = self::__( html_entity_decode( $pack->name ), '@packs' );
-		$pack_name = et_intentionally_unescaped( $pack_name, 'react_jsx' );
+		$pack_name = et_core_intentionally_unescaped( $pack_name, 'react_jsx' );
 
 		if ( ! isset( $layout_packs[ $pack->term_id ] ) ) {
 			$layout_packs[ $pack->term_id ] = array(
@@ -234,7 +234,7 @@ class ET_Builder_Library {
 		if ( $layout->is_landing ) {
 			$layout_packs[ $pack->term_id ]['thumbnail']     = $layout->thumbnail;
 			$layout_packs[ $pack->term_id ]['screenshot']    = $layout->screenshot;
-			$layout_packs[ $pack->term_id ]['description']   = et_intentionally_unescaped( html_entity_decode( $post->post_excerpt ), 'react_jsx' );
+			$layout_packs[ $pack->term_id ]['description']   = et_core_intentionally_unescaped( html_entity_decode( $post->post_excerpt ), 'react_jsx' );
 			$layout_packs[ $pack->term_id ]['category_slug'] = $layout->category_slug;
 			$layout_packs[ $pack->term_id ]['landing_index'] = $index;
 		}
@@ -397,8 +397,8 @@ class ET_Builder_Library {
 				}
 			}
 
-			$layout->name            = et_intentionally_unescaped( self::__( $title, '@layoutsLong' ), 'react_jsx' );
-			$layout->short_name      = et_intentionally_unescaped( self::__( $short_name, '@layoutsShort' ), 'react_jsx' );
+			$layout->name            = et_core_intentionally_unescaped( self::__( $title, '@layoutsLong' ), 'react_jsx' );
+			$layout->short_name      = et_core_intentionally_unescaped( self::__( $short_name, '@layoutsShort' ), 'react_jsx' );
 			$layout->slug            = $post->post_name;
 			$layout->url             = esc_url( wp_make_link_relative( get_permalink( $post ) ) );
 
@@ -603,6 +603,8 @@ class ET_Builder_Library {
 	 * }
 	 */
 	protected function builder_library_modal_custom_tabs_existing_pages() {
+		et_core_nonce_verified_previously();
+
 		$categories = array();
 		$packs      = array();
 		$layouts    = array();
@@ -703,8 +705,8 @@ class ET_Builder_Library {
 						$layout->status             = $post->post_status;
 						$layout->icon               = 'layout';
 						$layout->type               = $post_type;
-						$layout->name               = et_intentionally_unescaped( $title, 'react_jsx' );
-						$layout->short_name         = et_intentionally_unescaped( $title, 'react_jsx' );
+						$layout->name               = et_core_intentionally_unescaped( $title, 'react_jsx' );
+						$layout->short_name         = et_core_intentionally_unescaped( $title, 'react_jsx' );
 						$layout->slug               = $slug;
 						$layout->url                = esc_url( wp_make_link_relative( get_permalink( $post ) ) );
 
@@ -748,16 +750,16 @@ class ET_Builder_Library {
 			'options'    => array(
 				'content'    => array(
 					'title' => array(
-						et_intentionally_unescaped( self::__( '%d Pages' ), 'react_jsx' ),
-						et_intentionally_unescaped( self::__( '%d Page' ), 'react_jsx' ),
+						et_core_intentionally_unescaped( self::__( '%d Pages' ), 'react_jsx' ),
+						et_core_intentionally_unescaped( self::__( '%d Page' ), 'react_jsx' ),
 					),
 				),
 				'sidebar'    => array(
-					'title' => et_intentionally_unescaped( self::__( 'Find A Page' ), 'react_jsx' ),
+					'title' => et_core_intentionally_unescaped( self::__( 'Find A Page' ), 'react_jsx' ),
 				),
 				'list'       => array(
 					'columns' => array(
-						'status' => et_intentionally_unescaped( self::__( 'Status' ), 'react_jsx' ),
+						'status' => et_core_intentionally_unescaped( self::__( 'Status' ), 'react_jsx' ),
 					),
 				),
 			),
@@ -817,10 +819,12 @@ class ET_Builder_Library {
 
 		global $wpdb;
 
-		$sql = "SELECT DISTINCT( meta_value ) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value > ''";
-		$sql = $wpdb->prepare( $sql, '_et_pb_built_for_post_type' );
-
-		return $all_built_for_post_types = $wpdb->get_col( $sql );
+		return $all_built_for_post_types = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT( meta_value ) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value > ''",
+				'_et_pb_built_for_post_type'
+			)
+		);
 	}
 
 	/**
@@ -947,6 +951,9 @@ class ET_Builder_Library {
 
 				if ( ! isset( $_POST['is_BB'] ) ) {
 					$result['savedShortcode'] = et_fb_process_shortcode( $result['savedShortcode'] );
+				} else {
+					$post_content_processed = do_shortcode( $result['shortcode'] );
+					$result['migrations'] = ET_Builder_Module_Settings_Migration::$migrated;
 				}
 
 				unset( $result['shortcode'] );
@@ -976,7 +983,7 @@ class ET_Builder_Library {
 		// Charset has to be explicitly mentioned when it is other than UTF-8.
 		@header( 'Content-Type: application/json; charset=' . esc_attr( get_option( 'blog_charset' ) ) );
 
-		die( $response );
+		die( et_core_intentionally_unescaped( $response, 'html' ) );
 	}
 
 	/**

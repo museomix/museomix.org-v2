@@ -22,6 +22,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 							'column_2' => array( 'name' => esc_html__( 'Column 2', 'et_builder' ) ),
 							'column_3' => array( 'name' => esc_html__( 'Column 3', 'et_builder' ) ),
 						),
+						'priority' => 80,
 					),
 				),
 			),
@@ -81,6 +82,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'options'    => array(
 					'background_color' => array(
 						'default' => '',
+						'hover' => 'tabs',
 					),
 					'allow_player_pause' => array(
 						'default_on_front' => 'off',
@@ -204,6 +206,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'tab_slug'            => 'advanced',
 				'toggle_slug'         => 'width',
 				'specialty_only'      => 'yes',
+				'hover'               => 'tabs',
 			),
 			'custom_width_percent' => array(
 				'default'         => '80%',
@@ -221,6 +224,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'width',
 				'specialty_only'  => 'yes',
+				'hover'           => 'tabs',
 			),
 			'make_equal' => array(
 				'label'             => esc_html__( 'Equalize Column Heights', 'et_builder' ),
@@ -267,6 +271,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'validate_unit'    => false,
 				'fixed_range'      => true,
 				'default_on_front' => et_get_option( 'gutter_width', 3 ),
+				'hover'            => 'tabs',
 			),
 			'columns_background' => array(
 				'type'            => 'column_settings_background',
@@ -431,85 +436,122 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		return array_merge( $fields, $column_fields );
 	}
 
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['custom_width_px'] = array( 'max-width' => '%%order_class%%' );
+		$fields['custom_width_percent'] = array(
+			'max-width' => '%%order_class%% > .et_pb_row',
+			'width'     => '%%order_class%% > .et_pb_row',
+		);
+
+		// Section Dividers Height
+		foreach ( array( 'top', 'bottom' ) as $placement ) {
+			// Inside sprintf, the double %% prints a literal '%' character
+			$selector                                = sprintf(
+				'%%%%order_class%%%%.section_has_divider.et_pb_%1$s_divider .et_pb_%1$s_inside_divider',
+				$placement
+			);
+			$fields[ "{$placement}_divider_height" ] = array(
+				'height'          => $selector,
+				'background-size' => $selector,
+			);
+		}
+
+		return $fields;
+	}
+
 	function render( $atts, $content = null, $function_name ) {
-		$background_image        = $this->props['background_image'];
-		$background_color        = $this->props['background_color'];
-		$background_video_mp4    = $this->props['background_video_mp4'];
-		$background_video_webm   = $this->props['background_video_webm'];
-		$inner_shadow            = $this->props['inner_shadow'];
-		$parallax                = $this->props['parallax'];
-		$parallax_method         = $this->props['parallax_method'];
-		$fullwidth               = $this->props['fullwidth'];
-		$specialty               = $this->props['specialty'];
-		$background_color_1      = $this->props['background_color_1'];
-		$background_color_2      = $this->props['background_color_2'];
-		$background_color_3      = $this->props['background_color_3'];
-		$bg_img_1                = $this->props['bg_img_1'];
-		$bg_img_2                = $this->props['bg_img_2'];
-		$bg_img_3                = $this->props['bg_img_3'];
-		$background_size_1       = $this->props['background_size_1'];
-		$background_size_2       = $this->props['background_size_2'];
-		$background_size_3       = $this->props['background_size_3'];
-		$background_position_1   = $this->props['background_position_1'];
-		$background_position_2   = $this->props['background_position_2'];
-		$background_position_3   = $this->props['background_position_3'];
-		$background_repeat_1     = $this->props['background_repeat_1'];
-		$background_repeat_2     = $this->props['background_repeat_2'];
-		$background_repeat_3     = $this->props['background_repeat_3'];
-		$background_blend_1      = $this->props['background_blend_1'];
-		$background_blend_2      = $this->props['background_blend_2'];
-		$background_blend_3      = $this->props['background_blend_3'];
-		$parallax_1              = $this->props['parallax_1'];
-		$parallax_2              = $this->props['parallax_2'];
-		$parallax_3              = $this->props['parallax_3'];
-		$parallax_method_1       = $this->props['parallax_method_1'];
-		$parallax_method_2       = $this->props['parallax_method_2'];
-		$parallax_method_3       = $this->props['parallax_method_3'];
-		$padding_top_1           = $this->props['padding_top_1'];
-		$padding_right_1         = $this->props['padding_right_1'];
-		$padding_bottom_1        = $this->props['padding_bottom_1'];
-		$padding_left_1          = $this->props['padding_left_1'];
-		$padding_top_2           = $this->props['padding_top_2'];
-		$padding_right_2         = $this->props['padding_right_2'];
-		$padding_bottom_2        = $this->props['padding_bottom_2'];
-		$padding_left_2          = $this->props['padding_left_2'];
-		$padding_top_3           = $this->props['padding_top_3'];
-		$padding_right_3         = $this->props['padding_right_3'];
-		$padding_bottom_3        = $this->props['padding_bottom_3'];
-		$padding_left_3          = $this->props['padding_left_3'];
-		$padding_1_tablet        = $this->props['padding_1_tablet'];
-		$padding_2_tablet        = $this->props['padding_2_tablet'];
-		$padding_3_tablet        = $this->props['padding_3_tablet'];
-		$padding_1_phone         = $this->props['padding_1_phone'];
-		$padding_2_phone         = $this->props['padding_2_phone'];
-		$padding_3_phone         = $this->props['padding_3_phone'];
-		$padding_1_last_edited   = $this->props['padding_1_last_edited'];
-		$padding_2_last_edited   = $this->props['padding_2_last_edited'];
-		$padding_3_last_edited   = $this->props['padding_3_last_edited'];
-		$gutter_width            = $this->props['gutter_width'];
-		$use_custom_width        = $this->props['use_custom_width'];
-		$custom_width_px         = $this->props['custom_width_px'];
-		$custom_width_percent    = $this->props['custom_width_percent'];
-		$width_unit              = $this->props['width_unit'];
-		$make_equal              = $this->props['make_equal'];
-		$make_fullwidth          = $this->props['make_fullwidth'];
-		$global_module           = $this->props['global_module'];
-		$use_custom_gutter       = $this->props['use_custom_gutter'];
-		$module_id_1             = $this->props['module_id_1'];
-		$module_id_2             = $this->props['module_id_2'];
-		$module_id_3             = $this->props['module_id_3'];
-		$module_class_1          = $this->props['module_class_1'];
-		$module_class_2          = $this->props['module_class_2'];
-		$module_class_3          = $this->props['module_class_3'];
-		$custom_css_before_1     = $this->props['custom_css_before_1'];
-		$custom_css_before_2     = $this->props['custom_css_before_2'];
-		$custom_css_before_3     = $this->props['custom_css_before_3'];
-		$custom_css_main_1       = $this->props['custom_css_main_1'];
-		$custom_css_main_2       = $this->props['custom_css_main_2'];
-		$custom_css_main_3       = $this->props['custom_css_main_3'];
-		$custom_css_after_1      = $this->props['custom_css_after_1'];
-		$custom_css_after_2      = $this->props['custom_css_after_2'];
-		$custom_css_after_3      = $this->props['custom_css_after_3'];
+		$background_image                             = $this->props['background_image'];
+		$background_color                             = $this->props['background_color'];
+		$background_video_mp4                         = $this->props['background_video_mp4'];
+		$background_video_webm                        = $this->props['background_video_webm'];
+		$inner_shadow                                 = $this->props['inner_shadow'];
+		$parallax                                     = $this->props['parallax'];
+		$parallax_method                              = $this->props['parallax_method'];
+		$fullwidth                                    = $this->props['fullwidth'];
+		$specialty                                    = $this->props['specialty'];
+		$background_color_1                           = $this->props['background_color_1'];
+		$background_color_2                           = $this->props['background_color_2'];
+		$background_color_3                           = $this->props['background_color_3'];
+		$bg_img_1                                     = $this->props['bg_img_1'];
+		$bg_img_2                                     = $this->props['bg_img_2'];
+		$bg_img_3                                     = $this->props['bg_img_3'];
+		$background_size_1                            = $this->props['background_size_1'];
+		$background_size_2                            = $this->props['background_size_2'];
+		$background_size_3                            = $this->props['background_size_3'];
+		$background_position_1                        = $this->props['background_position_1'];
+		$background_position_2                        = $this->props['background_position_2'];
+		$background_position_3                        = $this->props['background_position_3'];
+		$background_repeat_1                          = $this->props['background_repeat_1'];
+		$background_repeat_2                          = $this->props['background_repeat_2'];
+		$background_repeat_3                          = $this->props['background_repeat_3'];
+		$background_blend_1                           = $this->props['background_blend_1'];
+		$background_blend_2                           = $this->props['background_blend_2'];
+		$background_blend_3                           = $this->props['background_blend_3'];
+		$parallax_1                                   = $this->props['parallax_1'];
+		$parallax_2                                   = $this->props['parallax_2'];
+		$parallax_3                                   = $this->props['parallax_3'];
+		$parallax_method_1                            = $this->props['parallax_method_1'];
+		$parallax_method_2                            = $this->props['parallax_method_2'];
+		$parallax_method_3                            = $this->props['parallax_method_3'];
+		$padding_top_1                                = $this->props['padding_top_1'];
+		$padding_right_1                              = $this->props['padding_right_1'];
+		$padding_bottom_1                             = $this->props['padding_bottom_1'];
+		$padding_left_1                               = $this->props['padding_left_1'];
+		$padding_top_2                                = $this->props['padding_top_2'];
+		$padding_right_2                              = $this->props['padding_right_2'];
+		$padding_bottom_2                             = $this->props['padding_bottom_2'];
+		$padding_left_2                               = $this->props['padding_left_2'];
+		$padding_top_3                                = $this->props['padding_top_3'];
+		$padding_right_3                              = $this->props['padding_right_3'];
+		$padding_bottom_3                             = $this->props['padding_bottom_3'];
+		$padding_left_3                               = $this->props['padding_left_3'];
+		$padding_1_tablet                             = $this->props['padding_1_tablet'];
+		$padding_2_tablet                             = $this->props['padding_2_tablet'];
+		$padding_3_tablet                             = $this->props['padding_3_tablet'];
+		$padding_1_phone                              = $this->props['padding_1_phone'];
+		$padding_2_phone                              = $this->props['padding_2_phone'];
+		$padding_3_phone                              = $this->props['padding_3_phone'];
+		$padding_1_last_edited                        = $this->props['padding_1_last_edited'];
+		$padding_2_last_edited                        = $this->props['padding_2_last_edited'];
+		$padding_3_last_edited                        = $this->props['padding_3_last_edited'];
+		$gutter_width                                 = $this->props['gutter_width'];
+		$gutter_width_hover                           = $this->get_hover_value( 'gutter_width' );
+		$use_custom_width                             = $this->props['use_custom_width'];
+		$custom_width_px                              = $this->props['custom_width_px'];
+		$custom_width_px_hover                        = $this->get_hover_value( 'custom_width_px' );
+		$custom_width_percent                         = $this->props['custom_width_percent'];
+		$custom_width_percent_hover                   = $this->get_hover_value( 'custom_width_percent' );
+		$width_unit                                   = $this->props['width_unit'];
+		$make_equal                                   = $this->props['make_equal'];
+		$make_fullwidth                               = $this->props['make_fullwidth'];
+		$global_module                                = $this->props['global_module'];
+		$use_custom_gutter                            = $this->props['use_custom_gutter'];
+		$module_id_1                                  = $this->props['module_id_1'];
+		$module_id_2                                  = $this->props['module_id_2'];
+		$module_id_3                                  = $this->props['module_id_3'];
+		$module_class_1                               = $this->props['module_class_1'];
+		$module_class_2                               = $this->props['module_class_2'];
+		$module_class_3                               = $this->props['module_class_3'];
+		$custom_css_before_1                          = $this->props['custom_css_before_1'];
+		$custom_css_before_2                          = $this->props['custom_css_before_2'];
+		$custom_css_before_3                          = $this->props['custom_css_before_3'];
+		$custom_css_main_1                            = $this->props['custom_css_main_1'];
+		$custom_css_main_2                            = $this->props['custom_css_main_2'];
+		$custom_css_main_3                            = $this->props['custom_css_main_3'];
+		$custom_css_after_1                           = $this->props['custom_css_after_1'];
+		$custom_css_after_2                           = $this->props['custom_css_after_2'];
+		$custom_css_after_3                           = $this->props['custom_css_after_3'];
+		$custom_css_before_1_hover                    = $this->get_hover_value( 'custom_css_before_1' );
+		$custom_css_before_2_hover                    = $this->get_hover_value( 'custom_css_before_2' );
+		$custom_css_before_3_hover                    = $this->get_hover_value( 'custom_css_before_3' );
+		$custom_css_main_1_hover                      = $this->get_hover_value( 'custom_css_main_1' );
+		$custom_css_main_2_hover                      = $this->get_hover_value( 'custom_css_main_2' );
+		$custom_css_main_3_hover                      = $this->get_hover_value( 'custom_css_main_3' );
+		$custom_css_after_1_hover                     = $this->get_hover_value( 'custom_css_after_1' );
+		$custom_css_after_2_hover                     = $this->get_hover_value( 'custom_css_after_2' );
+		$custom_css_after_3_hover                     = $this->get_hover_value( 'custom_css_after_3' );
 		$use_background_color_gradient_1              = $this->props['use_background_color_gradient_1'];
 		$use_background_color_gradient_2              = $this->props['use_background_color_gradient_2'];
 		$use_background_color_gradient_3              = $this->props['use_background_color_gradient_3'];
@@ -537,26 +579,28 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		$background_color_gradient_overlays_image_1   = $this->props['background_color_gradient_overlays_image_1'];
 		$background_color_gradient_overlays_image_2   = $this->props['background_color_gradient_overlays_image_2'];
 		$background_color_gradient_overlays_image_3   = $this->props['background_color_gradient_overlays_image_3'];
-		$background_video_mp4_1     = $this->props['background_video_mp4_1'];
-		$background_video_mp4_2     = $this->props['background_video_mp4_2'];
-		$background_video_mp4_3     = $this->props['background_video_mp4_3'];
-		$background_video_webm_1    = $this->props['background_video_webm_1'];
-		$background_video_webm_2    = $this->props['background_video_webm_2'];
-		$background_video_webm_3    = $this->props['background_video_webm_3'];
-		$background_video_width_1   = $this->props['background_video_width_1'];
-		$background_video_width_2   = $this->props['background_video_width_2'];
-		$background_video_width_3   = $this->props['background_video_width_3'];
-		$background_video_height_1  = $this->props['background_video_height_1'];
-		$background_video_height_2  = $this->props['background_video_height_2'];
-		$background_video_height_3  = $this->props['background_video_height_3'];
-		$allow_player_pause_1       = $this->props['allow_player_pause_1'];
-		$allow_player_pause_2       = $this->props['allow_player_pause_2'];
-		$allow_player_pause_3       = $this->props['allow_player_pause_3'];
-		$background_video_pause_outside_viewport_1 = $this->props['background_video_pause_outside_viewport_1'];
-		$background_video_pause_outside_viewport_2 = $this->props['background_video_pause_outside_viewport_2'];
-		$background_video_pause_outside_viewport_3 = $this->props['background_video_pause_outside_viewport_3'];
-		$prev_background_color = $this->props['prev_background_color'];
-		$next_background_color = $this->props['next_background_color'];
+		$background_video_mp4_1                       = $this->props['background_video_mp4_1'];
+		$background_video_mp4_2                       = $this->props['background_video_mp4_2'];
+		$background_video_mp4_3                       = $this->props['background_video_mp4_3'];
+		$background_video_webm_1                      = $this->props['background_video_webm_1'];
+		$background_video_webm_2                      = $this->props['background_video_webm_2'];
+		$background_video_webm_3                      = $this->props['background_video_webm_3'];
+		$background_video_width_1                     = $this->props['background_video_width_1'];
+		$background_video_width_2                     = $this->props['background_video_width_2'];
+		$background_video_width_3                     = $this->props['background_video_width_3'];
+		$background_video_height_1                    = $this->props['background_video_height_1'];
+		$background_video_height_2                    = $this->props['background_video_height_2'];
+		$background_video_height_3                    = $this->props['background_video_height_3'];
+		$allow_player_pause_1                         = $this->props['allow_player_pause_1'];
+		$allow_player_pause_2                         = $this->props['allow_player_pause_2'];
+		$allow_player_pause_3                         = $this->props['allow_player_pause_3'];
+		$background_video_pause_outside_viewport_1    = $this->props['background_video_pause_outside_viewport_1'];
+		$background_video_pause_outside_viewport_2    = $this->props['background_video_pause_outside_viewport_2'];
+		$background_video_pause_outside_viewport_3    = $this->props['background_video_pause_outside_viewport_3'];
+		$prev_background_color                        = $this->props['prev_background_color'];
+		$next_background_color                        = $this->props['next_background_color'];
+
+		$hover = et_pb_hover_options();
 
 		if ( '' !== $global_module ) {
 			$global_content = et_pb_load_global_module( $global_module, '', $prev_background_color, $next_background_color );
@@ -567,6 +611,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		}
 
 		$gutter_class = '';
+		$gutter_hover_data = '';
 
 		if ( 'on' === $specialty ) {
 			global $et_pb_all_column_settings, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
@@ -582,33 +627,59 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			if ( 'on' === $use_custom_gutter && '' !== $gutter_width ) {
 				$gutter_width = '0' === $gutter_width ? '1' : $gutter_width; // set the gutter to 1 if 0 entered by user
 				$gutter_class .= ' et_pb_gutters' . $gutter_width;
+
+				if ( et_builder_is_hover_enabled( 'gutter_width', $this->props ) ) {
+					$gutter_class .= ' et_pb_gutter_hover';
+
+					$gutter_hover_data = sprintf(
+						' data-original_gutter="%1$s" data-hover_gutter="%2$s"',
+						esc_attr($gutter_width),
+						esc_attr($gutter_width_hover)
+					);
+				}
+			}
+
+			// Column hover backgrounds
+			$column_hover_backgrounds = array();
+
+			for ( $i = 0; $i <= 3; $i ++ ) {
+				$column_hover_backgrounds = array_merge( $column_hover_backgrounds, array(
+					"column_{$i}_color_hover"         => $hover->get_value( "background_color_{$i}", $this->props, false ),
+					"column_{$i}_color_hover_enabled" => $hover->is_enabled( "background_color_{$i}", $this->props ),
+				) );
 			}
 
 			$et_pb_columns_counter = 0;
 			$et_pb_column_backgrounds = array(
 				array(
-					'color'          => $background_color_1,
-					'image'          => $bg_img_1,
-					'image_size'     => $background_size_1,
-					'image_position' => $background_position_1,
-					'image_repeat'   => $background_repeat_1,
-					'image_blend'    => $background_blend_1,
+					'color'               => $background_color_1,
+					'color_hover'         => $column_hover_backgrounds['column_1_color_hover'],
+					'color_hover_enabled' => $column_hover_backgrounds['column_1_color_hover_enabled'],
+					'image'               => $bg_img_1,
+					'image_size'          => $background_size_1,
+					'image_position'      => $background_position_1,
+					'image_repeat'        => $background_repeat_1,
+					'image_blend'         => $background_blend_1,
 				),
 				array(
-					'color'          => $background_color_2,
-					'image'          => $bg_img_2,
-					'image_size'     => $background_size_2,
-					'image_position' => $background_position_2,
-					'image_repeat'   => $background_repeat_2,
-					'image_blend'    => $background_blend_2,
+					'color'               => $background_color_2,
+					'color_hover'         => $column_hover_backgrounds['column_2_color_hover'],
+					'color_hover_enabled' => $column_hover_backgrounds['column_2_color_hover_enabled'],
+					'image'               => $bg_img_2,
+					'image_size'          => $background_size_2,
+					'image_position'      => $background_position_2,
+					'image_repeat'        => $background_repeat_2,
+					'image_blend'         => $background_blend_2,
 				),
 				array(
-					'color'          => $background_color_3,
-					'image'          => $bg_img_3,
-					'image_size'     => $background_size_3,
-					'image_position' => $background_position_3,
-					'image_repeat'   => $background_repeat_3,
-					'image_blend'    => $background_blend_3,
+					'color'               => $background_color_3,
+					'color_hover'         => $column_hover_backgrounds['column_3_color_hover'],
+					'color_hover_enabled' => $column_hover_backgrounds['column_3_color_hover_enabled'],
+					'image'               => $bg_img_3,
+					'image_size'          => $background_size_3,
+					'image_position'      => $background_position_3,
+					'image_repeat'        => $background_repeat_3,
+					'image_blend'         => $background_blend_3,
 				),
 			);
 
@@ -675,24 +746,52 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				),
 			);
 
+			// Column hover paddings
+			$column_hover_paddings = array();
+
+			for ( $i = 0; $i <= 3; $i++ ) {
+				$column_hover_paddings = array_merge( $column_hover_paddings, array(
+					"column_{$i}_padding_hover_enabled" => $hover->is_enabled( "padding_{$i}", $this->props ),
+					"column_{$i}_padding_top"           => $hover->get_compose_value( "padding_top_{$i}", "padding_{$i}", $this->props ),
+					"column_{$i}_padding_right"         => $hover->get_compose_value( "padding_right_{$i}", "padding_{$i}", $this->props ),
+					"column_{$i}_padding_bottom"        => $hover->get_compose_value( "padding_bottom_{$i}", "padding_{$i}", $this->props ),
+					"column_{$i}_padding_left"          => $hover->get_compose_value( "padding_left_{$i}", "padding_{$i}", $this->props ),
+				) );
+			}
+
 			$et_pb_column_paddings = array(
 				array(
-					'padding-top'    => $padding_top_1,
-					'padding-right'  => $padding_right_1,
-					'padding-bottom' => $padding_bottom_1,
-					'padding-left'   => $padding_left_1,
+					'padding-top'           => $padding_top_1,
+					'padding-right'         => $padding_right_1,
+					'padding-bottom'        => $padding_bottom_1,
+					'padding-left'          => $padding_left_1,
+					'padding-hover-enabled' => $column_hover_paddings['column_1_padding_hover_enabled'],
+					'padding-top-hover'     => $column_hover_paddings['column_1_padding_top'],
+					'padding-right-hover'   => $column_hover_paddings['column_1_padding_right'],
+					'padding-bottom-hover'  => $column_hover_paddings['column_1_padding_bottom'],
+					'padding-left-hover'    => $column_hover_paddings['column_1_padding_left'],
 				),
 				array(
-					'padding-top'    => $padding_top_2,
-					'padding-right'  => $padding_right_2,
-					'padding-bottom' => $padding_bottom_2,
-					'padding-left'   => $padding_left_2,
+					'padding-top'           => $padding_top_2,
+					'padding-right'         => $padding_right_2,
+					'padding-bottom'        => $padding_bottom_2,
+					'padding-left'          => $padding_left_2,
+					'padding-hover-enabled' => $column_hover_paddings['column_2_padding_hover_enabled'],
+					'padding-top-hover'     => $column_hover_paddings['column_2_padding_top'],
+					'padding-right-hover'   => $column_hover_paddings['column_2_padding_right'],
+					'padding-bottom-hover'  => $column_hover_paddings['column_2_padding_bottom'],
+					'padding-left-hover'    => $column_hover_paddings['column_2_padding_left'],
 				),
 				array(
-					'padding-top'    => $padding_top_3,
-					'padding-right'  => $padding_right_3,
-					'padding-bottom' => $padding_bottom_3,
-					'padding-left'   => $padding_left_3,
+					'padding-top'           => $padding_top_3,
+					'padding-right'         => $padding_right_3,
+					'padding-bottom'        => $padding_bottom_3,
+					'padding-left'          => $padding_left_3,
+					'padding-hover-enabled' => $column_hover_paddings['column_3_padding_hover_enabled'],
+					'padding-top-hover'     => $column_hover_paddings['column_3_padding_top'],
+					'padding-right-hover'   => $column_hover_paddings['column_3_padding_right'],
+					'padding-bottom-hover'  => $column_hover_paddings['column_3_padding_bottom'],
+					'padding-left-hover'    => $column_hover_paddings['column_3_padding_left'],
 				),
 			);
 
@@ -734,14 +833,50 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 						'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent ) ) ) : ''
 					),
 				) );
+
+				switch ( $width_unit ) {
+					case 'on':
+						if ( ! et_builder_is_hover_enabled( 'custom_width_px', $this->props ) ) {
+							break;
+						}
+
+						ET_Builder_Element::set_style( $function_name, array(
+							'selector'    => '%%order_class%% > .et_pb_row:hover',
+							'declaration' => sprintf(
+								'max-width:%1$s !important;',
+								esc_attr( sprintf( '%1$spx', intval( $custom_width_px_hover ) ) )
+							),
+						) );
+
+						break;
+					default:
+						if ( ! et_builder_is_hover_enabled( 'custom_width_percent', $this->props ) ) {
+							break;
+						}
+
+						ET_Builder_Element::set_style( $function_name, array(
+							'selector'    => '%%order_class%% > .et_pb_row:hover',
+							'declaration' => sprintf(
+								'max-width:%1$s !important;
+							%2$s',
+								esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent_hover ) ) ),
+								esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent_hover ) ) )
+							),
+						) );
+
+						break;
+				}
 			}
 
 			$et_pb_column_css = array(
-				'css_class'         => array( $module_class_1, $module_class_2, $module_class_3 ),
-				'css_id'            => array( $module_id_1, $module_id_2, $module_id_3 ),
-				'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3 ),
-				'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3 ),
-				'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3 ),
+				'css_class'               => array( $module_class_1, $module_class_2, $module_class_3 ),
+				'css_id'                  => array( $module_id_1, $module_id_2, $module_id_3 ),
+				'custom_css_before'       => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3 ),
+				'custom_css_main'         => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3 ),
+				'custom_css_after'        => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3 ),
+				'custom_css_before_hover' => array( $custom_css_before_1_hover, $custom_css_before_2_hover, $custom_css_before_3_hover ),
+				'custom_css_main_hover'   => array( $custom_css_main_1_hover, $custom_css_main_2_hover, $custom_css_main_3_hover ),
+				'custom_css_after_hover'  => array( $custom_css_after_1_hover, $custom_css_after_2_hover, $custom_css_after_3_hover ),
 			);
 
 			$internal_columns_settings_array = array(
@@ -777,6 +912,18 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'declaration' => sprintf(
 					'background-color:%s !important;',
 					esc_attr( $background_color )
+				),
+			) );
+		}
+
+		// Background hover styles
+		$bg_color = $hover->get_value( 'background_color', $this->props );
+		if ( $hover->is_enabled( 'background', $this->props ) && !empty( $bg_color ) ) {
+			ET_Builder_Element::set_style( $function_name, array(
+				'selector'    => '%%order_class%%.et_pb_section:hover',
+				'declaration' => sprintf(
+					'background-color:%s !important;',
+					esc_attr( $bg_color )
 				),
 			) );
 		}
@@ -882,7 +1029,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			$module_classes, // 3
 			$this->module_id(), // 4
 			( 'on' === $specialty ?
-				sprintf( '<div class="et_pb_row%1$s">', $gutter_class )
+				sprintf( '<div class="et_pb_row%1$s"%2$s>', $gutter_class, et_core_esc_previously( $gutter_hover_data ) )
 				: '' ), // 5
 			( 'on' === $specialty ? '</div> <!-- .et_pb_row -->' : '' ), // 6
 			( '' !== $background_image && 'on' === $parallax
@@ -895,8 +1042,8 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				: ''
 			), // 7
 			$this->get_module_data_attributes(), // 8
-			et_esc_previously( $top ), // 9
-			et_esc_previously( $bottom ) // 10
+			et_core_esc_previously( $top ), // 9
+			et_core_esc_previously( $bottom ) // 10
 		);
 
 		if ( 'on' === $specialty ) {
@@ -918,11 +1065,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		 */
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 		$style = $boxShadow->get_value( $this->props );
-
-		self::set_style( $function_name, array(
-			'selector'    => '%%order_class%%',
-			'declaration' => $style,
-		) );
+		$hover_style = $boxShadow->get_value( $this->props, array( 'hover' => true ) );
 
 		if ( ! empty( $style ) && 'none' !== $style && false === strpos( $style, 'inset' ) ) {
 			// Make section z-index higher if it has outer box shadow #4762
@@ -931,6 +1074,16 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'declaration' => 'z-index: 10;'
 			) );
 		}
+
+		if ( ! empty( $hover_style ) && 'none' !== $hover_style && false === strpos( $hover_style, 'inset' ) ) {
+			// Make section z-index higher if it has outer box shadow #4762
+			self::set_style( $function_name, array(
+				'selector'    => '%%order_class%%:hover',
+				'declaration' => 'z-index: 10;'
+			) );
+		}
+
+		parent::process_box_shadow( $function_name );
 	}
 
 	private function _keep_box_shadow_compatibility( $function_name ) {
@@ -980,6 +1133,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'options' => array(
 					'background_color' => array(
 						'default' => '',
+						'hover' => 'tabs',
 					),
 					'allow_player_pause' => array(
 						'default_on_front' => 'off',
@@ -1035,6 +1189,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 							'column_5' => array( 'name' => esc_html__( 'Column 5', 'et_builder' ) ),
 							'column_6' => array( 'name' => esc_html__( 'Column 6', 'et_builder' ) ),
 						),
+						'priority' => 80,
 					),
 				),
 			),
@@ -1167,6 +1322,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'description'         => esc_html__( 'Define custom width for this Row', 'et_builder' ),
 				'tab_slug'            => 'advanced',
 				'toggle_slug'         => 'width',
+				'hover'               => 'tabs',
 			),
 			'custom_width_percent' => array(
 				'default'         => '80%',
@@ -1184,6 +1340,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'description'     => esc_html__( 'Define custom width for this Row', 'et_builder' ),
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'width',
+				'hover'           => 'tabs',
 			),
 			'use_custom_gutter' => array(
 				'label'             => esc_html__( 'Use Custom Gutter Width', 'et_builder' ),
@@ -1217,6 +1374,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'tab_slug'         => 'advanced',
 				'toggle_slug'      => 'width',
 				'default_on_front' => et_get_option( 'gutter_width', 3 ),
+				'hover'            => 'tabs',
 			),
 			'custom_padding' => array(
 				'label'           => esc_html__( 'Custom Padding', 'et_builder' ),
@@ -1226,6 +1384,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'description'     => esc_html__( 'Adjust padding to specific values, or leave blank to use the default padding.', 'et_builder' ),
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'margin_padding',
+				'hover'           => 'tabs',
 			),
 			'custom_padding_tablet' => array(
 				'type'        => 'skip',
@@ -1251,6 +1410,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'type'            => 'custom_margin',
 				'option_category' => 'layout',
 				'tab_slug'        => 'advanced',
+				'hover'           => 'tabs',
 				'toggle_slug'     => 'margin_padding',
 			),
 			'make_equal' => array(
@@ -1417,142 +1577,181 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		return array_merge( $fields, $column_fields );
 	}
 
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['custom_width_px'] = array( 'max-width' => '%%order_class%%' );
+		$fields['custom_width_percent'] = array(
+			'max-width' => '%%order_class%%',
+			'width'     => '%%order_class%%',
+		);
+
+		for ( $i = 1; $i <= 6; $i ++ ) {
+			$selector = "%%order_class%% > .et_pb_column:nth-child({$i})";
+			$fields["background_color_{$i}"] = array( 'background-color' => $selector );
+			$fields["padding_{$i}"] = array( 'padding' => $selector );
+		}
+
+		return $fields;
+	}
+
 	function render( $atts, $content = null, $function_name ) {
-		$custom_padding          = $this->props['custom_padding'];
-		$custom_padding_tablet   = $this->props['custom_padding_tablet'];
-		$custom_padding_phone    = $this->props['custom_padding_phone'];
-		$custom_padding_last_edited = $this->props['custom_padding_last_edited'];
-		$column_padding_mobile   = $this->props['column_padding_mobile'];
-		$make_fullwidth          = $this->props['make_fullwidth'];
-		$make_equal              = $this->props['make_equal'];
-		$background_color_1      = $this->props['background_color_1'];
-		$background_color_2      = $this->props['background_color_2'];
-		$background_color_3      = $this->props['background_color_3'];
-		$background_color_4      = $this->props['background_color_4'];
-		$background_color_5      = $this->props['background_color_5'];
-		$background_color_6      = $this->props['background_color_6'];
-		$bg_img_1                = $this->props['bg_img_1'];
-		$bg_img_2                = $this->props['bg_img_2'];
-		$bg_img_3                = $this->props['bg_img_3'];
-		$bg_img_4                = $this->props['bg_img_4'];
-		$bg_img_5                = $this->props['bg_img_5'];
-		$bg_img_6                = $this->props['bg_img_6'];
-		$background_size_1       = $this->props['background_size_1'];
-		$background_size_2       = $this->props['background_size_2'];
-		$background_size_3       = $this->props['background_size_3'];
-		$background_size_4       = $this->props['background_size_4'];
-		$background_size_5       = $this->props['background_size_5'];
-		$background_size_6       = $this->props['background_size_6'];
-		$background_position_1   = $this->props['background_position_1'];
-		$background_position_2   = $this->props['background_position_2'];
-		$background_position_3   = $this->props['background_position_3'];
-		$background_position_4   = $this->props['background_position_4'];
-		$background_position_5   = $this->props['background_position_5'];
-		$background_position_6   = $this->props['background_position_6'];
-		$background_repeat_1     = $this->props['background_repeat_1'];
-		$background_repeat_2     = $this->props['background_repeat_2'];
-		$background_repeat_3     = $this->props['background_repeat_3'];
-		$background_repeat_4     = $this->props['background_repeat_4'];
-		$background_repeat_5     = $this->props['background_repeat_5'];
-		$background_repeat_6     = $this->props['background_repeat_6'];
-		$background_blend_1      = $this->props['background_blend_1'];
-		$background_blend_2      = $this->props['background_blend_2'];
-		$background_blend_3      = $this->props['background_blend_3'];
-		$background_blend_4      = $this->props['background_blend_4'];
-		$background_blend_5      = $this->props['background_blend_5'];
-		$background_blend_6      = $this->props['background_blend_6'];
-		$padding_top_1           = $this->props['padding_top_1'];
-		$padding_right_1         = $this->props['padding_right_1'];
-		$padding_bottom_1        = $this->props['padding_bottom_1'];
-		$padding_left_1          = $this->props['padding_left_1'];
-		$padding_top_2           = $this->props['padding_top_2'];
-		$padding_right_2         = $this->props['padding_right_2'];
-		$padding_bottom_2        = $this->props['padding_bottom_2'];
-		$padding_left_2          = $this->props['padding_left_2'];
-		$padding_top_3           = $this->props['padding_top_3'];
-		$padding_right_3         = $this->props['padding_right_3'];
-		$padding_bottom_3        = $this->props['padding_bottom_3'];
-		$padding_left_3          = $this->props['padding_left_3'];
-		$padding_top_4           = $this->props['padding_top_4'];
-		$padding_right_4         = $this->props['padding_right_4'];
-		$padding_bottom_4        = $this->props['padding_bottom_4'];
-		$padding_left_4          = $this->props['padding_left_4'];
-		$padding_top_5           = $this->props['padding_top_5'];
-		$padding_right_5         = $this->props['padding_right_5'];
-		$padding_bottom_5        = $this->props['padding_bottom_5'];
-		$padding_left_5          = $this->props['padding_left_5'];
-		$padding_top_6           = $this->props['padding_top_6'];
-		$padding_right_6         = $this->props['padding_right_6'];
-		$padding_bottom_6        = $this->props['padding_bottom_6'];
-		$padding_left_6          = $this->props['padding_left_6'];
-		$padding_1_tablet        = $this->props['padding_1_tablet'];
-		$padding_2_tablet        = $this->props['padding_2_tablet'];
-		$padding_3_tablet        = $this->props['padding_3_tablet'];
-		$padding_4_tablet        = $this->props['padding_4_tablet'];
-		$padding_5_tablet        = $this->props['padding_5_tablet'];
-		$padding_6_tablet        = $this->props['padding_6_tablet'];
-		$padding_1_phone         = $this->props['padding_1_phone'];
-		$padding_2_phone         = $this->props['padding_2_phone'];
-		$padding_3_phone         = $this->props['padding_3_phone'];
-		$padding_4_phone         = $this->props['padding_4_phone'];
-		$padding_5_phone         = $this->props['padding_5_phone'];
-		$padding_6_phone         = $this->props['padding_6_phone'];
-		$padding_1_last_edited   = $this->props['padding_1_last_edited'];
-		$padding_2_last_edited   = $this->props['padding_2_last_edited'];
-		$padding_3_last_edited   = $this->props['padding_3_last_edited'];
-		$padding_4_last_edited   = $this->props['padding_4_last_edited'];
-		$padding_5_last_edited   = $this->props['padding_5_last_edited'];
-		$padding_6_last_edited   = $this->props['padding_6_last_edited'];
-		$padding_mobile          = $this->props['padding_mobile'];
-		$gutter_width            = $this->props['gutter_width'];
-		$use_custom_width        = $this->props['use_custom_width'];
-		$custom_width_px         = $this->props['custom_width_px'];
-		$custom_width_percent    = $this->props['custom_width_percent'];
-		$width_unit              = $this->props['width_unit'];
-		$global_module           = $this->props['global_module'];
-		$use_custom_gutter       = $this->props['use_custom_gutter'];
-		$parallax_1              = $this->props['parallax_1'];
-		$parallax_method_1       = $this->props['parallax_method_1'];
-		$parallax_2              = $this->props['parallax_2'];
-		$parallax_method_2       = $this->props['parallax_method_2'];
-		$parallax_3              = $this->props['parallax_3'];
-		$parallax_method_3       = $this->props['parallax_method_3'];
-		$parallax_4              = $this->props['parallax_4'];
-		$parallax_5              = $this->props['parallax_5'];
-		$parallax_6              = $this->props['parallax_6'];
-		$parallax_method_4       = $this->props['parallax_method_4'];
-		$parallax_method_5       = $this->props['parallax_method_5'];
-		$parallax_method_6       = $this->props['parallax_method_6'];
-		$module_id_1             = $this->props['module_id_1'];
-		$module_id_2             = $this->props['module_id_2'];
-		$module_id_3             = $this->props['module_id_3'];
-		$module_id_4             = $this->props['module_id_4'];
-		$module_id_5             = $this->props['module_id_5'];
-		$module_id_6             = $this->props['module_id_6'];
-		$module_class_1          = $this->props['module_class_1'];
-		$module_class_2          = $this->props['module_class_2'];
-		$module_class_3          = $this->props['module_class_3'];
-		$module_class_4          = $this->props['module_class_4'];
-		$module_class_5          = $this->props['module_class_5'];
-		$module_class_6          = $this->props['module_class_6'];
-		$custom_css_before_1     = $this->props['custom_css_before_1'];
-		$custom_css_before_2     = $this->props['custom_css_before_2'];
-		$custom_css_before_3     = $this->props['custom_css_before_3'];
-		$custom_css_before_4     = $this->props['custom_css_before_4'];
-		$custom_css_before_5     = $this->props['custom_css_before_5'];
-		$custom_css_before_6     = $this->props['custom_css_before_6'];
-		$custom_css_main_1       = $this->props['custom_css_main_1'];
-		$custom_css_main_2       = $this->props['custom_css_main_2'];
-		$custom_css_main_3       = $this->props['custom_css_main_3'];
-		$custom_css_main_4       = $this->props['custom_css_main_4'];
-		$custom_css_main_5       = $this->props['custom_css_main_5'];
-		$custom_css_main_6       = $this->props['custom_css_main_6'];
-		$custom_css_after_1      = $this->props['custom_css_after_1'];
-		$custom_css_after_2      = $this->props['custom_css_after_2'];
-		$custom_css_after_3      = $this->props['custom_css_after_3'];
-		$custom_css_after_4      = $this->props['custom_css_after_4'];
-		$custom_css_after_5      = $this->props['custom_css_after_5'];
-		$custom_css_after_6      = $this->props['custom_css_after_6'];
+		$custom_padding                               = $this->props['custom_padding'];
+		$custom_padding_tablet                        = $this->props['custom_padding_tablet'];
+		$custom_padding_phone                         = $this->props['custom_padding_phone'];
+		$custom_padding_last_edited                   = $this->props['custom_padding_last_edited'];
+		$column_padding_mobile                        = $this->props['column_padding_mobile'];
+		$make_fullwidth                               = $this->props['make_fullwidth'];
+		$make_equal                                   = $this->props['make_equal'];
+		$background_color_1                           = $this->props['background_color_1'];
+		$background_color_2                           = $this->props['background_color_2'];
+		$background_color_3                           = $this->props['background_color_3'];
+		$background_color_4                           = $this->props['background_color_4'];
+		$background_color_5                           = $this->props['background_color_5'];
+		$background_color_6                           = $this->props['background_color_6'];
+		$bg_img_1                                     = $this->props['bg_img_1'];
+		$bg_img_2                                     = $this->props['bg_img_2'];
+		$bg_img_3                                     = $this->props['bg_img_3'];
+		$bg_img_4                                     = $this->props['bg_img_4'];
+		$bg_img_5                                     = $this->props['bg_img_5'];
+		$bg_img_6                                     = $this->props['bg_img_6'];
+		$background_size_1                            = $this->props['background_size_1'];
+		$background_size_2                            = $this->props['background_size_2'];
+		$background_size_3                            = $this->props['background_size_3'];
+		$background_size_4                            = $this->props['background_size_4'];
+		$background_size_5                            = $this->props['background_size_5'];
+		$background_size_6                            = $this->props['background_size_6'];
+		$background_position_1                        = $this->props['background_position_1'];
+		$background_position_2                        = $this->props['background_position_2'];
+		$background_position_3                        = $this->props['background_position_3'];
+		$background_position_4                        = $this->props['background_position_4'];
+		$background_position_5                        = $this->props['background_position_5'];
+		$background_position_6                        = $this->props['background_position_6'];
+		$background_repeat_1                          = $this->props['background_repeat_1'];
+		$background_repeat_2                          = $this->props['background_repeat_2'];
+		$background_repeat_3                          = $this->props['background_repeat_3'];
+		$background_repeat_4                          = $this->props['background_repeat_4'];
+		$background_repeat_5                          = $this->props['background_repeat_5'];
+		$background_repeat_6                          = $this->props['background_repeat_6'];
+		$background_blend_1                           = $this->props['background_blend_1'];
+		$background_blend_2                           = $this->props['background_blend_2'];
+		$background_blend_3                           = $this->props['background_blend_3'];
+		$background_blend_4                           = $this->props['background_blend_4'];
+		$background_blend_5                           = $this->props['background_blend_5'];
+		$background_blend_6                           = $this->props['background_blend_6'];
+		$padding_top_1                                = $this->props['padding_top_1'];
+		$padding_right_1                              = $this->props['padding_right_1'];
+		$padding_bottom_1                             = $this->props['padding_bottom_1'];
+		$padding_left_1                               = $this->props['padding_left_1'];
+		$padding_top_2                                = $this->props['padding_top_2'];
+		$padding_right_2                              = $this->props['padding_right_2'];
+		$padding_bottom_2                             = $this->props['padding_bottom_2'];
+		$padding_left_2                               = $this->props['padding_left_2'];
+		$padding_top_3                                = $this->props['padding_top_3'];
+		$padding_right_3                              = $this->props['padding_right_3'];
+		$padding_bottom_3                             = $this->props['padding_bottom_3'];
+		$padding_left_3                               = $this->props['padding_left_3'];
+		$padding_top_4                                = $this->props['padding_top_4'];
+		$padding_right_4                              = $this->props['padding_right_4'];
+		$padding_bottom_4                             = $this->props['padding_bottom_4'];
+		$padding_left_4                               = $this->props['padding_left_4'];
+		$padding_top_5                                = $this->props['padding_top_5'];
+		$padding_right_5                              = $this->props['padding_right_5'];
+		$padding_bottom_5                             = $this->props['padding_bottom_5'];
+		$padding_left_5                               = $this->props['padding_left_5'];
+		$padding_top_6                                = $this->props['padding_top_6'];
+		$padding_right_6                              = $this->props['padding_right_6'];
+		$padding_bottom_6                             = $this->props['padding_bottom_6'];
+		$padding_left_6                               = $this->props['padding_left_6'];
+		$padding_1_tablet                             = $this->props['padding_1_tablet'];
+		$padding_2_tablet                             = $this->props['padding_2_tablet'];
+		$padding_3_tablet                             = $this->props['padding_3_tablet'];
+		$padding_4_tablet                             = $this->props['padding_4_tablet'];
+		$padding_5_tablet                             = $this->props['padding_5_tablet'];
+		$padding_6_tablet                             = $this->props['padding_6_tablet'];
+		$padding_1_phone                              = $this->props['padding_1_phone'];
+		$padding_2_phone                              = $this->props['padding_2_phone'];
+		$padding_3_phone                              = $this->props['padding_3_phone'];
+		$padding_4_phone                              = $this->props['padding_4_phone'];
+		$padding_5_phone                              = $this->props['padding_5_phone'];
+		$padding_6_phone                              = $this->props['padding_6_phone'];
+		$padding_1_last_edited                        = $this->props['padding_1_last_edited'];
+		$padding_2_last_edited                        = $this->props['padding_2_last_edited'];
+		$padding_3_last_edited                        = $this->props['padding_3_last_edited'];
+		$padding_4_last_edited                        = $this->props['padding_4_last_edited'];
+		$padding_5_last_edited                        = $this->props['padding_5_last_edited'];
+		$padding_6_last_edited                        = $this->props['padding_6_last_edited'];
+		$padding_mobile                               = $this->props['padding_mobile'];
+		$gutter_width                                 = $this->props['gutter_width'];
+		$gutter_width_hover                           = $this->get_hover_value( 'gutter_width' );
+		$use_custom_width                             = $this->props['use_custom_width'];
+		$custom_width_px                              = $this->props['custom_width_px'];
+		$custom_width_px_hover                        = et_pb_hover_options()->get_value( 'custom_width_px', $this->props, $custom_width_px );
+		$custom_width_percent                         = $this->props['custom_width_percent'];
+		$custom_width_percent_hover                   = et_pb_hover_options()->get_value( 'custom_width_percent', $this->props, $custom_width_percent );
+		$width_unit                                   = $this->props['width_unit'];
+		$global_module                                = $this->props['global_module'];
+		$use_custom_gutter                            = $this->props['use_custom_gutter'];
+		$parallax_1                                   = $this->props['parallax_1'];
+		$parallax_method_1                            = $this->props['parallax_method_1'];
+		$parallax_2                                   = $this->props['parallax_2'];
+		$parallax_method_2                            = $this->props['parallax_method_2'];
+		$parallax_3                                   = $this->props['parallax_3'];
+		$parallax_method_3                            = $this->props['parallax_method_3'];
+		$parallax_4                                   = $this->props['parallax_4'];
+		$parallax_5                                   = $this->props['parallax_5'];
+		$parallax_6                                   = $this->props['parallax_6'];
+		$parallax_method_4                            = $this->props['parallax_method_4'];
+		$parallax_method_5                            = $this->props['parallax_method_5'];
+		$parallax_method_6                            = $this->props['parallax_method_6'];
+		$module_id_1                                  = $this->props['module_id_1'];
+		$module_id_2                                  = $this->props['module_id_2'];
+		$module_id_3                                  = $this->props['module_id_3'];
+		$module_id_4                                  = $this->props['module_id_4'];
+		$module_id_5                                  = $this->props['module_id_5'];
+		$module_id_6                                  = $this->props['module_id_6'];
+		$module_class_1                               = $this->props['module_class_1'];
+		$module_class_2                               = $this->props['module_class_2'];
+		$module_class_3                               = $this->props['module_class_3'];
+		$module_class_4                               = $this->props['module_class_4'];
+		$module_class_5                               = $this->props['module_class_5'];
+		$module_class_6                               = $this->props['module_class_6'];
+		$custom_css_before_1                          = $this->props['custom_css_before_1'];
+		$custom_css_before_2                          = $this->props['custom_css_before_2'];
+		$custom_css_before_3                          = $this->props['custom_css_before_3'];
+		$custom_css_before_4                          = $this->props['custom_css_before_4'];
+		$custom_css_before_5                          = $this->props['custom_css_before_5'];
+		$custom_css_before_6                          = $this->props['custom_css_before_6'];
+		$custom_css_main_1                            = $this->props['custom_css_main_1'];
+		$custom_css_main_2                            = $this->props['custom_css_main_2'];
+		$custom_css_main_3                            = $this->props['custom_css_main_3'];
+		$custom_css_main_4                            = $this->props['custom_css_main_4'];
+		$custom_css_main_5                            = $this->props['custom_css_main_5'];
+		$custom_css_main_6                            = $this->props['custom_css_main_6'];
+		$custom_css_after_1                           = $this->props['custom_css_after_1'];
+		$custom_css_after_2                           = $this->props['custom_css_after_2'];
+		$custom_css_after_3                           = $this->props['custom_css_after_3'];
+		$custom_css_after_4                           = $this->props['custom_css_after_4'];
+		$custom_css_after_5                           = $this->props['custom_css_after_5'];
+		$custom_css_after_6                           = $this->props['custom_css_after_6'];
+		$custom_css_before_1_hover                    = $this->get_hover_value( 'custom_css_before_1' );
+		$custom_css_before_2_hover                    = $this->get_hover_value( 'custom_css_before_2' );
+		$custom_css_before_3_hover                    = $this->get_hover_value( 'custom_css_before_3' );
+		$custom_css_before_4_hover                    = $this->get_hover_value( 'custom_css_before_4' );
+		$custom_css_before_5_hover                    = $this->get_hover_value( 'custom_css_before_5' );
+		$custom_css_before_6_hover                    = $this->get_hover_value( 'custom_css_before_6' );
+		$custom_css_main_1_hover                      = $this->get_hover_value( 'custom_css_main_1' );
+		$custom_css_main_2_hover                      = $this->get_hover_value( 'custom_css_main_2' );
+		$custom_css_main_3_hover                      = $this->get_hover_value( 'custom_css_main_3' );
+		$custom_css_main_4_hover                      = $this->get_hover_value( 'custom_css_main_4' );
+		$custom_css_main_5_hover                      = $this->get_hover_value( 'custom_css_main_5' );
+		$custom_css_main_6_hover                      = $this->get_hover_value( 'custom_css_main_6' );
+		$custom_css_after_1_hover                     = $this->get_hover_value( 'custom_css_after_1' );
+		$custom_css_after_2_hover                     = $this->get_hover_value( 'custom_css_after_2' );
+		$custom_css_after_3_hover                     = $this->get_hover_value( 'custom_css_after_3' );
+		$custom_css_after_4_hover                     = $this->get_hover_value( 'custom_css_after_4' );
+		$custom_css_after_5_hover                     = $this->get_hover_value( 'custom_css_after_5' );
+		$custom_css_after_6_hover                     = $this->get_hover_value( 'custom_css_after_6' );
 		$use_background_color_gradient_1              = $this->props['use_background_color_gradient_1'];
 		$use_background_color_gradient_2              = $this->props['use_background_color_gradient_2'];
 		$use_background_color_gradient_3              = $this->props['use_background_color_gradient_3'];
@@ -1607,42 +1806,44 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$background_color_gradient_overlays_image_4   = $this->props['background_color_gradient_overlays_image_4'];
 		$background_color_gradient_overlays_image_5   = $this->props['background_color_gradient_overlays_image_5'];
 		$background_color_gradient_overlays_image_6   = $this->props['background_color_gradient_overlays_image_6'];
-		$background_video_mp4_1     = $this->props['background_video_mp4_1'];
-		$background_video_mp4_2     = $this->props['background_video_mp4_2'];
-		$background_video_mp4_3     = $this->props['background_video_mp4_3'];
-		$background_video_mp4_4     = $this->props['background_video_mp4_4'];
-		$background_video_mp4_5     = $this->props['background_video_mp4_5'];
-		$background_video_mp4_6     = $this->props['background_video_mp4_6'];
-		$background_video_webm_1    = $this->props['background_video_webm_1'];
-		$background_video_webm_2    = $this->props['background_video_webm_2'];
-		$background_video_webm_3    = $this->props['background_video_webm_3'];
-		$background_video_webm_4    = $this->props['background_video_webm_4'];
-		$background_video_webm_5    = $this->props['background_video_webm_5'];
-		$background_video_webm_6    = $this->props['background_video_webm_6'];
-		$background_video_width_1   = $this->props['background_video_width_1'];
-		$background_video_width_2   = $this->props['background_video_width_2'];
-		$background_video_width_3   = $this->props['background_video_width_3'];
-		$background_video_width_4   = $this->props['background_video_width_4'];
-		$background_video_width_5   = $this->props['background_video_width_5'];
-		$background_video_width_6   = $this->props['background_video_width_6'];
-		$background_video_height_1  = $this->props['background_video_height_1'];
-		$background_video_height_2  = $this->props['background_video_height_2'];
-		$background_video_height_3  = $this->props['background_video_height_3'];
-		$background_video_height_4  = $this->props['background_video_height_4'];
-		$background_video_height_5  = $this->props['background_video_height_5'];
-		$background_video_height_6  = $this->props['background_video_height_6'];
-		$allow_player_pause_1       = $this->props['allow_player_pause_1'];
-		$allow_player_pause_2       = $this->props['allow_player_pause_2'];
-		$allow_player_pause_3       = $this->props['allow_player_pause_3'];
-		$allow_player_pause_4       = $this->props['allow_player_pause_4'];
-		$allow_player_pause_5       = $this->props['allow_player_pause_5'];
-		$allow_player_pause_6       = $this->props['allow_player_pause_6'];
-		$background_video_pause_outside_viewport_1 = $this->props['background_video_pause_outside_viewport_1'];
-		$background_video_pause_outside_viewport_2 = $this->props['background_video_pause_outside_viewport_2'];
-		$background_video_pause_outside_viewport_3 = $this->props['background_video_pause_outside_viewport_3'];
-		$background_video_pause_outside_viewport_4 = $this->props['background_video_pause_outside_viewport_4'];
-		$background_video_pause_outside_viewport_5 = $this->props['background_video_pause_outside_viewport_5'];
-		$background_video_pause_outside_viewport_6 = $this->props['background_video_pause_outside_viewport_6'];
+		$background_video_mp4_1                       = $this->props['background_video_mp4_1'];
+		$background_video_mp4_2                       = $this->props['background_video_mp4_2'];
+		$background_video_mp4_3                       = $this->props['background_video_mp4_3'];
+		$background_video_mp4_4                       = $this->props['background_video_mp4_4'];
+		$background_video_mp4_5                       = $this->props['background_video_mp4_5'];
+		$background_video_mp4_6                       = $this->props['background_video_mp4_6'];
+		$background_video_webm_1                      = $this->props['background_video_webm_1'];
+		$background_video_webm_2                      = $this->props['background_video_webm_2'];
+		$background_video_webm_3                      = $this->props['background_video_webm_3'];
+		$background_video_webm_4                      = $this->props['background_video_webm_4'];
+		$background_video_webm_5                      = $this->props['background_video_webm_5'];
+		$background_video_webm_6                      = $this->props['background_video_webm_6'];
+		$background_video_width_1                     = $this->props['background_video_width_1'];
+		$background_video_width_2                     = $this->props['background_video_width_2'];
+		$background_video_width_3                     = $this->props['background_video_width_3'];
+		$background_video_width_4                     = $this->props['background_video_width_4'];
+		$background_video_width_5                     = $this->props['background_video_width_5'];
+		$background_video_width_6                     = $this->props['background_video_width_6'];
+		$background_video_height_1                    = $this->props['background_video_height_1'];
+		$background_video_height_2                    = $this->props['background_video_height_2'];
+		$background_video_height_3                    = $this->props['background_video_height_3'];
+		$background_video_height_4                    = $this->props['background_video_height_4'];
+		$background_video_height_5                    = $this->props['background_video_height_5'];
+		$background_video_height_6                    = $this->props['background_video_height_6'];
+		$allow_player_pause_1                         = $this->props['allow_player_pause_1'];
+		$allow_player_pause_2                         = $this->props['allow_player_pause_2'];
+		$allow_player_pause_3                         = $this->props['allow_player_pause_3'];
+		$allow_player_pause_4                         = $this->props['allow_player_pause_4'];
+		$allow_player_pause_5                         = $this->props['allow_player_pause_5'];
+		$allow_player_pause_6                         = $this->props['allow_player_pause_6'];
+		$background_video_pause_outside_viewport_1    = $this->props['background_video_pause_outside_viewport_1'];
+		$background_video_pause_outside_viewport_2    = $this->props['background_video_pause_outside_viewport_2'];
+		$background_video_pause_outside_viewport_3    = $this->props['background_video_pause_outside_viewport_3'];
+		$background_video_pause_outside_viewport_4    = $this->props['background_video_pause_outside_viewport_4'];
+		$background_video_pause_outside_viewport_5    = $this->props['background_video_pause_outside_viewport_5'];
+		$background_video_pause_outside_viewport_6    = $this->props['background_video_pause_outside_viewport_6'];
+
+		$hover = et_pb_hover_options();
 
 		global $et_pb_all_column_settings, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
 
@@ -1672,56 +1873,79 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 
 		$et_pb_columns_counter = 0;
 
+		// Column hover backgrounds
+		$column_hover_backgrounds = array();
+
+		for ( $i = 0; $i <= 6; $i++ ) {
+			$column_hover_backgrounds = array_merge( $column_hover_backgrounds, array(
+				"column_{$i}_color_hover"         => $hover->get_value( "background_color_{$i}", $this->props ),
+				"column_{$i}_color_hover_enabled" => $hover->is_enabled( "background_color_{$i}", $this->props ),
+			) );
+		}
+
 		$et_pb_column_backgrounds = array(
 			array(
-				'color'          => $background_color_1,
-				'image'          => $bg_img_1,
-				'image_size'     => $background_size_1,
-				'image_position' => $background_position_1,
-				'image_repeat'   => $background_repeat_1,
-				'image_blend'    => $background_blend_1,
+				'color'               => $background_color_1,
+				'color_hover'         => $column_hover_backgrounds['column_1_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_1_color_hover_enabled'],
+				'image'               => $bg_img_1,
+				'image_size'          => $background_size_1,
+				'image_position'      => $background_position_1,
+				'image_repeat'        => $background_repeat_1,
+				'image_blend'         => $background_blend_1,
 			),
 			array(
-				'color'          => $background_color_2,
-				'image'          => $bg_img_2,
-				'image_size'     => $background_size_2,
-				'image_position' => $background_position_2,
-				'image_repeat'   => $background_repeat_2,
-				'image_blend'    => $background_blend_2,
+				'color'               => $background_color_2,
+				'color_hover'         => $column_hover_backgrounds['column_2_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_2_color_hover_enabled'],
+				'image'               => $bg_img_2,
+				'image_size'          => $background_size_2,
+				'image_position'      => $background_position_2,
+				'image_repeat'        => $background_repeat_2,
+				'image_blend'         => $background_blend_2,
 			),
 			array(
-				'color'          => $background_color_3,
-				'image'          => $bg_img_3,
-				'image_size'     => $background_size_3,
-				'image_position' => $background_position_3,
-				'image_repeat'   => $background_repeat_3,
-				'image_blend'    => $background_blend_3,
+				'color'               => $background_color_3,
+				'color_hover'         => $column_hover_backgrounds['column_3_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_3_color_hover_enabled'],
+				'image'               => $bg_img_3,
+				'image_size'          => $background_size_3,
+				'image_position'      => $background_position_3,
+				'image_repeat'        => $background_repeat_3,
+				'image_blend'         => $background_blend_3,
 			),
 			array(
-				'color'          => $background_color_4,
-				'image'          => $bg_img_4,
-				'image_size'     => $background_size_4,
-				'image_position' => $background_position_4,
-				'image_repeat'   => $background_repeat_4,
-				'image_blend'    => $background_blend_4,
+				'color'               => $background_color_4,
+				'color_hover'         => $column_hover_backgrounds['column_4_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_4_color_hover_enabled'],
+				'image'               => $bg_img_4,
+				'image_size'          => $background_size_4,
+				'image_position'      => $background_position_4,
+				'image_repeat'        => $background_repeat_4,
+				'image_blend'         => $background_blend_4,
 			),
 			array(
-				'color'          => $background_color_5,
-				'image'          => $bg_img_5,
-				'image_size'     => $background_size_5,
-				'image_position' => $background_position_5,
-				'image_repeat'   => $background_repeat_5,
-				'image_blend'    => $background_blend_5,
+				'color'               => $background_color_5,
+				'color_hover'         => $column_hover_backgrounds['column_5_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_5_color_hover_enabled'],
+				'image'               => $bg_img_5,
+				'image_size'          => $background_size_5,
+				'image_position'      => $background_position_5,
+				'image_repeat'        => $background_repeat_5,
+				'image_blend'         => $background_blend_5,
 			),
 			array(
-				'color'          => $background_color_6,
-				'image'          => $bg_img_6,
-				'image_size'     => $background_size_6,
-				'image_position' => $background_position_6,
-				'image_repeat'   => $background_repeat_6,
-				'image_blend'    => $background_blend_6,
+				'color'               => $background_color_6,
+				'color_hover'         => $column_hover_backgrounds['column_6_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_6_color_hover_enabled'],
+				'image'               => $bg_img_6,
+				'image_size'          => $background_size_6,
+				'image_position'      => $background_position_6,
+				'image_repeat'        => $background_repeat_6,
+				'image_blend'         => $background_blend_6,
 			),
 		);
+
 
 		$et_pb_column_backgrounds_gradient = array(
 			array(
@@ -1843,42 +2067,85 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			),
 		);
 
+		// Column hover paddings
+		$column_hover_paddings = array();
+
+		for ( $i = 1; $i <= 6; $i++ ) {
+			$column_hover_paddings = array_merge( $column_hover_paddings, array(
+				"column_{$i}_padding_hover_enabled" => $hover->is_enabled( "padding_{$i}", $this->props ),
+				"column_{$i}_padding_top"           => $hover->get_compose_value( "padding_top_{$i}", "padding_{$i}", $this->props ),
+				"column_{$i}_padding_right"         => $hover->get_compose_value( "padding_right_{$i}", "padding_{$i}", $this->props ),
+				"column_{$i}_padding_bottom"        => $hover->get_compose_value( "padding_bottom_{$i}", "padding_{$i}", $this->props ),
+				"column_{$i}_padding_left"          => $hover->get_compose_value( "padding_left_{$i}", "padding_{$i}", $this->props ),
+			) );
+		}
+
 		$et_pb_column_paddings = array(
 			array(
-				'padding-top'    => $padding_top_1,
-				'padding-right'  => $padding_right_1,
-				'padding-bottom' => $padding_bottom_1,
-				'padding-left'   => $padding_left_1,
+				'padding-top'           => $padding_top_1,
+				'padding-right'         => $padding_right_1,
+				'padding-bottom'        => $padding_bottom_1,
+				'padding-left'          => $padding_left_1,
+				'padding-hover-enabled' => $column_hover_paddings['column_1_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_1_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_1_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_1_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_1_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_2,
-				'padding-right'  => $padding_right_2,
-				'padding-bottom' => $padding_bottom_2,
-				'padding-left'   => $padding_left_2,
+				'padding-top'           => $padding_top_2,
+				'padding-right'         => $padding_right_2,
+				'padding-bottom'        => $padding_bottom_2,
+				'padding-left'          => $padding_left_2,
+				'padding-hover-enabled' => $column_hover_paddings['column_2_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_2_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_2_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_2_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_2_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_3,
-				'padding-right'  => $padding_right_3,
-				'padding-bottom' => $padding_bottom_3,
-				'padding-left'   => $padding_left_3,
+				'padding-top'           => $padding_top_3,
+				'padding-right'         => $padding_right_3,
+				'padding-bottom'        => $padding_bottom_3,
+				'padding-left'          => $padding_left_3,
+				'padding-hover-enabled' => $column_hover_paddings['column_3_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_3_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_3_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_3_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_3_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_4,
-				'padding-right'  => $padding_right_4,
-				'padding-bottom' => $padding_bottom_4,
-				'padding-left'   => $padding_left_4,
+				'padding-top'           => $padding_top_4,
+				'padding-right'         => $padding_right_4,
+				'padding-bottom'        => $padding_bottom_4,
+				'padding-left'          => $padding_left_4,
+				'padding-hover-enabled' => $column_hover_paddings['column_4_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_4_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_4_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_4_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_4_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_5,
-				'padding-right'  => $padding_right_5,
-				'padding-bottom' => $padding_bottom_5,
-				'padding-left'   => $padding_left_5,
+				'padding-top'           => $padding_top_5,
+				'padding-right'         => $padding_right_5,
+				'padding-bottom'        => $padding_bottom_5,
+				'padding-left'          => $padding_left_5,
+				'padding-hover-enabled' => $column_hover_paddings['column_5_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_5_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_5_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_5_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_5_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_6,
-				'padding-right'  => $padding_right_6,
-				'padding-bottom' => $padding_bottom_6,
-				'padding-left'   => $padding_left_6,
+				'padding-top'           => $padding_top_6,
+				'padding-right'         => $padding_right_6,
+				'padding-bottom'        => $padding_bottom_6,
+				'padding-left'          => $padding_left_6,
+				'padding-hover-enabled' => $column_hover_paddings['column_6_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_6_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_6_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_6_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_6_padding_left'],
 			),
 		);
 
@@ -1925,11 +2192,14 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		);
 
 		$et_pb_column_css = array(
-			'css_class'         => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4, $module_class_5, $module_class_6 ),
-			'css_id'            => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4, $module_id_5, $module_id_6 ),
-			'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4, $custom_css_before_5, $custom_css_before_6 ),
-			'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4, $custom_css_main_5, $custom_css_main_6 ),
-			'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4, $custom_css_after_5, $custom_css_after_6 ),
+			'css_class'               => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4, $module_class_5, $module_class_6 ),
+			'css_id'                  => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4, $module_id_5, $module_id_6 ),
+			'custom_css_before'       => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4, $custom_css_before_5, $custom_css_before_6 ),
+			'custom_css_main'         => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4, $custom_css_main_5, $custom_css_main_6 ),
+			'custom_css_after'        => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4, $custom_css_after_5, $custom_css_after_6 ),
+			'custom_css_before_hover' => array( $custom_css_before_1_hover, $custom_css_before_2_hover, $custom_css_before_3_hover, $custom_css_before_4_hover, $custom_css_before_5_hover, $custom_css_before_6_hover ),
+			'custom_css_main_hover'   => array( $custom_css_main_1_hover, $custom_css_main_2_hover, $custom_css_main_3_hover, $custom_css_main_4_hover, $custom_css_main_5_hover, $custom_css_main_6_hover ),
+			'custom_css_after_hover'  => array( $custom_css_after_1_hover, $custom_css_after_2_hover, $custom_css_after_3_hover, $custom_css_after_4_hover, $custom_css_after_5_hover, $custom_css_after_6_hover ),
 		);
 
 		$internal_columns_settings_array = array(
@@ -1957,9 +2227,21 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			$this->add_classname( 'et_pb_equal_columns' );
 		}
 
+		$gutter_hover_data = '';
+
 		if ( 'on' === $use_custom_gutter && '' !== $gutter_width ) {
 			$gutter_width = '0' === $gutter_width ? '1' : $gutter_width; // set the gutter width to 1 if 0 entered by user
 			$this->add_classname( 'et_pb_gutters' . $gutter_width );
+
+			if ( et_builder_is_hover_enabled( 'gutter_width', $this->props ) ) {
+				$this->add_classname( 'et_pb_gutter_hover' );
+
+				$gutter_hover_data = sprintf(
+					' data-original_gutter="%1$s" data-hover_gutter="%2$s"',
+					esc_attr($gutter_width),
+					esc_attr($gutter_width_hover)
+				);
+			}
 		}
 
 
@@ -2039,6 +2321,39 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 					'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent ) ) ) : ''
 				),
 			) );
+
+			switch ( $width_unit ) {
+				case 'on':
+					if ( $custom_width_px === $custom_width_px_hover ) {
+						break;
+					}
+
+					ET_Builder_Element::set_style( $function_name, array(
+						'selector'    => '%%order_class%%:hover',
+						'declaration' => sprintf(
+							'max-width:%1$s !important;',
+							esc_attr( sprintf( '%1$spx', intval( $custom_width_px_hover ) ) )
+						),
+					) );
+
+					break;
+				default:
+					if ( $custom_width_percent === $custom_width_percent_hover ) {
+						break;
+					}
+
+					ET_Builder_Element::set_style( $function_name, array(
+						'selector'    => '%%order_class%%:hover',
+						'declaration' => sprintf(
+							'max-width:%1$s !important;
+							%2$s',
+							esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent_hover ) ) ),
+							esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent_hover ) ) )
+						),
+					) );
+
+					break;
+			}
 		}
 
 		$parallax_image = $this->get_parallax_image_background();
@@ -2060,14 +2375,14 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 
 		// Inner content shortcode parsing has to be done after all classname addition/removal
 		$inner_content = do_shortcode( et_pb_fix_shortcodes( $content ) );
-		$content_dependent_classname = '' == trim( $inner_content ) ? ' et_pb_row_empty' : '';
+		$content_dependent_classname = '' === trim( $inner_content ) ? ' et_pb_row_empty' : '';
 
 		// reset the global column settings to make sure they are not affected by internal content
 		// This has to be done after inner content's shortcode being parsed
 		$et_pb_all_column_settings = $et_pb_all_column_settings_backup;
 
 		$output = sprintf(
-			'<div%4$s class="%2$s%7$s">
+			'<div%4$s class="%2$s%7$s"%8$s>
 				%1$s
 				%6$s
 				%5$s
@@ -2078,7 +2393,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			$this->module_id(),
 			$background_video,
 			$parallax_image,
-			$content_dependent_classname
+			$content_dependent_classname,
+			et_core_esc_previously( $gutter_hover_data )
 		);
 
 		return $output;
@@ -2134,6 +2450,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 							'column_3' => esc_html__( 'Column 3', 'et_builder' ),
 							'column_4' => esc_html__( 'Column 4', 'et_builder' ),
 						),
+						'priority' => 80,
 					),
 				),
 			),
@@ -2200,6 +2517,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'description'     => esc_html__( 'Adjust padding to specific values, or leave blank to use the default padding.', 'et_builder' ),
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'margin_padding',
+				'hover'           => 'tabs',
 			),
 			'custom_padding_tablet' => array(
 				'type'        => 'skip',
@@ -2249,6 +2567,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'tab_slug'         => 'advanced',
 				'toggle_slug'      => 'width',
 				'default_on_front' => et_get_option( 'gutter_width', 3 ),
+				'hover'            => 'tabs',
 			),
 			'make_equal' => array(
 				'label'             => esc_html__( 'Equalize Column Heights', 'et_builder' ),
@@ -2399,97 +2718,124 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		return array_merge( $fields, $column_fields );
 	}
 
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['custom_width_px'] = array( 'max-width' => '%%order_class%%' );
+
+		for ( $i = 1; $i <= 6; $i ++ ) {
+			$selector = "%%order_class%% > .et_pb_column:nth-child({$i})";
+			$fields["background_color_{$i}"] = array( 'background-color' => $selector );
+			$fields["padding_{$i}"] = array( 'padding' => $selector );
+		}
+
+		return $fields;
+	}
+
 	function render( $atts, $content = null, $function_name ) {
-		$background_color_1      = $this->props['background_color_1'];
-		$background_color_2      = $this->props['background_color_2'];
-		$background_color_3      = $this->props['background_color_3'];
-		$background_color_4      = $this->props['background_color_4'];
-		$bg_img_1                = $this->props['bg_img_1'];
-		$bg_img_2                = $this->props['bg_img_2'];
-		$bg_img_3                = $this->props['bg_img_3'];
-		$bg_img_4                = $this->props['bg_img_4'];
-		$background_size_1       = $this->props['background_size_1'];
-		$background_size_2       = $this->props['background_size_2'];
-		$background_size_3       = $this->props['background_size_3'];
-		$background_size_4       = $this->props['background_size_4'];
-		$background_position_1   = $this->props['background_position_1'];
-		$background_position_2   = $this->props['background_position_2'];
-		$background_position_3   = $this->props['background_position_3'];
-		$background_position_4   = $this->props['background_position_4'];
-		$background_repeat_1     = $this->props['background_repeat_1'];
-		$background_repeat_2     = $this->props['background_repeat_2'];
-		$background_repeat_3     = $this->props['background_repeat_3'];
-		$background_repeat_4     = $this->props['background_repeat_4'];
-		$background_blend_1      = $this->props['background_blend_1'];
-		$background_blend_2      = $this->props['background_blend_2'];
-		$background_blend_3      = $this->props['background_blend_3'];
-		$background_blend_4      = $this->props['background_blend_4'];
-		$padding_top_1           = $this->props['padding_top_1'];
-		$padding_right_1         = $this->props['padding_right_1'];
-		$padding_bottom_1        = $this->props['padding_bottom_1'];
-		$padding_left_1          = $this->props['padding_left_1'];
-		$padding_top_2           = $this->props['padding_top_2'];
-		$padding_right_2         = $this->props['padding_right_2'];
-		$padding_bottom_2        = $this->props['padding_bottom_2'];
-		$padding_left_2          = $this->props['padding_left_2'];
-		$padding_top_3           = $this->props['padding_top_3'];
-		$padding_top_4           = $this->props['padding_top_4'];
-		$padding_right_3         = $this->props['padding_right_3'];
-		$padding_right_4         = $this->props['padding_right_4'];
-		$padding_bottom_3        = $this->props['padding_bottom_3'];
-		$padding_bottom_4        = $this->props['padding_bottom_4'];
-		$padding_left_3          = $this->props['padding_left_3'];
-		$padding_left_4          = $this->props['padding_left_4'];
-		$padding_1_tablet        = $this->props['padding_1_tablet'];
-		$padding_2_tablet        = $this->props['padding_2_tablet'];
-		$padding_3_tablet        = $this->props['padding_3_tablet'];
-		$padding_4_tablet        = $this->props['padding_4_tablet'];
-		$padding_1_phone         = $this->props['padding_1_phone'];
-		$padding_2_phone         = $this->props['padding_2_phone'];
-		$padding_3_phone         = $this->props['padding_3_phone'];
-		$padding_4_phone         = $this->props['padding_4_phone'];
-		$padding_1_last_edited   = $this->props['padding_1_last_edited'];
-		$padding_2_last_edited   = $this->props['padding_2_last_edited'];
-		$padding_3_last_edited   = $this->props['padding_3_last_edited'];
-		$padding_4_last_edited   = $this->props['padding_4_last_edited'];
-		$gutter_width            = $this->props['gutter_width'];
-		$make_equal              = $this->props['make_equal'];
-		$custom_padding          = $this->props['custom_padding'];
-		$padding_mobile          = $this->props['padding_mobile'];
-		$custom_padding_tablet   = $this->props['custom_padding_tablet'];
-		$custom_padding_phone    = $this->props['custom_padding_phone'];
-		$custom_padding_last_edited = $this->props['custom_padding_last_edited'];
-		$column_padding_mobile   = $this->props['column_padding_mobile'];
-		$global_module           = $this->props['global_module'];
-		$use_custom_gutter       = $this->props['use_custom_gutter'];
-		$parallax_1              = $this->props['parallax_1'];
-		$parallax_method_1       = $this->props['parallax_method_1'];
-		$parallax_2              = $this->props['parallax_2'];
-		$parallax_method_2       = $this->props['parallax_method_2'];
-		$parallax_3              = $this->props['parallax_3'];
-		$parallax_4              = $this->props['parallax_4'];
-		$parallax_method_3       = $this->props['parallax_method_3'];
-		$parallax_method_4       = $this->props['parallax_method_4'];
-		$module_id_1             = $this->props['module_id_1'];
-		$module_id_2             = $this->props['module_id_2'];
-		$module_id_3             = $this->props['module_id_3'];
-		$module_id_4             = $this->props['module_id_4'];
-		$module_class_1          = $this->props['module_class_1'];
-		$module_class_2          = $this->props['module_class_2'];
-		$module_class_3          = $this->props['module_class_3'];
-		$module_class_4          = $this->props['module_class_4'];
-		$custom_css_before_1     = $this->props['custom_css_before_1'];
-		$custom_css_before_2     = $this->props['custom_css_before_2'];
-		$custom_css_before_3     = $this->props['custom_css_before_3'];
-		$custom_css_before_4     = $this->props['custom_css_before_4'];
-		$custom_css_main_1       = $this->props['custom_css_main_1'];
-		$custom_css_main_2       = $this->props['custom_css_main_2'];
-		$custom_css_main_3       = $this->props['custom_css_main_3'];
-		$custom_css_main_4       = $this->props['custom_css_main_4'];
-		$custom_css_after_1      = $this->props['custom_css_after_1'];
-		$custom_css_after_2      = $this->props['custom_css_after_2'];
-		$custom_css_after_3      = $this->props['custom_css_after_3'];
-		$custom_css_after_4      = $this->props['custom_css_after_4'];
+		$background_color_1                           = $this->props['background_color_1'];
+		$background_color_2                           = $this->props['background_color_2'];
+		$background_color_3                           = $this->props['background_color_3'];
+		$background_color_4                           = $this->props['background_color_4'];
+		$bg_img_1                                     = $this->props['bg_img_1'];
+		$bg_img_2                                     = $this->props['bg_img_2'];
+		$bg_img_3                                     = $this->props['bg_img_3'];
+		$bg_img_4                                     = $this->props['bg_img_4'];
+		$background_size_1                            = $this->props['background_size_1'];
+		$background_size_2                            = $this->props['background_size_2'];
+		$background_size_3                            = $this->props['background_size_3'];
+		$background_size_4                            = $this->props['background_size_4'];
+		$background_position_1                        = $this->props['background_position_1'];
+		$background_position_2                        = $this->props['background_position_2'];
+		$background_position_3                        = $this->props['background_position_3'];
+		$background_position_4                        = $this->props['background_position_4'];
+		$background_repeat_1                          = $this->props['background_repeat_1'];
+		$background_repeat_2                          = $this->props['background_repeat_2'];
+		$background_repeat_3                          = $this->props['background_repeat_3'];
+		$background_repeat_4                          = $this->props['background_repeat_4'];
+		$background_blend_1                           = $this->props['background_blend_1'];
+		$background_blend_2                           = $this->props['background_blend_2'];
+		$background_blend_3                           = $this->props['background_blend_3'];
+		$background_blend_4                           = $this->props['background_blend_4'];
+		$padding_top_1                                = $this->props['padding_top_1'];
+		$padding_right_1                              = $this->props['padding_right_1'];
+		$padding_bottom_1                             = $this->props['padding_bottom_1'];
+		$padding_left_1                               = $this->props['padding_left_1'];
+		$padding_top_2                                = $this->props['padding_top_2'];
+		$padding_right_2                              = $this->props['padding_right_2'];
+		$padding_bottom_2                             = $this->props['padding_bottom_2'];
+		$padding_left_2                               = $this->props['padding_left_2'];
+		$padding_top_3                                = $this->props['padding_top_3'];
+		$padding_top_4                                = $this->props['padding_top_4'];
+		$padding_right_3                              = $this->props['padding_right_3'];
+		$padding_right_4                              = $this->props['padding_right_4'];
+		$padding_bottom_3                             = $this->props['padding_bottom_3'];
+		$padding_bottom_4                             = $this->props['padding_bottom_4'];
+		$padding_left_3                               = $this->props['padding_left_3'];
+		$padding_left_4                               = $this->props['padding_left_4'];
+		$padding_1_tablet                             = $this->props['padding_1_tablet'];
+		$padding_2_tablet                             = $this->props['padding_2_tablet'];
+		$padding_3_tablet                             = $this->props['padding_3_tablet'];
+		$padding_4_tablet                             = $this->props['padding_4_tablet'];
+		$padding_1_phone                              = $this->props['padding_1_phone'];
+		$padding_2_phone                              = $this->props['padding_2_phone'];
+		$padding_3_phone                              = $this->props['padding_3_phone'];
+		$padding_4_phone                              = $this->props['padding_4_phone'];
+		$padding_1_last_edited                        = $this->props['padding_1_last_edited'];
+		$padding_2_last_edited                        = $this->props['padding_2_last_edited'];
+		$padding_3_last_edited                        = $this->props['padding_3_last_edited'];
+		$padding_4_last_edited                        = $this->props['padding_4_last_edited'];
+		$gutter_width                                 = $this->props['gutter_width'];
+		$gutter_width_hover                           = $this->get_hover_value( 'gutter_width' );
+		$make_equal                                   = $this->props['make_equal'];
+		$custom_padding                               = $this->props['custom_padding'];
+		$padding_mobile                               = $this->props['padding_mobile'];
+		$custom_padding_tablet                        = $this->props['custom_padding_tablet'];
+		$custom_padding_phone                         = $this->props['custom_padding_phone'];
+		$custom_padding_last_edited                   = $this->props['custom_padding_last_edited'];
+		$column_padding_mobile                        = $this->props['column_padding_mobile'];
+		$global_module                                = $this->props['global_module'];
+		$use_custom_gutter                            = $this->props['use_custom_gutter'];
+		$parallax_1                                   = $this->props['parallax_1'];
+		$parallax_method_1                            = $this->props['parallax_method_1'];
+		$parallax_2                                   = $this->props['parallax_2'];
+		$parallax_method_2                            = $this->props['parallax_method_2'];
+		$parallax_3                                   = $this->props['parallax_3'];
+		$parallax_4                                   = $this->props['parallax_4'];
+		$parallax_method_3                            = $this->props['parallax_method_3'];
+		$parallax_method_4                            = $this->props['parallax_method_4'];
+		$module_id_1                                  = $this->props['module_id_1'];
+		$module_id_2                                  = $this->props['module_id_2'];
+		$module_id_3                                  = $this->props['module_id_3'];
+		$module_id_4                                  = $this->props['module_id_4'];
+		$module_class_1                               = $this->props['module_class_1'];
+		$module_class_2                               = $this->props['module_class_2'];
+		$module_class_3                               = $this->props['module_class_3'];
+		$module_class_4                               = $this->props['module_class_4'];
+		$custom_css_before_1                          = $this->props['custom_css_before_1'];
+		$custom_css_before_2                          = $this->props['custom_css_before_2'];
+		$custom_css_before_3                          = $this->props['custom_css_before_3'];
+		$custom_css_before_4                          = $this->props['custom_css_before_4'];
+		$custom_css_main_1                            = $this->props['custom_css_main_1'];
+		$custom_css_main_2                            = $this->props['custom_css_main_2'];
+		$custom_css_main_3                            = $this->props['custom_css_main_3'];
+		$custom_css_main_4                            = $this->props['custom_css_main_4'];
+		$custom_css_after_1                           = $this->props['custom_css_after_1'];
+		$custom_css_after_2                           = $this->props['custom_css_after_2'];
+		$custom_css_after_3                           = $this->props['custom_css_after_3'];
+		$custom_css_after_4                           = $this->props['custom_css_after_4'];
+		$custom_css_before_1_hover                    = $this->get_hover_value( 'custom_css_before_1');
+		$custom_css_before_2_hover                    = $this->get_hover_value( 'custom_css_before_2');
+		$custom_css_before_3_hover                    = $this->get_hover_value( 'custom_css_before_3');
+		$custom_css_before_4_hover                    = $this->get_hover_value( 'custom_css_before_4');
+		$custom_css_main_1_hover                      = $this->get_hover_value( 'custom_css_main_1');
+		$custom_css_main_2_hover                      = $this->get_hover_value( 'custom_css_main_2');
+		$custom_css_main_3_hover                      = $this->get_hover_value( 'custom_css_main_3');
+		$custom_css_main_4_hover                      = $this->get_hover_value( 'custom_css_main_4');
+		$custom_css_after_1_hover                     = $this->get_hover_value( 'custom_css_after_1');
+		$custom_css_after_2_hover                     = $this->get_hover_value( 'custom_css_after_2');
+		$custom_css_after_3_hover                     = $this->get_hover_value( 'custom_css_after_3');
+		$custom_css_after_4_hover                     = $this->get_hover_value( 'custom_css_after_4');
 		$use_background_color_gradient_1              = $this->props['use_background_color_gradient_1'];
 		$use_background_color_gradient_2              = $this->props['use_background_color_gradient_2'];
 		$use_background_color_gradient_3              = $this->props['use_background_color_gradient_3'];
@@ -2526,30 +2872,32 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$background_color_gradient_overlays_image_2   = $this->props['background_color_gradient_overlays_image_2'];
 		$background_color_gradient_overlays_image_3   = $this->props['background_color_gradient_overlays_image_3'];
 		$background_color_gradient_overlays_image_4   = $this->props['background_color_gradient_overlays_image_4'];
-		$background_video_mp4_1     = $this->props['background_video_mp4_1'];
-		$background_video_mp4_2     = $this->props['background_video_mp4_2'];
-		$background_video_mp4_3     = $this->props['background_video_mp4_3'];
-		$background_video_mp4_4     = $this->props['background_video_mp4_4'];
-		$background_video_webm_1    = $this->props['background_video_webm_1'];
-		$background_video_webm_2    = $this->props['background_video_webm_2'];
-		$background_video_webm_3    = $this->props['background_video_webm_3'];
-		$background_video_webm_4    = $this->props['background_video_webm_4'];
-		$background_video_width_1   = $this->props['background_video_width_1'];
-		$background_video_width_2   = $this->props['background_video_width_2'];
-		$background_video_width_3   = $this->props['background_video_width_3'];
-		$background_video_width_4   = $this->props['background_video_width_4'];
-		$background_video_height_1  = $this->props['background_video_height_1'];
-		$background_video_height_2  = $this->props['background_video_height_2'];
-		$background_video_height_3  = $this->props['background_video_height_3'];
-		$background_video_height_4  = $this->props['background_video_height_4'];
-		$allow_player_pause_1       = $this->props['allow_player_pause_1'];
-		$allow_player_pause_2       = $this->props['allow_player_pause_2'];
-		$allow_player_pause_3       = $this->props['allow_player_pause_3'];
-		$allow_player_pause_4       = $this->props['allow_player_pause_4'];
-		$background_video_pause_outside_viewport_1 = $this->props['background_video_pause_outside_viewport_1'];
-		$background_video_pause_outside_viewport_2 = $this->props['background_video_pause_outside_viewport_2'];
-		$background_video_pause_outside_viewport_3 = $this->props['background_video_pause_outside_viewport_3'];
-		$background_video_pause_outside_viewport_4 = $this->props['background_video_pause_outside_viewport_4'];
+		$background_video_mp4_1                       = $this->props['background_video_mp4_1'];
+		$background_video_mp4_2                       = $this->props['background_video_mp4_2'];
+		$background_video_mp4_3                       = $this->props['background_video_mp4_3'];
+		$background_video_mp4_4                       = $this->props['background_video_mp4_4'];
+		$background_video_webm_1                      = $this->props['background_video_webm_1'];
+		$background_video_webm_2                      = $this->props['background_video_webm_2'];
+		$background_video_webm_3                      = $this->props['background_video_webm_3'];
+		$background_video_webm_4                      = $this->props['background_video_webm_4'];
+		$background_video_width_1                     = $this->props['background_video_width_1'];
+		$background_video_width_2                     = $this->props['background_video_width_2'];
+		$background_video_width_3                     = $this->props['background_video_width_3'];
+		$background_video_width_4                     = $this->props['background_video_width_4'];
+		$background_video_height_1                    = $this->props['background_video_height_1'];
+		$background_video_height_2                    = $this->props['background_video_height_2'];
+		$background_video_height_3                    = $this->props['background_video_height_3'];
+		$background_video_height_4                    = $this->props['background_video_height_4'];
+		$allow_player_pause_1                         = $this->props['allow_player_pause_1'];
+		$allow_player_pause_2                         = $this->props['allow_player_pause_2'];
+		$allow_player_pause_3                         = $this->props['allow_player_pause_3'];
+		$allow_player_pause_4                         = $this->props['allow_player_pause_4'];
+		$background_video_pause_outside_viewport_1    = $this->props['background_video_pause_outside_viewport_1'];
+		$background_video_pause_outside_viewport_2    = $this->props['background_video_pause_outside_viewport_2'];
+		$background_video_pause_outside_viewport_3    = $this->props['background_video_pause_outside_viewport_3'];
+		$background_video_pause_outside_viewport_4    = $this->props['background_video_pause_outside_viewport_4'];
+
+		$hover = et_pb_hover_options();
 
 		global $et_pb_all_column_settings_inner, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
 
@@ -2577,31 +2925,47 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			'phone' => false,
 		);
 
+		// Column hover backgrounds
+		$column_hover_backgrounds = array();
+
+		for ( $i = 0; $i <= 3; $i++ ) {
+			$column_hover_backgrounds = array_merge( $column_hover_backgrounds, array(
+				"column_{$i}_color_hover"         => $hover->get_value( "background_color_{$i}", $this->props ),
+				"column_{$i}_color_hover_enabled" => $hover->is_enabled( "background_color_{$i}", $this->props ),
+			) );
+		}
+
 		$et_pb_columns_inner_counter = 0;
 		$et_pb_column_inner_backgrounds = array(
 			array(
-				'color'          => $background_color_1,
-				'image'          => $bg_img_1,
-				'image_size'     => $background_size_1,
-				'image_position' => $background_position_1,
-				'image_repeat'   => $background_repeat_1,
-				'image_blend'    => $background_blend_1,
+				'color'               => $background_color_1,
+				'color_hover'         => $column_hover_backgrounds['column_1_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_1_color_hover_enabled'],
+				'image'               => $bg_img_1,
+				'image_size'          => $background_size_1,
+				'image_position'      => $background_position_1,
+				'image_repeat'        => $background_repeat_1,
+				'image_blend'         => $background_blend_1,
 			),
 			array(
-				'color'          => $background_color_2,
-				'image'          => $bg_img_2,
-				'image_size'     => $background_size_2,
-				'image_position' => $background_position_2,
-				'image_repeat'   => $background_repeat_2,
-				'image_blend'    => $background_blend_2,
+				'color'               => $background_color_2,
+				'color_hover'         => $column_hover_backgrounds['column_2_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_2_color_hover_enabled'],
+				'image'               => $bg_img_2,
+				'image_size'          => $background_size_2,
+				'image_position'      => $background_position_2,
+				'image_repeat'        => $background_repeat_2,
+				'image_blend'         => $background_blend_2,
 			),
 			array(
-				'color'          => $background_color_3,
-				'image'          => $bg_img_3,
-				'image_size'     => $background_size_3,
-				'image_position' => $background_position_3,
-				'image_repeat'   => $background_repeat_3,
-				'image_blend'    => $background_blend_3,
+				'color'               => $background_color_3,
+				'color_hover'         => $column_hover_backgrounds['column_3_color_hover'],
+				'color_hover_enabled' => $column_hover_backgrounds['column_3_color_hover_enabled'],
+				'image'               => $bg_img_3,
+				'image_size'          => $background_size_3,
+				'image_position'      => $background_position_3,
+				'image_repeat'        => $background_repeat_3,
+				'image_blend'         => $background_blend_3,
 			),
 			array(
 				'color'          => $background_color_4,
@@ -2695,24 +3059,52 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			),
 		);
 
+		// Column hover paddings
+		$column_hover_paddings = array();
+
+		for ( $i = 0; $i <= 4; $i++ ) {
+			$column_hover_paddings = array_merge( $column_hover_paddings, array(
+				"column_{$i}_padding_hover_enabled" => $hover->is_enabled( "padding_{$i}", $this->props ),
+				"column_{$i}_padding_top"           => $hover->get_compose_value( "padding_top_{$i}", "padding_{$i}", $this->props ),
+				"column_{$i}_padding_right"         => $hover->get_compose_value( "padding_right_{$i}", "padding_{$i}", $this->props ),
+				"column_{$i}_padding_bottom"        => $hover->get_compose_value( "padding_bottom_{$i}", "padding_{$i}", $this->props ),
+				"column_{$i}_padding_left"          => $hover->get_compose_value( "padding_left_{$i}", "padding_{$i}", $this->props ),
+			) );
+		}
+
 		$et_pb_column_inner_paddings = array(
 			array(
-				'padding-top'    => $padding_top_1,
-				'padding-right'  => $padding_right_1,
-				'padding-bottom' => $padding_bottom_1,
-				'padding-left'   => $padding_left_1,
+				'padding-top'           => $padding_top_1,
+				'padding-right'         => $padding_right_1,
+				'padding-bottom'        => $padding_bottom_1,
+				'padding-left'          => $padding_left_1,
+				'padding-hover-enabled' => $column_hover_paddings['column_1_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_1_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_1_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_1_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_1_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_2,
-				'padding-right'  => $padding_right_2,
-				'padding-bottom' => $padding_bottom_2,
-				'padding-left'   => $padding_left_2,
+				'padding-top'           => $padding_top_2,
+				'padding-right'         => $padding_right_2,
+				'padding-bottom'        => $padding_bottom_2,
+				'padding-left'          => $padding_left_2,
+				'padding-hover-enabled' => $column_hover_paddings['column_2_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_2_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_2_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_2_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_2_padding_left'],
 			),
 			array(
-				'padding-top'    => $padding_top_3,
-				'padding-right'  => $padding_right_3,
-				'padding-bottom' => $padding_bottom_3,
-				'padding-left'   => $padding_left_3,
+				'padding-top'           => $padding_top_3,
+				'padding-right'         => $padding_right_3,
+				'padding-bottom'        => $padding_bottom_3,
+				'padding-left'          => $padding_left_3,
+				'padding-hover-enabled' => $column_hover_paddings['column_3_padding_hover_enabled'],
+				'padding-top-hover'     => $column_hover_paddings['column_3_padding_top'],
+				'padding-right-hover'   => $column_hover_paddings['column_3_padding_right'],
+				'padding-bottom-hover'  => $column_hover_paddings['column_3_padding_bottom'],
+				'padding-left-hover'    => $column_hover_paddings['column_3_padding_left'],
 			),
 			array(
 				'padding-top'    => $padding_top_4,
@@ -2815,11 +3207,14 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		}
 
 		$et_pb_column_inner_css = array(
-			'css_class'         => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4 ),
-			'css_id'            => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4 ),
-			'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4 ),
-			'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4 ),
-			'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4 ),
+			'css_class'               => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4 ),
+			'css_id'                  => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4 ),
+			'custom_css_before'       => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4 ),
+			'custom_css_main'         => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4 ),
+			'custom_css_after'        => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4 ),
+			'custom_css_before_hover' => array( $custom_css_before_1_hover, $custom_css_before_2_hover, $custom_css_before_3_hover, $custom_css_before_4_hover ),
+			'custom_css_main_hover'   => array( $custom_css_main_1_hover, $custom_css_main_2_hover, $custom_css_main_3_hover, $custom_css_main_4_hover ),
+			'custom_css_after_hover'  => array( $custom_css_after_1_hover, $custom_css_after_2_hover, $custom_css_after_3_hover, $custom_css_after_4_hover ),
 		);
 
 		$internal_columns_settings_array = array(
@@ -2842,9 +3237,21 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			$this->add_classname( 'et_pb_equal_columns' );
 		}
 
+		$gutter_hover_data = '';
+
 		if ( 'on' === $use_custom_gutter && '' !== $gutter_width ) {
 			$gutter_width = '0' === $gutter_width ? '1' : $gutter_width; // set the gutter to 1 if 0 entered by user
 			$this->add_classname( 'et_pb_gutters' . $gutter_width );
+
+			if ( et_builder_is_hover_enabled( 'gutter_width', $this->props ) ) {
+				$this->add_classname( 'et_pb_gutter_hover' );
+
+				$gutter_hover_data = sprintf(
+					' data-original_gutter="%1$s" data-hover_gutter="%2$s"',
+					esc_attr($gutter_width),
+					esc_attr($gutter_width_hover)
+				);
+			}
 		}
 
 		$parallax_image = $this->get_parallax_image_background();
@@ -2862,13 +3269,13 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 
 		// Inner content shortcode parsing has to be done after all classname addition/removal
 		$inner_content = do_shortcode( et_pb_fix_shortcodes( $content ) );
-		$content_dependent_classname = '' == trim( $inner_content ) ? ' et_pb_row_empty' : '';
+		$content_dependent_classname = '' === trim( $inner_content ) ? ' et_pb_row_empty' : '';
 
 		// reset the global column settings to make sure they are not affected by internal content
 		$et_pb_all_column_settings_inner = $et_pb_all_column_settings_backup;
 
 		$output = sprintf(
-			'<div%4$s class="%2$s%7$s">
+			'<div%4$s class="%2$s%7$s"%8$s>
 				%1$s
 				%5$s
 				%6$s
@@ -2879,7 +3286,8 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			$this->module_id(),
 			$parallax_image,
 			$background_video,
-			$content_dependent_classname
+			$content_dependent_classname,
+			et_core_esc_previously( $gutter_hover_data )
 		);
 
 		return $output;
@@ -2966,6 +3374,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 			}
 		}
 
+
 		// Get column type value in array
 		$column_type = explode( '_', $type );
 
@@ -2982,7 +3391,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		}
 
 		// Last column is when sum of column type value equals to 1
-		$is_last_column = 1 == $et_pb_column_completion;
+		$is_last_column = 1 === $et_pb_column_completion;
 
 		$background_color = isset( $backgrounds_array[$array_index]['color'] ) ? $backgrounds_array[$array_index]['color'] : '';
 		$background_img = isset( $backgrounds_array[$array_index]['image'] ) ? $backgrounds_array[$array_index]['image'] : '';
@@ -3002,6 +3411,11 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		$custom_css_before = isset( $column_css_array['custom_css_before'][$array_index] ) ? $column_css_array['custom_css_before'][$array_index] : '';
 		$custom_css_main = isset( $column_css_array['custom_css_main'][$array_index] ) ? $column_css_array['custom_css_main'][$array_index] : '';
 		$custom_css_after = isset( $column_css_array['custom_css_after'][$array_index] ) ? $column_css_array['custom_css_after'][$array_index] : '';
+
+		$custom_css_before_hover = self::$_->array_get( $column_css_array, "custom_css_before_hover.[$array_index]", '' );
+		$custom_css_main_hover = self::$_->array_get( $column_css_array, "custom_css_main_hover.[$array_index]", '' );
+		$custom_css_after_hover = self::$_->array_get( $column_css_array, "custom_css_after_hover.[$array_index]", '' );
+
 		$background_images = array();
 
 		if ( '' !== $background_gradient && 'on' === $background_gradient['active'] ) {
@@ -3103,6 +3517,19 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 					esc_attr( $background_color )
 				),
 			) );
+
+			$background_color_hover = self::$_->array_get( $backgrounds_array[$array_index], "color_hover" );
+			$background_color_hover_enabled = self::$_->array_get( $backgrounds_array[$array_index], "color_hover_enabled" );
+
+			if ( $background_color_hover && $background_color_hover_enabled ) {
+				ET_Builder_Element::set_style( $function_name, array(
+					'selector'    => '%%order_class%%:hover',
+					'declaration' => sprintf(
+						'background-color:%s;',
+						esc_attr( $background_color_hover )
+					),
+				) );
+			}
 		} else if ( isset( $has_background_gradient, $has_background_image ) ) {
 			// Force background-color: initial
 			ET_Builder_Element::set_style( $function_name, array(
@@ -3112,8 +3539,11 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		}
 
 		if ( ! empty( $padding_values ) ) {
+			$padding_hover_enabled = self::$_->array_get( $padding_values, 'padding-hover-enabled', false );
+			unset( $padding_values['padding-hover-enabled'] );
+
 			foreach( $padding_values as $position => $value ) {
-				if ( '' !== $value ) {
+				if ( in_array( $position, array('padding-top', 'padding-right', 'padding-bottom', 'padding-left' ) ) && !empty( $value ) ) {
 					$element_style = array(
 						'selector'    => '%%order_class%%',
 						'declaration' => sprintf(
@@ -3129,6 +3559,25 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 					if ( in_array( $keep_column_padding_mobile, array( 'on', 'off' ) ) && 'on' !== $keep_column_padding_mobile && ! $padding_responsive_active ) {
 						$element_style['media_query'] = ET_Builder_Element::get_media_query( 'min_width_981' );
 					}
+
+					ET_Builder_Element::set_style( $function_name, $element_style );
+				}
+
+				// Add padding hover styles
+				if ( $padding_hover_enabled
+				     && null != self::$_->array_get( $padding_values, "{$position}-hover" )
+				     && '' != self::$_->array_get( $padding_values, "{$position}-hover" )
+				) {
+					$hover_value = $padding_values["{$position}-hover"];
+
+					$element_style = array(
+						'selector'    => '%%order_class%%:hover',
+						'declaration' => sprintf(
+							'%1$s:%2$s;',
+							esc_html( $position ),
+							esc_html( et_builder_process_range_value( $hover_value ) )
+						),
+					);
 
 					ET_Builder_Element::set_style( $function_name, $element_style );
 				}
@@ -3175,6 +3624,27 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%%:after',
 				'declaration' => trim( $custom_css_after ),
+			) );
+		}
+
+		if ( '' !== $custom_css_before_hover ) {
+			ET_Builder_Element::set_style( $function_name, array(
+				'selector'    => '%%order_class%%:hover:before',
+				'declaration' => trim( $custom_css_before_hover ),
+			) );
+		}
+
+		if ( '' !== $custom_css_main_hover ) {
+			ET_Builder_Element::set_style( $function_name, array(
+				'selector'    => '%%order_class%%:hover',
+				'declaration' => trim( $custom_css_main_hover ),
+			) );
+		}
+
+		if ( '' !== $custom_css_after_hover ) {
+			ET_Builder_Element::set_style( $function_name, array(
+				'selector'    => '%%order_class%%:hover:after',
+				'declaration' => trim( $custom_css_after_hover ),
 			) );
 		}
 
@@ -3258,7 +3728,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		$inner_content = do_shortcode( et_pb_fix_shortcodes( $content ) );
 
 		// Inner content dependant class in column shouldn't use add_classname/remove_classname method
-		$content_dependent_classname = '' == trim( $inner_content ) ? ' et_pb_column_empty' : '';
+		$content_dependent_classname = '' === trim( $inner_content ) ? ' et_pb_column_empty' : '';
 
 		$output = sprintf(
 			'<div class="%1$s%6$s"%4$s>

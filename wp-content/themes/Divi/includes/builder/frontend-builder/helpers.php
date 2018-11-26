@@ -168,7 +168,7 @@ function et_fb_backend_helpers() {
 	$modules_defaults = array(
 		'title'    => _x( 'Your Title Goes Here', 'Modules dummy content', 'et_builder' ),
 		'subtitle' => _x( 'Subtitle goes Here', 'et_builder' ),
-		'body'     => _x( 'Your content goes here. Edit or remove this text inline or in the module Content settings. You can also style every aspect of this content in the module Design settings and even apply custom CSS to this text in the module Advanced settings.',
+		'body'     => _x( '<p>Your content goes here. Edit or remove this text inline or in the module Content settings. You can also style every aspect of this content in the module Design settings and even apply custom CSS to this text in the module Advanced settings.</p>',
 			'et_builder' ),
 		'number'   => 50,
 		'button'   => _x( 'Click Here', 'Modules dummy content', 'et_builder' ),
@@ -366,7 +366,7 @@ function et_fb_backend_helpers() {
 			'show_only' => array(
 				'styles_modified'   => esc_html__( 'Modified Styles', 'et_builder' ),
 				'styles_responsive' => esc_html__( 'Responsive Styles', 'et_builder' ),
-				// 'styles_hover'      => esc_html__( 'Hover Styles', 'et_builder' ), // TODO Uncomment this once the hover options feature has been released.
+				'styles_hover'      => esc_html__( 'Hover Styles', 'et_builder' ),
 				'active_content'    => esc_html__( 'Active Content', 'et_builder' ),
 			),
 		),
@@ -526,6 +526,7 @@ function et_fb_backend_helpers() {
 					'tab_slug'     => 'general',
 					'toggle_slug'  => 'background',
 					'sub_toggle'   => 'column_%s',
+					'hover'        => 'tabs',
 				),
 				'parallax_%s' => array(
 					'label'           => esc_html__( 'Column %s Parallax Effect', 'et_builder' ),
@@ -917,6 +918,7 @@ function et_fb_backend_helpers() {
 					'tab_slug'        => 'advanced',
 					'toggle_slug'     => 'margin_padding',
 					'sub_toggle'      => 'column_%s',
+					'hover'           => 'tabs',
 				),
 			),
 			'css'                     => array(
@@ -945,12 +947,14 @@ function et_fb_backend_helpers() {
 					'tab_slug'        => 'custom_css',
 					'toggle_slug'     => 'custom_css',
 					'sub_toggle'      => 'column_%s',
+					'hover'           => 'tabs',
 				),
 				'custom_css_main_%s'  => array(
 					'label'           => esc_html__( 'Column %s Main Element', 'et_builder' ),
 					'tab_slug'        => 'custom_css',
 					'toggle_slug'     => 'custom_css',
 					'sub_toggle'      => 'column_%s',
+					'hover'           => 'tabs',
 				),
 				'custom_css_after_%s' => array(
 					'label'           => esc_html__( 'Column %s After', 'et_builder' ),
@@ -959,6 +963,7 @@ function et_fb_backend_helpers() {
 					'tab_slug'        => 'custom_css',
 					'toggle_slug'     => 'custom_css',
 					'sub_toggle'      => 'column_%s',
+					'hover'           => 'tabs',
 				),
 
 			),
@@ -1229,6 +1234,10 @@ function et_fb_backend_helpers() {
 				'design'               => esc_html__( 'Design', 'et_builder' ),
 				'advanced'             => esc_html__( 'Design', 'et_builder' ),
 				'css'                  => esc_html__( 'Advanced', 'et_builder' ),
+				'desktop'              => esc_html__( 'Desktop', 'et_builder' ),
+				'tablet'               => esc_html__( 'Tablet', 'et_builder' ),
+				'phone'                => esc_html__( 'Phone', 'et_builder' ),
+				'hover'                => esc_html__( 'Hover', 'et_builder' ),
 			),
 			'additionalButton'         => array(
 				'changeApiKey'         => esc_html__( 'Change API Key', 'et_builder' ),
@@ -1257,6 +1266,12 @@ function et_fb_backend_helpers() {
 				'roll'   => esc_html__( 'Roll', 'et_builder' ),
 			),
 			'cssText'                  => esc_html__( 'CSS', 'et_builder'),
+			'hoverOptions'             => array(
+				'default' => esc_html__( 'Default', 'et_builder' ),
+				'hover'   => esc_html__( 'Hover', 'et_builder' ),
+				'tablet'  => esc_html__( 'Tablet', 'et_builder' ),
+				'phone'   => esc_html__( 'Phone', 'et_builder' ),
+			),
 			'background'               => array(
 				'addColor'       => esc_html__( 'Add Background Color', 'et_builder' ),
 				'addGradient'    => esc_html__( 'Add Background Gradient', 'et_builder' ),
@@ -1271,7 +1286,7 @@ function et_fb_backend_helpers() {
 			'responsiveTabs' => array(
 				'desktop' => esc_html__( 'Desktop', 'et_builder' ),
 				'tablet'  => esc_html__( 'Tablet', 'et_builder' ),
-				'phone'   => esc_html__( 'Smartphone', 'et_builder' ),
+				'phone'   => esc_html__( 'Phone', 'et_builder' ),
 			),
 			'element'                  => esc_html__( 'Element', 'et_builder' ),
 		),
@@ -1672,7 +1687,7 @@ function et_fb_backend_helpers() {
 			'section_only_row_dragged_away'            => esc_html__( 'The section should have at least one row.', 'et_builder' ),
 			'global_module_alert'                      => esc_html__( 'You cannot add global modules into global sections or rows', 'et_builder' ),
 			'cannot_move_module_goal_out_from_subject' => esc_html__( 'Once set, a goal that has been placed inside a split testing subject cannot be moved outside the split testing subject. You can end your split test and start a new one if you would like to make this change.', 'et_builder' ),
-			'stop_dropping_3_col_row'                  => esc_html__( '3 column row can\'t be used in this column.', 'et_builder' ),
+			'stop_dropping_3_col_row'                  => esc_html__( "This number of columns can't be used on this row.", 'et_builder' ),
 		),
 		'tooltip' => array(
 			'pageSettingsBar' => array(
@@ -1805,6 +1820,15 @@ function et_fb_backend_helpers() {
 			),
 			'unsupportedFieldType' => esc_html__( 'The above custom field is not fully supported and has been rendered as a standard input.' ),
 		),
+
+		'dynamicContent' => array(
+			'invalidField' => esc_html__( 'Invalid field or insufficient permissions.', 'et_builder' ),
+			'tooltips' => array(
+				'enable' => esc_html__( 'Use Dynamic Content', 'et_builder' ),
+				'disable' => esc_html__( 'Remove Dynamic Content', 'et_builder' ),
+				'settings' => esc_html__( 'Edit Dynamic Content', 'et_builder' ),
+			),
+		),
 	);
 
 	// Add strings from i18n directory. Note: We don't handle subdirectories, but we should in the future.
@@ -1815,6 +1839,8 @@ function et_fb_backend_helpers() {
 
 		$helpers['i18n'][ $key ] = require $file;
 	}
+
+	$helpers['dynamicContentFields'] = et_builder_get_dynamic_content_fields( $post_id, 'edit' );
 
 	// Pass helpers via localization.
 	wp_localize_script( 'et-frontend-builder', 'ETBuilderBackend', $helpers );

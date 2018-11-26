@@ -1,3 +1,288 @@
+version 3.17.6 ( updated 11-02-2018 )
+- Fixed JavaScript error when trying to edit non-existing Global Module in BB.
+- Fixed a issue where module styles cannot be pasted.
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/scripts/builder.js
+
+version 3.17.5 ( updated 11-02-2018 )
+- Fixed JavaScript error when trying to edit non-existing Global Module in BB.
+- Fixed a issue where module styles cannot be pasted.
+- Prevent Custom CSS code from being removed when hover options is used.
+- Fixed modules with hover styles applied not getting proper z-index in VB preview.
+- Fixed bar counter item titles inadvertently displaying html tags.
+- Fixed a bug in Email Optin module where Redirect URL had Question Mark at end of the URL.
+- Fixed a issue where Contact Form module incorrectly set Reply-To email header when no Email field has been set for the module.
+- Fixed Backend Builder not being able to import premade layouts.
+- Removed HTML escaping recently added to Filterable Portfolio module post titles.
+- Fixes a PHP warning when importing layouts.
+- Fixed some aspects of modules being editable even if the relevant capability has been disabled in the Role Editor.
+- Fixed CSS for VB Wireframe View when Vertical Navigation is enabled.
+- Removed Design and Advanced settings for Pin Settings of Map module.
+- Improved timer separator display in Countdown Timer modules.
+- Fixed issue affecting border field's generated styles.
+- Added label for reset button in Page Settings.
+- Fixed issue where modules with partial support were not visible in VB.
+- Fixed a bug where Site Header gets hidden when Vertical Navigation is enabled.
+- Fixed a JavaScript error for CSS ID on Tabs module when Alternative scroll-to-anchor method is enabled.
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/settings/migration/DiscontinueHtmlEncoding.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.less
+	* js/custom.js
+
+version 3.17.4 ( updated 10-31-2018 )
+- Fixed the internal server error that occurred when the Yoast SEO plugin was activated.
+- Fixed paragraphs encoding issue when multiple Code Module were added in the same page.
+- Fixed a PHP Warning caused by the Post Slider Module.
+- Fixed broken shortcode rendering on code and fullwidth module caused by late line break stripping.
+	* includes/builder/functions.php
+	* includes/builder/core.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/Code.php
+	* includes/builder/module/FullwidthCode.php
+
+version 3.17.3 ( updated 10-30-2018 )
+- Important Security Update. Following an internal code audit, various security improvements were made and several minor security vulnerabilities were patched. For more information, please refer to the disclosure here: https://us7.campaign-archive.com/?u=9ae7aa91c578052b052b864d6&id=a9763c15f2
+- Fixed Right-click controls missing in empty fullwidth sections.
+- Added missing extend options to border styles and background tabs.
+- Fixed languages using quote characters different from the ones in English causing Dynamic Content to not render properly in the front-end.
+
+version 3.17.2 ( updated 10-17-2018 )
+- Fixed issue with rendering dynamic content in Global Modules in some cases.
+- Fixed the issue where Button Text option can't be copied between Button modules.
+- Fixed VB select control to only fire onChange event when necessary.
+- Fixed output of inner box shadow in VB.
+- Fixed Blurb module title link not being applied to the title.
+- Fixed HTML being incorrectly filtered in Dynamic Content's Before and After settings.
+- Fixed Autoptimize incompatibility with the Visual Builder, causing the rich text control to crash.
+- Fixed JS error which breaks some modules in BB while checking for dynamic content.
+- Fixed Bar Counter amount not changing on hover for small % amounts.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Image.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-global-functions.js
+	* includes/builder/styles/frontend-builder-style.less
+
+version 3.17.1 ( updated 10-12-2018 )
+- Fixed error occurring in Team Member module.
+- Fixed circle counter not showing up in the front end when there was an animation set for it.
+- Fixed the Divider height value being picked from Desktop height, when the tablet or/and phone values are set to the default 100px.
+- Fixed Dynamic Content background image preview in Extend Styles.
+- Fixed support for PHP 5.2 and 5.3 in Dynamic Content.
+- Fixed responsive tabs for row column padding settings not showing up in BB.
+- Fixed Social Media Follow module link text duplication when read through assistive technologies.
+- Added i18n support for visual builder toggle buttons.
+	* core/ui/components/controls/toggle/toggle.jsx
+	* core/ui/components/controls/toggle/toggle.scss
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+
+version 3.17 ( updated 10-11-2018 )
+- Added Dynamic Content to Divi.
+- Fixed Style Type, Position and Indent Option for Lists (OL/UL) in Text module for Post.
+- Removed certain instances of hover icon that should not be present.
+- Fixed a bug where Shop modules failed to display products sorted by price or date (ascending).
+- Prevent adding max-width: 100% to modules when the sizing is not changed.
+- Fixed incorrect history state for bulk editing hover options.
+- Fixed alignment issue in Firefox for the first field in Email Optin module.
+- Fixed the bug where Play Icon color option in VIdeo module were not working only in Visual Builder for a Post.
+- Fixed Custom CSS removing CSS when hover is enabled.
+- Fixed testimonial portrait margin on 1/5 and 1/6 columns.
+- Fixed CSS for Grid columns For Smartphone.
+- Fixed specialty column styles for 1/6 columns inside a 1/2 column.
+- Fixed the issue where Favicon from old Theme Option setting were printed on page, even if Site Icon has been uploaded from WordPress Customizer.
+- Fixed post_max_size megabytes conversion.
+- Fixed a issue where Your Save Has Failed Modal Hides Wordfence's Blocked Request Notification.
+	* core/admin/css/core.css
+	* core/components/Portability.php
+	* epanel/custom_functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-value.php
+	* includes/builder/core.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/feature/post-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets/css/responsive-preview-wrapped.css
+	* includes/builder/frontend-builder/assets/css/responsive-preview.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/Search.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/TabsItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/Video.php
+	* includes/builder/module/VideoSliderItem.php
+	* includes/builder/module/type/PostBased.php
+	* includes/builder/plugin-compat/advanced-custom-fields.php
+	* includes/builder/plugin-compat/woocommerce.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-global-style.css
+	* includes/builder/styles/style.css
+	* includes/builder/template-preview.php
+
+version 3.16.1 ( updated 10-05-2018 )
+- Fixed Responsive Tabs, Hover Tabs and reset button support for multiselect.
+- Added missing blurb icon transitions.
+- Fixed Login Module issue where form field background color and text color was not applied to Password Field.
+- Fixed circle counter behavior when custom padding on hover exists.
+- Fixed Hover tabs rendering in combination with responsive tabs for Section Dividers.
+- Fixed an issue with background controls in the Visual Builder that incorrectly only allowed background color to be edited in certain situations.
+- Fixed heading 2 text size in VB that rendered differently than previous version (3.14 compared to 3.15).
+- Fixed Fullwidth Post-Title module issue where background disappeared when section background set as parallax.
+- The Divi Builder meta box will now take priority over other meta boxes on the post edit screen.
+- Fixed inconsistent mobile display of embedded videos in Blog module blocks.
+- Fixed a Visual Builder bug that prevented editing in Internet Explorer 11.
+- Fixed a Visual Builder bug where non-Latin characters were ignored when determining whether a block of text was empty.
+- Fixed double click issue when opening modal settings for selected items.
+- Fixed 1/6 column wrap on certain viewports.
+- Fixed global element children so that they stay colored as a global when moved outside their global containers.
+- Fixed issue with dragging specialty columns.
+- Fixed font field group visibility when options filter is active.
+- Fixed the missing padding on the Section when the Nav has a transparent background.
+	* includes/builder/frontend-builder/assets/css/responsive-preview.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Login.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-grid.less
+	* includes/builder/styles/frontend-builder-style.less
+	* js/custom.js
+
+version 3.16 ( updated 10-4-2018 )
+- Added Hover Options to the Divi Builder.
+	* core/components/data/Utils.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/BarCounters.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/Divider.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/FullwidthMap.php
+	* includes/builder/module/FullwidthMenu.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/FullwidthPostTitle.php
+	* includes/builder/module/FullwidthSlider.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/Map.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PostTitle.php
+	* includes/builder/module/PostsNavigation.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/Search.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Sidebar.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/Slider.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollow.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/Tabs.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/Video.php
+	* includes/builder/module/VideoSlider.php
+	* includes/builder/module/VideoSliderItem.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/field/BoxShadow.php
+	* includes/builder/module/field/Divider.php
+	* includes/builder/module/field/TextShadow.php
+	* includes/builder/module/field/template/Tabbed.php
+	* includes/builder/module/helpers/HoverOptions.php
+	* includes/builder/module/helpers/TransitionOptions.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/module/settings/migration/HoverOptions.php
+	* includes/builder/module/settings/migration/TeamMemberIconHover.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.less
+	* includes/builder/styles/style.css
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-global-settings.php
+
 version 3.15 ( updated 09-13-2018 )
 - Added Multiselect and Bulk Editing to the Visual Builder.
 - Fixed missing "Reply To" in Contact Form module email when the email field is not set to required.

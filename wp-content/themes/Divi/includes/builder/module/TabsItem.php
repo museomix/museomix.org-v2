@@ -90,16 +90,18 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 	function get_fields() {
 		$fields = array(
 			'title' => array(
-				'label'       => esc_html__( 'Title', 'et_builder' ),
-				'type'        => 'text',
-				'description' => esc_html__( 'The title will be used within the tab button for this tab.', 'et_builder' ),
-				'toggle_slug' => 'main_content',
+				'label'           => esc_html__( 'Title', 'et_builder' ),
+				'type'            => 'text',
+				'description'     => esc_html__( 'The title will be used within the tab button for this tab.', 'et_builder' ),
+				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'content' => array(
-				'label'       => esc_html__( 'Content', 'et_builder' ),
-				'type'        => 'tiny_mce',
-				'description' => esc_html__( 'Here you can define the content that will be placed within the current tab.', 'et_builder' ),
-				'toggle_slug' => 'main_content',
+				'label'           => esc_html__( 'Content', 'et_builder' ),
+				'type'            => 'tiny_mce',
+				'description'     => esc_html__( 'Here you can define the content that will be placed within the current tab.', 'et_builder' ),
+				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 		);
 		return $fields;

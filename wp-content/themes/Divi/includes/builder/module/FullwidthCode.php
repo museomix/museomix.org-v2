@@ -7,8 +7,7 @@ class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
 		$this->slug            = 'et_pb_fullwidth_code';
 		$this->vb_support      = 'on';
 		$this->fullwidth       = true;
-		$this->use_row_content = true;
-		$this->decode_entities = true;
+		$this->use_raw_content = true;
 
 		$this->settings_modal_toggles = array(
 			'general'  => array(
@@ -64,8 +63,6 @@ class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
 	function render( $attrs, $content = null, $render_slug ) {
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
-
-		$this->content = et_builder_convert_line_breaks( et_builder_replace_code_content_entities( $this->content ) );
 
 		$this->add_classname( $this->get_text_orientation_classname() );
 

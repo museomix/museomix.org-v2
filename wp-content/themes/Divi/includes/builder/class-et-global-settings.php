@@ -16,6 +16,8 @@ class ET_Global_Settings {
 	}
 
 	private static function set_values() {
+		$hover = et_pb_hover_options();
+
 		$font_defaults_h1 = array(
 			'size'           => '30px',
 			'letter_spacing' => '0px',
@@ -75,8 +77,8 @@ class ET_Global_Settings {
 			'all_buttons_border_radius'                              => '3',
 			'all_buttons_spacing'                                    => '0',
 			'all_buttons_font_style'                                 => '',
-			'all_buttons_border_radius_hover'                        => '3',
-			'all_buttons_spacing_hover'                              => '0',
+			$hover->get_hover_field( 'all_buttons_border_radius' )   => '3',
+			$hover->get_hover_field( 'all_buttons_spacing' )         => '0',
 			// Global: Background Gradients
 			'all_background_gradient_start'                          => $background_gradient_defaults['start'],
 			'all_background_gradient_end'                            => $background_gradient_defaults['end'],

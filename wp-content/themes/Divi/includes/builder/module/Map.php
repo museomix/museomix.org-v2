@@ -30,7 +30,7 @@ class ET_Builder_Module_Map extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),
@@ -181,6 +181,13 @@ class ET_Builder_Module_Map extends ET_Builder_Module {
 			),
 		);
 		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+		$filters = $this->get_transition_filters_fields_css_props( 'child_filters' );
+
+		return array_merge( $fields, $filters );
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {

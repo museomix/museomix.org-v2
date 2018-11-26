@@ -118,15 +118,8 @@
 			return;
 		}
 
-		var $bar_container      = $bar_item.closest( '.et_pb_counter_container' ),
-			bar_item_width      = $bar_item.attr( 'data-width' ),
-			bar_item_padding    = Math.ceil( parseFloat( $bar_item.css('paddingLeft') ) ) + Math.ceil( parseFloat( $bar_item.css('paddingRight') ) ),
-			$bar_item_text      = $bar_item.children( '.et_pb_counter_amount_number' ),
-			calculated_width    = ( $bar_container.width() - $bar_item_text.innerWidth() ) / 100 * parseFloat( bar_item_width ),
-			bar_item_text_width = calculated_width + $bar_item_text.innerWidth();
-
 		$bar_item.css({
-			'width' : bar_item_text_width
+			'width' : parseFloat( $bar_item.attr( 'data-width' ) ) + '%'
 		});
 	}
 

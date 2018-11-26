@@ -9,11 +9,13 @@
  * @return string $_POST['et-fb-builder-redirect'] if set, $location otherwise.
  */
 function et_fb_redirect_post_location( $location ) {
+	// phpcs:disable WordPress.Security.NonceVerification.NoNonceVerification
 	if ( is_admin() && isset( $_POST['et-fb-builder-redirect'] ) ) {
 		return $_POST['et-fb-builder-redirect'];
 	}
 
 	return $location;
+	// phpcs:enable
 }
 add_filter( 'redirect_post_location', 'et_fb_redirect_post_location' );
 
@@ -27,7 +29,7 @@ function et_fb_enabled() {
 		return ET_FB_ENABLED;
 	}
 
-	if ( empty( $_GET['et_fb'] ) ) {
+	if ( empty( $_GET['et_fb'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		return false;
 	}
 

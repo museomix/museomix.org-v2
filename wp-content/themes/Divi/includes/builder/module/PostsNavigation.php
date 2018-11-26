@@ -63,13 +63,14 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 				'default' => array(
 					'css' => array(
 						'main'         => '%%order_class%% .nav-previous, %%order_class%% .nav-next',
-						'custom_style' => true,
+						'overlay' => 'inset',
 						'important'    => true,
 					),
 				),
 			),
 			'text'                  => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 
 		$this->custom_css_fields = array(
@@ -229,6 +230,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 
 		$in_same_term = ! $args['in_same_term'] || 'off' === $args['in_same_term'] ? false : true;
 
+		et_core_nonce_verified_previously();
 		if ( ! isset( $post ) && defined( 'DOING_AJAX' ) && DOING_AJAX && ! empty( $_POST['et_post_id'] ) ) {
 			$post_id = sanitize_text_field( $_POST['et_post_id'] );
 		} else if ( isset( $current_page['id'] ) ) {
@@ -244,7 +246,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 		}
 
 		// Set current post as global $post
-		$post = get_post( $post_id );
+		$post = get_post( $post_id ); // phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 
 		// Get next post
 		$next_post = get_next_post( $in_same_term, '', $args['taxonomy_name'] );
@@ -347,10 +349,10 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 			$prev_link_text = '' !== $prev_text ? $prev_text : $posts_navigation['prev']->title;
 			?>
 				<span class="nav-previous">
-					<a href="<?php echo esc_url( $posts_navigation['prev']->permalink ); ?>" rel="prev"<?php echo $background_class_attr; ?>>
+					<a href="<?php echo esc_url( $posts_navigation['prev']->permalink ); ?>" rel="prev"<?php echo et_core_esc_previously( $background_class_attr ); ?>>
 						<?php
-							echo $parallax_image_background;
-							echo $video_background;
+							echo et_core_esc_previously( $parallax_image_background );
+							echo et_core_esc_previously( $video_background );
 						?>
 						<span class="meta-nav">&larr; </span><span class="nav-label"><?php echo esc_html( $posts_navigation['prev']->title ); ?></span>
 					</a>
@@ -362,10 +364,10 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 			$next_link_text = '' !== $next_text ? $next_text : $posts_navigation['next']->title;
 			?>
 				<span class="nav-next">
-					<a href="<?php echo esc_url( $posts_navigation['next']->permalink ); ?>" rel="next"<?php echo $background_class_attr; ?>>
+					<a href="<?php echo esc_url( $posts_navigation['next']->permalink ); ?>" rel="next"<?php echo et_core_esc_previously( $background_class_attr ); ?>>
 						<?php
-							echo $parallax_image_background;
-							echo $video_background;
+							echo et_core_esc_previously( $parallax_image_background );
+							echo et_core_esc_previously( $video_background );
 						?>
 						<span class="nav-label"><?php echo esc_html( $posts_navigation['next']->title ); ?></span><span class="meta-nav"> &rarr;</span>
 					</a>

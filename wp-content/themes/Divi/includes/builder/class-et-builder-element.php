@@ -7,6 +7,8 @@ define( 'ET_BUILDER_AJAX_TEMPLATES_AMOUNT', apply_filters( 'et_pb_templates_load
 
 add_action( 'init', array( 'ET_Builder_Element', 'set_media_queries' ), 11 );
 
+require_once 'module/helpers/HoverOptions.php';
+require_once 'module/helpers/TransitionOptions.php';
 require_once 'module/field/Factory.php';
 
 /**
@@ -20,7 +22,7 @@ class ET_Builder_Element {
 	public $slug;
 	public $type;
 	public $child_slug;
-	public $decode_entities;
+	public $use_raw_content = false;
 	public $fields = array();
 	public $advanced_fields;
 	public $has_advanced_fields;
@@ -31,6 +33,24 @@ class ET_Builder_Element {
 	 * @var array[]
 	 */
 	protected static $_deprecations;
+
+	/**
+	 * Unprocessed attributes.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $attrs_unprocessed = array();
+
+	/**
+	 * Unprocessed content.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @var string
+	 */
+	protected $content_unprocessed = '';
 
 	/**
 	 * Settings used to render the module's output.
@@ -122,6 +142,8 @@ class ET_Builder_Element {
 	 */
 	protected $_style_priority;
 
+	// only needed for BB + hover
+	protected $is_background = false;
 	private $_is_official_module;
 
 	/**
@@ -248,8 +270,6 @@ class ET_Builder_Element {
 
 		$this->type = isset( $this->type ) ? $this->type : '';
 
-		$this->decode_entities = isset( $this->decode_entities ) ? (bool) $this->decode_entities : false;
-
 		$this->_style_priority = (int) self::DEFAULT_PRIORITY;
 		if ( isset( $this->type ) && 'child' === $this->type ) {
 			$this->_style_priority = $this->_style_priority + 1;
@@ -301,7 +321,19 @@ class ET_Builder_Element {
 				self::$_module_slugs_by_post_type[ $post_type ][] = $this->slug;
 			}
 
-			if ( 'child' == $this->type ) {
+			if ( isset( $this->additional_shortcode ) && ! in_array( $this->additional_shortcode, self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+				self::$_module_slugs_by_post_type[ $post_type ][] = $this->additional_shortcode;
+			}
+
+			if ( isset( $this->additional_shortcode_slugs ) ) {
+				foreach ( $this->additional_shortcode_slugs as $additional_shortcode_slug ) {
+					if ( ! in_array( $additional_shortcode_slug, self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+						self::$_module_slugs_by_post_type[ $post_type ][] = $additional_shortcode_slug;
+					}
+				}
+			}
+
+			if ( 'child' === $this->type ) {
 				self::$child_modules[ $post_type ][ $this->slug ] = $this;
 			} else {
 				self::$parent_modules[ $post_type ][ $this->slug ] = $this;
@@ -533,9 +565,29 @@ class ET_Builder_Element {
 
 	/**
 	 * Retrieve Post ID from 1 of 3 sources depending on which exists:
-	 * - get_the_ID()
 	 * - $_POST['et_post_id']
 	 * - $_GET['post']
+	 * - get_the_ID()
+	 * Similar to get_the_ID() but in reverse order and statically callable.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @return int|bool
+	 */
+	public static function get_current_post_id() {
+		if ( wp_doing_ajax() && isset( $_POST['et_post_id'] ) ) {
+			return absint( $_POST['et_post_id'] );
+		}
+
+		if ( isset( $_POST['post'] ) ) {
+			return absint( $_POST['post'] );
+		}
+
+		return get_the_ID();
+	}
+
+	/**
+	 * Get the current ID depending on the current request.
 	 *
 	 * @return int|bool
 	 */
@@ -549,11 +601,11 @@ class ET_Builder_Element {
 
 		if ( wp_doing_ajax() ) {
 			// get the post ID if loading data for VB
-			return isset( $_POST['et_post_id'] ) ? absint( $_POST['et_post_id'] ) : false;
+			return isset( $_POST['et_post_id'] ) ? absint( $_POST['et_post_id'] ) : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		}
 
 		// fallback to $_GET['post'] to cover the BB data loading
-		return isset( $_GET['post'] ) ? absint( $_GET['post'] ) : false;
+		return isset( $_GET['post'] ) ? absint( $_GET['post'] ) : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 	}
 
 	/**
@@ -717,6 +769,9 @@ class ET_Builder_Element {
 
 		// Add _builder_version field to all modules
 		$this->fields_unprocessed['_builder_version'] = array( 'type' => 'skip' );
+
+		// Add _dynamic_attributes field to all modules.
+		$this->fields_unprocessed['_dynamic_attributes'] = array( 'type' => 'skip' );
 
 		if ( $this->_is_official_module ) {
 			return;
@@ -988,7 +1043,7 @@ class ET_Builder_Element {
 	 * @return bool
 	 */
 	private function is_loading_vb_data() {
-		return isset( $_POST['action'] ) && 'et_fb_retrieve_builder_data' === $_POST['action'];
+		return isset( $_POST['action'] ) && 'et_fb_retrieve_builder_data' === $_POST['action']; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 	}
 
 	private function register_post_type( $post_type ) {
@@ -1001,9 +1056,11 @@ class ET_Builder_Element {
 	 * Double quote are saved as "%22" in shortcode attributes.
 	 * Decode them back into "
 	 *
+	 * @param array $enabled_dynamic_attributes
+	 *
 	 * @return void
 	 */
-	private function _decode_double_quotes() {
+	private function _decode_double_quotes( $enabled_dynamic_attributes ) {
 		if ( ! isset( $this->props ) ) {
 			return;
 		}
@@ -1032,7 +1089,10 @@ class ET_Builder_Element {
 			}
 
 			// URLs are weird since they can allow non-ascii characters so we escape those separately.
-			if ( in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
+			// Also make sure the attribute is not powered by dynamic content so we do not escape
+			// the JSON value as if it is a raw url.
+			$is_dynamic_content_attribute = $this->_is_dynamic_value( $attribute_key, $attribute_value, $enabled_dynamic_attributes );
+			if ( ! $is_dynamic_content_attribute && in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
 				$shortcode_attributes[ $attribute_key ] = esc_url_raw( $processed_attr_value );
 			} else {
 				$shortcode_attributes[ $attribute_key ] = str_replace( array( '%22', '%92', '%91', '%93' ), array( '"', '\\', '&#91;', '&#93;' ), $processed_attr_value );
@@ -1285,6 +1345,19 @@ class ET_Builder_Element {
 			}
 		}
 
+		// Add hover attributes
+		if ( ! is_array( $values ) ) {
+			return $resolved;
+		}
+
+		foreach ( $values as $attr => $value ) {
+			if ( ! preg_match('~_hover(_enabled)?$~', $attr ) ) {
+				continue;
+			}
+
+			$resolved[$attr] = $value;
+		}
+
 		return $resolved;
 	}
 
@@ -1400,6 +1473,36 @@ class ET_Builder_Element {
 	}
 
 	/**
+	 * Resolves the values for dynamic attributes.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @param  array  $attrs              List of attributes
+	 *
+	 * @return array                      Processed attributes with resolved dynamic values.
+	 */
+	function process_dynamic_attrs( $original_attrs ) {
+		global $et_fb_processing_shortcode_object;
+
+		$attrs                      = $original_attrs;
+		$enabled_dynamic_attributes = $this->_get_enabled_dynamic_attributes( $attrs );
+
+		if ( is_array( $attrs ) ) {
+			foreach ( $attrs as $key => $value ) {
+				$attrs[ $key ] = $this->_resolve_value(
+					$this->get_the_ID(),
+					$key,
+					$value,
+					$enabled_dynamic_attributes,
+					$et_fb_processing_shortcode_object
+				);
+			}
+		}
+
+		return $attrs;
+	}
+
+	/**
 	 * Prepares for and then calls the module's {@see self::render()} method.
 	 *
 	 * @since 3.1 Renamed from `_shortcode_callback()` to `_render()`.
@@ -1417,9 +1520,15 @@ class ET_Builder_Element {
 	function _render( $attrs, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '' ) {
 		global $et_fb_processing_shortcode_object;
 
+		$this->attrs_unprocessed = $attrs;
+
+		$enabled_dynamic_attributes = $this->_get_enabled_dynamic_attributes( $attrs );
+
+		$attrs = $this->process_dynamic_attrs( $attrs );
+
 		$this->props = shortcode_atts( $this->resolve_conditional_defaults($attrs, $render_slug), $attrs );
 
-		$this->_decode_double_quotes();
+		$this->_decode_double_quotes( $enabled_dynamic_attributes );
 
 		$this->_maybe_remove_global_default_values_from_props();
 
@@ -1501,6 +1610,10 @@ class ET_Builder_Element {
 					$global_content = et_pb_get_global_module_content( $global_module_data, $render_slug );
 				}
 
+				if ( in_array($render_slug, array('et_pb_code', 'et_pb_fullwidth_code')) ) {
+					$global_content = _et_pb_code_module_prep_content($global_content);
+				}
+
 				// cleanup the shortcode string to avoid the attributes messing with content
 				$global_content_processed = false !== $global_content ? str_replace( $global_content, '', $global_module_data ) : $global_module_data;
 				$global_atts = shortcode_parse_atts( et_pb_remove_shortcode_content( $global_content_processed, $this->slug ) );
@@ -1541,6 +1654,12 @@ class ET_Builder_Element {
 						$this->props[ $single_attr] = is_string( $global_atts[ $single_attr] ) && ! array_intersect( array( "et_pb_{$single_attr}", $single_attr ), $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[ $single_attr] ) : $global_atts[ $single_attr];
 					}
 				}
+
+				$enabled_dynamic_attributes_global = $this->_get_enabled_dynamic_attributes( $this->props );
+
+				$this->props = $this->process_dynamic_attrs( $this->props );
+
+				$this->_decode_double_quotes( $enabled_dynamic_attributes_global );
 			}
 		}
 
@@ -1548,7 +1667,16 @@ class ET_Builder_Element {
 
 		$this->before_render();
 
-		$content = false !== $global_content ? $global_content : $content;
+		$this->content_unprocessed = (false !== $global_content ? $global_content : $content);
+		$content = $this->_resolve_value(
+			$this->get_the_ID(),
+			'content',
+			$this->content_unprocessed,
+			$enabled_dynamic_attributes,
+			$et_fb_processing_shortcode_object
+		);
+
+		$content = apply_filters( 'et_pb_module_content', $content, $this->props, $attrs, $render_slug, $_address, $global_content );
 
 		// Set empty TinyMCE content '&lt;br /&gt;<br />' as empty string.
 		if ( 'ltbrgtbr' === preg_replace( '/[^a-z]/', '', $content ) ) {
@@ -1556,9 +1684,15 @@ class ET_Builder_Element {
 		}
 
 		if ( $et_fb_processing_shortcode_object ) {
-			$this->content = et_pb_fix_shortcodes( $content, $this->decode_entities );
+			$this->content = et_pb_fix_shortcodes( $content, $this->use_raw_content );
 		} else {
-			$this->props['content'] = $this->content = ! ( isset( $this->is_structure_element ) && $this->is_structure_element ) ? do_shortcode( et_pb_fix_shortcodes( $content, $this->decode_entities ) ) : '';
+			// Line breaks should be converted before do_shortcode to avoid legit rendered shortcode
+			// line breaks being trimmed into one line and causing issue like broken javascript code
+			if ( $this->use_raw_content ) {
+				$content = et_builder_convert_line_breaks( et_builder_replace_code_content_entities( $content ) );
+			}
+
+			$this->props['content'] = $this->content = ! ( isset( $this->is_structure_element ) && $this->is_structure_element ) ? do_shortcode( et_pb_fix_shortcodes( $content, $this->use_raw_content ) ) : '';
 		}
 
 		// Restart classname on shortcode callback. Module class is only called once, not on every
@@ -1623,14 +1757,14 @@ class ET_Builder_Element {
 
 			if ( $module_class ) {
 				et_builder_handle_animation_data( array(
-					'class'            => trim( $module_class ),
-					'style'            => $animation_style,
-					'repeat'           => $animation_repeat,
-					'duration'         => $animation_duration,
-					'delay'            => $animation_delay,
-					'intensity'        => $animation_intensity,
-					'starting_opacity' => $animation_starting_opacity,
-					'speed_curve'      => $animation_speed_curve,
+					'class'            => esc_attr( trim( $module_class ) ),
+					'style'            => esc_html( $animation_style ),
+					'repeat'           => esc_html( $animation_repeat ),
+					'duration'         => esc_html( $animation_duration ),
+					'delay'            => esc_html( $animation_delay ),
+					'intensity'        => esc_html( $animation_intensity ),
+					'starting_opacity' => esc_html( $animation_starting_opacity ),
+					'speed_curve'      => esc_html( $animation_speed_curve ),
 				) );
 			}
 
@@ -1640,6 +1774,29 @@ class ET_Builder_Element {
 			}
 
 			$this->add_classname( 'et_animated' );
+		}
+
+		// Add "et_hover_enabled" class to elements that have at least one hover prop enabled
+		if ( et_has_hover_enabled( $this->props ) ) {
+			$this->add_classname( 'et_hover_enabled' );
+		}
+
+		// Setup link options
+		$link_option_url            = isset( $this->props['link_option_url'] ) ? $this->props['link_option_url'] : '';
+		$link_option_url_new_window = isset( $this->props['link_option_url_new_window'] ) ? $this->props['link_option_url_new_window'] : false;
+
+		if ( '' !== $link_option_url ) {
+			$module_class = ET_Builder_Element::get_module_order_class( $render_slug );
+
+			if ( $module_class ) {
+				et_builder_handle_link_options_data( array(
+					'class'  => trim( $module_class ),
+					'url'    => esc_url( $link_option_url ),
+					'target' => 'on' === $link_option_url_new_window ? '_blank' : '_self',
+				) );
+			}
+
+			$this->add_classname( 'et_clickable' );
 		}
 
 		// Hide module on specific screens if needed
@@ -1887,6 +2044,9 @@ class ET_Builder_Element {
 		global $post;
 
 		// this is called during pageload, but we want to ignore that round, as this data will be built and returned on separate ajax request instead
+
+		et_core_nonce_verified_previously();
+
 		if ( ! isset( $_POST['action'] ) ) {
 			return '';
 		}
@@ -2026,7 +2186,7 @@ class ET_Builder_Element {
 				}
 
 				if ( ! is_callable( $field['computed_callback'] ) ) {
-					die( $shortcode_attr_key . ' Callback:' . $field['computed_callback'] . ' is not callable.... '); // TODO, fix this make it more graceful...
+					wp_die( esc_html( $shortcode_attr_key . ' Callback:' . $field['computed_callback'] . ' is not callable.... ' ) );
 				}
 
 				$value = call_user_func( $field['computed_callback'], $depends_on );
@@ -2086,7 +2246,7 @@ class ET_Builder_Element {
 
 		if ( empty( $attrs ) ) {
 			// Visual Builder expects $attrs to be an object.
-			// Associative array converted to an object by json_encode correctly, but empty array is not and it causes issues.
+			// Associative array converted to an object by wp_json_encode correctly, but empty array is not and it causes issues.
 			$attrs = new stdClass();
 		}
 
@@ -2274,14 +2434,25 @@ class ET_Builder_Element {
 		// Add animation fields to all modules
 		$this->_add_animation_fields();
 
+		$this->_add_additional_transition_fields();
+
 		// Add text shadow fields to all modules
 		$this->_add_text_shadow_fields();
+
+		// Add link options to all modules
+		$this->_add_link_options_fields();
 
 		if ( ! isset( $this->_additional_fields_options ) ) {
 			return false;
 		}
 
 		$additional_options = $this->_additional_fields_options;
+
+		// Add hover field indication
+		$additional_options['hover_enabled'] = array(
+			'type'    => 'skip',
+			'default' => 0,
+		);
 
 		if ( ! empty( $additional_options ) ) {
 			// delete second level advanced options default values
@@ -2468,6 +2639,7 @@ class ET_Builder_Element {
 						'max'  => '100',
 						'step' => '1',
 					),
+					'hover'           => 'tabs',
 				) );
 
 				// set the depends_show_if parameter if needed
@@ -2509,6 +2681,34 @@ class ET_Builder_Element {
 				);
 			}
 
+			if ( ! isset( $option_settings['hide_text_color'] ) || ! $option_settings['hide_text_color'] ) {
+				$additional_options["{$option_name}_text_color"] = array(
+					'label'           => sprintf( esc_html__( '%1$s Text Color', 'et_builder' ), $option_settings['label'] ),
+					'type'            => 'color-alpha',
+					'option_category' => 'font_option',
+					'custom_color'    => true,
+					'tab_slug'        => $tab_slug,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
+					'hover'           => 'tabs',
+				);
+
+				// add reference to the obsolete color option if needed
+				if (self::$_->array_get($option_settings, 'text_color.old_option_ref')) {
+					$additional_options["{$option_name}_text_color"]['attributes'] = array( 'data-old-option-ref' => "{$option_settings['text_color']['old_option_ref']}" );
+				}
+
+				// set default value if defined
+				if (self::$_->array_get($option_settings, 'text_color.default')) {
+					$additional_options["{$option_name}_text_color"]['default'] = $option_settings['text_color']['default'];
+				}
+
+				// set the depends_show_if parameter if needed
+				if ( isset( $option_settings['depends_show_if'] ) ) {
+					$additional_options["{$option_name}_text_color"]['depends_show_if'] = $option_settings['depends_show_if'];
+				}
+			}
+
 			if ( ! isset( $option_settings['hide_letter_spacing'] ) || ! $option_settings['hide_letter_spacing'] ) {
 				$additional_options["{$option_name}_letter_spacing"] = wp_parse_args( $option_settings['letter_spacing'], array(
 					'label'           => sprintf( esc_html__( '%1$s Letter Spacing', 'et_builder' ), $option_settings['label'] ),
@@ -2525,6 +2725,7 @@ class ET_Builder_Element {
 						'max'  => '100',
 						'step' => '1',
 					),
+					'hover'           => 'tabs',
 				) );
 
 				// set the depends_show_if parameter if needed
@@ -2558,12 +2759,13 @@ class ET_Builder_Element {
 					'tab_slug'         => $tab_slug,
 					'toggle_slug'      => $toggle_slug,
 					'sub_toggle'       => $sub_toggle,
-					'default_unit'    => 'em',
+					'default_unit'     => 'em',
 					'range_settings'   => array(
 						'min'  => '1',
 						'max'  => '3',
 						'step' => '0.1',
 					),
+					'hover'            => 'tabs',
 				);
 
 				if ( isset( $option_settings['line_height'] ) ) {
@@ -2656,6 +2858,8 @@ class ET_Builder_Element {
 			$this->_add_settings_modal_toggles( $tab_slug, $background_toggle );
 		}
 
+		$background_field_name = "background";
+
 		// Possible values for use_* attributes: true, false, or 'fields_only'
 		$defaults = array(
 			'has_background_color_toggle'   => false,
@@ -2720,6 +2924,7 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 
 		// Allow module to configure specific options
+
 		$background_options = self::$_->array_get( $this->advanced_fields, 'background.options', false );
 
 		if ( $background_options ) {
@@ -2807,6 +3012,7 @@ class ET_Builder_Element {
 				),
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
+				'hover'             => 'tabs',
 				'description'       => esc_html__( 'Here you can choose whether your text should be light or dark. If you are working with a dark background, then your text should be light. If your background is light, then your text should be set to dark.', 'et_builder' ),
 			);
 
@@ -3004,6 +3210,7 @@ class ET_Builder_Element {
 						'max'  => '100',
 						'step' => '1',
 					),
+					'hover'            => 'tabs',
 				),
 				'max_width_tablet'      => array(
 					'type'        => 'skip',
@@ -3045,6 +3252,7 @@ class ET_Builder_Element {
 
 				$additional_options['module_alignment']['depends_on'] = array(
 					'max_width',
+					et_pb_hover_options()->get_hover_field( 'max_width' ),
 				);
 
 				$additional_options['module_alignment']['depends_on_responsive'] = array(
@@ -3119,6 +3327,7 @@ class ET_Builder_Element {
 				'option_category' => 'layout',
 				'tab_slug'        => $tab_slug,
 				'toggle_slug'     => $toggle_slug,
+				'hover'           => 'tabs',
 			);
 			$additional_options['custom_margin_tablet'] = array(
 				'type'     => 'skip',
@@ -3174,6 +3383,7 @@ class ET_Builder_Element {
 				'option_category' => 'layout',
 				'tab_slug'        => $tab_slug,
 				'toggle_slug'     => $toggle_slug,
+				'hover'           => 'tabs',
 			);
 			$additional_options['custom_padding_tablet'] = array(
 				'type'        => 'skip',
@@ -3224,6 +3434,7 @@ class ET_Builder_Element {
 		}
 
 		$additional_options = array();
+		$hover = et_pb_hover_options();
 
 		foreach ( $this->advanced_fields['button'] as $option_name => $option_settings ) {
 			$tab_slug = isset( $option_settings['tab_slug'] ) ? $option_settings['tab_slug'] : 'advanced';
@@ -3262,11 +3473,10 @@ class ET_Builder_Element {
 					"{$option_name}_border_color",
 					"{$option_name}_use_icon",
 					"{$option_name}_font",
-					"{$option_name}_text_color_hover",
-					"{$option_name}_bg_color_hover",
-					"{$option_name}_border_color_hover",
-					"{$option_name}_border_radius_hover",
-					"{$option_name}_letter_spacing_hover",
+					$hover->get_hover_field( "{$option_name}_text_color" ),
+					$hover->get_hover_field( "{$option_name}_border_color" ),
+					$hover->get_hover_field( "{$option_name}_border_radius" ),
+					$hover->get_hover_field( "{$option_name}_letter_spacing" ),
 					"{$option_name}_text_shadow_style", // Add Text Shadow to button options
 					"box_shadow_style_{$option_name}",
 				),
@@ -3290,6 +3500,7 @@ class ET_Builder_Element {
 				'toggle_slug'     => $toggle_slug,
 				'mobile_options'  => true,
 				'depends_show_if' => 'on',
+				'hover'           => 'tabs',
 			);
 
 			$additional_options["{$option_name}_text_color"] = array(
@@ -3301,12 +3512,14 @@ class ET_Builder_Element {
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 				'depends_show_if'   => 'on',
+				'hover'             => 'tabs',
 			);
 
 			$additional_options["{$option_name}_bg_color"] = array(
 				'label'             => sprintf( esc_html__( '%1$s Background Color', 'et_builder' ), $option_settings['label'] ),
 				'type'              => 'background-field',
 				'base_name'         => "{$option_name}_bg",
+				'context'           => "{$option_name}_bg",
 				'option_category'   => 'button',
 				'custom_color'      => true,
 				'default'           => ET_Global_Settings::get_value( 'all_buttons_bg_color' ),
@@ -3314,12 +3527,13 @@ class ET_Builder_Element {
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 				'depends_show_if'   => 'on',
-				'background_fields' => $this->generate_background_options( "{$option_name}_bg", 'button', $tab_slug, $toggle_slug ),
+				'background_fields' => $this->generate_background_options( "{$option_name}_bg", 'button', $tab_slug, $toggle_slug, "{$option_name}_bg_color" ),
+				'hover'             => 'tabs',
 			);
 
 			$additional_options["{$option_name}_bg_color"]['background_fields']["{$option_name}_bg_color"]['default'] = ET_Global_Settings::get_value( 'all_buttons_bg_color' );
 
-			$additional_options = array_merge( $additional_options, $this->generate_background_options( "{$option_name}_bg", 'skip', $tab_slug, $toggle_slug ) );
+			$additional_options = array_merge( $additional_options, $this->generate_background_options( "{$option_name}_bg", 'skip', $tab_slug, $toggle_slug, "{$option_name}_bg_color" ) );
 
 			$additional_options["{$option_name}_border_width"] = array(
 				'label'             => sprintf( esc_html__( '%1$s Border Width', 'et_builder' ), $option_settings['label'] ),
@@ -3331,6 +3545,7 @@ class ET_Builder_Element {
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 				'depends_show_if'   => 'on',
+				'hover'             => 'tabs',
 			);
 
 			$additional_options["{$option_name}_border_color"] = array(
@@ -3342,6 +3557,7 @@ class ET_Builder_Element {
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 				'depends_show_if'   => 'on',
+				'hover'             => 'tabs',
 			);
 
 			$additional_options["{$option_name}_border_radius"] = array(
@@ -3354,6 +3570,7 @@ class ET_Builder_Element {
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 				'depends_show_if'   => 'on',
+				'hover'             => 'tabs',
 			);
 
 			$additional_options["{$option_name}_letter_spacing"] = array(
@@ -3367,6 +3584,7 @@ class ET_Builder_Element {
 				'toggle_slug'       => $toggle_slug,
 				'mobile_options'    => true,
 				'depends_show_if'   => 'on',
+				'hover'             => 'tabs',
 			);
 
 			$additional_options["{$option_name}_font"] = array(
@@ -3415,6 +3633,7 @@ class ET_Builder_Element {
 				'option_category'     => 'button',
 				'custom_color'        => true,
 				'default'             => '',
+				'hover'               => 'tabs',
 				'tab_slug'            => $tab_slug,
 				'toggle_slug'         => $toggle_slug,
 				'depends_show_if_not' => 'off',
@@ -3446,63 +3665,6 @@ class ET_Builder_Element {
 				'tab_slug'            => $tab_slug,
 				'toggle_slug'         => $toggle_slug,
 				'depends_show_if_not' => 'off',
-			);
-
-			$additional_options["{$option_name}_text_color_hover"] = array(
-				'label'             => sprintf( esc_html__( '%1$s Hover Text Color', 'et_builder' ), $option_settings['label'] ),
-				'type'              => 'color-alpha',
-				'option_category'   => 'button',
-				'custom_color'      => true,
-				'default'           => '',
-				'tab_slug'          => $tab_slug,
-				'toggle_slug'       => $toggle_slug,
-				'depends_show_if'   => 'on',
-			);
-
-			$additional_options["{$option_name}_bg_color_hover"] = array(
-				'label'             => sprintf( esc_html__( '%1$s Hover Background Color', 'et_builder' ), $option_settings['label'] ),
-				'type'              => 'color-alpha',
-				'option_category'   => 'button',
-				'custom_color'      => true,
-				'default'           => '',
-				'tab_slug'          => $tab_slug,
-				'toggle_slug'       => $toggle_slug,
-				'depends_show_if'   => 'on',
-			);
-
-			$additional_options["{$option_name}_border_color_hover"] = array(
-				'label'             => sprintf( esc_html__( '%1$s Hover Border Color', 'et_builder' ), $option_settings['label'] ),
-				'type'              => 'color-alpha',
-				'option_category'   => 'button',
-				'custom_color'      => true,
-				'default'           => '',
-				'tab_slug'          => $tab_slug,
-				'toggle_slug'       => $toggle_slug,
-				'depends_show_if'   => 'on',
-			);
-
-			$additional_options["{$option_name}_border_radius_hover"] = array(
-				'label'             => sprintf( esc_html__( '%1$s Hover Border Radius', 'et_builder' ), $option_settings['label'] ),
-				'type'              => 'range',
-				'option_category'   => 'button',
-				'default'           => ET_Global_Settings::get_value( 'all_buttons_border_radius_hover' ),
-				'default_unit'      => 'px',
-				'default_on_front'  => '',
-				'tab_slug'          => $tab_slug,
-				'toggle_slug'       => $toggle_slug,
-				'depends_show_if'   => 'on',
-			);
-
-			$additional_options["{$option_name}_letter_spacing_hover"] = array(
-				'label'           => sprintf( esc_html__( '%1$s Hover Letter Spacing', 'et_builder' ), $option_settings['label'] ),
-				'type'            => 'range',
-				'option_category' => 'button',
-				'default'         => ET_Global_Settings::get_value( 'all_buttons_spacing_hover' ),
-				'default_unit'    => 'px',
-				'tab_slug'        => $tab_slug,
-				'toggle_slug'     => $toggle_slug,
-				'mobile_options'  => true,
-				'depends_show_if' => 'on',
 			);
 
 			$additional_options["{$option_name}_text_size_tablet"] = array(
@@ -3546,7 +3708,7 @@ class ET_Builder_Element {
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
 			);
-			$additional_options["{$option_name}_letter_spacing_hover_last_edited"] = array(
+			$additional_options[$hover->get_hover_field( "{$option_name}_letter_spacing_last_edited" )] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
@@ -4127,6 +4289,76 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
+	private function _add_additional_transition_fields() {
+		$this->settings_modal_toggles['custom_css']['toggles']['hover_transitions'] = array(
+			'title'    => esc_html__( 'Transitions', 'et_builder' ),
+			'priority' => 120,
+		);
+
+		$additional_options = array();
+
+		$additional_options['hover_transition_duration'] = array(
+			'label'            => esc_html__( 'Transition Duration', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 2000,
+				'step' => 50,
+			),
+			'default'          => '300ms',
+			'default_on_child' => true,
+			'validate_unit'    => true,
+			'fixed_unit'       => 'ms',
+			'fixed_range'      => true,
+			'tab_slug'         => 'custom_css',
+			'toggle_slug'      => 'hover_transitions',
+			'depends_default'  => null,
+			'description'      => esc_html__( 'This controls the transition duration of the hover animation.', 'et_builder' ),
+		);
+
+		$additional_options['hover_transition_delay'] = array(
+			'label'            => esc_html__( 'Transition Delay', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 300,
+				'step' => 50,
+			),
+			'default'          => '0ms',
+			'default_on_child' => true,
+			'validate_unit'    => true,
+			'fixed_unit'       => 'ms',
+			'fixed_range'      => true,
+			'tab_slug'         => 'custom_css',
+			'toggle_slug'      => 'hover_transitions',
+			'depends_default'  => null,
+			'description'      => esc_html__( 'This controls the transition delay of the hover animation.', 'et_builder' ),
+		);
+
+		$additional_options['hover_transition_speed_curve'] = array(
+			'label'            => esc_html__( 'Transition Speed Curve', 'et_builder' ),
+			'type'             => 'select',
+			'option_category'  => 'layout',
+			'default'          => 'ease',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'This controls the transition speed curve of the hover animation.', 'et_builder' ),
+			'options'          => array(
+				'ease-in-out' => esc_html__( 'Ease-In-Out', 'et_builder' ),
+				'ease'        => esc_html__( 'Ease', 'et_builder' ),
+				'ease-in'     => esc_html__( 'Ease-In', 'et_builder' ),
+				'ease-out'    => esc_html__( 'Ease-Out', 'et_builder' ),
+				'linear'      => esc_html__( 'Linear', 'et_builder' ),
+			),
+			'tab_slug'         => 'custom_css',
+			'toggle_slug'      => 'hover_transitions',
+			'depends_default'  => null,
+		);
+
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
 	/**
 	 * Add CSS filter controls (i.e. saturation, brightness, opacity) to the `_additional_fields_options` array.
 	 *
@@ -4178,6 +4410,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_saturate'] = array(
@@ -4198,6 +4431,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_brightness'] = array(
@@ -4218,6 +4452,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_contrast'] = array(
@@ -4238,6 +4473,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_invert'] = array(
@@ -4258,6 +4494,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_sepia'] = array(
@@ -4278,6 +4515,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_opacity'] = array(
@@ -4298,6 +4536,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['filter_blur'] = array(
@@ -4319,6 +4558,7 @@ class ET_Builder_Element {
 			'tab_slug'         => $tab_slug,
 			'toggle_slug'      => $toggle_slug,
 			'reset_animation'  => false,
+			'hover'            => 'tabs',
 		);
 
 		$additional_options['mix_blend_mode'] = array(
@@ -4379,6 +4619,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_saturate'   => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Saturation', 'et_builder' ),
@@ -4398,6 +4639,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_brightness' => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Brightness', 'et_builder' ),
@@ -4417,6 +4659,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_contrast'   => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Contrast', 'et_builder' ),
@@ -4436,6 +4679,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_invert'     => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Invert', 'et_builder' ),
@@ -4455,6 +4699,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_sepia'      => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Sepia', 'et_builder' ),
@@ -4474,6 +4719,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_opacity'    => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Opacity', 'et_builder' ),
@@ -4493,6 +4739,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_filter_blur'       => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Blur', 'et_builder' ),
@@ -4512,6 +4759,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 			'child_mix_blend_mode'    => array(
 				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Blend Mode', 'et_builder' ),
@@ -4541,6 +4789,7 @@ class ET_Builder_Element {
 				'tab_slug'         => $child_filter['tab_slug'],
 				'toggle_slug'      => $child_filter['toggle_slug'],
 				'reset_animation'  => false,
+				'hover'            => 'tabs',
 			),
 		);
 
@@ -4677,6 +4926,358 @@ class ET_Builder_Element {
 				ET_Builder_Module_Fields_Factory::get( 'BoxShadow' )->get_fields( $settings )
 			);
 		}
+	}
+
+	public function get_transition_box_shadow_fields_css_props( $module = 'default' ) {
+		/**
+		 * @var ET_Builder_Module_Field_BoxShadow $box_shadow
+		 */
+		$box_shadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
+		$selector   = self::$_->array_get( $this->advanced_fields, "box_shadow.$module.css.main", '%%order_class%%' );
+		$overlay    = self::$_->array_get( $this->advanced_fields, "box_shadow.$module.css.overlay", false );
+		$suffix     = 'default' == $module ? '' : "_$module";
+
+		if ( in_array( $overlay, array( 'inset', 'always' ) ) ) {
+			$selector .= ', ' . $box_shadow->get_overlay_selector( $selector );
+		}
+
+		return array(
+			"box_shadow_horizontal{$suffix}" => array( 'box-shadow' => $selector, ),
+			"box_shadow_vertical{$suffix}"   => array( 'box-shadow' => $selector, ),
+			"box_shadow_blur{$suffix}"       => array( 'box-shadow' => $selector, ),
+			"box_shadow_spread{$suffix}"     => array( 'box-shadow' => $selector, ),
+			"box_shadow_color{$suffix}"      => array( 'box-shadow' => $selector, ),
+		);
+	}
+
+	public function get_transition_text_shadow_fields_css_props( $module = null ) {
+		$source = null == $module ? 'text.css' : "fonts.$module.css";
+		$default = self::$_->array_get( $this->advanced_fields, "$source.main", '%%order_class%%' );
+		$selector = self::$_->array_get( $this->advanced_fields, "$source.text_shadow", $default );
+		$prefix = null == $module ? '' : "{$module}_";
+
+		return array(
+			"{$prefix}text_shadow_horizontal_length" => array( 'text-shadow' => $selector, ),
+			"{$prefix}text_shadow_vertical_length"   => array( 'text-shadow' => $selector, ),
+			"{$prefix}text_shadow_blur_strength"     => array( 'text-shadow' => $selector, ),
+			"{$prefix}text_shadow_color"             => array( 'text-shadow' => $selector, ),
+		);
+	}
+
+	public function get_transition_filters_fields_css_props( $module = null ) {
+		$slug = empty( $module ) ? 'filter' : 'child_filter';
+		$source = empty( $module ) ? 'filters.css.main' : "$module.css.main";
+		$filters = array( 'hue_rotate', 'saturate', 'brightness', 'contrast', 'invert', 'sepia', 'opacity', 'blur', );
+		$fields = array();
+		$main = self::$_->array_get( $this->advanced_fields, $source, '%%order_class%%' );
+		$selector = $module ? self::$_->array_get( $this->advanced_fields, 'filters.child_filters_target.css.main', $main ) : $main;
+
+		foreach ( $filters as $filter ) {
+			$fields[ "{$slug}_{$filter}" ] = array( 'filter' => $selector, );
+		}
+
+		return $fields;
+	}
+
+	public function get_transition_borders_fields_css_props( $module = 'default' ) {
+		$suffix = 'default' == $module ? '' : "_$module";
+		$radius = self::$_->array_get( $this->advanced_fields, "borders.$module.css.main.border_radii", '%%order_class%%' );
+		$style = self::$_->array_get( $this->advanced_fields, "borders.$module.css.main.border_styles", '%%order_class%%' );
+
+		return array(
+			"border_radii{$suffix}"        => array( 'border-radius' => implode( ', ', array( $radius, ) ) ),
+			"border_width_all{$suffix}"    => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_color_all{$suffix}"    => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_width_top{$suffix}"    => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_color_top{$suffix}"    => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_width_right{$suffix}"  => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_color_right{$suffix}"  => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_width_bottom{$suffix}" => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_color_bottom{$suffix}" => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_width_left{$suffix}"   => array( 'border' => implode( ', ', array( $style, ) ), ),
+			"border_color_left{$suffix}"   => array( 'border' => implode( ', ', array( $style, ) ), ),
+		);
+	}
+
+	public function get_transition_margin_padding_fields_css_props( $module = null ) {
+		$key = empty($module) ? '' : "$module.";
+		$suffix = empty($module) ? '' : "_$module";
+		$margin = self::$_->array_get( $this->advanced_fields, "margin_padding.{$key}css.margin", '%%order_class%%' );
+		$padding = self::$_->array_get( $this->advanced_fields, "margin_padding.{$key}css.padding", '%%order_class%%' );
+
+		return array(
+			"custom_margin{$suffix}"  => array( 'margin' => implode( ', ', array( $margin, ) ) ),
+			"custom_padding{$suffix}" => array( 'padding' => implode( ', ', array( $padding, ) ), ),
+		);
+	}
+
+	public function get_transition_font_fields_css_props() {
+		$items = self::$_->array_get( $this->advanced_fields, 'fonts' );
+
+		if ( !is_array( $items ) ) {
+			return array();
+		}
+
+		$font_options = array(
+			array( 'option' => 'text_color', 'slug' => 'color', 'prop' => 'color', ),
+			array( 'option' => 'font_size', 'slug' => 'font_size', 'prop' => 'font-size', ),
+			array( 'option' => 'line_height', 'slug' => 'line_height', 'prop' => 'line-height', ),
+			array( 'option' => 'letter_spacing', 'slug' => 'letter_spacing', 'prop' => 'letter-spacing', ),
+			array( 'option' => 'text_shadow_horizontal_length', 'slug' => 'text_shadow', 'prop' => 'text-shadow', ),
+			array( 'option' => 'text_shadow_vertical_length', 'slug' => 'text_shadow', 'prop' => 'text-shadow', ),
+			array( 'option' => 'text_shadow_blur_strength', 'slug' => 'text_shadow', 'prop' => 'text-shadow', ),
+			array( 'option' => 'text_shadow_color', 'slug' => 'text_shadow', 'prop' => 'text-shadow', ),
+		);
+		$fields = array();
+
+		foreach ( $items as $item => $field ) {
+			foreach ( $font_options as $key ) {
+				$fields["{$item}_{$key['option']}"] = array(
+					$key['prop'] => self::$_->array_get(
+						$field,
+						"css.{$key['slug']}",
+						self::$_->array_get( $field, 'css.main', '%%order_class%%' )
+					)
+				);
+			}
+		}
+
+		return $fields;
+	}
+
+	public function get_transition_image_fields_css_props() {
+		$fields = array();
+		$fields = array_merge( $this->get_transition_filters_fields_css_props( 'image' ), $fields );
+		$fields = array_merge( $this->get_transition_borders_fields_css_props( 'image' ), $fields );
+		$fields = array_merge( $this->get_transition_box_shadow_fields_css_props( 'image' ), $fields );
+
+		return $fields;
+	}
+
+	public function get_transition_button_fields_css_props() {
+		$buttons = self::$_->array_get( $this->advanced_fields, 'button', array() );
+		$fields  = array();
+
+		if ( empty( $buttons ) ) {
+			return array();
+		}
+
+		foreach ( $buttons as $key => $button ) {
+			$selector = self::$_->array_get( $button, 'css.main', '%%order_class%%' );
+
+			$field = array(
+				"{$key}_text_color"        => array( 'color' => $selector, ),
+				"{$key}_text_size"         => array(
+					'font-size'   => $selector,
+					'line-height' => $selector,
+					'padding'     => $selector,
+				),
+				"{$key}_bg_color"                     => array( 'background-color' => $selector, ),
+				"{$key}_border_width"                 => array( 'border' => $selector, ),
+				"{$key}_border_color"                 => array( 'border' => $selector, ),
+				"{$key}_border_radius"                => array( 'border-radius' => $selector, ),
+				"{$key}_letter_spacing"               => array( 'letter-spacing' => $selector, ),
+				"{$key}text_shadow_horizontal_length" => array( 'text-shadow' => $selector, ),
+				"{$key}text_shadow_vertical_length"   => array( 'text-shadow' => $selector, ),
+				"{$key}text_shadow_blur_strength"     => array( 'text-shadow' => $selector, ),
+				"{$key}text_shadow_color"             => array( 'text-shadow' => $selector, ),
+				"box_shadow_style_$key"               => array(
+					'box-shadow' => implode( ', ',
+						array(
+							$selector,
+							$this->add_suffix_to_selectors( ' > .box-shadow-overlay', $selector ),
+						) ),
+				),
+			);
+
+			$fields = array_merge( $fields, $field );
+		}
+
+		return $fields;
+	}
+
+	public function get_transition_gutter_fields_css_props() {
+		$gutter_selector = 'et_pb_section' === $this->slug ? '%%order_class%% .et_pb_gutter_hover *' : '%%order_class%%.et_pb_gutter_hover *';
+
+		// animate width, padding and margin if gutter width has hover options
+		return array(
+			'gutter_width' => array(
+				'width'   => $gutter_selector,
+				'margin'  => $gutter_selector,
+				'padding' => $gutter_selector,
+			)
+		);
+	}
+
+	public function get_transition_fields_css_props() {
+		$default     = $this->main_css_element;
+		$text_main   = self::$_->array_get( $this->advanced_fields, 'text.css.main', $default );
+
+		$fields = array(
+			'background_layout' => array( 'color' => $text_main, ),
+			'background'        => array(
+				'background-color' => self::$_->array_get( $this->advanced_fields,
+					'background.css.main',
+					$default ),
+			),
+			'max_width'         => array( 'max-width' => $default, ),
+			'text_color'        => array(
+				'color' => self::$_->array_get( $this->advanced_fields,
+					'text.css.color',
+					$text_main ),
+			),
+		);
+
+		$fields = array_merge( $this->get_transition_filters_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_box_shadow_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_text_shadow_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_image_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_borders_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_margin_padding_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_button_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_font_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_gutter_fields_css_props(), $fields );
+
+		return apply_filters( 'et_builder_hover_transitions_map', $fields );
+	}
+
+	/**
+	 * Add link options fields to all modules
+	 *
+	 * @since 3.15.1
+	 */
+	protected function _add_link_options_fields() {
+		// Link Options are added by default if module has partial or full VB support
+		if ( $this->has_vb_support() ) {
+			$this->advanced_fields['link_options'] = self::$_->array_get( $this->advanced_fields, 'link_options', array() );
+		} else if ( ! $this->has_advanced_fields ) {
+			// Disable if module doesn't set advanced_fields property and has no VB support
+			return;
+		}
+
+		// Link options settings have to be array
+		if ( ! is_array( self::$_->array_get( $this->advanced_fields, 'link_options' ) ) ) {
+			return;
+		}
+
+		$this->settings_modal_toggles['general']['toggles']['link_options'] = array(
+			'title'    => esc_html__( 'Link', 'et_builder' ),
+			'priority' => 70,
+		);
+
+		$additional_options = array();
+
+		// Translate the whole label as a phrase instead of replacing placeholder with section / row / module translation
+		// Less error prone for translator and the translation. Phrase might be structured differently in some language
+		switch ( $this->slug ) {
+			case 'et_pb_section':
+				$url_label    = esc_html__( 'Section Link URL', 'et_builder' );
+				$target_label = esc_html__( 'Section Link Target', 'et_builder' );
+				break;
+
+			case 'et_pb_row':
+			case 'et_pb_row_inner':
+				$url_label    = esc_html__( 'Row Link URL', 'et_builder' );
+				$target_label = esc_html__( 'Row Link Target', 'et_builder' );
+				break;
+
+			default:
+				$url_label    = esc_html__( 'Module Link URL', 'et_builder' );
+				$target_label = esc_html__( 'Module Link Target', 'et_builder' );
+				break;
+		}
+
+		$additional_options['link_option_url'] = array(
+			'label'           => $url_label,
+			'type'            => 'text',
+			'toggle_slug'     => 'link_options',
+			'description'     => esc_html__( 'When clicked the module will link to this URL.', 'et_builder' ),
+			'dynamic_content' => 'url',
+		);
+
+		$additional_options['link_option_url_new_window'] = array(
+			'label'            => $target_label,
+			'type'             => 'select',
+			'option_category'  => 'configuration',
+			'options'          => array(
+				'off' => esc_html__( 'In The Same Window', 'et_builder' ),
+				'on'  => esc_html__( 'In The New Tab', 'et_builder' ),
+			),
+			'toggle_slug'      => 'link_options',
+			'description'      => esc_html__( 'Here you can choose whether or not your link opens in a new window', 'et_builder' ),
+			'default_on_front' => 'off',
+		);
+
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
+	function setup_hover_transitions( $function_name ) {
+
+		// List of all property names and their respective CSS property names
+		$transitions_map = $this->get_transition_fields_css_props();
+
+		$selectors   = array();
+		$transitions = array();
+		$hover = et_pb_hover_options();
+
+		// We need to loop transitions array so cases of prefixed prop names can also be caught
+		foreach ( $transitions_map as $prop_name => $css_props ) {
+			// To build a proper regex "{prefix}" is replaced with ".*?" as it might not always be present
+			$prop_name_regexed = str_replace( '{slug}', '.*?', $prop_name );
+			$match_regex       = "~^{$prop_name_regexed}{$hover->get_enabled_suffix()}$~";
+
+			// Get a list of props matching the pattern above (should never be more than one match actually)
+			$prop_matches = preg_grep( $match_regex, array_keys( $this->props ) );
+
+			if ( empty( $prop_matches ) ) {
+				continue;
+			}
+
+			// Reset the array keys to make sure the first (and only) match is $prop_matches[0]
+			$prop_matches = array_values( $prop_matches );
+
+			// Continue if somehow {property_name}__hover_enabled is not "on"
+			if ( 'on' !== $this->props[ $prop_matches[0] ] ) {
+				continue;
+			}
+
+			// Add the CSS property for the transition
+			$transitions = array_merge( $transitions, array_keys( $css_props ) );
+			foreach ( $css_props as $selector ) {
+				$selector = is_array( $selector ) ? $selector : array( $selector );
+				$selectors = array_merge( $selectors, $selector );
+			}
+		}
+
+		// Don't apply transitions if none are needed
+		if ( empty( $transitions ) ) {
+			return;
+		}
+
+		// Create a separate transition definition for each needed transition to avoid using "all"
+		$transition_css = array();
+
+		$duration   = et_pb_transition_options()->get_duration( $this->props );
+		$easing     = et_pb_transition_options()->get_easing( $this->props );
+		$delay      = et_pb_transition_options()->get_delay( $this->props );
+
+		foreach ( array_unique( $transitions ) as $transition ) {
+			$transition_css[] = "{$transition} {$duration} {$easing} {$delay}";
+			$transition_css[] = sprintf(
+				'%1$s %2$s %3$s %4$s',
+				esc_attr($transition),
+				esc_attr($duration),
+				esc_attr($easing),
+				esc_attr($delay)
+			);
+		}
+
+		$transition_declaration = 'transition: ' . implode( ', ', $transition_css ) . ';';
+
+		self::set_style( $function_name, array(
+			'selector'    => implode( ', ', array_unique( $selectors ) ),
+			'declaration' => esc_html( $transition_declaration )
+		) );
 	}
 
 	protected function _add_custom_css_fields() {
@@ -5055,7 +5656,7 @@ class ET_Builder_Element {
 	function get_post_type() {
 		global $post, $et_builder_post_type;
 
-		if ( isset( $_POST['et_post_type'] ) && ! $et_builder_post_type ) {
+		if ( isset( $_POST['et_post_type'] ) && ! $et_builder_post_type ) {  // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$et_builder_post_type = sanitize_text_field( $_POST['et_post_type'] );
 		}
 
@@ -5089,7 +5690,7 @@ class ET_Builder_Element {
 		return $content;
 	}
 
-	function wrap_settings_option( $option_output, $field ) {
+	function wrap_settings_option( $option_output, $field, $name = '' ) {
 		$depends      = false;
 		$new_depends  = isset( $field['show_if'] ) || isset( $field['show_if_not'] );
 		$depends_attr = '';
@@ -5121,19 +5722,38 @@ class ET_Builder_Element {
 
 		$output = sprintf(
 			'%6$s<div class="et-pb-option et-pb-option--%10$s%1$s%2$s%3$s%8$s%9$s%12$s"%4$s tabindex="-1" data-option_name="%11$s">%5$s</div>%7$s',
-			( ! empty( $field['type'] ) && 'tiny_mce' == $field['type'] ? ' et-pb-option-main-content' : '' ),
+			( ! empty( $field['type'] ) && 'tiny_mce' === $field['type'] ? ' et-pb-option-main-content' : '' ),
 			$depends || $new_depends ? ' et-pb-depends' : '',
-			( ! empty( $field['type'] ) && 'hidden' == $field['type'] ? ' et_pb_hidden' : '' ),
+			( ! empty( $field['type'] ) && 'hidden' === $field['type'] ? ' et_pb_hidden' : '' ),
 			( $depends ? $depends_attr : '' ),
 			"\n\t\t\t\t" . $option_output . "\n\t\t\t",
 			"\t",
 			"\n\n\t\t",
-			( ! empty( $field['type'] ) && 'hidden' == $field['type'] ? esc_attr( sprintf( ' et-pb-option-%1$s', $field['name'] ) ) : '' ),
+			( ! empty( $field['type'] ) && 'hidden' === $field['type'] ? esc_attr( sprintf( ' et-pb-option-%1$s', $field['name'] ) ) : '' ),
 			( ! empty( $field['option_class'] ) ? ' ' . $field['option_class'] : '' ),
 			isset( $field['type'] ) ? esc_attr( $field['type'] ) : '',
 			esc_attr( $field['name'] ),
 			isset( $field['specialty_only'] ) && 'yes' === $field['specialty_only'] ? ' et-pb-specialty-only-option' : ''
 		);
+
+		if ( ! empty( $field['hover'] ) ) {
+			if ( 'tabs' === $field['hover'] ) {
+				$this->last_hover_tab_field = $name;
+			}
+			$hover = $this->last_hover_tab_field;
+			if ( $hover ) {
+				$begin = '<div class="et-pb-option ';
+				$pos = strpos( $output, $begin );
+				if ( $pos >= 0 ) {
+					$output = substr_replace(
+						$output,
+						"<div data-depends_hover=\"$hover\" class=\"et-pb-option-standard et-pb-option ",
+						$pos,
+						strlen( $begin )
+					);
+				}
+			}
+		}
 
 		return self::get_unique_bb_key($output);
 	}
@@ -5213,7 +5833,7 @@ class ET_Builder_Element {
 	 *
 	 * @return mixed|string Html code of the field
 	 */
-	public function wrap_settings_option_field( $field ) {
+	public function wrap_settings_option_field( $field, $name = '' ) {
 		$use_container_wrapper = isset( $field['use_container_wrapper'] ) && ! $field['use_container_wrapper'] ? false : true;
 		$field_renderer = $this->get_field_renderer( $field );
 
@@ -5244,10 +5864,10 @@ class ET_Builder_Element {
 			$field_el = is_callable( $field_renderer['renderer'] ) ? call_user_func( $field_renderer['renderer'], $renderer_options ) : $field_renderer['renderer'];
 
 			if ( ! empty( $field_renderer['renderer_with_field'] ) && $field_renderer['renderer_with_field'] ) {
-				$field_el .= $this->render_field( $field );
+				$field_el .= $this->render_field( $field, $name );
 			}
 		} else {
-			$field_el = $this->render_field( $field );
+			$field_el = $this->render_field( $field, $name );
 		}
 
 		$description = ! empty( $field['description'] ) ? sprintf( '%2$s<p class="description">%1$s</p>', $field['description'], "\n\t\t\t\t\t" ) : '';
@@ -5268,6 +5888,31 @@ class ET_Builder_Element {
 				isset( $field['type'] ) ? esc_attr( $field['type'] ) : ''
 			);
 		}
+
+		$dynamic_content_notice = et_get_safe_localization( sprintf(
+			__( 'This field contains a dynamic value which requires the Visual Builder. <a href="#" class="%1$s">Open Visual Builder</a>', 'et_builder' ),
+			'et-pb-dynamic-content-fb-switch'
+		) );
+
+		// Conditionally wrap fields depending on whether their values represent dynamic content or not.
+		$output = sprintf(
+			'<%% var isDynamic = typeof %1$s !== \'undefined\' && ET_PageBuilder.isDynamicContent(%1$s); %%>
+			<%% if (isDynamic) { %%>
+				<div class="et-pb-dynamic-content">
+					<div class="et-pb-dynamic-content__message">
+						%2$s
+					</div>
+					<div class="et-pb-dynamic-content__field">
+			<%% } %%>
+			%3$s
+			<%% if (isDynamic) { %%>
+					</div>
+				</div>
+			<%% } %%>',
+			et_core_intentionally_unescaped( $this->get_field_variable_name( $field ), 'underscore_template' ),
+			et_core_intentionally_unescaped( $this->get_icon( 'lock' ) . $dynamic_content_notice, 'underscore_template'),
+			et_core_intentionally_unescaped( $output, 'underscore_template' )
+		);
 
 		return $output;
 	}
@@ -5291,9 +5936,9 @@ class ET_Builder_Element {
 
 		$label = sprintf(
 			'<label%1$s>%2$s%4$s %3$s</label>',
-			$attributes,
-			$label,
-			$required,
+			et_core_esc_previously( $attributes ),
+			et_core_intentionally_unescaped( $label, 'html' ),
+			et_core_intentionally_unescaped( $required, 'fixed_string' ),
 			isset( $field['no_colon'] ) && true === $field['no_colon'] ? '' : ':'
 		);
 
@@ -5435,7 +6080,7 @@ class ET_Builder_Element {
 	 *
 	 * @return array of background fields
 	 */
-	function generate_background_options( $base_name = 'background', $background_tab, $tab_slug, $toggle_slug ) {
+	function generate_background_options( $base_name = 'background', $background_tab, $tab_slug, $toggle_slug, $context = null ) {
 		$baseless_prefix = 'background' === $base_name ? '' : "{$base_name}_";
 		$options         = array();
 
@@ -5449,6 +6094,7 @@ class ET_Builder_Element {
 				'tab_slug'        => $tab_slug,
 				'toggle_slug'     => $toggle_slug,
 				'field_template'  => 'color',
+				'hover'           => 'tabs',
 			);
 		}
 
@@ -5886,6 +6532,10 @@ class ET_Builder_Element {
 			);
 		}
 
+		foreach ( $options as &$option ) {
+			$option['context'] = null == $context ? $base_name : $context;;
+		}
+
 		return $options;
 	}
 
@@ -5930,7 +6580,7 @@ class ET_Builder_Element {
 		}
 
 		// Tab Nav
-		$background .= sprintf( '<%%= window.et_builder.options_template_output("background_tabs_nav",%1$s) %%>', json_encode( $tab_names_processed ) );
+		$background .= sprintf( '<%%= window.et_builder.options_template_output("background_tabs_nav",%1$s) %%>', wp_json_encode( $tab_names_processed ) );
 
 		// Tabs
 		foreach ( $tab_names as $tab_name ) {
@@ -5990,8 +6640,11 @@ class ET_Builder_Element {
 					isset( $tab_field['field_template'] ) ? esc_attr( $tab_field['field_template'] ) : ''
 				);
 
+				// This adds a CSS class based on whether it is `true` or `false`
+				$this->is_background = true;
 				$background .= $this->wrap_settings_option_label( $tab_field );
 				$background .= $this->wrap_settings_option_field( $tab_field );
+				$this->is_background = false;
 				$background .= '</div>';
 			}
 
@@ -6005,12 +6658,38 @@ class ET_Builder_Element {
 	}
 
 	function get_field_name( $field ) {
-		// Don't add 'et_pb_' prefix to the "Admin Label" field
+		$prefix = 'et_pb_';
+
+		// Don't add 'et_pb_' prefix to the "Admin Label" field.
 		if ( 'admin_label' === $field['name'] ) {
 			return $field['name'];
 		}
 
-		return sprintf( 'et_pb_%s', $field['name'] );
+		// Make sure the prefix is not doubled.
+		if ( strpos( $field['name'], $prefix ) === 0 ) {
+			return $field['name'];
+		}
+
+		return $prefix . $field['name'];
+	}
+
+	/**
+	 * Get field name for use in underscore templates.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @param array $field
+	 *
+	 * @return string
+	 */
+	function get_field_variable_name( $field ) {
+		$name = $this->get_field_name( $field );
+		if ( isset( $this->type ) && 'child' === $this->type ) {
+			$name = "data.{$name}";
+		}
+		$name = str_replace( '-', '_', $name );
+
+		return $name;
 	}
 
 	function process_html_attributes( $field, &$attributes ) {
@@ -6055,8 +6734,7 @@ class ET_Builder_Element {
 			)
 	 * @return string        HTML underscore template.
 	 */
-	function render_field( $field ) {
-		$utils = ET_Core_Data_Utils::instance();
+	function render_field( $field, $name = '' ) {
 		$classes = array();
 		$hidden_field = '';
 		$field_el = '';
@@ -6108,7 +6786,7 @@ class ET_Builder_Element {
 			$field_name = "data.{$field_name}";
 		}
 
-		$field_var_name = str_replace('-', '_', $field_name);
+		$field_var_name = $this->get_field_variable_name( $field );
 
 		$default_on_front = self::$_->array_get( $field, 'default_on_front', '' );
 		$default_arr = self::$_->array_get( $field, 'default', $default_on_front );
@@ -6116,11 +6794,11 @@ class ET_Builder_Element {
 		if ( is_array( $default_arr ) && isset( $default_arr[1] ) && is_array( $default_arr[1] ) ) {
 			list($default_parent_id, $defaults_list) = $default_arr;
 			$default_parent_id = sprintf( '%1$set_pb_%2$s', $is_child ? 'data.' : '', $default_parent_id );
-			$default = esc_attr( json_encode( $default_arr ) );
+			$default = esc_attr( wp_json_encode( $default_arr ) );
 			$default_value = sprintf(
 				'(typeof(%1$s) !== \'undefined\' ? ( typeof(%1$s) === \'object\' ? (%2$s)[jQuery(%1$s).val()] : (%2$s)[%1$s] ) : \'\')',
 				$default_parent_id,
-				json_encode( $defaults_list )
+				wp_json_encode( $defaults_list )
 			);
 
 			$default_is_arr = true;
@@ -6260,7 +6938,7 @@ class ET_Builder_Element {
 					$field_custom_value .= '.replace( /%91/g, "&#91;" ).replace( /%93/g, "&#93;" )';
 				}
 
-				if ( in_array( $field_name, array( 'et_pb_raw_content', 'et_pb_custom_message' ) ) ) {
+				if ( in_array( $field_name, array( 'et_pb_custom_message' ) ) ) {
 					// escape html to make sure it's not rendered inside the Textarea field in Settings Modal.
 					$field_custom_value = sprintf( '_.escape( %1$s )', $field_custom_value );
 				}
@@ -6270,7 +6948,7 @@ class ET_Builder_Element {
 					esc_attr( $field['class'] ),
 					esc_attr( $field['id'] ),
 					esc_html( $field_var_name ),
-					et_esc_previously( $field_custom_value )
+					et_core_esc_previously( $field_custom_value )
 				);
 
 				if ( 'options_list' === $field['type'] || 'sortable_list' === $field['type'] ) {
@@ -6304,7 +6982,7 @@ class ET_Builder_Element {
 						esc_attr( $field['class'] ),
 						esc_attr( $field['id'] ),
 						esc_html( $field_var_name ),
-						et_esc_previously( $field_custom_value ),
+						et_core_esc_previously( $field_custom_value ),
 						esc_attr( $row_class ),
 						$radio_check,
 						esc_html__( 'Add New Item', 'et_builder' )
@@ -6350,7 +7028,7 @@ class ET_Builder_Element {
 					esc_attr( $field['class'] ),
 					esc_attr( $field['id'] ),
 					esc_html( $field_var_name ),
-					et_esc_previously( $field_custom_value ),
+					et_core_esc_previously( $field_custom_value ),
 					$field_selects,
 					esc_html__( 'checked', 'et_builder' ),
 					esc_html__( 'not checked', 'et_builder' ),
@@ -6387,7 +7065,7 @@ class ET_Builder_Element {
 
 				//If default is an array, then $default_value value is an js expression, so it doesn't need to be encoded
 				//In other case it needs to be encoded
-				$select_default = $default_is_arr ? $default_value : json_encode( $default_value );
+				$select_default = $default_is_arr ? $default_value : wp_json_encode( $default_value );
 
 				if ( 'font' === $field['type'] ) {
 					$group_label = isset( $field['group_label'] ) ? $field['group_label'] : '';
@@ -6414,7 +7092,7 @@ class ET_Builder_Element {
 				if ( 'font' === $field['type'] ) {
 					$font_style_button_html = sprintf(
 						'<%%= window.et_builder.options_template_output("font_buttons",%1$s) %%>',
-						json_encode( array( 'italic', 'uppercase', 'capitalize', 'underline', 'line_through' ) )
+						wp_json_encode( array( 'italic', 'uppercase', 'capitalize', 'underline', 'line_through' ) )
 					);
 
 					$field_el .= sprintf(
@@ -6435,7 +7113,7 @@ class ET_Builder_Element {
 
 					$text_align_style_button_html = sprintf(
 						'<%%= window.et_builder.options_text_align_buttons_output(%1$s, "%2$s") %%>',
-						json_encode( $text_align_options ),
+						wp_json_encode( $text_align_options ),
 						$is_module_alignment ? 'module' : 'text'
 					);
 
@@ -6462,7 +7140,7 @@ class ET_Builder_Element {
 					$animation_buttons_array[ $option_name ] = sanitize_text_field( $option_title );
 				}
 
-				$animation_buttons = sprintf( '<%%= window.et_builder.options_template_output("animation_buttons",%1$s) %%>', json_encode( $animation_buttons_array ) );
+				$animation_buttons = sprintf( '<%%= window.et_builder.options_template_output("animation_buttons",%1$s) %%>', wp_json_encode( $animation_buttons_array ) );
 
 				$field_el = sprintf(
 					'<div class="et_select_animation et-pb-main-setting" data-default="none">
@@ -6481,7 +7159,7 @@ class ET_Builder_Element {
 
 				foreach ( $presets as $preset ) {
 					$fields = isset( $preset['fields'] )
-						? htmlspecialchars( json_encode( $preset['fields'] ), ENT_QUOTES, 'UTF-8' )
+						? htmlspecialchars( wp_json_encode( $preset['fields'] ), ENT_QUOTES, 'UTF-8' )
 						: '[]';
 					$presets_buttons .= sprintf(
 						'<div class="et-preset" data-value="%1$s" data-fields="%2$s">',
@@ -6602,7 +7280,7 @@ class ET_Builder_Element {
 				break;
 			case 'checkbox':
 				$field_el .= sprintf(
-					'<input type="checkbox" name="%1$s" id="%2$s" class="et-pb-main-setting" value="on" <%%- typeof( %3$s ) !==  \'undefined\' && %3$s == \'on\' ? checked="checked" : "" %%>>',
+					'<input type="checkbox" name="%1$s" id="%2$s" class="et-pb-main-setting" value="on" <%%- typeof( %3$s ) !==  \'undefined\' && %3$s === \'on\' ? checked="checked" : "" %%>>',
 					esc_attr( $field['name'] ),
 					esc_attr( $field['id'] ),
 					esc_attr( str_replace( '-', '_', $field['name'] ) )
@@ -6710,28 +7388,28 @@ class ET_Builder_Element {
 					esc_attr( $default ), // #5
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'top', $field['sides'] ) ) ?
 						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
-							json_encode( array_merge( $single_fields_settings, array(
+							wp_json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'top',
 								'label' => esc_html__( 'Top', 'et_builder' ),
 							) ) )
 						) : '',
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'right', $field['sides'] ) ) ?
 						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
-							json_encode( array_merge( $single_fields_settings, array(
+							wp_json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'right',
 								'label' => esc_html__( 'Right', 'et_builder' ),
 							) ) )
 						) : '',
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'bottom', $field['sides'] ) ) ?
 						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
-							json_encode( array_merge( $single_fields_settings, array(
+							wp_json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'bottom',
 								'label' => esc_html__( 'Bottom', 'et_builder' ),
 							) ) )
 						) : '',
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'left', $field['sides'] ) ) ?
 						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
-							json_encode( array_merge( $single_fields_settings, array(
+							wp_json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'left',
 								'label' => esc_html__( 'Left', 'et_builder' ),
 							) ) )
@@ -6880,13 +7558,14 @@ class ET_Builder_Element {
 					}
 
 					$range_el = sprintf(
-						'<input type="range" class="et-pb-main-setting et-pb-range%4$s%6$s" data-default="%2$s"%1$s%3$s%5$s />',
+						'<input type="range" data-name="%7$s" class="et-pb-main-setting et-pb-range%4$s%6$s" data-default="%2$s"%1$s%3$s%5$s />',
 						$value,
 						esc_attr( $default ),
 						$range_settings_html,
 						$need_mobile_options ? ' et_pb_setting_mobile et_pb_setting_mobile_desktop et_pb_setting_mobile_active' : '',
 						$need_mobile_options ? ' data-device="desktop"' : '',
-						$fixed_range ? ' et-pb-fixed-range' : ''
+						$fixed_range ? ' et-pb-fixed-range' : '',
+						esc_attr( $field['name'] )
 					);
 
 					if ( $need_mobile_options ) {
@@ -6961,7 +7640,7 @@ class ET_Builder_Element {
 			switch ( $element['type'] ) {
 				case 'button':
 					$class     = isset( $element['class'] ) ? esc_attr( $element['class'] ) : '';
-					$text      = isset( $element['text'] ) ? et_esc_previously( $element['text'] ) : '';
+					$text      = isset( $element['text'] ) ? et_core_esc_previously( $element['text'] ) : '';
 					$field_el .= sprintf( '<button class="button %1$s"%2$s>%3$s</button>', $class, $attributes, $text );
 
 					break;
@@ -7018,7 +7697,7 @@ class ET_Builder_Element {
 					sprintf(
 						'{select_name: "%1$s", list: %2$s, default: %3$s, }',
 						$name,
-						json_encode($option_group),
+						wp_json_encode( $option_group ),
 						$default
 					)
 				);
@@ -7035,7 +7714,7 @@ class ET_Builder_Element {
 				sprintf(
 					'{select_name: "%1$s", list: %2$s, default: %3$s, }',
 					$name,
-					json_encode($options),
+					wp_json_encode( $options ),
 					$default
 				)
 			);
@@ -7055,7 +7734,7 @@ class ET_Builder_Element {
 					'<div class="et_pb_yes_no_button_wrapper %2$s">
 						%1$s',
 					sprintf( '<%%= window.et_builder.options_template_output("yes_no_button",%1$s) %%>',
-						json_encode( array(
+						wp_json_encode( array(
 							'on' => esc_html( $processed_options['on'] ),
 							'off' => esc_html( $processed_options['off'] ),
 						) )
@@ -7087,7 +7766,7 @@ class ET_Builder_Element {
 				: ''
 			),
 			sprintf( '<%%= window.et_builder.options_template_output("multiple_buttons",%1$s) %%>',
-				json_encode( $options )
+				wp_json_encode( $options )
 			),
 			esc_attr( $name )
 		);
@@ -7226,7 +7905,7 @@ class ET_Builder_Element {
 			$is_toggle_option = isset( $field['toggle_slug'] ) && $toggles_used && isset( $this->settings_modal_toggles[ $tab_slug ] );
 			$toggle_slug = $is_toggle_option ? $field['toggle_slug'] : $toggle_all_options_slug;
 			$sub_toggle_slug = 'all_options' !== $toggle_slug && isset( $field['sub_toggle'] ) && '' !== $field['sub_toggle'] ? $field['sub_toggle'] : 'main';
-			$tabs_output[ $tab_slug ][ $toggle_slug ][ $sub_toggle_slug ][] = $this->wrap_settings_option( $option_output, $field );
+			$tabs_output[ $tab_slug ][ $toggle_slug ][ $sub_toggle_slug ][] = $this->wrap_settings_option( $option_output, $field, $field_name );
 
 			if ( isset( $field['toggle_slug'] ) && ! isset( $this->settings_modal_toggles[ $tab_slug ]['toggles'][ $toggle_slug ] ) ) {
 				if ( $toggle = self::$_->array_get( $all_toggles, "{$this->slug}.{$tab_slug}.toggles.{$field['toggle_slug']}" ) ) {
@@ -7279,7 +7958,7 @@ class ET_Builder_Element {
 							</div>
 						</div>',
 						esc_html__( $this->name, 'et_builder' ),
-						et_esc_previously( $toggle_unclassified_output ),
+						et_core_esc_previously( $toggle_unclassified_output ),
 						'et-pb-options-toggle-disabled'
 					);
 				}
@@ -7472,7 +8151,7 @@ class ET_Builder_Element {
 				'label' => $tab_name,
 			);
 
-			$tabs_json = json_encode( $tabs_array );
+			$tabs_json = wp_json_encode( $tabs_array );
 		}
 
 		$tabs_output = sprintf( '<%%= window.et_builder.settings_tabs_output(%1$s) %%>', $tabs_json );
@@ -7618,10 +8297,10 @@ class ET_Builder_Element {
 			</script>',
 			esc_attr( $id_attr ),
 			esc_html( $settings_text ),
-			$output
+			et_core_intentionally_unescaped( $output, 'html' )
 		);
 
-		if ( $this->type == 'child' ) {
+		if ( 'child' === $this->type ) {
 			$title_var = esc_js( $this->child_title_var );
 			$title_var = false === strpos( $title_var, 'et_pb_' ) ? 'et_pb_'. $title_var : $title_var;
 			$title_fallback_var = esc_js( $this->child_title_fallback_var );
@@ -7631,9 +8310,17 @@ class ET_Builder_Element {
 			$template_output .= sprintf(
 				'%6$s<script type="text/template" id="et-builder-advanced-setting-%1$s-title">
 					<%% if ( typeof( %2$s ) !== \'undefined\' && typeof( %2$s ) === \'string\' && %2$s !== \'\' ) { %%>
-						<%%- %2$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% if ( ET_PageBuilder.isDynamicContent(%2$s) ) { %%>
+							%7$s
+						<%% } else { %%>
+							<%%- %2$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% } %%>
 					<%% } else if ( typeof( %3$s ) !== \'undefined\' && typeof( %3$s ) === \'string\' && %3$s !== \'\' ) { %%>
-						<%%- %3$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% if ( ET_PageBuilder.isDynamicContent(%3$s) ) { %%>
+							%7$s
+						<%% } else { %%>
+							<%%- %3$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% } %%>
 					<%% } else { %%>
 						<%%- \'%4$s\' %%>
 					<%% } %%>
@@ -7643,7 +8330,8 @@ class ET_Builder_Element {
 				esc_html( $title_fallback_var ),
 				esc_html( $add_new_text ),
 				"\n\n",
-				"\t"
+				"\t",
+				$this->get_icon( 'lock' ) . esc_html__( 'Dynamic Content', 'et_builder' )
 			);
 		}
 
@@ -7783,7 +8471,9 @@ class ET_Builder_Element {
 
 		$module->process_advanced_button_options( $function_name );
 
-		$module->process_box_shadow( $function_name );
+		$this->process_box_shadow( $function_name );
+
+		$this->setup_hover_transitions( $function_name );
 	}
 
 	function process_inline_fonts_option( $fonts_list ) {
@@ -7839,6 +8529,7 @@ class ET_Builder_Element {
 
 		foreach ( $this->advanced_fields['fonts'] as $option_name => $option_settings ) {
 			$style = '';
+			$hover_style = '';
 			$important_options = array();
 			$is_important_set = isset( $option_settings['css']['important'] );
 			$is_placeholder = isset( $option_settings['css']['placeholder'] );
@@ -7896,13 +8587,27 @@ class ET_Builder_Element {
 				);
 			}
 
+			// Hover font size
+			$size_hover = trim( et_pb_hover_options()->get_value( $size_option_name, $this->props, '' ) );
+
+			if ( ! in_array( $size_hover, array( '', 'px', $default_size ) ) ) {
+				$important = in_array( 'size', $important_options ) || $use_global_important ? ' !important' : '';
+
+				$hover_style .= sprintf(
+					'font-size: %1$s%2$s; ',
+					esc_html( et_builder_process_range_value( $size_hover ) ),
+					esc_html( $important )
+				);
+			}
+
 			$text_color_option_name = "{$option_name}_{$slugs[2]}";
 
+			// handle the value from old option
+			$old_option_ref = isset( $option_settings['text_color'] ) && isset( $option_settings['text_color']['old_option_ref'] ) ? $option_settings['text_color']['old_option_ref'] : '';
+			$old_option_val = '' !== $old_option_ref && isset( $this->props[ $old_option_ref ] ) ? $this->props[ $old_option_ref ] : '';
+			$default_value = '' !== $old_option_val && isset( $option_settings['text_color'] ) && isset( $option_settings['text_color']['default'] ) ? $option_settings['text_color']['default'] : '';
+
 			if ( isset( $font_options[ $text_color_option_name ] ) && '' !== $font_options[ $text_color_option_name ] ) {
-				// handle the value from old option
-				$old_option_ref = isset( $option_settings['text_color'] ) && isset( $option_settings['text_color']['old_option_ref'] ) ? $option_settings['text_color']['old_option_ref'] : '';
-				$old_option_val = '' !== $old_option_ref && isset( $this->props[ $old_option_ref ] ) ? $this->props[ $old_option_ref ] : '';
-				$default_value = '' !== $old_option_val && isset( $option_settings['text_color'] ) && isset( $option_settings['text_color']['default'] ) ? $option_settings['text_color']['default'] : '';
 				$important = ' !important';
 
 				if ( $default_value !== $font_options[ $text_color_option_name ] ) {
@@ -7923,6 +8628,31 @@ class ET_Builder_Element {
 							esc_html( $important )
 						);
 					}
+				}
+			}
+
+			$text_color_hover = et_pb_hover_options()->get_value( $text_color_option_name, $this->props );
+
+			if ( $default_value !== $text_color_hover && ! empty( $text_color_hover ) ) {
+				$important = ' !important';
+
+				if ( isset( $option_settings['css']['color'] ) ) {
+					$sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['color'] );
+					self::set_style( $function_name, array(
+						'selector'    => self::$_->array_get( $option_settings, 'css.color_hover', $sel ),
+						'declaration' => sprintf(
+							'color: %1$s%2$s;',
+							esc_html( $text_color_hover ),
+							esc_html( $important )
+						),
+						'priority'    => $this->_style_priority,
+					) );
+				} else {
+					$hover_style .= sprintf(
+						'color: %1$s%2$s; ',
+						esc_html( $text_color_hover ),
+						esc_html( $important )
+					);
 				}
 			}
 
@@ -7948,6 +8678,42 @@ class ET_Builder_Element {
 						),
 						'priority'    => $this->_style_priority,
 					) );
+				}
+			}
+
+			// Hover letter spacing
+			$letter_spacing_hover = trim( et_pb_hover_options()->get_value( $letter_spacing_option_name, $this->props, '' ) );
+
+			if ( ! in_array( $letter_spacing_hover, array( '', 'px', $default_letter_spacing ) ) ) {
+				$important = in_array( 'letter-spacing', $important_options ) || $use_global_important ? ' !important' : '';
+
+				if ( et_builder_is_hover_enabled( $letter_spacing_option_name, $this->props ) ) {
+					$hover_style .= sprintf(
+						'letter-spacing: %1$s%2$s; ',
+						esc_html( et_builder_process_range_value( $letter_spacing_hover ) ),
+						esc_html( $important )
+					);
+				}
+
+				if ( isset( $option_settings['css']['letter_spacing'] ) ) {
+					if ( et_builder_is_hover_enabled( $letter_spacing_option_name, $this->props ) ) {
+						$letter_spacing_hover = $this->props[ $letter_spacing_option_name_hover ];
+
+						if ( $default_letter_spacing !== $letter_spacing_hover ) {
+							if ( isset( $option_settings['css']['color'] ) ) {
+								$sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['letter_spacing'] );
+								self::set_style( $function_name, array(
+									'selector'    => self::$_->array_get( $option_settings, 'css.letter_spacing_hover', $sel ),
+									'declaration' => sprintf(
+										'color: %1$s%2$s;',
+										esc_html( $letter_spacing_hover ),
+										esc_html( $important )
+									),
+									'priority'    => $this->_style_priority,
+								) );
+							}
+						}
+					}
 				}
 			}
 
@@ -7979,6 +8745,40 @@ class ET_Builder_Element {
 				}
 			}
 
+			// Hover line height
+			$line_height_hover = trim( et_pb_hover_options()->get_value( $line_height_option_name, $this->props, '' ) );
+
+			if ( ! in_array( $line_height_hover, array( '', 'px', $default_line_height ) ) ) {
+				$important = in_array( 'line-height', $important_options ) || $use_global_important ? ' !important' : '';
+
+				if ( et_builder_is_hover_enabled( $line_height_option_name, $this->props ) ) {
+					$hover_style .= sprintf(
+						'line-height: %1$s%2$s; ',
+						esc_html( et_builder_process_range_value( $line_height_hover, 'line_height' ) ),
+						esc_html( $important )
+					);
+				}
+
+				if ( isset( $option_settings['css']['line_height'] ) ) {
+					if ( et_builder_is_hover_enabled( $line_height_option_name, $this->props ) ) {
+						if ( $default_line_height !== $line_height_hover ) {
+							if ( isset( $option_settings['css']['color'] ) ) {
+								$sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['line_height'] );
+								self::set_style( $function_name, array(
+									'selector'    => self::$_->array_get( $option_settings, 'css.line_height_hover', $sel ),
+									'declaration' => sprintf(
+										'color: %1$s%2$s;',
+										esc_html( $line_height_hover ),
+										esc_html( $important )
+									),
+									'priority'    => $this->_style_priority,
+								) );
+							}
+						}
+					}
+				}
+			}
+
 			$text_align_option_name = "{$option_name}_{$slugs[5]}";
 
 			if ( isset( $font_options[ $text_align_option_name ] ) && '' !== $font_options[ $text_align_option_name ] ) {
@@ -8003,9 +8803,6 @@ class ET_Builder_Element {
 						esc_html( $important )
 					);
 				}
-
-
-
 			}
 
 			if ( isset( $option_settings['use_all_caps'] ) && $option_settings['use_all_caps'] && 'on' === $this->props["{$option_name}_all_caps"] ) {
@@ -8014,48 +8811,64 @@ class ET_Builder_Element {
 				$style .= sprintf( 'text-transform: uppercase%1$s; ', esc_html( $important ) );
 			}
 
-			if ( '' !== $style ) {
-				$css_element = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element;
+			// apply both default and hover styles
+			$style_states = array( 'default', 'hover' );
 
-				// use different selector for plugin if defined
-				if ( et_is_builder_plugin_active() && ! empty( $option_settings['css']['plugin_main'] ) ) {
-					$css_element = $option_settings['css']['plugin_main'];
-				}
+			foreach ( $style_states as $style_state ) {
+				$is_hover = 'hover' === $style_state;
+				$style    = $is_hover ? $hover_style : $style;
 
-				// $css_element might be an array, for example to apply the css for placeholders
-				if ( is_array( $css_element ) ) {
-					foreach( $css_element as $selector ) {
-						self::set_style( $function_name, array(
-							'selector'    => $selector,
-							'declaration' => rtrim( $style ),
-							'priority'    => $this->_style_priority,
-						) );
+				if ( '' !== $style ) {
+					$css_element = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element;
+
+					// use different selector for plugin if defined
+					if ( et_is_builder_plugin_active() && ! empty( $option_settings['css']['plugin_main'] ) ) {
+						$css_element = $option_settings['css']['plugin_main'];
 					}
-				} else {
-					self::set_style( $function_name, array(
-						'selector'    => $css_element,
-						'declaration' => rtrim( $style ),
-						'priority'    => $this->_style_priority,
-					) );
 
-					if ( $is_placeholder ) {
+					// $css_element might be an array, for example to apply the css for placeholders
+					if ( is_array( $css_element ) ) {
+						foreach( $css_element as $selector ) {
+							if ( $is_hover ) {
+								$selector = self::$_->array_get( $option_settings, 'css.hover', $this->add_hover_to_order_class( $selector, $is_hover ) );
+							}
+
+							self::set_style( $function_name, array(
+								'selector'    => $selector,
+								'declaration' => rtrim( $style ),
+								'priority'    => $this->_style_priority,
+							) );
+						}
+					} else {
+						if ( $is_hover ) {
+							$css_element = self::$_->array_get( $option_settings, 'css.hover', $this->add_hover_to_order_class( $css_element, $is_hover ) );
+						}
+
 						self::set_style( $function_name, array(
-							'selector'    => $css_element . '::-webkit-input-placeholder',
+							'selector'    => $css_element,
 							'declaration' => rtrim( $style ),
 							'priority'    => $this->_style_priority,
 						) );
 
-						self::set_style( $function_name, array(
-							'selector'    => $css_element . '::-moz-placeholder',
-							'declaration' => rtrim( $style ),
-							'priority'    => $this->_style_priority,
-						) );
+						if ( $is_placeholder ) {
+							self::set_style( $function_name, array(
+								'selector'    => $this->_maybe_add_hover_to_order_class( $css_element . '::-webkit-input-placeholder', $is_hover ),
+								'declaration' => rtrim( $style ),
+								'priority'    => $this->_style_priority,
+							) );
 
-						self::set_style( $function_name, array(
-							'selector'    => $css_element . '::-ms-input-placeholder',
-							'declaration' => rtrim( $style ),
-							'priority'    => $this->_style_priority,
-						) );
+							self::set_style( $function_name, array(
+								'selector'    => $this->_maybe_add_hover_to_order_class( $css_element . '::-moz-placeholder', $is_hover ),
+								'declaration' => rtrim( $style ),
+								'priority'    => $this->_style_priority,
+							) );
+
+							self::set_style( $function_name, array(
+								'selector'    => $this->_maybe_add_hover_to_order_class( $css_element . '::-ms-input-placeholder', $is_hover ),
+								'declaration' => rtrim( $style ),
+								'priority'    => $this->_style_priority,
+							) );
+						}
 					}
 				}
 			}
@@ -8174,6 +8987,7 @@ class ET_Builder_Element {
 		}
 
 		$style = '';
+
 		$settings = $this->advanced_fields['background'];
 		$important = isset( $settings['css']['important'] ) && $settings['css']['important'] ? ' !important' : '';
 
@@ -8287,7 +9101,10 @@ class ET_Builder_Element {
 		}
 
 		if ( $use_background_color_options && 'fields_only' !== $use_background_color_options ) {
-			if ( ! isset( $has_background_color_gradient, $has_background_image ) ) {
+			if ( ! isset( $has_background_color_gradient, $has_background_image )
+				&&
+				'off' !== self::$_->array_get( $this->props, 'use_background_color', false )
+			) {
 				$background_color = $this->props['background_color'];
 
 				if ( '' !== $background_color ) {
@@ -8302,6 +9119,41 @@ class ET_Builder_Element {
 
 		if ( '' !== $style ) {
 			$css_element = ! empty( $settings['css']['main'] ) ? $settings['css']['main'] : $this->main_css_element;
+
+			self::set_style( $function_name, array(
+				'selector'    => $css_element,
+				'declaration' => rtrim( $style ),
+				'priority'    => $this->_style_priority,
+			) );
+		}
+
+
+		// Background hover options
+		$background_color_hover = et_pb_hover_options()->get_value( 'background_color', $this->props );
+		if ( ! $background_color_hover || ! et_builder_is_hover_enabled( 'background', $this->props ) ) {
+			return;
+		}
+
+		if ( $use_background_color_options && 'fields_only' !== $use_background_color_options ) {
+			if (
+				! isset( $has_background_color_gradient, $has_background_image )
+				&&
+				'off' !== self::$_->array_get( $this->props, 'use_background_color', false )
+			) {
+				if ( '' !== $background_color_hover ) {
+					$style .= sprintf(
+						'background-color: %1$s%2$s; ',
+						esc_html( $background_color_hover ),
+						esc_html( $important )
+					);
+				}
+			}
+		}
+
+		if ( '' !== $style ) {
+			$main  = self::$_->array_get( $settings, 'css.main', $this->main_css_element );
+			$css_element = self::$_->array_get( $settings, 'css.hover', et_pb_hover_options()->add_hover_to_order_class( $main ) );
+
 
 			self::set_style( $function_name, array(
 				'selector'    => $css_element,
@@ -8409,9 +9261,34 @@ class ET_Builder_Element {
 					'priority'    => $this->_style_priority,
 				) );
 
+				if ( et_builder_is_hover_enabled( "border_radii$suffix", $this->props ) ) {
+					$main = self::$_->array_get( $border, 'css.hover', $this->main_css_element );
+					$main = self::$data_utils->array_get( $border, 'css.main.border_radii', $main );
+					$main = 'default' !== $border_name ? et_pb_hover_options()->add_hover_to_selectors( $main ) : et_pb_hover_options()->add_hover_to_order_class( $main );
+					$selector = self::$data_utils->array_get( $border, 'css.main.border_radii_hover', $main );
+
+					self::set_style( $function_name, array(
+						'selector'    => $selector,
+						'declaration' => $border_field->get_radii_style( $this->props, $this->advanced_fields, $suffix, $overflow, true ),
+						'priority'    => $this->_style_priority,
+					) );
+				}
+
 				self::set_style( $function_name, array(
 					'selector'    => self::$_->array_get( $border, 'css.main.border_styles', $this->main_css_element ),
 					'declaration' => $border_field->get_borders_style( $this->props, $this->advanced_fields, $suffix ),
+					'priority'    => $this->_style_priority,
+				) );
+
+				$main = self::$_->array_get( $border, 'css.hover', $this->main_css_element );
+				$main = self::$data_utils->array_get( $border, 'css.main.border_styles', $main );
+				$main = 'default' !== $border_name ? et_pb_hover_options()->add_hover_to_selectors( $main ) : et_pb_hover_options()->add_hover_to_order_class( $main );
+
+				$selector = self::$data_utils->array_get( $border, 'css.main.border_styles_hover', $main );
+
+				self::set_style( $function_name, array(
+					'selector'    => $selector,
+					'declaration' => $border_field->get_borders_style( $this->props, $this->advanced_fields, $suffix, true ),
 					'priority'    => $this->_style_priority,
 				) );
 			}
@@ -8470,28 +9347,35 @@ class ET_Builder_Element {
 		$this->advanced_fields['max_width'] = wp_parse_args( $this->advanced_fields['max_width'], $setting_defaults );
 
 		$is_max_width_customized = false;
+		$hover = et_pb_hover_options();
 
 		// Max width
 		if ( $this->advanced_fields['max_width']['use_max_width'] ) {
 			$max_width_default     = $this->fields_unprocessed['max_width']['default'];
+			$desktop_default       = $max_width_default;
 			$max_width             = self::$_->array_get( $this->props, 'max_width', '' );
 			$max_width_tablet      = self::$_->array_get( $this->props, 'max_width_tablet', '' );
 			$max_width_phone       = self::$_->array_get( $this->props, 'max_width_phone', '' );
+			$max_width_hover       = $hover->get_value( 'max_width', $this->props, '' );
 			$max_width_last_edited = $this->props['max_width_last_edited'];
+			$max_width_responsive_active = et_pb_get_responsive_status( $max_width_last_edited );
 
-			foreach ( array( 'max_width', 'max_width_tablet', 'max_width_phone' ) as $value ) {
-				if ( $$value === $max_width_default ) {
-					$$value = '';
-				} else {
-					// Set current value is smaller breakpoint's default
-					$max_width_default = $$value;
+			if ( $max_width_responsive_active ) {
+				foreach ( array( 'max_width', 'max_width_tablet', 'max_width_phone' ) as $value ) {
+					if ( $$value === $max_width_default ) {
+						$$value = '';
+					} else {
+						// Set current value is smaller breakpoint's default
+						$max_width_default = $$value;
+					}
 				}
+			} else if( $max_width === $max_width_default ) {
+				$max_width = '';
 			}
 
 			if ( '' !== $max_width_tablet || '' !== $max_width_phone || '' !== $max_width ) {
 				$max_width_options           = $this->advanced_fields['max_width'];
 				$max_width_options_css       = isset( $max_width_options['css'] ) ? $max_width_options['css'] : array();
-				$max_width_responsive_active = et_pb_get_responsive_status( $max_width_last_edited );
 				$selector                    = isset( $max_width_options_css['main'] ) ? $max_width_options_css['main'] : '%%order_class%%';
 				$additional_css              = $this->get_max_width_additional_css();
 				$max_width_attrs             = array( 'max_width' );
@@ -8521,7 +9405,7 @@ class ET_Builder_Element {
 						break;
 					}
 
-					if ( ! in_array( $this->props[ $max_width_attr ], array( '', $max_width_default ) ) ) {
+					if ( ! in_array( self::$_->array_get($this->props, $max_width_attr ), array( '', $max_width_default ) ) ) {
 						$is_max_width_customized = true;
 					}
 				}
@@ -8534,6 +9418,33 @@ class ET_Builder_Element {
 					$additional_css
 				);
 			}
+
+			// Hover styles
+			if ( '' !== $max_width_hover ) {
+				// Apply 100% max-width if there is only hover max-width set so that transiton works
+				$selector = isset( $max_width_options_css['main'] ) ? $max_width_options_css['main'] : '%%order_class%%';
+				$is_max_width_customized = true;
+
+				if ( '' === $max_width ) {
+					$hover_max_width = $desktop_default ? $desktop_default : '100%';
+					$hover_base = array(
+						'selector'    => $selector,
+						'declaration' => esc_html( "max-width: $hover_max_width;" ),
+					);
+
+					ET_Builder_Element::set_style( $function_name, $hover_base );
+				}
+
+				$selector_hover = et_pb_hover_options()->add_hover_to_order_class( $selector );
+				$additional_css = $this->get_max_width_additional_css();
+
+				$hover_style = array(
+					'selector' => $selector_hover,
+					'declaration' => esc_html( "max-width: {$max_width_hover}{$additional_css};" )
+				);
+
+				ET_Builder_Element::set_style( $function_name, $hover_style );
+			}
 		}
 
 		// Module Alignment
@@ -8543,10 +9454,11 @@ class ET_Builder_Element {
 				'center' => 'margin-left: auto !important; margin-right: auto !important;',
 				'right'  => 'margin-left: auto !important; margin-right: 0px !important;',
 			);
+
 			$module_alignment = isset( $this->props['module_alignment'] ) ? $this->props['module_alignment'] : '';
 
 			if ( ( $is_max_width_customized || ! $this->advanced_fields['max_width']['use_max_width'] ) && isset( $module_alignment_styles[ $module_alignment ] ) ) {
-				$module_alignment_selector = isset( $this->advanced_fields['max_width']['css'] ) && isset( $this->advanced_fields['max_width']['css']['module_alignment'] ) ? $this->advanced_fields['max_width']['css']['module_alignment'] : '%%order_class%%.et_pb_module';
+				$module_alignment_selector =  self::$_->array_get( $this->advanced_fields, 'max_width.css.module_alignment', '%%order_class%%.et_pb_module' );
 
 				self::set_style( $function_name, array(
 					'selector'    => $module_alignment_selector,
@@ -8567,6 +9479,7 @@ class ET_Builder_Element {
 			return;
 		}
 
+		$hover                = et_pb_hover_options();
 		$style                = '';
 		$style_padding        = '';
 		$style_margin         = '';
@@ -8792,6 +9705,30 @@ class ET_Builder_Element {
 				$css_element
 			);
 		}
+
+		// Hover styles
+		$custom_margin_hover  = $hover->get_value( 'custom_margin', $this->props );
+
+		if ( '' !== $custom_margin_hover && et_builder_is_hover_enabled( 'custom_margin', $this->props ) ) {
+			$css_element_margin = self::$_->array_get( $this->advanced_fields, 'margin_padding.css.margin', $this->main_css_element );
+
+			self::set_style( $function_name, array(
+				'selector'    => $this->add_hover_to_order_class( $css_element_margin ),
+				'declaration' => rtrim( et_builder_get_element_style_css( $custom_margin_hover, 'margin', true ) ),
+				'priority'    => 20,
+			) );
+		}
+
+		$custom_padding_hover = $hover->get_value( 'custom_padding', $this->props, '' );
+
+		if ( '' !== $custom_padding_hover && et_builder_is_hover_enabled( 'custom_padding', $this->props ) ) {
+			$css_element_padding = self::$_->array_get( $this->advanced_fields, 'margin_padding.css.padding', $this->main_css_element );
+			self::set_style( $function_name, array(
+				'selector'    => $this->add_hover_to_order_class( $css_element_padding ),
+				'declaration' => rtrim( et_builder_get_element_style_css( $custom_padding_hover, 'padding', true ) ),
+				'priority'    => 20,
+			) );
+		}
 	}
 
 	function process_advanced_mobile_margin_options( $function_name, $style_mobile, $css_element ) {
@@ -8816,6 +9753,15 @@ class ET_Builder_Element {
 		}
 	}
 
+	protected function get_hover_value( $option ) {
+		$enabled_option = $option === 'background_color' ? 'background' : $option;
+		$original_value = self::$_->array_get( $this->props, $option );
+		$hover_enabled  = et_pb_hover_options()->is_enabled( $enabled_option, $this->props );
+		$value          = et_pb_hover_options()->get_value( $option, $this->props );
+
+		return ( ! $hover_enabled || $original_value === $value ) ? null : $value;
+	}
+
 	function process_advanced_button_options( $function_name ) {
 		// Disable if module doesn't set advanced_fields property and has no VB support
 		if ( ! $this->has_advanced_fields ) {
@@ -8826,35 +9772,40 @@ class ET_Builder_Element {
 			return;
 		}
 
+		$hover = et_pb_hover_options();
+
 		foreach ( $this->advanced_fields['button'] as $option_name => $option_settings ) {
-			$button_custom                      = $this->props["custom_{$option_name}"];
-			$button_text_size                   = $this->props["{$option_name}_text_size"];
-			$button_text_size_tablet            = $this->props["{$option_name}_text_size_tablet"];
-			$button_text_size_phone             = $this->props["{$option_name}_text_size_phone"];
-			$button_text_size_last_edited       = $this->props["{$option_name}_text_size_last_edited"];
-			$button_text_color                  = $this->props["{$option_name}_text_color"];
-			$button_bg_color                    = $this->props["{$option_name}_bg_color"];
-			$button_border_width                = $this->props["{$option_name}_border_width"];
-			$button_border_color                = $this->props["{$option_name}_border_color"];
-			$button_border_radius               = $this->props["{$option_name}_border_radius"];
-			$button_font                        = $this->props["{$option_name}_font"];
-			$button_letter_spacing              = $this->props["{$option_name}_letter_spacing"];
-			$button_letter_spacing_tablet       = $this->props["{$option_name}_letter_spacing_tablet"];
-			$button_letter_spacing_phone        = $this->props["{$option_name}_letter_spacing_phone"];
-			$button_letter_spacing_last_edited  = $this->props["{$option_name}_letter_spacing_last_edited"];
-			$button_use_icon                    = $this->props["{$option_name}_use_icon"];
-			$button_icon                        = $this->props["{$option_name}_icon"];
-			$button_icon_color                  = $this->props["{$option_name}_icon_color"];
-			$button_icon_placement              = $this->props["{$option_name}_icon_placement"];
-			$button_on_hover                    = $this->props["{$option_name}_on_hover"];
-			$button_text_color_hover            = $this->props["{$option_name}_text_color_hover"];
-			$button_bg_color_hover              = $this->props["{$option_name}_bg_color_hover"];
-			$button_border_color_hover          = $this->props["{$option_name}_border_color_hover"];
-			$button_border_radius_hover         = $this->props["{$option_name}_border_radius_hover"];
-			$button_letter_spacing_hover        = $this->props["{$option_name}_letter_spacing_hover"];
-			$button_letter_spacing_hover_tablet = $this->props["{$option_name}_letter_spacing_hover_tablet"];
-			$button_letter_spacing_hover_phone  = $this->props["{$option_name}_letter_spacing_hover_phone"];
-			$button_letter_spacing_hover_last_edited  = $this->props["{$option_name}_letter_spacing_hover_last_edited"];
+			$button_custom                           = $this->props["custom_{$option_name}"];
+			$button_text_size                        = $this->props["{$option_name}_text_size"];
+			$button_text_size_tablet                 = $this->props["{$option_name}_text_size_tablet"];
+			$button_text_size_phone                  = $this->props["{$option_name}_text_size_phone"];
+			$button_text_size_last_edited            = $this->props["{$option_name}_text_size_last_edited"];
+			$button_text_color                       = $this->props["{$option_name}_text_color"];
+			$button_bg_color                         = $this->props["{$option_name}_bg_color"];
+			$button_border_width                     = $this->props["{$option_name}_border_width"];
+			$button_border_color                     = $this->props["{$option_name}_border_color"];
+			$button_border_radius                    = $this->props["{$option_name}_border_radius"];
+			$button_font                             = $this->props["{$option_name}_font"];
+			$button_letter_spacing                   = $this->props["{$option_name}_letter_spacing"];
+			$button_letter_spacing_tablet            = $this->props["{$option_name}_letter_spacing_tablet"];
+			$button_letter_spacing_phone             = $this->props["{$option_name}_letter_spacing_phone"];
+			$button_letter_spacing_last_edited       = $this->props["{$option_name}_letter_spacing_last_edited"];
+			$button_use_icon                         = $this->props["{$option_name}_use_icon"];
+			$button_icon                             = $this->props["{$option_name}_icon"];
+			$button_icon_color                       = $this->props["{$option_name}_icon_color"];
+			$button_icon_color_hover                 = et_pb_hover_options()->get_value( "{$option_name}_icon_color", $this->props );
+			$button_icon_placement                   = $this->props["{$option_name}_icon_placement"];
+			$button_on_hover                         = $this->props["{$option_name}_on_hover"];
+			$button_text_size_hover                  = $this->get_hover_value("{$option_name}_text_size" );
+			$button_text_color_hover                 = $this->get_hover_value("{$option_name}_text_color" );
+			$button_border_width_hover               = $this->get_hover_value("{$option_name}_border_width" );
+			$button_bg_color_hover                   = $this->get_hover_value("{$option_name}_bg_color" );
+			$button_border_color_hover               = $this->get_hover_value("{$option_name}_border_color" );
+			$button_border_radius_hover              = $this->get_hover_value("{$option_name}_border_radius" );
+			$button_letter_spacing_hover             = $this->get_hover_value("{$option_name}_letter_spacing" );
+			$button_letter_spacing_hover_tablet      = isset( $this->props["{$option_name}_letter_spacing_hover_tablet"] ) ? $this->props["{$option_name}_letter_spacing_hover_tablet"] : '';
+			$button_letter_spacing_hover_phone       = isset( $this->props["{$option_name}_letter_spacing_hover_phone"] ) ? $this->props["{$option_name}_letter_spacing_hover_phone"] : '';
+			$button_letter_spacing_hover_last_edited = isset( $this->props["{$option_name}_letter_spacing_hover_last_edited"] ) ? $this->props["{$option_name}_letter_spacing_hover_last_edited"] : '';
 
 			$button_icon_pseudo_selector = $button_icon_placement === 'left' ? ':before' : ':after';
 
@@ -8866,7 +9817,7 @@ class ET_Builder_Element {
 				if ( '' !== $button_alignment && '' !== $button_alignment_selector ) {
 					self::set_style( $function_name, array(
 						'selector'    => $button_alignment_selector,
-						'declaration' => "text-align: {$button_alignment};",
+						'declaration' => esc_html( "text-align: {$button_alignment};" ),
 					) );
 				}
 			}
@@ -8879,8 +9830,9 @@ class ET_Builder_Element {
 				$is_default_hover_placement = $is_default_button_on_hover && $is_default_button_icon_placement;
 
 				$button_text_size_processed = $is_default_button_text_size ? '20px' : et_builder_process_range_value( $button_text_size );
+				$button_text_size_hover_processed = strlen( $button_text_size_hover ) && $button_text_size !== $button_text_size_hover ? et_builder_process_range_value( $button_text_size_hover ) : '';
 				$button_border_radius_processed = '' !== $button_border_radius && 'px' !== $button_border_radius ? et_builder_process_range_value( $button_border_radius ) : '';
-				$button_border_radius_hover_processed = '' !== $button_border_radius_hover && 'px' !== $button_border_radius_hover ? et_builder_process_range_value( $button_border_radius_hover ) : '';
+				$button_border_radius_hover_processed = null !== $button_border_radius_hover && 'px' !== $button_border_radius_hover && $button_border_radius_hover !== $button_border_radius ? et_builder_process_range_value( $button_border_radius_hover ) : '';
 				$button_use_icon = '' === $button_use_icon ? 'on' : $button_use_icon;
 
 				$css_element           = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element . ' .et_pb_button';
@@ -8945,7 +9897,7 @@ class ET_Builder_Element {
 					);
 
 				// Avoid adding useless style when value equals its default
-				$button_letter_spacing_hover = $this->_is_field_default('button_letter_spacing_hover', $button_letter_spacing_hover) ? '' : $button_letter_spacing_hover;
+				$button_letter_spacing_hover = $this->_is_field_default( $hover->get_hover_field( 'button_letter_spacing' ), $button_letter_spacing_hover) ? '' : $button_letter_spacing_hover;
 
 				$main_element_styles_hover = sprintf(
 					'%1$s
@@ -8953,19 +9905,25 @@ class ET_Builder_Element {
 					%3$s
 					%4$s
 					%5$s
-					%6$s',
-					'' !== $button_text_color_hover ? sprintf( 'color:%1$s !important;', $button_text_color_hover ) : '',
-					'' !== $button_bg_color_hover ? sprintf( 'background:%1$s !important;', $button_bg_color_hover ) : '',
-					'' !== $button_border_color_hover ? sprintf( 'border-color:%1$s !important;', $button_border_color_hover ) : '',
+					%6$s
+					%7$s
+					%8$s',
+					null !== $button_text_color_hover ? sprintf( 'color:%1$s !important;', $button_text_color_hover ) : '',
+					null !== $button_bg_color_hover ? sprintf( 'background:%1$s !important;', $button_bg_color_hover ) : '',
+					null !== $button_border_color_hover ? sprintf( 'border-color:%1$s !important;', $button_border_color_hover ) : '',
 					'' !== $button_border_radius_hover_processed ? sprintf( 'border-radius:%1$s;', $button_border_radius_hover_processed ) : '',
-					'' !== $button_letter_spacing_hover && 'px' !== $button_letter_spacing_hover ? sprintf( 'letter-spacing:%1$s;', et_builder_process_range_value( $button_letter_spacing_hover ) ) : '',
-					'off' === $button_on_hover ? '' : $on_hover_padding
+					null !== $button_letter_spacing_hover && 'px' !== $button_letter_spacing_hover && $button_letter_spacing_hover !== $button_letter_spacing ? sprintf( 'letter-spacing:%1$s;', et_builder_process_range_value( $button_letter_spacing_hover ) ) : '',
+					'off' === $button_on_hover ? '' : $on_hover_padding,
+					'' !== $button_text_size_hover_processed ? sprintf( 'font-size:%1$s !important;', $button_text_size_hover_processed ) : '',
+					null !== $button_border_width_hover ? sprintf( 'border-width:%1$s !important;', $button_border_width_hover ) : ''
 				);
 
 				self::set_style( $function_name, array(
 					'selector'    => $css_element_processed . ':hover',
 					'declaration' => rtrim( $main_element_styles_hover ),
 				) );
+
+				$main_element_styles_after_hover = '';
 
 				if ( 'off' === $button_use_icon ) {
 					$main_element_styles_after = 'display:none !important;';
@@ -8997,9 +9955,17 @@ class ET_Builder_Element {
 
 				} else {
 					$button_icon_code = '' !== $button_icon ? str_replace( ';', '', str_replace( '&#x', '', html_entity_decode( et_pb_process_font_icon( $button_icon ) ) ) ) : '';
+					$button_icon_size_hover = $button_icon_size = '';
+
+
 					if ( '' !== $button_text_size_processed ) {
 						$button_icon_size = '35' !== $button_icon_code ? '1em' : '1.6em';
 					}
+
+					if ( '' !== $button_text_size_hover_processed ) {
+						$button_icon_size_hover = '35' !== $button_icon_code ? '1em' : '1.6em';
+					}
+
 
 					$main_element_styles_after = sprintf(
 						'%1$s
@@ -9029,6 +9995,14 @@ class ET_Builder_Element {
 							: '',
 						( ! $is_default_button_icon_placement && in_array( $button_use_icon , array( 'default', 'on' ) ) ? 'display: inline-block;' : '' )
 					);
+
+					if ( '' !== $button_icon_size_hover && $button_icon_size_hover !== $button_icon_size ) {
+						$main_element_styles_after_hover = sprintf( 'font-size: %1$s', $button_icon_size_hover );
+					}
+
+					if ( '' !== $button_icon_color_hover && $button_icon_color_hover !== $button_icon_color ) {
+						$main_element_styles_after_hover = sprintf( 'color: %1$s', $button_icon_color_hover );
+					}
 
 					// Reverse icon position
 					if ( 'left' === $button_icon_placement ) {
@@ -9092,6 +10066,21 @@ class ET_Builder_Element {
 						) );
 					}
 
+					if ( '' === $button_icon && '' !== $button_text_size_hover_processed ) {
+						$default_icons_size = '1.6em';
+						$custom_icon_size = $button_text_size_hover_processed;
+
+						self::set_style( $function_name, array(
+							'selector'    => $css_element_processed . ':hover' . $button_icon_pseudo_selector,
+							'declaration' => sprintf( 'font-size:%1$s;', $default_icons_size ),
+						) );
+
+						self::set_style( $function_name, array(
+							'selector'    => 'body.et_button_custom_icon #page-container ' . $css_element . ':hover' . $button_icon_pseudo_selector,
+							'declaration' => sprintf( 'font-size:%1$s;', $custom_icon_size ),
+						) );
+					}
+
 					$selector = $css_element_processed . $button_icon_pseudo_selector;
 				}
 
@@ -9133,6 +10122,11 @@ class ET_Builder_Element {
 				self::set_style( $function_name, array(
 					'selector'    => $selector,
 					'declaration' => rtrim( $main_element_styles_after ),
+				) );
+
+				self::set_style( $function_name, array(
+					'selector'    =>  et_pb_hover_options()->add_hover_to_selectors( $selector ),
+					'declaration' => rtrim( $main_element_styles_after_hover ),
 				) );
 
 				// Background Options Styling
@@ -9259,6 +10253,7 @@ class ET_Builder_Element {
 
 		foreach ( $this->custom_css_fields as $slug => $option ) {
 			$css      = $this->props["custom_css_{$slug}"];
+			$hover_css = self::get_hover_value("custom_css_{$slug}");
 			$order_class = isset( $this->main_css_element ) && count( explode( ' ', $this->main_css_element ) ) === 1 ? $selector = $this->main_css_element : '%%order_class%%';
 			$selector = ! empty( $option['selector'] ) ? $option['selector'] : '';
 
@@ -9276,12 +10271,21 @@ class ET_Builder_Element {
 					'declaration' => trim( $css ),
 				) );
 			}
+
+
+			if ( ! empty( $hover_css ) ) {
+				self::set_style( $function_name,
+					array(
+						'selector'    => $this->add_hover_to_selectors( $selector ),
+						'declaration' => trim( $hover_css ),
+					) );
+			}
 		}
 	}
 
 	function process_box_shadow( $function_name ) {
 		/**
-		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
+		 * @var ET_Builder_Module_Field_BoxShadow $box_shadow
 		 */
 		$box_shadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 
@@ -9352,23 +10356,58 @@ class ET_Builder_Element {
 				}
 			}
 
-			// Allow module to generate styling using ET_Builder_Module_Field_BoxShadow->get_style()
-			if ( self::$_->array_get( $option_settings, 'css.custom_style', false ) ) {
-				self::set_style( $function_name, $box_shadow->get_style(
-					str_replace(
-						'%%order_class%%',
-						'.' . sanitize_text_field( self::get_module_order_class( $function_name ) ),
-						self::$_->array_get( $option_settings, 'css.main', '%%order_class%%' )
-					),
-					$this->props,
-					$declaration_args
-				) );
+			$overlay        = self::$_->array_get( $option_settings, 'css.overlay', false );
+			$has_video_bg   = ! empty( $atts['background_video_mp4'] ) || ! empty( $atts['background_video_webm'] );
+			$inset          = $box_shadow->is_inset( $box_shadow->get_value( $this->props, $declaration_args ) );
+			$inset_hover    = $box_shadow->is_inset( $box_shadow->get_value(
+				$this->props,
+				array_merge( $declaration_args, array( 'hover' => true ) )
+			) );
+			$selector       = self::$_->array_get( $option_settings, 'css.main', '%%order_class%%' );
+
+			// Default box shadow affects module while other affects group element it belongs to (ie image, button, etc)
+			$hover_selector = 'default' === $option_name ? $this->add_hover_to_order_class( $selector ) : $this->add_hover_to_selectors( $selector );
+
+			if ( ( $inset && 'inset' == $overlay ) || 'always' == $overlay || $has_video_bg ) {
+				self::set_style(
+					$function_name,
+					$box_shadow->get_overlay_style(
+						$function_name,
+						$selector,
+						$this->props,
+						$declaration_args
+					)
+				);
 			} else {
-				// Standard box shadow style output
-				self::set_style( $function_name, array(
-					'selector'    => self::$_->array_get( $option_settings, 'css.main', '%%order_class%%' ),
-					'declaration' => $box_shadow->get_value( $this->props, $declaration_args ),
-				) );
+				self::set_style(
+					$function_name,
+					$box_shadow->get_style(
+						$selector,
+						$this->props,
+						$declaration_args
+					)
+				);
+			}
+
+			if ( ( $inset_hover && 'inset' == $overlay ) || 'always' == $overlay || $has_video_bg ) {
+				self::set_style(
+					$function_name,
+					$box_shadow->get_overlay_style(
+						$function_name,
+						$hover_selector,
+						$this->props,
+						array_merge( $declaration_args, array( 'hover' => true ) )
+					)
+				);
+			} else {
+				self::set_style(
+					$function_name,
+					$box_shadow->get_style(
+						$hover_selector,
+						$this->props,
+						array_merge( $declaration_args, array( 'hover' => true ) )
+					)
+				);
 			}
 		}
 	}
@@ -9658,7 +10697,7 @@ class ET_Builder_Element {
 		$parent_modules = self::get_parent_modules( $post_type );
 		if ( ! empty( $parent_modules ) ) {
 			foreach( $parent_modules as $module ) {
-				if ( isset( $module->use_row_content ) && $module->use_row_content ) {
+				if ( isset( $module->use_raw_content ) && $module->use_raw_content ) {
 					$shortcodes[] = $module->slug;
 				}
 			}
@@ -9667,7 +10706,7 @@ class ET_Builder_Element {
 		$child_modules = self::get_child_modules( $post_type );
 		if ( ! empty( $child_modules ) ) {
 			foreach( $child_modules as $module ) {
-				if ( isset( $module->use_row_content ) && $module->use_row_content ) {
+				if ( isset( $module->use_raw_content ) && $module->use_raw_content ) {
 					$shortcodes[] = $module->slug;
 				}
 			}
@@ -9756,7 +10795,7 @@ class ET_Builder_Element {
 		self::$structure_modules = array();
 		foreach ( $parent_modules as $parent_module ) {
 			if ( isset( $parent_module->is_structure_element ) && $parent_module->is_structure_element ) {
-				$parent_module->plural = empty($parent_module->plural) ? $parent_module->name : $parent_module->plural;
+				$parent_module->plural = empty( $parent_module->plural ) ? $parent_module->name : $parent_module->plural;
 
 				self::$structure_modules[] = $parent_module;
 			}
@@ -10334,6 +11373,10 @@ class ET_Builder_Element {
 
 			$module_fields[ $_module_slug ] = $_module->custom_css_fields;
 
+			foreach ( $module_fields[ $_module_slug ] as &$item ) {
+				$item['hover'] = self::$_->array_get( $item, 'hover', 'tabs' );
+			}
+
 			// Automatically added module ID and module class fields to setting modal's CSS tab
 			if ( ! empty( $_module->fields_unprocessed ) ) {
 				foreach ( $_module->fields_unprocessed as $field_unprocessed_key => $field_unprocessed ) {
@@ -10385,6 +11428,41 @@ class ET_Builder_Element {
 
 		if ( 'all' !== $module_type ) {
 			return $fields[ $module_type ];
+		}
+
+		return $fields;
+	}
+
+	public static function get_modules_transitions( $post_type = '', $mode = 'all', $module_type = 'all' ) {
+		/**
+		 * @var ET_Builder_Element[] $_modules
+		 */
+
+		$parent_modules = self::get_parent_modules( $post_type );
+		$child_modules  = self::get_child_modules( $post_type );
+		$fields         = array();
+
+		switch ( $mode ) {
+			case 'parent':
+				$_modules = $parent_modules;
+				break;
+
+			case 'child':
+				$_modules = $child_modules;
+				break;
+
+			default:
+				$_modules = array_merge( $parent_modules, $child_modules );
+				break;
+		}
+
+		foreach ( $_modules as $_module_slug => $_module ) {
+			// filter modules by slug if needed
+			if ( 'all' !== $module_type && $module_type !== $_module_slug ) {
+				continue;
+			}
+
+			$fields[ $_module_slug ] = $_module->get_transition_fields_css_props();
 		}
 
 		return $fields;
@@ -10659,14 +11737,14 @@ class ET_Builder_Element {
 
 			foreach ( $field_info[ $dependency_type ] as $dependency => $value ) {
 				// dependency -> dependent (eg. et_pb_signup.provider.affects.first_name_field.show_if: mailchimp)
-				$address = array( $slug, $dependency, 'affects', $field_id, $dependency_type );
+				$address = self::$_->esc_array( array( $slug, $dependency, 'affects', $field_id, $dependency_type ), 'esc_attr' );
 
-				self::$data_utils->array_set( self::$field_dependencies, $address, $value );
+				self::$data_utils->array_set( self::$field_dependencies, $address, self::$_->esc_array( $value, 'esc_attr' ) );
 
 				// dependent -> dependency (eg. et_pb_signup.first_name_field.show_if.provider: mailchimp)
-				$address = array( $slug, $field_id, $dependency_type, $dependency );
+				$address = self::$_->esc_array( array( $slug, $field_id, $dependency_type, $dependency ), 'esc_attr' );
 
-				self::$data_utils->array_set( self::$field_dependencies, $address, $value );
+				self::$data_utils->array_set( self::$field_dependencies, $address, self::$_->esc_array( $value, 'esc_attr' ) );
 			}
 		}
 	}
@@ -10697,6 +11775,15 @@ class ET_Builder_Element {
 	}
 
 	static function set_style( $function_name, $style ) {
+		$selectors = is_array( $style['selector'] ) ? $style['selector'] : array( $style['selector'] );
+		foreach ( $selectors as $item ) {
+			foreach ( self::$_->sanitize_css_placeholders( $item ) as $selector ) {
+				self::_set_style( $function_name, array_merge( $style, array( 'selector' => $selector ) ) );
+			}
+		}
+	}
+
+	protected static function _set_style( $function_name, $style ) {
 		$declaration = rtrim($style['declaration']);
 		if ( empty($declaration) ) {
 			// Do not add empty declarations
@@ -10705,7 +11792,7 @@ class ET_Builder_Element {
 		$builder_post_types = et_builder_get_builder_post_types();
 		$allowed_post_types = apply_filters( 'et_builder_set_style_allowed_post_types', $builder_post_types );
 
-		if ( $builder_post_types != $allowed_post_types ) {
+		if ( $builder_post_types !== $allowed_post_types ) {
 			$matches = array_intersect( $allowed_post_types, array_keys( self::$_module_slugs_by_post_type ) );
 			$allowed = false;
 
@@ -10906,7 +11993,7 @@ class ET_Builder_Element {
 			}
 		}
 
-		if ( '' !== $background_image && 'on' == $parallax ) {
+		if ( '' !== $background_image && 'on' === $parallax ) {
 			$parallax_classname = array( 'et_parallax_bg' );
 
 			if ( 'off' === $parallax_method ) {
@@ -10952,7 +12039,7 @@ class ET_Builder_Element {
 		// If `$selectors` is a string, convert to an array before we continue
 		$selectors_prepared = $selectors;
 		if ( ! is_array( $selectors ) ) {
-			$selectors_prepared = explode( ',', et_intentionally_unescaped( $selectors, 'fixed_string' ) );
+			$selectors_prepared = explode( ',', et_core_intentionally_unescaped( $selectors, 'fixed_string' ) );
 		}
 
 		$additional_classes = '';
@@ -10962,114 +12049,211 @@ class ET_Builder_Element {
 			return $additional_classes;
 		}
 
-		// Some web browser glitches with filters and blend modes can be improved this way
-		// see https://bugs.chromium.org/p/chromium/issues/detail?id=157218 for more info
-		$backfaceVisibility = 'backface-visibility:hidden;';
-		$backfaceVisibilityAdded = array();
+		$hover_suffix = et_pb_hover_options()->get_suffix();
+		$field_suffixes = array( '', $hover_suffix );
 
-		$additional_classes = '';
-
-		// Blend Mode
-		$mix_blend_mode = self::$data_utils->array_get( $this->props, "{$prefix}mix_blend_mode", '' );
-
-		// Filters
-		$filter = array(
-			'hue_rotate' => self::$data_utils->array_get( $this->props, "{$prefix}filter_hue_rotate", ''),
-			'saturate'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_saturate", ''),
-			'brightness' => self::$data_utils->array_get( $this->props, "{$prefix}filter_brightness", ''),
-			'contrast'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_contrast", ''),
-			'invert'     => self::$data_utils->array_get( $this->props, "{$prefix}filter_invert", ''),
-			'sepia'      => self::$data_utils->array_get( $this->props, "{$prefix}filter_sepia", ''),
-			'opacity'    => self::$data_utils->array_get( $this->props, "{$prefix}filter_opacity", ''),
-			'blur'       => self::$data_utils->array_get( $this->props, "{$prefix}filter_blur", ''),
-		);
-
-		// Remove any filters with null or default values
-		$filter = array_filter( $filter, 'strlen' );
-
-		// Optional: CSS `mix-blend-mode` rule
-		$mix_blend_mode_default = ET_Global_Settings::get_value( 'all_mix_blend_mode', 'default' );
-		if ( $mix_blend_mode && $mix_blend_mode !== $mix_blend_mode_default ) {
-			foreach ( $selectors_prepared as $selector ) {
-				ET_Builder_Element::set_style( $function_name, array(
-					'selector'    => $selector,
-					'declaration' => sprintf(
-						'mix-blend-mode: %1$s;',
-						esc_html( $mix_blend_mode )
-					) . $backfaceVisibility,
-				) );
-
-				$backfaceVisibilityAdded[] = $selector;
-			}
-			$additional_classes .= ' et_pb_css_mix_blend_mode';
-		} else if ( 'et_pb_column' === $function_name ) {
-			// Columns need to pass through
-			$additional_classes .= ' et_pb_css_mix_blend_mode_passthrough';
-		}
-
-		// Optional: CSS `filter` rule
-		if ( empty( $filter ) ) {
-			return $additional_classes;
-		}
-
-		$css_value = '';
-		$css_value_fb_hover = '';
-
-		foreach ( $filter as $label => $value ) {
-			// Check against our default settings, and only append the rule if it differs
-			if ( ET_Global_Settings::get_value( 'all_filter_' . $label, 'default' ) === $value ) {
-				continue;
+		foreach ( $field_suffixes as $suffix ) {
+			if ( $hover_suffix === $suffix ) {
+				$selectors_prepared = array_map( array( $this, 'add_hover_to_selectors' ), $selectors_prepared );
 			}
 
-			$value = et_sanitize_input_unit( $value, false, 'deg' );
-			$label_css_format = str_replace( '_', '-', $label );
+			// Some web browser glitches with filters and blend modes can be improved this way
+			// see https://bugs.chromium.org/p/chromium/issues/detail?id=157218 for more info
+			$backfaceVisibility = 'backface-visibility:hidden;';
+			$backfaceVisibilityAdded = array();
 
-			// Construct string of all CSS Filter values
-			$css_value .= esc_html( " ${label_css_format}(${value})" );
+			$additional_classes = '';
 
-			// Construct Visual Builder hover rules
-			if ( ! in_array( $label, array( 'opacity', 'blur' ) ) ) {
-				// Skip those, because they mess with VB controls
-				$css_value_fb_hover .= esc_html( " ${label_css_format}(${value})" );
+			// Blend Mode
+			$mix_blend_mode = self::$data_utils->array_get( $this->props, "{$prefix}mix_blend_mode", '' );
+
+			// Filters
+			$filter = array(
+				'hue_rotate' => self::$data_utils->array_get( $this->props, "{$prefix}filter_hue_rotate{$suffix}", ''),
+				'saturate'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_saturate{$suffix}", ''),
+				'brightness' => self::$data_utils->array_get( $this->props, "{$prefix}filter_brightness{$suffix}", ''),
+				'contrast'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_contrast{$suffix}", ''),
+				'invert'     => self::$data_utils->array_get( $this->props, "{$prefix}filter_invert{$suffix}", ''),
+				'sepia'      => self::$data_utils->array_get( $this->props, "{$prefix}filter_sepia{$suffix}", ''),
+				'opacity'    => self::$data_utils->array_get( $this->props, "{$prefix}filter_opacity{$suffix}", ''),
+				'blur'       => self::$data_utils->array_get( $this->props, "{$prefix}filter_blur{$suffix}", ''),
+			);
+
+			// Remove any filters with null or default values
+			$filter = array_filter( $filter, 'strlen' );
+
+			// Optional: CSS `mix-blend-mode` rule
+			$mix_blend_mode_default = ET_Global_Settings::get_value( 'all_mix_blend_mode', 'default' );
+			if ( $mix_blend_mode && $mix_blend_mode !== $mix_blend_mode_default ) {
+				foreach ( $selectors_prepared as $selector ) {
+					ET_Builder_Element::set_style( $function_name, array(
+						'selector'    => $selector,
+						'declaration' => sprintf(
+							'mix-blend-mode: %1$s;',
+							esc_html( $mix_blend_mode )
+						) . $backfaceVisibility,
+					) );
+					$backfaceVisibilityAdded[] = $selector;
+				}
+				$additional_classes .= ' et_pb_css_mix_blend_mode';
+			} else if ( 'et_pb_column' === $function_name ) {
+				// Columns need to pass through
+				$additional_classes .= ' et_pb_css_mix_blend_mode_passthrough';
 			}
-		}
-
-		// Append our new CSS rules
-		if ( trim( $css_value ) ) {
-			foreach ( $selectors_prepared as $selector ) {
-				$backfaceVisibilityDeclaration = in_array( $selector, $backfaceVisibilityAdded ) ? '' : $backfaceVisibility;
-				ET_Builder_Element::set_style( $function_name, array(
-					'selector'    => $selector,
-					'declaration' => sprintf(
-						'filter: %1$s;',
-						$css_value
-					) . $backfaceVisibilityDeclaration,
-				) );
+			// Optional: CSS `filter` rule
+			if ( empty( $filter ) ) {
+				return $additional_classes;
 			}
-			$additional_classes .= ' et_pb_css_filters';
-		}
+			$css_value = '';
+			$css_value_fb_hover = '';
+			foreach ( $filter as $label => $value ) {
+				// Check against our default settings, and only append the rule if it differs
+				// (only for default state since hover might be equal to default, ie. no filter on hover only)
+				if ( ET_Global_Settings::get_value( 'all_filter_' . $label, 'default' ) === $value && $hover_suffix !== $suffix ) {
+					continue;
+				}
 
-		// If we have VB hover-friendly CSS rules, we'll gather those and append them here
-		if ( trim( $css_value_fb_hover ) ) {
-			foreach ( $selectors_prepared as $selector ) {
-				$selector_hover = str_replace(
-					'%%order_class%%',
-					'html:not(.et_fb_edit_enabled) #et-fb-app %%order_class%%:hover',
-					$selector
-				);
-				ET_Builder_Element::set_style( $function_name, array(
-					'selector'    => $selector_hover,
-					'declaration' => sprintf(
-						'filter: %1$s;',
-						$css_value_fb_hover
-					),
-				) );
+				// Don't apply hover filter if it is not enabled
+				if ( $hover_suffix === $suffix && ! et_pb_hover_options()->is_enabled( "{$prefix}filter_{$label}{$suffix}", $this->props ) ) {
+					continue;
+				}
 
+				$value = et_sanitize_input_unit( $value, false, 'deg' );
+				$label_css_format = str_replace( '_', '-', $label );
+				// Construct string of all CSS Filter values
+				$css_value .= esc_html( " ${label_css_format}(${value})" );
+				// Construct Visual Builder hover rules
+				if ( ! in_array( $label, array( 'opacity', 'blur' ) ) ) {
+					// Skip those, because they mess with VB controls
+					$css_value_fb_hover .= esc_html( " ${label_css_format}(${value})" );
+				}
 			}
-			$additional_classes .= ' et_pb_css_filters_hover';
+			// Append our new CSS rules
+			if ( trim( $css_value ) ) {
+				foreach ( $selectors_prepared as $selector ) {
+					$backfaceVisibilityDeclaration = in_array( $selector, $backfaceVisibilityAdded ) ? '' : $backfaceVisibility;
+					ET_Builder_Element::set_style( $function_name, array(
+						'selector'    => $selector,
+						'declaration' => sprintf(
+							'filter: %1$s;',
+							$css_value
+						) . $backfaceVisibilityDeclaration,
+					) );
+				}
+				$additional_classes .= ' et_pb_css_filters';
+			}
+			// If we have VB hover-friendly CSS rules, we'll gather those and append them here
+			if ( trim( $css_value_fb_hover ) ) {
+				foreach ( $selectors_prepared as $selector ) {
+					$selector_hover = str_replace(
+						'%%order_class%%',
+						'html:not(.et_fb_edit_enabled) #et-fb-app %%order_class%%:hover',
+						$selector
+					);
+					ET_Builder_Element::set_style( $function_name, array(
+						'selector'    => $selector_hover,
+						'declaration' => esc_html( sprintf(
+							'filter: %1$s;',
+							$css_value_fb_hover
+						) ),
+					) );
+				}
+				$additional_classes .= ' et_pb_css_filters_hover';
+			}
 		}
 
 		return $additional_classes;
+	}
+
+	/**
+	 * Convert classes array to a string. Also removes any duplicate classes
+	 *
+	 * @param array $classes A list of CSS classnames
+	 *
+	 * @return array
+	 */
+	function stringify_css_filter_classes( $classes ) {
+		// Remove repeating classes
+		$classes = array_unique( $classes );
+
+		// Transform classes to a string
+		$classes = ' ' . implode( ' ', $classes );
+
+		return $classes;
+	}
+
+	/**
+	 * Adds a suffix at the end of the selector
+	 * E.g: add_suffix_to_selectors(':hover', '%%order_class%%% .image') >>> '%%order_class%%% .image:hover'
+	 *
+	 * @param string $suffix
+	 * @param string $selector
+	 *
+	 * @return string
+	 */
+	public function add_suffix_to_selectors( $suffix, $selector ) {
+		$selectors = explode( ',', $selector );
+		$selectors = array_map( 'trim', $selectors );
+
+		foreach ( $selectors as &$selector ) {
+			$selector .= $suffix;
+		}
+
+		return implode( ', ', $selectors );
+	}
+
+	/**
+	 * Adds `:hover` in selector at the end of the selector
+	 * E.g: add_hover_to_selectors('%%order_class%%% .image') >>> '%%order_class%%% .image:hover'
+	 *
+	 * @param string $selector
+	 *
+	 * @return string
+	 *
+	 * @deprecated Use et_pb_hover_options()->add_hover_to_selectors( $selector );
+	 */
+	public function add_hover_to_selectors( $selector ) {
+		return et_pb_hover_options()->add_hover_to_selectors( $selector );
+	}
+
+	/**
+	 * Adds `:hover` in selector at the end of the selector if $add_hover is true
+	 * otherwise returns the original selector
+	 *
+	 * @param string $selector
+	 * @param bool $add_hover
+	 *
+	 * @return string
+	 */
+	protected function _maybe_add_hover_to_selectors( $selector, $add_hover = false ) {
+		return $add_hover ? et_pb_hover_options()->add_hover_to_selectors( $selector ) : $selector;
+	}
+
+	/**
+	 * Adds `:hover` in selector after `%%order_class%%`
+	 * E.g: add_hover_to_order_class('%%order_class%%% .image') >>> '%%order_class%%%:hover .image'
+	 *
+	 * @param string $selector
+	 *
+	 * @return string
+	 *
+	 * @deprecated Use et_pb_hover_options()->add_hover_to_order_class( $selector );
+	 */
+	public function add_hover_to_order_class( $selector ) {
+		return et_pb_hover_options()->add_hover_to_order_class( $selector );
+	}
+
+	/**
+	 * Adds `:hover` to order class only if is specified, in other cse returns original selector
+	 * otherwise returns the original selector
+	 *
+	 * @param string $selector
+	 * @param bool $add_hover
+	 *
+	 * @return string
+	 */
+	protected function _maybe_add_hover_to_order_class( $selector, $add_hover = false ) {
+		return $add_hover ? et_pb_hover_options()->add_hover_to_order_class( $selector ) : $selector;
 	}
 
 	/**
@@ -11215,9 +12399,9 @@ class ET_Builder_Element {
 	 * @return string module id / module id wrapped by id attribute
 	 */
 	function module_id( $include_attribute = true ) {
-		$module_id = $this->props['module_id'];
+		$module_id = esc_attr( $this->props['module_id'] );
 
-		$output = $include_attribute ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : $module_id;
+		$output = $include_attribute ? sprintf( ' id="%1$s"', $module_id ) : $module_id;
 
 		return '' !== $module_id ? $output : '';
 	}
@@ -11234,22 +12418,25 @@ class ET_Builder_Element {
 	function render_button( $args = array() ) {
 		// Prepare arguments
 		$defaults = array(
-			'button_id'        => '',
-			'button_classname' => array(),
-			'button_custom'    => '',
-			'button_rel'       => '',
-			'button_text'      => '',
-			'button_url'       => '',
-			'custom_icon'      => '',
-			'display_button'   => true,
-			'has_wrapper'      => true,
-			'url_new_window'   => '',
+			'button_id'           => '',
+			'button_classname'    => array(),
+			'button_custom'       => '',
+			'button_rel'          => '',
+			'button_text'         => '',
+			'button_text_escaped' => false,
+			'button_url'          => '',
+			'custom_icon'         => '',
+			'display_button'      => true,
+			'has_wrapper'         => true,
+			'url_new_window'      => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
 
+		$button_text = $args['button_text_escaped'] ? $args['button_text'] : esc_html( $args['button_text'] );
+
 		// Do not proceed if no button URL or text found
-		if ( ! $args['display_button'] || '' === $args['button_text'] ) {
+		if ( ! $args['display_button'] || '' === $button_text ) {
 			return '';
 		}
 
@@ -11274,11 +12461,11 @@ class ET_Builder_Element {
 		// Render button
 		return sprintf( '%7$s<a%9$s class="%5$s" href="%1$s"%3$s%4$s%6$s>%2$s</a>%8$s',
 			esc_url( $args['button_url'] ),
-			esc_html( $args['button_text'] ),
+			et_core_esc_previously( $button_text ),
 			( 'on' === $args['url_new_window'] ? ' target="_blank"' : '' ),
-			et_esc_previously( $data_icon ),
+			et_core_esc_previously( $data_icon ),
 			esc_attr( implode( ' ', array_unique( $button_classname ) ) ), // #5
-			et_esc_previously( $this->get_rel_attributes( $args['button_rel'] ) ),
+			et_core_esc_previously( $this->get_rel_attributes( $args['button_rel'] ) ),
 			$args['has_wrapper'] ? '<div class="et_pb_button_wrapper">' : '',
 			$args['has_wrapper'] ? '</div>' : '',
 			'' !== $args['button_id'] ? sprintf( ' id="%1$s"', esc_attr( $args['button_id'] ) ) : ''
@@ -11360,6 +12547,110 @@ class ET_Builder_Element {
 
 		return '{' . implode( ',', $slugs ) . '}';
 	}
+
+	/**
+	 * Get array of attributes which have dynamic content enabled.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @param array<string, mixed> $attrs
+	 *
+	 * @return array<string>
+	 */
+	protected function _get_enabled_dynamic_attributes( $attrs ) {
+		$enabled_dynamic_attributes = isset( $attrs['_dynamic_attributes'] ) ? $attrs['_dynamic_attributes'] : '';
+		$enabled_dynamic_attributes = array_filter( explode( ',', $enabled_dynamic_attributes ) );
+
+		return $enabled_dynamic_attributes;
+	}
+
+	/**
+	 * Check if an attribute value is dynamic or not.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @param string $attribute
+	 * @param string $value
+	 * @param array $enabled_dynamic_attributes
+	 *
+	 * @return bool
+	 */
+	protected function _is_dynamic_value( $attribute, $value, $enabled_dynamic_attributes ) {
+		if ( ! in_array( $attribute, $enabled_dynamic_attributes ) ) {
+			return false;
+		}
+
+		return et_builder_parse_dynamic_content( $value )->is_dynamic();
+	}
+
+	/**
+	 * Resolve a value, be it static or dynamic to a static one.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @param integer $post_id
+	 * @param string $field
+	 * @param string $value
+	 * @param array<string> $enabled_dynamic_attributes
+	 * @param boolean $serialize
+	 *
+	 * @return string
+	 */
+	protected function _resolve_value( $post_id, $field, $value, $enabled_dynamic_attributes, $serialize ) {
+		if ( ! in_array( $field, $enabled_dynamic_attributes ) ) {
+			return $value;
+		}
+
+		$builder_value = et_builder_parse_dynamic_content( $value );
+
+		if ( $serialize ) {
+			return $builder_value->serialize();
+		}
+
+		return $builder_value->resolve( $post_id );
+	}
+
+	/**
+	 * Escape an attribute's value.
+	 *
+	 * @since 3.17.2
+	 *
+	 * @param string $attribute
+	 * @param string $html 'limited', 'full', 'none'
+	 *
+	 * @return string
+	 */
+	protected function _esc_attr( $attribute, $html = 'none' ) {
+		$html               = in_array( $html, array( 'limited', 'full' ), true ) ? $html : 'none';
+		$raw                = isset( $this->attrs_unprocessed[ $attribute ] ) ? $this->attrs_unprocessed[ $attribute ] : '';
+		$formatted          = isset( $this->props[ $attribute ] ) ? $this->props[ $attribute ] : '';
+		$dynamic_attributes = $this->_get_enabled_dynamic_attributes( $this->props );
+
+		// More often than not content is not an attribute so we need to handle that special case.
+		if ( 'content' === $attribute && ! isset( $this->attrs_unprocessed[ $attribute ] ) ) {
+			$raw       = $this->content_unprocessed;
+			$formatted = $this->content;
+		}
+
+		if ( ! $this->_is_dynamic_value( $attribute, $raw, $dynamic_attributes ) ) {
+			if ( 'full' === $html ) {
+				return $formatted;
+			}
+			return esc_html( $formatted );
+		}
+
+		if ( 'limited' === $html ) {
+			return wp_kses( $formatted, array(
+				'strong' => array( 'id' => array(), 'class' => array(), 'style' => array() ),
+				'em'     => array( 'id' => array(), 'class' => array(), 'style' => array() ),
+				'i'      => array( 'id' => array(), 'class' => array(), 'style' => array() ),
+			) );
+		}
+
+		// Dynamic content values are escaped when they are resolved so we do not want to
+		// double-escape them when using them in the frontend, for example.
+		return et_core_esc_previously( $formatted );
+	}
 }
 
 do_action( 'et_pagebuilder_module_init' );
@@ -11369,12 +12660,13 @@ class ET_Builder_Module extends ET_Builder_Element {}
 class ET_Builder_Structure_Element extends ET_Builder_Element {
 	public $is_structure_element = true;
 
-	function wrap_settings_option( $option_output, $field ) {
+	function wrap_settings_option( $option_output, $field, $name = '' ) {
 		$field_type = ! empty( $field['type'] ) ? $field['type'] : '';
 
 		switch( $field_type ) {
 			case 'column_settings_background' :
 				$output = $this->generate_columns_settings_background();
+				$field['hover'] = 'tabs';
 				break;
 			case 'column_settings_padding' :
 				$output = $this->generate_columns_settings_padding();
@@ -11419,23 +12711,44 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 				}
 
 				$output = sprintf(
-					'%6$s<div class="et-pb-option et-pb-option--%11$s%1$s%2$s%3$s%8$s%9$s%10$s"%4$s>%5$s</div>%7$s',
-					( ! empty( $field['type'] ) && 'tiny_mce' == $field['type'] ? ' et-pb-option-main-content' : '' ),
+					'%6$s<div class="et-pb-option et-pb-option--%11$s%1$s%2$s%3$s%8$s%9$s%10$s"%4$s data-option_name="%12$s">%5$s</div>%7$s',
+					( ! empty( $field['type'] ) && 'tiny_mce' === $field['type'] ? ' et-pb-option-main-content' : '' ),
 					$depends ? ' et-pb-depends' : '',
-					( ! empty( $field['type'] ) && 'hidden' == $field['type'] ? ' et_pb_hidden' : '' ),
+					( ! empty( $field['type'] ) && 'hidden' === $field['type'] ? ' et_pb_hidden' : '' ),
 					( $depends ? $depends_attr : '' ),
 					"\n\t\t\t\t" . $option_output . "\n\t\t\t",
 					"\t",
 					"\n\n\t\t",
-					( ! empty( $field['type'] ) && 'hidden' == $field['type'] ? esc_attr( sprintf( ' et-pb-option-%1$s', $field['name'] ) ) : '' ),
+					( ! empty( $field['type'] ) && 'hidden' === $field['type'] ? esc_attr( sprintf( ' et-pb-option-%1$s', $field['name'] ) ) : '' ),
 					( ! empty( $field['option_class'] ) ? ' ' . $field['option_class'] : '' ),
 					isset( $field['specialty_only'] ) && 'yes' === $field['specialty_only'] ? ' et-pb-specialty-only-option' : '',
-					isset( $field['type'] ) ? esc_attr( $field['type'] ) : ''
+					isset( $field['type'] ) ? esc_attr( $field['type'] ) : '',
+					esc_attr( $field['name'] )
 				);
 				break;
 		}
 
-		return self::get_unique_bb_key( $output );
+		if ( ! empty( $field['hover'] ) ) {
+			if ( 'tabs' === $field['hover'] ) {
+				$name = ( 'columns_background' === $name ) ? 'background_color_<%= counter %>' : $name;
+				$this->last_hover_tab_field = $name;
+			}
+			$hover = $this->last_hover_tab_field;
+			if ( $hover ) {
+				$begin = '<div class="et-pb-option ';
+				$pos = strpos( $output, $begin );
+				if ( $pos >= 0 ) {
+					$output = substr_replace(
+						$output,
+						"<div data-depends_hover=\"$hover\" class=\"et-pb-option-standard et-pb-option ",
+						$pos,
+						strlen( $begin )
+					);
+				}
+			}
+		}
+
+        return self::get_unique_bb_key( $output );
 	}
 
 	function generate_column_vars_css() {
@@ -12130,7 +13443,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 		$output .= sprintf(
 			'<div class="et_pb_subtoggle_section">
 				<div class="et-pb-option-toggle-content">
-					<div class="et-pb-option et-pb-option--background">
+					<div class="et-pb-option et-pb-option--background" data-option_name="background_color_<%%= counter %%>">
 						<label for="et_pb_background">
 							%1$s
 							<%% if ( "4_4" !== column_type ) { %%>

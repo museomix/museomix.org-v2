@@ -30,7 +30,7 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),

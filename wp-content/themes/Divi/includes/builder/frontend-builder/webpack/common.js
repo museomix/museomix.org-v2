@@ -100,7 +100,7 @@ module.exports = (development, customLoader = false) => {
       rules: [
         {
           test: /\.jsx?$/,
-          exclude: /(node_modules|bower_components)/,
+          exclude: new RegExp(`(node_modules|bower_components)(?!(\\${path.sep}file-type))`),
           use: [
             {
               loader: 'babel-loader',
