@@ -38,6 +38,7 @@ function display_news($data, $link_text = null, $display = true) {
 					<div class="news_image">
 						<a href="'.$link.'">';
 		if ($item->post_type == 'museomix'):
+		$edition = get_field('edition', $item);
 			$out .='<div class="edition_logo">
 									<div class="edition_word">'.__('Edition','museomix').'</div>
 									<div class="edition_year">'.$edition->post_title.'</div>
