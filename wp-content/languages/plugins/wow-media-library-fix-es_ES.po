@@ -1,0 +1,33 @@
+# Translation of Plugins - Fix Media Library - Stable (latest release) in Spanish (Spain)
+# This file is distributed under the same license as the Plugins - Fix Media Library - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2019-02-09 12:34:21+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: es\n"
+"Project-Id-Version: Plugins - Fix Media Library - Stable (latest release)\n"
+
+#. Author URI of the plugin
+msgid "https://wowpress.host"
+msgstr "https://wowpress.host"
+
+#. Author of the plugin
+msgid "WowPress.host"
+msgstr "WowPress.host"
+
+#. Description of the plugin
+msgid "Fixes Media Library"
+msgstr "Fixes Media Library"
+
+#. Plugin URI of the plugin
+msgid "https://wowpress.host/plugins/wow-"
+msgstr "https://wowpress.host/plugins/wow-"
+
+#. Plugin Name of the plugin
+#: AdminInit.php:40
+msgid "Fix Media Library"
+msgstr "Fix Media Library"

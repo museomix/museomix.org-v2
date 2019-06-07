@@ -1,0 +1,323 @@
+# Translation of Plugins - Duplicate Post - Stable (latest release) in Portuguese (Brazil)
+# This file is distributed under the same license as the Plugins - Duplicate Post - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-02-15 18:31:27+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: pt_BR\n"
+"Project-Id-Version: Plugins - Duplicate Post - Stable (latest release)\n"
+
+#: duplicate-post-admin.php:280
+msgid "Current user is not allowed to copy posts."
+msgstr "Usuário atual não tem permissão para copiar posts."
+
+#: duplicate-post-admin.php:195
+msgid "Check out the new documentation"
+msgstr "Confira a nova documentação."
+
+#: duplicate-post-admin.php:194
+msgid "Serving the WordPress community since November 2007."
+msgstr "Servindo à comunidade WordPress desde novembro de 2007."
+
+#: duplicate-post-admin.php:194
+msgid "Duplicate Post turns 10!"
+msgstr "Duplicate Post está fazendo 10 anos!"
+
+#. Plugin URI of the plugin/theme
+msgid "https://duplicate-post.lopo.it/"
+msgstr "https://duplicate-post.lopo.it/"
+
+#: duplicate-post-options.php:235
+msgid "you probably want this unchecked, unless you have very special requirements"
+msgstr "você provavelmente deixará isto desmarcado, a não ser que tenha requerimentos muito especiais"
+
+#: duplicate-post-admin.php:652 duplicate-post-options.php:91
+msgid "Documentation"
+msgstr "Documentação"
+
+#: duplicate-post-admin.php:196
+msgid "Help me develop the plugin and provide support by <a href=\"%s\">donating even a small sum</a>."
+msgstr "Me ajude a desenvolver este plugin e fornecer suporte ao <a href=\"%s\">doar qualquer valor mesmo que pequeno</a>."
+
+#: duplicate-post-options.php:378
+msgid "Show update notice"
+msgstr "Mostrar alerta de atualização"
+
+#: duplicate-post-options.php:367
+msgid "Bulk Actions"
+msgstr "Ações em massa"
+
+#: duplicate-post-options.php:285
+msgid "You can use * to match zero or more alphanumeric characters or underscores: e.g. field*"
+msgstr "Você pode usar um * para substituir caracteres alfanuméricos ou sublinhados. Exemplo: campo*"
+
+#: duplicate-post-options.php:244
+msgid "Menu order"
+msgstr "Ordem do menu"
+
+#: duplicate-post-options.php:229
+msgid "Author"
+msgstr "Autor"
+
+#: duplicate-post-options.php:226
+msgctxt "post format"
+msgid "Format"
+msgstr "Formato"
+
+#: duplicate-post-options.php:223
+msgid "Template"
+msgstr "Modelo"
+
+#: duplicate-post-options.php:220
+msgid "Featured Image"
+msgstr "Imagem destacada"
+
+#: duplicate-post-options.php:93
+msgid "Support Forum"
+msgstr "Fóruns de suporte"
+
+#: duplicate-post-options.php:87
+msgid "Donate whatever sum you choose, even just 10¢."
+msgstr "Doe a quantia que você quiser, mesmo que seja 10¢."
+
+#: duplicate-post-options.php:85
+msgid "Help me develop the plugin, add new features and improve support!"
+msgstr "Me ajude a desenvolver o plugin, adicionar novos recursos e melhorar o suporte!"
+
+#: duplicate-post-admin.php:195
+msgid "Please <a href=\"%s\">review the settings</a> to make sure it works as you expect."
+msgstr "<a href=\"%s\">Revise as configurações</a> para certificar-se de que ele funciona como esperado."
+
+#: duplicate-post-admin.php:663
+msgid "%s item copied."
+msgid_plural "%s items copied."
+msgstr[0] "%s item copiado."
+msgstr[1] "%s itens copiados."
+
+#: duplicate-post-options.php:373
+msgid "You can also use the template tag duplicate_post_clone_post_link( $link, $before, $after, $id ). More info <a href=\"%s\">here</a>"
+msgstr "Você também pode usar a tag de modelo duplicate_post_clone_post_link( $link, $before, $after, $id ). Mais informações <a href=\"%s\">aqui</a>"
+
+#: duplicate-post-options.php:346 duplicate-post-options.php:372
+msgid "Whether the links are displayed for custom post types registered by themes or plugins depends on their use of standard WordPress UI elements"
+msgstr "Se os links são exibidos para os tipos de posts registados por temas ou plugins vai depender do uso de elementos padrões da interface do usuário do WordPress"
+
+#: duplicate-post-options.php:345
+msgid "Select the post types you want the plugin to be enabled"
+msgstr "Selecione os tipos de posts para os quais você deseja que o plugin seja habilitado"
+
+#: duplicate-post-options.php:336
+msgid "Enable for these post types"
+msgstr "Ativar para estes tipos de posts"
+
+#: duplicate-post-options.php:330
+msgid "Passwords and contents of password-protected posts may become visible to undesired users and visitors"
+msgstr "Senhas e conteúdos de posts protegidos por senhas podem tornar-se visíveis a usuários e visitantes indesejados"
+
+#: duplicate-post-options.php:292
+msgid "Show/hide private taxonomies"
+msgstr "Mostrar/esconder taxonomias privadas"
+
+#: duplicate-post-options.php:274
+msgid "Add this number to the original menu order (blank or zero to retain the value)"
+msgstr "Adicione este número para a ordem original do menu (em branco ou zero para reter o valor)"
+
+#: duplicate-post-options.php:269
+msgid "Increase menu order by"
+msgstr "Aumente a ordem de menu por"
+
+#: duplicate-post-options.php:241
+msgid "except pingbacks and trackbacks"
+msgstr "exceto pingbacks e trackbacks"
+
+#: duplicate-post-options.php:241
+msgid "Comments"
+msgstr "Comentários"
+
+#: duplicate-post-options.php:238
+msgid "Children"
+msgstr "Filhos"
+
+#: duplicate-post-options.php:235
+msgid "Attachments"
+msgstr "Anexos"
+
+#: duplicate-post-options.php:232
+msgid "Password"
+msgstr "Senha"
+
+#: duplicate-post-options.php:217
+msgid "Content"
+msgstr "Conteúdo"
+
+#: duplicate-post-options.php:214
+msgid "Excerpt"
+msgstr "Resumo"
+
+#: duplicate-post-options.php:211
+msgid "Slug"
+msgstr "Slug"
+
+#: duplicate-post-options.php:208
+msgid "Status"
+msgstr "Status"
+
+#: duplicate-post-options.php:205
+msgid "Date"
+msgstr "Data"
+
+#: duplicate-post-options.php:202
+msgid "Title"
+msgstr "Título"
+
+#: duplicate-post-options.php:198
+msgid "Post/page elements to copy"
+msgstr "Elementos a copiar do post/página"
+
+#: duplicate-post-options.php:190
+msgid "Display"
+msgstr "Exibição"
+
+#: duplicate-post-options.php:188
+msgid "Permissions"
+msgstr "Permissões"
+
+#: duplicate-post-options.php:186
+msgid "What to copy"
+msgstr "O que copiar"
+
+#: duplicate-post-admin.php:559
+msgid "Untitled"
+msgstr "Sem título"
+
+#: duplicate-post-admin.php:540
+msgid "Copy features for this post type are not enabled in options page"
+msgstr "Os recursos de cópia para esse tipo de post não estão habilitados na página de opções"
+
+#: duplicate-post-admin.php:199
+msgid "Dismiss this notice."
+msgstr "Dispensar este aviso."
+
+#. Author URI of the plugin/theme
+msgid "https://lopo.it"
+msgstr "https://lopo.it"
+
+#. Author of the plugin/theme
+msgid "Enrico Battocchi"
+msgstr "Enrico Battocchi"
+
+#. Description of the plugin/theme
+msgid "Clone posts and pages."
+msgstr "Clonar posts e páginas."
+
+#: duplicate-post.php:49
+msgid "Settings"
+msgstr "Configurações"
+
+#: duplicate-post-options.php:388
+msgid "Save Changes"
+msgstr "Salvar alterações"
+
+#: duplicate-post-options.php:363
+msgid "Admin bar"
+msgstr "Barra de administração"
+
+#: duplicate-post-options.php:361
+msgid "Edit screen"
+msgstr "Tela de edição"
+
+#: duplicate-post-options.php:359
+msgid "Post list"
+msgstr "Lista do post"
+
+#: duplicate-post-options.php:355
+msgid "Show links in"
+msgstr "Exibir links em"
+
+#: duplicate-post-options.php:329
+msgid "Warning: users will be able to copy all posts, even those of other users"
+msgstr "Atenção: os usuários serão capazes de copiar todas as mensagens, mesmo aqueles de outros usuários"
+
+#: duplicate-post-options.php:319
+msgid "Roles allowed to copy"
+msgstr "Funções autorizadas a copiar"
+
+#: duplicate-post-options.php:264
+msgid "Suffix to be added after the title, e.g. \"(dup)\" (blank for no suffix)"
+msgstr "Sufixo a ser adicionado após o título. Exemplo: \"(dup)\" (deixe em branco para nenhum sufixo)"
+
+#: duplicate-post-options.php:259
+msgid "Title suffix"
+msgstr "Sufixo do título"
+
+#: duplicate-post-options.php:254
+msgid "Prefix to be added before the title, e.g. \"Copy of\" (blank for no prefix)"
+msgstr "Prefixo para ser adicionado antes do título. Exemplo: \"Cópia de\" (deixe em branco para nenhum prefixo)"
+
+#: duplicate-post-options.php:249
+msgid "Title prefix"
+msgstr "Prefixo do título"
+
+#: duplicate-post-options.php:309
+msgid "Select the taxonomies you don't want to be copied"
+msgstr "Selecione as taxonomias que você não deseja copiar"
+
+#: duplicate-post-options.php:290
+msgid "Do not copy these taxonomies"
+msgstr "Não copiar estas taxonomias"
+
+#: duplicate-post-options.php:284
+msgid "Comma-separated list of meta fields that must not be copied"
+msgstr "Lista separada por vírgulas dos campos meta que não devem ser copiados"
+
+#: duplicate-post-options.php:279
+msgid "Do not copy these fields"
+msgstr "Não copie estes campos"
+
+#. #-#-#-#-#  duplicate-post-code.pot (Duplicate Post 3.2.1)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: duplicate-post-options.php:46
+msgid "Duplicate Post"
+msgstr "Duplicate Post"
+
+#: duplicate-post-options.php:46 duplicate-post-options.php:79
+msgid "Duplicate Post Options"
+msgstr "Opções do Duplicate Post"
+
+#: duplicate-post-options.php:92
+msgid "Translate"
+msgstr "Traduzir"
+
+#: duplicate-post-admin.php:653
+msgid "Donate"
+msgstr "Doar"
+
+#: duplicate-post-admin.php:323
+msgid "Copy creation failed, could not find original:"
+msgstr "A criação da cópia falhou, o original não foi encontrado:"
+
+#: duplicate-post-admin.php:284
+msgid "No post to duplicate has been supplied!"
+msgstr "Nenhum post foi fornecido para duplicação!"
+
+#: duplicate-post-admin.php:237
+msgid "New Draft"
+msgstr "Novo rascunho"
+
+#: duplicate-post-admin.php:236 duplicate-post-admin.php:253
+#: duplicate-post-common.php:78 duplicate-post-common.php:81
+#: duplicate-post-common.php:116
+msgid "Copy to a new draft"
+msgstr "Copie para um novo rascunho"
+
+#: duplicate-post-admin.php:234 duplicate-post-admin.php:687
+msgid "Clone"
+msgstr "Clonar"
+
+#: duplicate-post-admin.php:233
+msgid "Clone this item"
+msgstr "Clonar este item"

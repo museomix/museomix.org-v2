@@ -1,0 +1,309 @@
+# Translation of Plugins - Media Cleaner - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Media Cleaner - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2019-05-31 18:35:31+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Media Cleaner - Stable (latest release)\n"
+
+#: views/menu-screen.php:159
+msgid "<b>ACF has been detected</b>. The free version might detect the files used by ACF correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>ACF wurde erkannt</b>. Die kostenlose Version erkennt zwar die von ACF verwendeten Dateien korrekt, aber ihre volle Unterstützung ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar."
+
+#: core.php:899
+msgid "Orphan WebP."
+msgstr "Verwaiste WebP-Datei "
+
+#: api.php:228
+msgid "Invalid Option Value"
+msgstr "Ungültiger Optionswert "
+
+#: admin.php:41
+msgid "Invalid Regular-Expression"
+msgstr "Ungültiger regulärer Ausdruck "
+
+#: views/menu-screen.php:106
+msgid "Delete all search results"
+msgstr "Alle Suchergebnisse löschen "
+
+#: views/menu-screen.php:134
+msgid "<div class='notice notice-error'><p><b>The database is not ready for Media Cleaner. The scan will not work.</b> Click on the <b>Reset</b> button, it re-creates the tables required by Media Cleaner. If this message still appear, contact the support.</p></div>"
+msgstr "<div class='notice notice-error'><p><b>Die Datenbank ist nicht bereit für Media Cleaner. Der Scan funktioniert nicht.</b> Klicke auf den Button <b>Reset</b> und erstelle damit die von Media Cleaner benötigten Tabellen neu. Wenn diese Meldung weiterhin angezeigt wird, wende dich an deinen Support.</p></div> "
+
+#: admin.php:216
+msgid "You can choose two kind of methods, analyzing your Media Library for images which are not in used, or in your Filesystem for images which aren't registered in the Media Library or not in used. <b>Those checks can be very expensive in term of resources and might fail so you might want to play with those options depending on your install and what you need.</b> Check the <a target=\"_blank\" href=\"//meowapps.com/media-cleaner/tutorial/\">tutorial</a> for more information."
+msgstr "Du kannst zwei Methoden wählen: Deine Medienbibliothek nach Bildern durchsuchen, die nicht verwendet werden, oder in deinem Dateisystem auf Bilder durchsuchen, die nicht in der Medienbibliothek registriert bzw. nicht verwendet werden. <b>Diese Prüfungen können in Bezug auf die Ressourcen sehr aufwändig sein und könnten fehlschlagen, so dass du vielleicht mit diesen Optionen etwas spielen solltest, abhängig von deiner Installation und dem, was du benötigst.</b> Sieh in das <a target=\"_blank\" href=\"//meowapps.com/media-cleaner/tutorial/\">Tutorial</a> für weitere Informationen. "
+
+#: admin.php:363
+msgid "<br /><b>Cannot create the logging file. Logging will not work. The plugin as a whole might not be able to work neither.</b>"
+msgstr "<br /><b>Kann die Protokolldatei nicht erstellen. Die Protokollierung funktioniert nicht. Das Plugin als Ganzes kann möglicherweise auch nicht funktionieren.</b> "
+
+#: admin.php:360
+msgid "Creates an internal log file, for debugging purposes."
+msgstr "Erstellt eine interne Protokolldatei für Debuggingzwecke. "
+
+#: admin.php:325
+msgid "Check the <a target=\"_blank\" href=\"//meowapps.com/media-cleaner/tutorial/\">tutorial</a> for more information."
+msgstr "Weitere Informationen findest du im <a target=\"_blank\" href=\"//meowapps.com/media-cleaner/tutorial/\">Tutorial</a>. "
+
+#: views/menu-screen.php:206
+msgid "<div class='error'><p>Media Cleaner will analyze your Media Library. However, There is <b>NOTHING MARKED TO BE CHECKED</b> in the Settings. Media Cleaner will therefore run a special scan: <b>only the broken medias will be detected as issues.</b></p></div>"
+msgstr "<div class='error'><p>Media Cleaner analysiert deine Medienbibliothek. Es ist jedoch in den Einstellungen <b>NICHTS, ALS ZU ÜBERPRÜFEND GEKENNZEICHNET</b>. Media Cleaner führt daher einen speziellen Scan durch: <b>nur die defekten Medien werden als Probleme erkannt.</b></p></div>>"
+
+#: views/menu-screen.php:195
+msgid "<b>SiteOrigin Page Builder has been detected</b>. The free version might detect the files used by SiteOrigin Page Builder correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>SiteOrigin Page Builder wurde erkannt</b>. Die kostenlose Version erkennt zwar die vom SiteOrigin Page Builder verwendeten Dateien korrekt, aber der volle Funktionsumfang ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar. "
+
+#: views/menu-screen.php:189
+msgid "<b>Elementor has been detected</b>. The free version might detect the files used by Elementor correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>Elementor wurde erkannt</b>. Die kostenlose Version erkennt zwar die von Elementor verwendeten Dateien korrekt, aber die volle Unterstützung ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar."
+
+#: views/menu-screen.php:183
+msgid "<b>Beaver Builder has been detected</b>. The free version might detect the files used by Beaver Builder correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>Beaver Builder wurde erkannt</b>. Die kostenlose Version erkennt zwar die vom Beaver Builder verwendeten Dateien korrekt, aber die volle Unterstützung ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar. "
+
+#: views/menu-screen.php:177
+msgid "<b>Fusion Builder has been detected</b>. The free version might detect the files used by Fusion Builder correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>Fusion Builder wurde erkannt</b>. Die kostenlose Version erkennt zwar die vom Fusion Builder verwendeten Dateien korrekt, aber die volle Unterstützung ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar. "
+
+#: views/menu-screen.php:171
+msgid "<b>Visual Composer has been detected</b>. The free version might detect the files used by Visual Composer correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>Visual Composer wurde erkannt</b>. Die kostenlose Version erkennt zwar die vom Visual Composer verwendeten Dateien korrekt, aber die volle Unterstützung ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar. "
+
+#: views/menu-screen.php:165
+msgid "<b>Divi has been detected</b>. The free version might detect the files used by Divi correctly, but its full support is only available in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a>."
+msgstr "<b>Divi wurde erkannt</b>. Die kostenlose Version erkennt vielleicht die von Divi verwendeten Dateien korrekt, aber die volle Unterstützung ist nur in <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> verfügbar. "
+
+#: views/menu-screen.php:154
+msgid "<b>This version is not Pro.</b> This plugin is a lot of work so please consider <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> in order to receive support and to contribute in the evolution of it. Also, <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> version will also give you the option <b>to scan the physical files in your /uploads folder</b> and extra checks for the common Page Builders."
+msgstr "<b>Dies ist keine Pro-Version.</b> Dieses Plugin ist eine Menge Arbeit, also wertschätzen <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> bitte, um Unterstützung zu erhalten und zur Entwicklung beizutragen. <a target='_blank' href='//meowapps.com/media-cleaner'>Media Cleaner Pro</a> gibt dir auch die Möglichkeit <b>die physischen Dateien in deinem /uploads-Ordner</b> zu scannen und prüft zusätzlich die gängigen Page Builders. "
+
+#: engine.php:26 engine.php:30
+msgid "Posts, Meta and Widgets analysis are all off. Done."
+msgstr "Beiträge, Meta- und Widgets-Analysen sind alle aus. Erledigt. "
+
+#: common/admin.php:221
+msgid "<label>Force</label><br /><small>Updates and licenses checks are usually made without checking SSL certificates and it is actually fine this way. But if you are intransigent when it comes to SSL matters, this option will force it.</small>"
+msgstr "<label>Erzwingen</label><br /><small>Updates und Lizenzprüfungen werden in der Regel ohne Prüfung von SSL-Zertifikaten durchgeführt und es ist eigentlich in Ordnung. Aber wenn du kompromisslos bist, wenn es um SSL geht, wird diese Option es erzwingen.</small> "
+
+#: common/admin.php:213
+msgid "<label>Hide <b>Meow Apps</b> Menu</label><br /><small>Hide Meow Apps menu and all its components, for a cleaner admin. This option will be reset if a new Meow Apps plugin is installed. <b>Once activated, an option will be added in your General settings to display it again.</b></small>"
+msgstr "<label>Verberge<b>Meow Apps</b> Menu</label><br /><small>Verbirgt für eine sauberere Verwaltung das Meow Apps Menü und alle seine Komponenten. Diese Option wird zurückgesetzt, wenn ein neues Meow Apps Plugin installiert wird. <b>Sobald aktiviert, wird in deinen allgemeinen Einstellungen eine Option hinzugefügt, um sie wieder anzuzeigen.</b></small> "
+
+#: views/menu-screen.php:212
+msgid "<div class='error'><p>Media Cleaner will analyze your Filesystem. However, There is <b>NOTHING MARKED TO BE CHECKED</b> in the Settings. If you scan now, all the files will be detected as <b>NOT USED</b>.</p></div>"
+msgstr "<div class='error'><p>Media Cleaner analysiert dein Dateisystem. Es ist jedoch in den Einstellungen <b>NICHTS ZUR PRÜFUNG MARKIERT</b>. Wenn du jetzt scannst, werden alle Dateien als <b>NICHT VERWENDET</b>.</p></div> erkannt. "
+
+#: views/menu-screen.php:89
+msgid "Mark as Issue"
+msgstr " \tAls Problem markieren "
+
+#: ui.php:147
+msgid "Restore with Media Cleaner"
+msgstr "Wiederherstellen mit Media Cleaner "
+
+#: ui.php:144
+msgid "Trash with Media Cleaner"
+msgstr "Entsorgen mit Media Cleaner "
+
+#: ui.php:141
+msgid "Delete with Media Cleaner"
+msgstr "Löschen mit Media Cleaner "
+
+#: engine.php:109
+msgid "Posts checked."
+msgstr "Beiträge überprüft."
+
+#: admin.php:367
+msgid "<br />The <a target=\"_blank\" href=\"%smedia-cleaner.log\">log file</a> is available. You can also <a href=\"?page=wpmc_settings-menu&clearlogs=true\">clear</a> it."
+msgstr "<br />Die <a target=\"_blank\" href=\"%smedia-cleaner.log\">Log-Datei</a> ist verfügbar. Du kannst sie auch <a href=\"?page=wpmc_settings-menu&clearlogs=true\">leeren</a>."
+
+#: views/menu-screen.php:77
+msgid "Pause"
+msgstr "Pausieren"
+
+#: views/menu-screen.php:72
+msgid "Start Scan"
+msgstr "Untersuchung starten"
+
+#: admin.php:218
+msgid "Access Media Cleaner Dashboard"
+msgstr "Auf das Media-Cleaner-Dashboard zugreifen"
+
+#: api.php:54
+msgid "Unavailable."
+msgstr "Nicht verfügbar."
+
+#: common/admin.php:339
+msgid "Meow Apps is run by Jordy Meow, a photographer and software developer living in Japan (and taking <a target=\"_blank\" href=\"http://offbeatjapan.org\">a lot of photos</a>). Meow Apps is a suite of plugins focusing on photography, imaging, optimization and it teams up with the best players in the community (other themes and plugins developers). For more information, please check <a href=\"http://meowapps.com\" target=\"_blank\">Meow Apps</a>."
+msgstr "Meow Apps wird von Jordy Meow geführt, ein Fotograf und Software-Entwickler, der in Japan lebt (und <a target=\"_blank\" href=\"http://offbeatjapan.org\">viele Fotos</a> aufnimmt). Meow Apps ist eine Sammlung von Plugins, die sich auf Fotografie und Bildbearbeitung / -optimierung konzentrieren und mit den Besten der Community zusammenarbeiten (andere Theme- und Plugin-Entwickler). Weitere Informationen findest du hier: <a href=\"http://meowapps.com\" target=\"_blank\">Meow Apps</a>"
+
+#: views/menu-screen.php:251 views/menu-screen.php:327
+msgid "LR ID"
+msgstr "LR ID"
+
+#. Description of the plugin
+msgid "Clean your Media Library, many options, trash system."
+msgstr "Bereinige deine Mediathek, viele Optionen, Papierkorb-System."
+
+#: views/menu-screen.php:148
+msgid "<div class='notice notice-warning'><p>The trash for the Media Library is disabled. Any media removed by the plugin will be <b>permanently deleted</b>. To enable it, modify your wp-config.php file and add this line (preferably at the top): <b>define( 'MEDIA_TRASH', true );</b></p></div>"
+msgstr "<div class='notice notice-warning'><p>Der Papierkorb für die Mediathek ist deaktiviert. Durch das Plugin gelöschte Medien werden <b>dauerhaft gelöscht</b>. Um ihn zu aktivieren, bearbeite deine wp-config.php Datei und füge folgende Zeile ein (vorzugsweise oben):<br /><b>define( 'MEDIA_TRASH', true );</b></p></div>"
+
+#: views/menu-screen.php:144
+msgid "<div class='notice notice-warning'><p><b style='color: red;'>Important.</b> <b>Backup your DB and your /uploads directory before using Media Cleaner. </b> The deleted files will be temporarily moved to the <b>uploads/wpmc-trash</b> directory. After testing your website, you can check the <a href='?page=media-cleaner&s&view=deleted'>trash</a> to either empty it or recover the media and files. The Media Cleaner does its best to be safe to use. However, WordPress being a very dynamic and pluggable system, it is impossible to predict all the situations in which your files are used. <b style='color: red;'>Again, please backup!</b> If you don't know how, give a try to this: <a href='https://meow.click/blogvault' target='_blank'>BlogVault</a>. <br /><br /><b style='color: red;'>Be thoughtful.</b> Don't blame Media Cleaner if it deleted too many or not enough of your files. It makes cleaning possible and this task is only possible this way; don't post a bad review because it broke your install. <b>If you have a proper backup, there is no risk</b>. Sorry for the lengthy message, but better be safe than sorry. You can disable this big warning in the options if you have a Pro license. Make sure you read this warning twice. Media Cleaner is awesome and always getting better so I hope you will enjoy it. Thank you :)</p></div>"
+msgstr "<div class='notice notice-error'><p><b style='color: red;'>Wichtig.</b> <b>Sichere deine Datenbank und dein /uploads Verzeichnis bevor du den Media Cleaner benutzt.</b> Gelöschte Dateien werden temporär ins <b>uploads/wpmc-trash</b> Verzeichnis verschoben. Nach dem Testen deiner Webseite kannst du den <a href='?page=media-cleaner&s&view=deleted'>Papierkorb</a> überprüfen um ihn entweder zu leeren oder Medien wiederherzustellen. Der Media Cleaner tut sein Bestes um sicher benutzt werden zu können. Da jedoch WordPress ein sehr dynamisches anpassbares System ist, ist es nicht möglich jede Benutzung deiner Medien zu erkennen. <b style='color: red;'>Nochmals, bitte sichere deine Daten!</b> <br /><br /><b style='color: red;'>Handle mit Bedacht.</b> Gib Media Cleaner keine Schuld, wenn zu viele oder zu wenige Dateien gelöscht wurden. Es erlaubt die Bereinigung grundsätzlich und dies ist nur auf diesem Weg möglich; gib keine schlechte Bewertung ab, wenn die Nutzung deine Installation zerstörte. <b>Wenn du eine ordnungsgemäße Datensicherung angelegt hast, gibt es kein Risiko</b>. Entschuldige die lange Nachricht, aber Vorsicht ist besser als Nachsicht. Du kannst diese große Warnung in den Einstellungen deaktivieren, wenn du eine Pro-Lizenz erworben hast. Stelle sicher, dass du die Nachricht zwei Mal gelesen hast. Media Cleaner ist großartig und wird ständig besser, daher hoffe ich, es gefällt dir. Danke :)</p></div>"
+
+#: views/menu-screen.php:214
+msgid "<div class='notice notice-success'><p>Media Cleaner will analyze your Filesystem.</p></div>"
+msgstr "<div class='notice notice-success'><p>Media Cleaner überprüft dein Dateisystem.</p></div>"
+
+#: views/menu-screen.php:208
+msgid "<div class='notice notice-success'><p>Media Cleaner will analyze your Media Library.</p></div>"
+msgstr "<div class='notice notice-success'><p>Media Cleaner überprüft deine Mediathek.</p></div>"
+
+#: common/admin.php:205
+msgid "<label>Hide</label><br /><small>Doesn't display the ads.</small>"
+msgstr "<label>Verstecken</label><br /><small>Werbung wird nicht angezeigt.</small>"
+
+#: common/admin.php:181 common/admin.php:182
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://meowapps.com"
+msgstr "http://meowapps.com"
+
+#. Author of the plugin
+msgid "Jordy Meow"
+msgstr "Jordy Meow"
+
+#. Plugin Name of the plugin
+msgid "Media Cleaner"
+msgstr "Media Cleaner"
+
+#: admin.php:64
+msgid "<div class='error'><p>The Pro version is required to scan files. You can <a target='_blank' href='http://meowapps.com/media-cleaner'>get a serial for the Pro version here</a>.</p></div>"
+msgstr "<div class='error'><p>Die Pro-Version wird benötigt um Dateien zu überprüfen. Du kannst <a target='_blank' href='http://meowapps.com/media-cleaner'>hier eine Seriennummer für die Pro-Version bekommen</a>.</p></div>"
+
+#: core.php:927
+msgid "The directory for uploads is not writable. Media Cleaner will only be able to scan."
+msgstr "Das Verzeichnis für Uploads ist nicht schreibbar. Media Cleaner kann nur eine Überprüfung durchführen."
+
+#: views/menu-screen.php:256 views/menu-screen.php:329
+msgid "Size"
+msgstr "Größe"
+
+#: views/menu-screen.php:255 views/menu-screen.php:329
+msgid "Issue"
+msgstr "Probleme"
+
+#: views/menu-screen.php:254 views/menu-screen.php:329
+msgid "Path"
+msgstr "Pfad"
+
+#: views/menu-screen.php:248 views/menu-screen.php:325
+msgid "Origin"
+msgstr "Ursprung"
+
+#: views/menu-screen.php:247 views/menu-screen.php:325
+msgid "Type"
+msgstr "Art"
+
+#: views/menu-screen.php:245
+msgid "Thumb"
+msgstr "Vorschau"
+
+#: views/menu-screen.php:236
+msgid "Trash"
+msgstr "Papierkorb"
+
+#: views/menu-screen.php:235
+msgid "Ignored"
+msgstr "Ignoriert"
+
+#: views/menu-screen.php:234
+msgid "Issues"
+msgstr "Probleme"
+
+#: views/menu-screen.php:217
+msgid "There are <b>%s issue(s)</b> with your files, accounting for <b>%s MB</b>. Your trash contains <b>%s MB.</b>"
+msgstr "Es gibt <b>%s Problem(e)</b> mit deinen Medien, diese benötigen <b>%s MB</b>. Dein Papierkorb enthält <b>%s MB.</b>"
+
+#: views/menu-screen.php:118
+msgid "Search"
+msgstr "Suche"
+
+#: views/menu-screen.php:108
+msgid "Delete all"
+msgstr "Alle löschen"
+
+#: views/menu-screen.php:103
+msgid "Empty trash"
+msgstr "Papierkorb leeren"
+
+#: views/menu-screen.php:102
+msgid "Recover all"
+msgstr "Alle wiederherstellen"
+
+#: views/menu-screen.php:97
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: views/menu-screen.php:91
+msgid "Ignore"
+msgstr "Ignorieren"
+
+#: views/menu-screen.php:83
+msgid "Recover"
+msgstr "Wiederherstellen"
+
+#: views/menu-screen.php:81
+msgid "Delete"
+msgstr "Löschen"
+
+#: core.php:902
+msgid "File not found."
+msgstr "Datei nicht gefunden."
+
+#: core.php:896
+msgid "Orphan retina."
+msgstr "Verwaistes Retina-Bild."
+
+#: core.php:893
+msgid "Not in Media Library."
+msgstr "Nicht in der Mediathek."
+
+#: core.php:890
+msgid "Seems not in use."
+msgstr "Scheinbar nicht verwendet."
+
+#: api.php:85
+msgid "No task."
+msgstr "Keine Aufgabe."
+
+#: api.php:79
+msgid "Medias retrieved."
+msgstr "Medien abgerufen."
+
+#: api.php:61
+msgid "Files retrieved."
+msgstr "Dateien wiederhergestellt"
+
+#: api.php:146 api.php:160
+msgid "List generated."
+msgstr "Liste erstellt."
+
+#: api.php:127
+msgid "Items checked."
+msgstr "Einträge überprüft."
+
+#: api.php:178 api.php:196 api.php:214
+msgid "Status unknown."
+msgstr "Status unbekannt."

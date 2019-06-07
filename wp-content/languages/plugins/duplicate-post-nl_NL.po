@@ -1,0 +1,311 @@
+# Translation of Plugins - Duplicate Post - Stable (latest release) in Dutch
+# This file is distributed under the same license as the Plugins - Duplicate Post - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2017-06-03 08:20:17+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: nl\n"
+"Project-Id-Version: Plugins - Duplicate Post - Stable (latest release)\n"
+
+#. Plugin URI of the plugin/theme
+msgid "https://duplicate-post.lopo.it/"
+msgstr "https://duplicate-post.lopo.it/"
+
+#: duplicate-post-options.php:235
+msgid "you probably want this unchecked, unless you have very special requirements"
+msgstr "waarschijnlijk wil je dit uitgevinkt hebben, tenzij je hele specifieke vereisten hebt"
+
+#: duplicate-post-admin.php:653 duplicate-post-options.php:91
+msgid "Documentation"
+msgstr "Documentatie"
+
+#: duplicate-post-admin.php:196
+msgid "Help me develop the plugin and provide support by <a href=\"%s\">donating even a small sum</a>."
+msgstr "Help mij deze plugin te ontwikkelen en ondersteun mij door een  <a href=\"%s\">klein bedrag te doneren</a>."
+
+#: duplicate-post-admin.php:195
+msgid "Duplicate Post is now also compatible with WPML!"
+msgstr "Duplicate Post werkt nu ook met WPML!"
+
+#: duplicate-post-admin.php:194
+msgid "Check out the new documentation for Duplicate Post!"
+msgstr "Bekijk de nieuwe documentatie voor Duplicate Post!"
+
+#: duplicate-post-options.php:378
+msgid "Show update notice"
+msgstr "Updatebericht weergeven"
+
+#: duplicate-post-options.php:367
+msgid "Bulk Actions"
+msgstr "Bulk acties"
+
+#: duplicate-post-options.php:285
+msgid "You can use * to match zero or more alphanumeric characters or underscores: e.g. field*"
+msgstr "Je kunt * gebruiken om een of meerdere alfanumerieke karakters of liggende streepjes te matchen. Bijv.: veld*"
+
+#: duplicate-post-options.php:244
+msgid "Menu order"
+msgstr "Menuvolgorde"
+
+#: duplicate-post-options.php:229
+msgid "Author"
+msgstr "Auteur"
+
+#: duplicate-post-options.php:226
+msgctxt "post format"
+msgid "Format"
+msgstr "Format"
+
+#: duplicate-post-options.php:223
+msgid "Template"
+msgstr "Template"
+
+#: duplicate-post-options.php:220
+msgid "Featured Image"
+msgstr "Uitgelichte afbeelding"
+
+#: duplicate-post-options.php:93
+msgid "Support Forum"
+msgstr "Ondersteuningsforum"
+
+#: duplicate-post-options.php:87
+msgid "Donate whatever sum you choose, even just 10¢."
+msgstr "Doneer wat je wil, zelfs een bedrag van 10 cent helpt."
+
+#: duplicate-post-options.php:85
+msgid "Help me develop the plugin, add new features and improve support!"
+msgstr "Help mij bij het ontwikkelen van deze plugin, het toevoegen van nieuwe functies en het verbeteren van de ondersteuning."
+
+#: duplicate-post-admin.php:664
+msgid "%s item copied."
+msgid_plural "%s items copied."
+msgstr[0] "%s item gekopieerd."
+msgstr[1] "%s items gekopieerd."
+
+#: duplicate-post-options.php:373
+msgid "You can also use the template tag duplicate_post_clone_post_link( $link, $before, $after, $id ). More info <a href=\"%s\">here</a>"
+msgstr "Ja kunt ook de templatetag duplicate_post_clone_post_link( $link, $before, $after, $id ) gebruiken. Meer info <a href=\"%s\">hier</a>"
+
+#: duplicate-post-options.php:346 duplicate-post-options.php:372
+msgid "Whether the links are displayed for custom post types registered by themes or plugins depends on their use of standard WordPress UI elements"
+msgstr "Of de links worden weergegeven voor aangepaste bericht-typen door thema's of plugins geregistreerd, hangt af van het gebruik van de standaard WordPress UI-elementen"
+
+#: duplicate-post-options.php:345
+msgid "Select the post types you want the plugin to be enabled"
+msgstr "Selecteer de post types waarvoor je de plugin wilt gebruiken"
+
+#: duplicate-post-options.php:336
+msgid "Enable for these post types"
+msgstr "Instellen voor deze berichttypes"
+
+#: duplicate-post-options.php:330
+msgid "Passwords and contents of password-protected posts may become visible to undesired users and visitors"
+msgstr "Wachtwoorden en de inhoud van met een wachtwoord beveiligde berichten kunnen zichtbaar worden voor ongewenste gebruikers en bezoekers"
+
+#: duplicate-post-options.php:292
+msgid "Show/hide private taxonomies"
+msgstr "Toon/verberg privé taxonomieën"
+
+#: duplicate-post-options.php:274
+msgid "Add this number to the original menu order (blank or zero to retain the value)"
+msgstr "Voeg dit nummer toe aan de originele menuvolgorde (laat leeg of 0 om waarde te behouden)"
+
+#: duplicate-post-options.php:269
+msgid "Increase menu order by"
+msgstr "Verhoog menuvolgorde met"
+
+#: duplicate-post-options.php:241
+msgid "except pingbacks and trackbacks"
+msgstr "behalve pingbacks en trackbacks"
+
+#: duplicate-post-options.php:241
+msgid "Comments"
+msgstr "Reacties"
+
+#: duplicate-post-options.php:238
+msgid "Children"
+msgstr "Onderliggend"
+
+#: duplicate-post-options.php:235
+msgid "Attachments"
+msgstr "Bijlagen"
+
+#: duplicate-post-options.php:232
+msgid "Password"
+msgstr "Wachtwoord"
+
+#: duplicate-post-options.php:217
+msgid "Content"
+msgstr "Inhoud"
+
+#: duplicate-post-options.php:214
+msgid "Excerpt"
+msgstr "Samenvatting"
+
+#: duplicate-post-options.php:211
+msgid "Slug"
+msgstr "Slug"
+
+#: duplicate-post-options.php:208
+msgid "Status"
+msgstr "Status"
+
+#: duplicate-post-options.php:205
+msgid "Date"
+msgstr "Datum"
+
+#: duplicate-post-options.php:202
+msgid "Title"
+msgstr "Titel"
+
+#: duplicate-post-options.php:198
+msgid "Post/page elements to copy"
+msgstr "Bericht/pagina-elementen om te kopiëren"
+
+#: duplicate-post-options.php:190
+msgid "Display"
+msgstr "Bekijken"
+
+#: duplicate-post-options.php:188
+msgid "Permissions"
+msgstr "Rechten"
+
+#: duplicate-post-options.php:186
+msgid "What to copy"
+msgstr "Wat te kopiëren"
+
+#: duplicate-post-admin.php:555
+msgid "Untitled"
+msgstr "Zonder titel"
+
+#: duplicate-post-admin.php:536
+msgid "Copy features for this post type are not enabled in options page"
+msgstr "Kopieeropties voor dit post type zijn niet aangezet op de optiespagina"
+
+#: duplicate-post-admin.php:199
+msgid "Dismiss this notice."
+msgstr "Dit bericht verbergen."
+
+#. Author URI of the plugin/theme
+msgid "https://lopo.it"
+msgstr "http://lopo.it"
+
+#. Author of the plugin/theme
+msgid "Enrico Battocchi"
+msgstr "Enrico Battocchi"
+
+#. Description of the plugin/theme
+msgid "Clone posts and pages."
+msgstr "Kopieer berichten en pagina's"
+
+#: duplicate-post.php:49
+msgid "Settings"
+msgstr "Instellingen"
+
+#: duplicate-post-options.php:388
+msgid "Save Changes"
+msgstr "Opslaan"
+
+#: duplicate-post-options.php:363
+msgid "Admin bar"
+msgstr "Beheerders balk"
+
+#: duplicate-post-options.php:361
+msgid "Edit screen"
+msgstr "Bewerk scherm"
+
+#: duplicate-post-options.php:359
+msgid "Post list"
+msgstr "Berichten lijst"
+
+#: duplicate-post-options.php:355
+msgid "Show links in"
+msgstr "Toon koppelingen in"
+
+#: duplicate-post-options.php:329
+msgid "Warning: users will be able to copy all posts, even those of other users"
+msgstr "Waarschuwing: gebruikers zullen alle berichten kunnen kopiëren, zelfs die van andere gebruikers"
+
+#: duplicate-post-options.php:319
+msgid "Roles allowed to copy"
+msgstr "Rollen die kopieën mogen maken"
+
+#: duplicate-post-options.php:264
+msgid "Suffix to be added after the title, e.g. \"(dup)\" (blank for no suffix)"
+msgstr "Tekst die achter de originele titel wordt toegevoegd, bijv. \"(kopie)\" (leeg voor geen achtervoegsel)"
+
+#: duplicate-post-options.php:259
+msgid "Title suffix"
+msgstr "Titel achtervoegsel"
+
+#: duplicate-post-options.php:254
+msgid "Prefix to be added before the title, e.g. \"Copy of\" (blank for no prefix)"
+msgstr "Tekst die voor de originele titel wordt toegevoegd, bijv. \"Kopie van\" (leeg voor geen voorvoegsel)"
+
+#: duplicate-post-options.php:249
+msgid "Title prefix"
+msgstr "Titel voorvoegsel"
+
+#: duplicate-post-options.php:309
+msgid "Select the taxonomies you don't want to be copied"
+msgstr "Selecteer de taxonomieën die u niet gekopieerd wilt hebben"
+
+#: duplicate-post-options.php:290
+msgid "Do not copy these taxonomies"
+msgstr "Kopieer deze taxonomieën niet"
+
+#: duplicate-post-options.php:284
+msgid "Comma-separated list of meta fields that must not be copied"
+msgstr "enKomma gescheiden lijst van meta velden die niet gekopieerd moeten worden"
+
+#: duplicate-post-options.php:279
+msgid "Do not copy these fields"
+msgstr "Kopieer deze velden niet"
+
+#. #-#-#-#-#  tmp-duplicate-post.pot (Duplicate Post 3.2)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: duplicate-post-options.php:46
+msgid "Duplicate Post"
+msgstr "Duplicate Post"
+
+#: duplicate-post-options.php:46 duplicate-post-options.php:79
+msgid "Duplicate Post Options"
+msgstr "Duplicate Post instellingen"
+
+#: duplicate-post-options.php:92
+msgid "Translate"
+msgstr "Vertaal"
+
+#: duplicate-post-admin.php:654
+msgid "Donate"
+msgstr "Doneer"
+
+#: duplicate-post-admin.php:319
+msgid "Copy creation failed, could not find original:"
+msgstr "Kopieëren mislukt, kon origineel niet vinden:"
+
+#: duplicate-post-admin.php:280
+msgid "No post to duplicate has been supplied!"
+msgstr "Er is geen orgineel bericht opgegeven!"
+
+#: duplicate-post-admin.php:237
+msgid "New Draft"
+msgstr "Nieuw concept"
+
+#: duplicate-post-admin.php:236 duplicate-post-admin.php:253
+#: duplicate-post-common.php:78 duplicate-post-common.php:81
+#: duplicate-post-common.php:116
+msgid "Copy to a new draft"
+msgstr "Kopiëren naar een nieuw concept"
+
+#: duplicate-post-admin.php:234 duplicate-post-admin.php:688
+msgid "Clone"
+msgstr "Kopieer"
+
+#: duplicate-post-admin.php:233
+msgid "Clone this item"
+msgstr "Kopieer dit item"

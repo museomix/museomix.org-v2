@@ -1,0 +1,428 @@
+# Translation of Plugins - Media File Renamer (Auto Rename) - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Media File Renamer (Auto Rename) - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2019-05-31 19:06:27+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Media File Renamer (Auto Rename) - Stable (latest release)\n"
+
+#. Plugin Name of the plugin
+msgid "Media File Renamer (Auto Rename)"
+msgstr "Media File Renamer (Auto Rename)"
+
+#. Author URI of the plugin
+msgid "https://jordymeow.com"
+msgstr "https://jordymeow.com"
+
+#. Description of the plugin
+msgid "Renames automatically the files depending on Media titles and updates the links."
+msgstr "Benennt die Dateien je nach Medientitel automatisch um und aktualisiert die Links."
+
+#: mfrh_admin.php:308 mfrh_admin.php:337
+msgid "Title of Product"
+msgstr "Titel des Produkts"
+
+#. Translators: %1$s: link to mfrh_sql.log, %2$s: link to mfrh_sql_revert.log
+#: mfrh_admin.php:485
+msgid "The files %1$s and %2$s will be created and they will include the raw SQL queries which were run by the plugin. If there is an issue, the revert file can help you reverting the changes more easily."
+msgstr "Die Dateien %1$s und %2$s werden erstellt und enthalten die SQL-Rohdaten, die vom Plugin ausgeführt wurden. Wenn es ein Problem gibt, kann dir die Revert-Datei helfen, die Änderungen leichter rückgängig zu machen."
+
+#. Translators: %s: link to media-file-renamer.log
+#: mfrh_admin.php:471
+msgid "Simple logging that explains which actions has been run. The file is %s."
+msgstr "Einfache Protokollierung, die erklärt, welche Aktionen ausgeführt wurden. Die Datei ist %s."
+
+#: mfrh_admin.php:451
+msgid "You can modify the titles of your media while editing a post but, of course, the plugin can't update the HTML at this stage. With this option, the plugin will update the filenames and HTML after that you saved the post."
+msgstr "Du kannst die Titel deiner Medien während der Bearbeitung eines Beitrags ändern, aber natürlich kann das Plugin die HTML-Datei in diesem Stadium nicht aktualisieren. Mit dieser Option aktualisiert das Plugin die Dateinamen und die HTML-Datei, nachdem du den Beitrag gespeichert hast."
+
+#: mfrh_admin.php:450
+msgid "Enable (NOT RECOMMENDED)"
+msgstr "Aktivieren (nicht empfohlen)"
+
+#: mfrh_admin.php:439
+msgid "content"
+msgstr "Inhalt"
+
+#. Translators: %1$s: content, %2$s: excerpt,
+#: mfrh_admin.php:438
+msgid "Update the references to the renamed files in the %1$s and %2$s of the posts (pages and custom types included)."
+msgstr "Aktualisiere den Verweise auf die umbenannten Dateien in den %1$s und %2$s der Beiträge (Seiten und benutzerdefinierte Typen enthalten)."
+
+#: mfrh_admin.php:425
+msgid "custom fields"
+msgstr "Benutzerdefinierte Felder"
+
+#: mfrh_admin.php:413
+msgid "During upload, the filename will be renamed based on the title of the media if there is any EXIF with the file. Otherwise, it will optimize the upload filename."
+msgstr "Während des Hochladens wird der Dateiname basierend auf dem Titel des Mediums umbenannt, wenn es EXIF-Daten zu der Datei gibt. Andernfalls wird der Dateiname des Uploads optimiert."
+
+#: mfrh_admin.php:355
+msgid "A little undo icon will be added in the Rename column (Media Library). When clicked, the filename will be renamed back to the original."
+msgstr "In der Spalte \"Umbenennen\" (Medienbibliothek) wird ein kleines Undo-Symbol hinzugefügt. Wenn du darauf klickst, wird der Dateiname wieder auf das Original umbenannt."
+
+#: mfrh_admin.php:343
+msgid "Media Title"
+msgstr "Medientitel"
+
+#: mfrh_admin.php:320 mfrh_admin.php:347
+msgid "Keep in mind that the HTML of your posts and pages WILL NOT be modified, as that is simply too dangerous for a plug-in."
+msgstr "Beachte, dass der HTML-Code deiner Beiträge und Seiten NICHT geändert wird, da dies für ein Plugin einfach zu gefährlich ist."
+
+#: mfrh_admin.php:316
+msgid "ALT"
+msgstr "ALT"
+
+#. Translators: %1$s: update target name, %2$s: update resourse name
+#: mfrh_admin.php:315 mfrh_admin.php:342
+msgid "Update %1$s with %2$s"
+msgstr "Aktualisiert %1$s mit %2$s"
+
+#: mfrh_admin.php:290
+msgid "The GUID will be renamed like the new filename. Better to keep this un-checked."
+msgstr "Die GUID wird wie der neue Dateiname umbenannt. Es ist besser, das nicht zu aktivieren."
+
+#: mfrh_admin.php:289
+msgid "Update GUID with Filename"
+msgstr "GUID mit Dateiname aktualisieren"
+
+#: mfrh_admin.php:282
+msgid "Identical filenames will be allowed by the plugin and a number will be appended automatically (myfile.jpg, myfile-2.jpg, myfile-3.jpg, etc)."
+msgstr "Identische Dateinamen werden vom Plugin erlaubt und eine Nummer wird automatisch angehängt (myfile.jpg, myfile-2.jpg, myfile-3.jpg, etc.)."
+
+#: mfrh_admin.php:281
+msgid "Enable Numbering"
+msgstr "Nummerierung aktivieren"
+
+#: mfrh_admin.php:274
+msgid "Manual field will be enabled in the Media Library and the Media Edit Screen."
+msgstr "Das Feld Manuell wird in der Medienbibliothek und im Bildschirm Medienbearbeitung aktiviert."
+
+#: mfrh_admin.php:266
+msgid "Examples: "
+msgstr "Beispiele:"
+
+#: mfrh_admin.php:265
+msgid "Replace accents, umlauts, cyrillic, diacritics, by their ASCII equivalent."
+msgstr "Ersetzt Akzente, Umlaute, Kyrillisch, Diakritisch, durch ihr ASCII-Äquivalent."
+
+#: mfrh_admin.php:264 mfrh_admin.php:273 mfrh_admin.php:354 mfrh_admin.php:412
+#: mfrh_admin.php:421 mfrh_admin.php:435 mfrh_admin.php:459 mfrh_admin.php:468
+#: mfrh_admin.php:482
+msgid "Enable"
+msgstr "Einschalten"
+
+#: mfrh_admin.php:257
+msgid "Better to keep this un-checked as the link might have been referenced somewhere else."
+msgstr "Es ist besser, dies nicht zu aktivieren, da der Link möglicherweise an anderer Stelle referenziert wurde."
+
+#: mfrh_admin.php:256
+msgid "Update slug with filename"
+msgstr "Slug mit Dateiname aktualisieren"
+
+#: mfrh_admin.php:172
+msgid "tutorial"
+msgstr "Tutorial"
+
+#. Translators: %s: link to tutorial
+#: mfrh_admin.php:171
+msgid "This plugin works out of the box, the default settings are the best for most installs. However, you should have a look at the %s."
+msgstr "Dieses Plugin funktioniert sofort. Die Standardeinstellungen sind für die meisten Installationen die besten. Du solltest dir jedoch die %s ansehen."
+
+#: mfrh_admin.php:440
+msgid "excerpt"
+msgstr "Textauszug"
+
+#: ui.php:166
+msgid "<p class=\"description\">This feature is for <a target=\"_blank\" href=\"https://store.meowapps.com/\">Pro users</a> only.</p>"
+msgstr "<p class=\"description\">Dieses Feature ist für <a target=\"_blank\" href=\"https://store.meowapps.com/\">Pro-Benutzer</a> nur.</p>."
+
+#: views/menu-screen.php:101
+msgid "This is useful if you wish to create redirections from your old filenames to your new ones. The CSV file generated by Media File Renamer is compatible with the import function of the <a href=\"https://wordpress.org/plugins/redirection/\" target=\"_blank\">Redirection</a> plugin. The redirections with slugs are already automatically and natively handled by WordPress."
+msgstr "Dies ist nützlich, wenn du Umleitungen von deinen alten Dateinamen zu den neuen erstellen möchten. Die mit dem Media File Renamer erzeugte CSV-Datei ist kompatibel mit der Importfunktion des Plugins <a href=\"https://wordpress.org/plugins/redirection/\" target=\"_blank\">Redirection</a>. Die Umleitungen mit Slugs werden bereits automatisch und nativ von WordPress verarbeitet."
+
+#: views/menu-screen.php:64
+msgid "If you want to rename the media this way, I recommend you to do it from the Media Library directly. If you think this \"Scan All\" is really handy, please tell me that you are using it on the forums. I am currently planning to remove it and moving the \"Rename in Bulk\" with the settings of File Renamer (to clean the WordPress UI)."
+msgstr "Wenn du die Medien auf diese Weise umbenennen möchtest, empfehle ich dir, dies direkt aus der Medienbibliothek heraus zu tun. Wenn du denkst, dass dieses \"Alles scannen\" wirklich praktisch ist und du es verwendest, sag mir das bitte im Forum. Ich plane derzeit, es zu entfernen und die Massenumbenennung mit den Einstellungen von File Renamer zu verschieben (um die WordPress Benutzeroberfläche zu bereinigen)."
+
+#: views/menu-screen.php:21
+msgid "You might have noticed that some of your media are locked by the file renamer, others are unlocked. Automatically, the plugin locks the media you renamed manually. By default, they are unlocked. Here, you have the choice of rename all the media in your DB or only the ones which are unlocked (to keep the files you renamed manually). <span style=\"color: red; font-weight: bold;\">Please backup your uploads folder + DB before using this.</span> If you don't know how, give a try to this: <a href=\"https://meow.click/blogvault\" target=\"_blank\">BlogVault</a>."
+msgstr "Du hast vielleicht bemerkt, dass einige deiner Medien durch den Dateiumbenenner gesperrt, andere aber freigeschaltet sind. Das Plugin sperrt automatisch die Medien, die du manuell umbenannt hast. Standardmäßig sind sie freigeschaltet. Hier hast du die Wahl, alle Medien in deiner Datenbank umzubenennen oder nur die, die entsperrt sind (um die manuell umbenannten Dateien zu erhalten). <span style=\"color: red; font-weight: bold;\">Bitte sichere deinen Upload-Ordner + Datenbank, bevor du dies verwendest.</span> Wenn du nicht weist, wie, versuchen es damit: <a href=\"https://meow.click/blogvault\" target=\"_blank\">BlogVault</a>."
+
+#: views/menu-screen.php:13
+msgid "<b>The Pro version</b> of the plugin allows you to <b>rename based on the title of the post</b> (product or whatever else) you media is attached to, <b>rename manually</b>, use <b>numbered files</b> (by adding a counter if the filenames are similar), <b>sync the title with your ALT text</b>, a force rename (to repair a broken install), and, more importantly, <b>supports the developer</b> :) Thank you!<br /><br /><a class=\"button-primary\" href=\"https://store.meowapps.com/\" target=\"_blank\">Get the Pro</a>"
+msgstr "<b>Die Pro-Version</b> des Plugins erlaubt dir, <b>den Namen basierend auf dem Titel des Beitrags</b> (ein Produkt oder was auch immer) umzubenennen, an dem dein Medium hängt, ihn <b>manuell umzubenennen</b>, <b>nummerierte Dateien</b> zu verwenden (durch Hinzufügen eines Zählers, wenn die Dateinamen ähnlich sind), den <b>Bildtitel mit dem ALT-Text zu synchronisieren</b>, die Rückbenennung zu erzwingen (um eine defekte Installation zu reparieren) und, was noch wichtiger ist, <b> den Entwickler zu unterstützen.</b> :) Danke!<br /><br /><a class=\"button-primary\" href=\"https://store.meowapps.com/\" target=\"_blank\">Hol dir die Pro-Version</a>."
+
+#: views/column.php:60
+msgid "Auto"
+msgstr "Auto"
+
+#: ui.php:399
+msgid "No such post"
+msgstr "Kein solcher Beitrag"
+
+#: ui.php:380
+msgid "Failed to unlock"
+msgstr "Entsperrung fehlgeschlagen"
+
+#: ui.php:372
+msgid "Failed to lock"
+msgstr "Sperrung fehlgeschlagen"
+
+#: ui.php:367 ui.php:385 ui.php:396
+msgid "Invalid request"
+msgstr "Ungültige Anfrage"
+
+#: ui.php:315
+msgid "You need to enable Manual Rename in the plugin settings"
+msgstr "Du musst \"Manuelles Umbenennen\" in den Plugin-Einstellungen aktivieren."
+
+#: ui.php:313
+msgid "This feature is for Pro users only"
+msgstr "Diese Funktion ist nur für Pro-Benutzer verfügbar."
+
+#: ui.php:243 views/column.php:76
+msgid "The first media you rename will actually get this filename; the next will be either not renamed or will have a counter appended to it."
+msgstr "Das erste Medium, das du umbenennst, erhält tatsächlich diesen Dateinamen; das nächste wird entweder nicht umbenannt oder es wird ein Zähler hinzugefügt."
+
+#: ui.php:232 views/column.php:67
+msgid "Rename in lowercase, to %s. You can also <a href=\"%s\">edit this media</a>."
+msgstr "Umbenennen in Kleinbuchstaben, in %s. Du kannst auch <a href=\"%s\">dieses Medium bearbeiten</a>."
+
+#: common/admin.php:221
+msgid "<label>Force</label><br /><small>Updates and licenses checks are usually made without checking SSL certificates and it is actually fine this way. But if you are intransigent when it comes to SSL matters, this option will force it.</small>"
+msgstr "<label>Erzwingen</label><br /><small>Updates und Lizenzprüfungen werden in der Regel ohne Prüfung von SSL-Zertifikaten durchgeführt und es ist eigentlich ok so. Aber wenn du kompromisslos bist, wenn es um SSL geht, wird diese Option sie erzwingen.</small>"
+
+#: common/admin.php:213
+msgid "<label>Hide <b>Meow Apps</b> Menu</label><br /><small>Hide Meow Apps menu and all its components, for a cleaner admin. This option will be reset if a new Meow Apps plugin is installed. <b>Once activated, an option will be added in your General settings to display it again.</b></small>"
+msgstr "<label>Verbergen<b>Meow Apps</b> Menü</label><br /><small>Blendet Meow Apps Menü und alle seine Komponenten für eine sauberere Verwaltung aus. Diese Option wird zurückgesetzt, wenn ein neues Meow Apps Plugin installiert wird. <b>Sobald aktiviert, wird in \"Allgemeinen Einstellungen\" eine Option hinzugefügt, um sie wieder anzuzeigen.</b></small>"
+
+#: mfrh_admin.php:177
+msgid "Access the Renamer Dashboard"
+msgstr "Aufrufen des Renamer Dashboards"
+
+#: ui.php:258
+msgid "Rename (Renamer)"
+msgstr "Umbenennen (Renamer)"
+
+#: ui.php:257
+msgid "Unlock (Renamer)"
+msgstr "Freischalten (Renamer)"
+
+#: ui.php:256
+msgid "Lock (Renamer)"
+msgstr "Sperren (Renamer)"
+
+#: views/menu-screen.php:119 views/menu-screen.php:122
+msgid "After"
+msgstr "Danach"
+
+#: views/menu-screen.php:119 views/menu-screen.php:122
+msgid "Before"
+msgstr "Davor"
+
+#: views/menu-screen.php:112
+msgid "Export as CSV"
+msgstr "Als CSV exportieren"
+
+#: views/menu-screen.php:107
+msgid "Display Filenames"
+msgstr "Dateinamen anzeigen"
+
+#: views/menu-screen.php:41
+msgid "Unlock ALL [%d]"
+msgstr "Alle [%d] freischalten"
+
+#: mfrh_admin.php:35
+msgid "Force Rename and Numbered Files cannot be used at the same time. Please use Force Rename only when you are trying to repair a broken install. For now, Force Rename has been disabled."
+msgstr "Die Funktionen \"Umbenennung erzwingen\" und \"Nummerierte Dateien\" können nicht gleichzeitig verwendet werden. Bitte verwende \"Umbenennung erzwingen\" nur, wenn du versuchst, eine defekte Installation zu reparieren. Im Moment ist \"Umbenennung erzwingen\" deaktiviert."
+
+#: views/menu-screen.php:45
+msgid "Undo ALL [%d]"
+msgstr "Alle [%d] rückgängig machen"
+
+#: views/menu-screen.php:37
+msgid "Lock ALL [%d]"
+msgstr "Alle [%d] sperren"
+
+#: views/menu-screen.php:6
+msgid "All the media files are now locked."
+msgstr "Alle Mediendateien sind nun gesperrt."
+
+#: views/admin-head.php:14 views/admin-head.php:40
+msgid "Done. Please <a href='?page=rename_media_files'>refresh</a> this page."
+msgstr "Erledigt. Bitte <a href='?page=rename_media_files'>aktualisiere</a> diese Seite."
+
+#: mfrh_admin.php:331
+msgid "Media ALT"
+msgstr "Medien ALT"
+
+#: mfrh_admin.php:53
+msgid "The option Sync Media Title was turned off since it does not make sense to have it with this Auto-Rename mode."
+msgstr "Die Option \"Medientitel synchronisieren\" wurde deaktiviert, da es keinen Sinn macht, sie in diesem Auto-Rename-Modus zu verwenden."
+
+#: common/admin.php:339
+msgid "Meow Apps is run by Jordy Meow, a photographer and software developer living in Japan (and taking <a target=\"_blank\" href=\"http://offbeatjapan.org\">a lot of photos</a>). Meow Apps is a suite of plugins focusing on photography, imaging, optimization and it teams up with the best players in the community (other themes and plugins developers). For more information, please check <a href=\"http://meowapps.com\" target=\"_blank\">Meow Apps</a>."
+msgstr "Meow Apps wird von Jordy Meow, einem in Japan lebenden Fotografen und Softwareentwickler, betrieben (der auch viele Fotos <a target=\"_blank\" href=\"http://offbeatjapan.org\">macht</a>). Meow Apps sind eine Reihe von Plugins, die sich auf Fotografie, Bildbearbeitung und Optimierung konzentrieren und mit den besten Akteuren der Community (andere Theme- und Plugin-Entwickler) zusammenarbeiten. Für weitere Informationen besuche bitte <a href=\"http://meowapps.com\" target=\"_blank\">Meow Apps</a>."
+
+#: mfrh_admin.php:305 mfrh_admin.php:334
+msgid "Attached Post Title"
+msgstr "Angehängter Beitragstitel"
+
+#: mfrh_admin.php:302
+msgid "Title of Media"
+msgstr "Medientitel"
+
+#: mfrh_admin.php:311 mfrh_admin.php:327
+msgid "Error!"
+msgstr "Fehler!"
+
+#: mfrh_admin.php:44
+msgid "The option Sync ALT was turned off since it does not make sense to have it with this Auto-Rename mode."
+msgstr "Die Option \"Sync ALT\" wurde deaktiviert, da es keinen Sinn macht, sie in diesem Auto-Rename-Modus zu verwenden."
+
+#: views/menu-screen.php:32
+msgid "Unlock ALL & Rename [%d]"
+msgstr "Alle freischalten und umbenennen [%d]"
+
+#: views/menu-screen.php:28
+msgid "Rename ALL [%d]"
+msgstr "ALLE [%d] umbenennen"
+
+#. Plugin URI of the plugin
+msgid "https://meowapps.com"
+msgstr "https://meowapps.com"
+
+#: mfrh_admin.php:234
+msgid "Do you want to clear/reset the logs? Click <a href=\"?page=mfrh_settings-menu&reset=true\">here</a>.</b>"
+msgstr "Möchtest du die Protokolle löschen/zurücksetzen? Klicke <a href=\"?page=mfrh_settings-menu&reset=true\">hier</a>.</b>."
+
+#: mfrh_admin.php:202
+msgid "When the files are renamed, many links to them on your WordPress might be broken. Those options are updating the references to those files. <b>Give it a try, every install is different and it might not work for certain kind of references.</b>"
+msgstr "Wenn die Dateien umbenannt werden, können viele Links zu ihnen auf deinem WordPress-Blog beschädigt sein. Diese Optionen aktualisieren die Verweise auf diese Dateien. <b>Probiere es aus, jede Installation ist anders und es funktioniert möglicherweise nicht für bestimmte Arten von Verweisen.</b>"
+
+#: mfrh_admin.php:142
+msgid "SQL Logs<br />(Pro)"
+msgstr "SQL-Logs<br />(Pro-Version)"
+
+#: mfrh_admin.php:136
+msgid "Force Rename<br />(Pro)"
+msgstr "Umbenennen erzwingen<br />(Pro-Version)"
+
+#: mfrh_admin.php:98
+msgid "Post Meta"
+msgstr "Beitrags-Meta"
+
+#: mfrh_admin.php:95
+msgid "Posts"
+msgstr "Beiträge"
+
+#: views/column.php:87
+msgid "Rename to original filename: "
+msgstr "Umbenennen in den ursprünglichen Dateinamen:"
+
+#: common/admin.php:205
+msgid "<label>Hide</label><br /><small>Doesn't display the ads.</small>"
+msgstr "<label>Verbergen</label><br /><small>Zeige die Anzeigen nicht an.</small>"
+
+#: common/admin.php:181 common/admin.php:182
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: views/menu-screen.php:86
+msgid "There are no issues. Cool!<br />Let's go visit <a target=\"_blank\" href='https://offbeatjapan.org'>The Offbeat Guide of Japan</a> :)"
+msgstr "Es gibt keine Probleme. Cool!<br />Schau dir <a target=\"_blank\" href='https://offbeatjapan.org'>The Offbeat Guide of Japan</a> an :)."
+
+#: mfrh_admin.php:460
+msgid "Update the references to the file even if the file renaming itself was not successful. You might want to use that option if your install is broken and you are trying to link your Media to files for which the filenames has been altered (after a migration for exemple)"
+msgstr "Aktualisiere die Dateireferenzen, auch wenn die Umbenennung der Datei selbst nicht erfolgreich war. Du kannst die Option verwenden, wenn deine Installation beschädigt ist und du versuchst, deine Medien mit Dateien zu verknüpfen, deren Dateinamen geändert wurden (z.B. nach einer Migration)."
+
+#: mfrh_admin.php:404
+msgid "If the plugin considers that it is too dangerous to rename the file directly at some point, it will be flagged internally <b>as to be renamed</b>. The list of those flagged files can be found in Media > File Renamer and they can be renamed from there."
+msgstr "Wenn das Plugin der Ansicht ist, dass es irgendwann zu gefährlich ist, die Datei direkt umzubenennen, wird sie intern als <b>umbenannt</b> gekennzeichnet. Die Liste der markierten Dateien findest du unter \"Medien > File Renamer\" und können von dort aus umbenannt werden."
+
+#: ui.php:228 views/column.php:63 views/column.php:89
+msgid "Click to lock it to manual only."
+msgstr "Klicke hier, um es nur für die manuelle Bedienung zu sperren."
+
+#: views/column.php:85
+msgid "Automatically renamed."
+msgstr "Automatisch umbenannt."
+
+#: views/column.php:32
+msgid "Locked to manual only. Click to unlock it."
+msgstr "Nur für manuelle Bedienung gesperrt. Klicke hier, um es zu entsperren."
+
+#: views/column.php:31
+msgid "Manually renamed."
+msgstr "Manuell umbenannt."
+
+#: ui.php:212 views/column.php:44
+msgid "The ideal filename already exists. If you would like to use a count and rename it, enable the <b>Numbered Files</b> option in the plugin settings."
+msgstr "Der Dateiname ist bereits vorhanden. Wenn du einen Zähler verwenden und umbenennen möchtest, aktiviere die Option <b>Nummerierte Dateien</b> in den Plugin-Einstellungen."
+
+#: views/menu-screen.php:67 views/menu-screen.php:70
+msgid "Action"
+msgstr "Aktion"
+
+#: views/admin-head.php:23 views/admin-head.php:49
+msgid "Please wait..."
+msgstr "Bitte warten ..."
+
+#: views/menu-screen.php:67 views/menu-screen.php:70
+msgid "Title"
+msgstr "Titel"
+
+#. Author of the plugin
+msgid "Jordy Meow"
+msgstr "Jordy Meow"
+
+#: mfrh_admin.php:139
+msgid "Logs"
+msgstr "Protokolle"
+
+#. Translators: %s: custom fields
+#: mfrh_admin.php:424
+msgid "Update the references in the %s of the posts (including pages and custom types metadata)."
+msgstr "Aktualisiere die Verweise in den %s der Beiträge (einschließlich Seiten und Metadaten benutzerdefinierter Typen)."
+
+#: views/menu-screen.php:92
+msgid "Scan All & Show Issues"
+msgstr "Alles scannen und Probleme anzeigen"
+
+#: views/menu-screen.php:67 views/menu-screen.php:70
+msgid "Desired Filename"
+msgstr "Gewünschter Dateiname"
+
+#: views/menu-screen.php:67 views/menu-screen.php:70
+msgid "Current Filename"
+msgstr "Aktueller Dateiname"
+
+#: views/menu-screen.php:52 views/menu-screen.php:56
+msgid "Rename <span class='mfrh-flagged'>%d</span> flagged media"
+msgstr "Umbenennen von <span class='mfrh-flagged'>%d</span> markierten Medien"
+
+#: ui.php:237 views/column.php:71
+msgid "Rename to %s. You can also <a href=\"%s\">EDIT THIS MEDIA</a>."
+msgstr "Umbenennen in %s. Du kannst <a href=\"%s\">dieses Medium auch bearbeiten</a>."
+
+#: ui.php:227
+msgid "Auto-Rename"
+msgstr "Automatische Umbenennung"
+
+#: ui.php:209 views/column.php:40
+msgid "This title cannot be used for a filename."
+msgstr "Dieser Titel kann nicht für einen Dateinamen verwendet werden."
+
+#: ui.php:209 ui.php:212 views/column.php:39 views/column.php:42
+msgid "Edit Media"
+msgstr "Medium bearbeiten"
+
+#: ui.php:117 ui.php:178
+msgid "Rename"
+msgstr "Umbenennen"
