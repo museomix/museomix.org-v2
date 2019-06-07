@@ -44,7 +44,9 @@ if ( ! is_page_template( 'page-template-blank.php' ) ) : ?>
 						get_template_part( 'includes/social_icons', 'footer' );
 					}
 
-					echo et_core_esc_previously( et_get_footer_credits() );
+					// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo et_core_fix_unclosed_html_tags( et_core_esc_previously( et_get_footer_credits() ) );
+					// phpcs:enable
 				?>
 					</div>	<!-- .container -->
 				</div>

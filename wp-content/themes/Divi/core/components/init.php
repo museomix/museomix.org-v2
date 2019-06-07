@@ -131,6 +131,9 @@ function et_core_clear_wp_cache( $post_id = '' ) {
 			if ( is_object( $sg_cachepress_supercacher ) && method_exists( $sg_cachepress_supercacher, 'purge_cache' ) ) {
 				$sg_cachepress_supercacher->purge_cache( true );
 			}
+
+		} else if ( function_exists( 'sg_cachepress_purge_cache' ) ) {
+			sg_cachepress_purge_cache();
 		}
 
 		// WP Engine
@@ -223,6 +226,11 @@ function et_core_page_resource_fallback() {
 		return;
 	}
 
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return;
+	}
+
 	$resource_id = sanitize_text_field( $_GET['et_core_page_resource'] );
 	$pattern     = '/et-(\w+)-([\w-]+)-cached-inline-(?>styles|scripts)(global|\d+)/';
 	$has_matches = preg_match( $pattern, $resource_id, $matches );
@@ -279,6 +287,11 @@ function et_core_page_resource_maybe_output_fallback_script() {
 	}
 
 	if ( function_exists( 'et_get_option' ) && 'off' === et_get_option( 'et_pb_static_css_file', 'on' ) ) {
+		return;
+	}
+
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
 		return;
 	}
 

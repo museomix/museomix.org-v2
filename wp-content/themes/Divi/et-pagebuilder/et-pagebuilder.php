@@ -10,11 +10,85 @@ function et_setup_builder() {
 	define( 'ET_BUILDER_VERSION', $theme_version );
 
 	load_theme_textdomain( 'et_builder', ET_BUILDER_DIR . 'languages' );
-	require ET_BUILDER_DIR . 'framework.php';
+	require_once ET_BUILDER_DIR . 'framework.php';
 
 	et_pb_register_posttypes();
 }
 add_action( 'init', 'et_setup_builder', 0 );
+
+if ( ! function_exists( 'et_divi_maybe_adjust_row_advanced_options_config' ) ):
+function et_divi_maybe_adjust_row_advanced_options_config( $advanced_options ) {
+	$modules = ET_Builder_Element::get_modules();
+	$module  = array_pop( $modules );
+
+	if ( $module && 'post' === $module->get_post_type() ) {
+		$selector = implode( ', ', array(
+			'%%order_class%%',
+			'body #page-container .et-db #et-boc %%order_class%%.et_pb_row',
+			'body.et_pb_pagebuilder_layout.single #page-container #et-boc %%order_class%%.et_pb_row',
+			'body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc %%order_class%%.et_pb_row',
+			'body.et_pb_pagebuilder_layout.single.et_full_width_portfolio_page #page-container #et-boc %%order_class%%.et_pb_row',
+		) );
+
+		et_()->array_set( $advanced_options, 'max_width.css.width', $selector );
+		et_()->array_set( $advanced_options, 'max_width.css.max_width', $selector );
+	}
+
+	if ( true !== et_get_option( 'boxed_layout', false ) ) {
+		return $advanced_options;
+	}
+
+	$selector = implode( ', ', array(
+		'%%order_class%%',
+		'body.et_boxed_layout #page-container %%order_class%%.et_pb_row',
+		'body.et_boxed_layout.et_pb_pagebuilder_layout.single #page-container #et-boc %%order_class%%.et_pb_row',
+		'body.et_boxed_layout.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc %%order_class%%.et_pb_row',
+		'body.et_boxed_layout.et_pb_pagebuilder_layout.single.et_full_width_portfolio_page #page-container #et-boc %%order_class%%.et_pb_row',
+	) );
+
+	et_()->array_set( $advanced_options, 'max_width.css.width', $selector );
+	et_()->array_set( $advanced_options, 'max_width.css.max_width', $selector );
+	et_()->array_set( $advanced_options, 'max_width.options.width.default', '90%' );
+	et_()->array_set( $advanced_options, 'max_width.options.max_width.default', '1200px' );
+
+	return $advanced_options;
+}
+add_filter( 'et_pb_row_advanced_fields', 'et_divi_maybe_adjust_row_advanced_options_config' );
+endif;
+
+if ( ! function_exists( 'et_divi_maybe_adjust_section_advanced_options_config' ) ):
+function et_divi_maybe_adjust_section_advanced_options_config( $advanced_options ) {
+	$is_post_type = is_singular( 'post' ) || ( 'et_fb_update_builder_assets' === et_()->array_get( $_POST, 'action' ) && 'post' === et_()->array_get( $_POST, 'et_post_type' ) );
+
+	if ( et_get_option( 'boxed_layout', false ) ) {
+		$selector = implode( ', ', array(
+			'%%order_class%% > .et_pb_row',
+			'body.et_boxed_layout #page-container %%order_class%% > .et_pb_row',
+			'body.et_boxed_layout.et_pb_pagebuilder_layout.single #page-container #et-boc %%order_class%% > .et_pb_row',
+			'body.et_boxed_layout.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc %%order_class%% > .et_pb_row',
+			'body.et_boxed_layout.et_pb_pagebuilder_layout.single.et_full_width_portfolio_page #page-container #et-boc %%order_class%% > .et_pb_row',
+		) );
+
+		et_()->array_set( $advanced_options, 'max_width.extra.inner.options.width.default', '90%' );
+		et_()->array_set( $advanced_options, 'max_width.extra.inner.options.max_width.default', '1200px' );
+		et_()->array_set( $advanced_options, 'max_width.extra.inner.css.main', $selector );
+	} else if ( $is_post_type ) {
+		$selector = implode( ', ', array(
+			'%%order_class%% > .et_pb_row',
+			'body #page-container .et-db #et-boc %%order_class%% > .et_pb_row',
+			'body.et_pb_pagebuilder_layout.single #page-container #et-boc %%order_class%% > .et_pb_row',
+			'body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc %%order_class%% > .et_pb_row',
+			'body.et_pb_pagebuilder_layout.single.et_full_width_portfolio_page #page-container #et-boc %%order_class%% > .et_pb_row',
+		) );
+		et_()->array_set( $advanced_options, 'max_width.extra.inner.css.main', $selector );
+	}
+
+	et_()->array_set( $advanced_options, 'margin_padding.css.main', '%%order_class%%.et_pb_section' );
+
+	return $advanced_options;
+}
+add_filter( 'et_pb_section_advanced_fields', 'et_divi_maybe_adjust_section_advanced_options_config' );
+endif;
 
 /**
  * Added custom data attribute to builder's section
@@ -55,78 +129,28 @@ add_filter( 'et_pb_section_data_attributes', 'et_divi_section_data_attributes', 
  * @return void
  */
 if ( ! function_exists( 'et_fb_set_builder_locale' ) ) :
-function et_fb_set_builder_locale() {
+function et_fb_set_builder_locale( $locale ) {
 	// apply translations inside VB only
 	if ( empty( $_GET['et_fb'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-		return;
+		return $locale;
 	}
 
-	// make sure switch_to_locale() funciton exists. It was introduced in WP 4.7
+	$user = get_user_locale();
+
+	if ( $user === $locale ) {
+		return $locale;
+	}
+
 	if ( ! function_exists( 'switch_to_locale' ) ) {
-		return;
+		return $locale;
 	}
 
-	// do not proceed if user language == website language
-	if ( get_user_locale() === get_locale() ) {
-		return;
-	}
+	switch_to_locale( $user );
 
-	// switch the translation to user language
-	switch_to_locale( get_user_locale() );
-
-	// manually restore the translation for all domains except for the 'et_builder' domain
-	// otherwise entire page will be translated to user language, but we need to apply it to VB interface only.
-
-	/* The below code adapted from WordPress
-
-	  wp-includes/class-wp-locale-switcher.php:
-	    * load_translations()
-
-	  @copyright 2015 by the WordPress contributors.
-	  This program is free software; you can redistribute it and/or modify
-	  it under the terms of the GNU General Public License as published by
-	  the Free Software Foundation; either version 2 of the License, or
-	  (at your option) any later version.
-
-	  This program is distributed in the hope that it will be useful,
-	  but WITHOUT ANY WARRANTY; without even the implied warranty of
-	  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	  GNU General Public License for more details.
-
-	  You should have received a copy of the GNU General Public License
-	  along with this program; if not, write to the Free Software
-	  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-	  This program incorporates work covered by the following copyright and
-	  permission notices:
-
-	  b2 is (c) 2001, 2002 Michel Valdrighi - m@tidakada.com - http://tidakada.com
-
-	  b2 is released under the GPL
-
-	  WordPress - Web publishing software
-
-	  Copyright 2003-2010 by the contributors
-
-	  WordPress is released under the GPL */
-
-	global $l10n;
-
-	$domains = $l10n ? array_keys( $l10n ) : array();
-
-	load_default_textdomain( get_locale() );
-
-	foreach ( $domains as $domain ) {
-		if ( 'et_builder' === $domain ) {
-			continue;
-		}
-
-		unload_textdomain( $domain );
-		get_translations_for_domain( $domain );
-	}
+	return $user;
 }
 endif;
-add_action( 'after_setup_theme', 'et_fb_set_builder_locale' );
+add_filter( 'theme_locale', 'et_fb_set_builder_locale' );
 
 /**
  * Added custom post class

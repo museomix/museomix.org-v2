@@ -89,17 +89,6 @@ class ET_Builder_Value {
 			return $this->content;
 		}
 
-		// JSON_UNESCAPED_SLASHES is only supported from 5.4.
-		$options = defined( 'JSON_UNESCAPED_SLASHES' ) ? JSON_UNESCAPED_SLASHES : 0;
-		$result  = wp_json_encode( array(
-			'dynamic' => $this->dynamic,
-			'content' => $this->content,
-			// Force object type for keyed arrays as empty arrays will be encoded to
-			// javascript arrays instead of empty objects.
-			'settings' => (object) $this->settings,
-		), $options );
-
-		// Use fallback if needed
-		return 0 === $options ? str_replace( '\/', '/', $result ) : $result;
+		return et_builder_serialize_dynamic_content( $this->dynamic, $this->content, $this->settings );
 	}
 }

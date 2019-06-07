@@ -1,3 +1,6 @@
+// Check whether current page is inside (visual) builder or not
+var isBuilder = 'object' === typeof window.ET_Builder;
+
 /*! ET custom.js */
 (function($){
 	window.et_calculating_scroll_position = false;
@@ -33,6 +36,45 @@
 		$et_pb_first_row = $( 'body.et_pb_pagebuilder_layout .et_pb_section:visible:first' ),
 		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints,
 		$et_top_cart = $('#et-secondary-menu a.et-cart-info');
+
+	// Modification of underscore's _.debounce()
+	// Underscore.js 1.8.3
+	// http://underscorejs.org
+	// (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	// Underscore may be freely distributed under the MIT license.
+	function et_debounce(func, wait, immediate) {
+		var timeout, args, context, timestamp, result;
+
+		var now = Date.now || new Date().getTime();
+
+		var later = function() {
+			var last = now - timestamp;
+
+			if (last < wait && last >= 0) {
+				timeout = setTimeout(later, wait - last);
+			} else {
+				timeout = null;
+				if (!immediate) {
+					result = func.apply(context, args);
+					if (!timeout) context = args = null;
+				}
+			}
+		};
+
+		return function() {
+			context = this;
+			args = arguments;
+			timestamp = now;
+			var callNow = immediate && !timeout;
+			if (!timeout) timeout = setTimeout(later, wait);
+			if (callNow) {
+				result = func.apply(context, args);
+				context = args = null;
+			}
+
+			return result;
+		};
+	};
 
 	function et_preload_image( src, callback ) {
 		var img = new Image();
@@ -122,10 +164,6 @@
 			});
 		}
 
-		if ( $('ul.et_disable_top_tier').length ) {
-			$("ul.et_disable_top_tier > li > ul").prev('a').attr('href','#');
-		}
-
 		if ( window.et_is_vertical_nav ) {
 			if ( $( '#main-header' ).height() < $( '#et-top-navigation' ).height() ) {
 				$( '#main-header' ).height( $( '#et-top-navigation' ).height() + $( '#logo' ).height() + 100 );
@@ -166,6 +204,24 @@
 		et_duplicate_menu( $('#et-top-navigation ul.nav'), $('#et-top-navigation .mobile_nav'), 'mobile_menu', 'et_mobile_menu' );
 		et_duplicate_menu( '', $('.et_pb_fullscreen_nav_container'), 'mobile_menu_slide', 'et_mobile_menu', 'no_click_event' );
 
+		// Handle `Disable top tier dropdown menu links` Theme Option.
+		if ($('ul.et_disable_top_tier').length) {
+			$disbaled_top_tier_links = $("ul.et_disable_top_tier > li > ul").prev('a');
+
+			$disbaled_top_tier_links.attr('href', '#');
+			$disbaled_top_tier_links.on('click', function(e) {
+				e.preventDefault();
+			});
+
+			// Handle top tier links in cloned mobile menu
+			$disbaled_top_tier_links_mobile = $("ul#mobile_menu > li > ul").prev('a');
+
+			$disbaled_top_tier_links_mobile.attr('href', '#');
+			$disbaled_top_tier_links_mobile.on('click', function(e) {
+				e.preventDefault();
+			});
+		}
+
 		if ( $( '#et-secondary-nav' ).length ) {
 			$('#et-top-navigation #mobile_menu').append( $( '#et-secondary-nav' ).clone().html() );
 		}
@@ -182,12 +238,19 @@
 		function et_change_primary_nav_position( delay ) {
 			setTimeout( function() {
 				var $body = $('body'),
-					$wpadminbar = $( '#wpadminbar' ),
+					$wpadminbar = isBuilder ? window.top.jQuery('#wpadminbar') : $('#wpadminbar'),
 					$top_header = $( '#top-header' ),
 					et_primary_header_top = 0;
 
 				if ( $wpadminbar.length ) {
-					et_primary_header_top += $wpadminbar.innerHeight();
+					var adminbarHeight = $wpadminbar.innerHeight();
+
+					// Adjust admin bar height for builder's preview mode zoom since admin bar is rendered on top window
+					if (isBuilder && window.top.jQuery('html').is('.et-fb-preview--zoom:not(.et-fb-preview--desktop)')) {
+						adminbarHeight = adminbarHeight * 2;
+					}
+
+					et_primary_header_top += adminbarHeight;
 				}
 
 				if ( $top_header.length && $top_header.is(':visible') ) {
@@ -199,6 +262,8 @@
 				}
 			}, delay );
 		}
+
+		window.et_change_primary_nav_position = et_change_primary_nav_position;
 
 		function et_hide_nav_transform( ) {
 			var $body = $( 'body' ),
@@ -298,26 +363,52 @@
 				header_height,
 				et_pb_first_row_padding_top;
 
+				var $mainHeaderClone = $main_header
+					.clone()
+					.addClass('et-disabled-animations main-header-clone')
+					.css({
+						opacity: 0,
+						position: 'fixed',
+						top: 'auto',
+						right: 0,
+						bottom: 0,
+						left: 0,
+					})
+					.appendTo($('body'));
+
 			// Replace previous resize cycle's adjustment
-			$('*[data-fix-page-container="on"]').each(function(){
-				var $adjusted_element = $(this),
-					styling = $adjusted_element.data();
+			if (!$('body').hasClass('et-bfb')) {
+				$('*[data-fix-page-container="on"]').each(function(){
+					var $adjusted_element = $(this),
+						styling = $adjusted_element.data();
 
-				// Reapply previous styling
-				$adjusted_element.css( styling.fix_page_container_style );
+					if (styling && styling.fix_page_container_style) {
+						// Reapply previous styling
+						$adjusted_element.css( styling.fix_page_container_style );
+					}
 
-			});
+				});
+			}
 
 			// Set data-height-onload for header if the page is loaded on large screen
 			// If the page is loaded from small screen, rely on data-height-onload printed on the markup,
 			// prevent window resizing issue from small to large
-			if ( et_window_width > 980 && ! $main_header.attr( 'data-height-loaded' ) ){
-				$main_header.attr({ 'data-height-onload' : parseInt( $main_header.height() ), 'data-height-loaded' : true });
+			// ignore data-height-loaded in VB to make sure it calculated correctly.
+			if (et_window_width > 980 && (! $main_header.attr('data-height-loaded') || $('body').is('.et-fb'))) {
+				var mainHeaderHeight = 0;
+				if ($main_header.hasClass('et-fixed-header')) {
+					$mainHeaderClone.removeClass('et-fixed-header');
+					mainHeaderHeight = $mainHeaderClone.height();
+					$mainHeaderClone.addClass('et-fixed-header');
+				} else {
+					mainHeaderHeight = $main_header.height();
+				}
+				$main_header.attr({ 'data-height-onload' : parseInt(mainHeaderHeight), 'data-height-loaded' : true });
 			}
 
 			// Use on page load calculation for large screen. Use on the fly calculation for small screen (980px below)
 			if ( et_window_width <= 980 ) {
-				header_height = parseInt( $main_header.innerHeight() ) + secondary_nav_height - 1;
+				header_height = parseInt( $main_header.innerHeight() ) + secondary_nav_height - ($('body').hasClass('et-fb') ? 0 : 1);
 
 				// If transparent is detected, #main-content .container's padding-top needs to be added to header_height
 				// And NOT a pagebuilder page
@@ -335,20 +426,7 @@
 				}
 
 				// Calculate fixed header height by cloning, emulating, and calculating its height
-				$main_header.clone().addClass(
-					'main-header-clone et-fixed-header'
-				).css({
-					opacity: 0,
-					position: 'fixed',
-					top: 'auto',
-					right: 0,
-					bottom: 0,
-					left: 0
-				}).appendTo( $('body') );
-
-				main_header_fixed_height = $('.main-header-clone').height();
-
-				$('.main-header-clone').remove();
+				main_header_fixed_height = $mainHeaderClone.height();
 			}
 
 			// Saved fixed main header height calculation
@@ -357,10 +435,12 @@
 			});
 
 			// Specific adjustment required for transparent nav + not vertical nav
-			if ( window.et_is_transparent_nav && ! window.et_is_vertical_nav ){
+			if (window.et_is_transparent_nav && !window.et_is_vertical_nav) {
 
-				// Add class for first row for custom section padding purpose
-				$et_pb_first_row.addClass( 'et_pb_section_first' );
+				if (!$('body').hasClass('et-bfb')) {
+					// Add class for first row for custom section padding purpose
+					$et_pb_first_row.addClass( 'et_pb_section_first' );
+				}
 
 				// List of conditionals
 				var is_pb                            = $et_pb_first_row.length,
@@ -411,8 +491,14 @@
 							'paddingTop'
 						);
 
+						// Reset any inline padding-top.
 						$et_pb_first_row.css({
-							'paddingTop' : header_height
+							paddingTop: ''
+						});
+
+						$et_pb_first_row.css({
+							// Ignore the extra 58px added to header height previously.
+							'paddingTop' : 'calc(' + (header_height - 58) + 'px + ' + $et_pb_first_row.css('paddingTop') + ')'
 						});
 
 					} else {
@@ -712,7 +798,7 @@
 					} else {
 						// Pagebuilder ignores #main-content .container's fixed height and uses its row's padding
 						// Anticipate the use of custom section padding.
-						et_pb_first_row_padding_top = header_height + parseInt( $et_pb_first_row.css( 'paddingBottom' ) );
+						et_pb_first_row_padding_top = header_height + parseInt( $et_pb_first_row.css( 'paddingTop' ) );
 
 						// Save current styling for the next resize cycle
 						et_save_initial_page_container_style(
@@ -748,49 +834,69 @@
 					}).appendTo('head');
 				}
 
+				// If the first visible (visibility is significant for for cached split test) section/row/module has
+				// parallax background, trigger parallax height resize so the parallax location is correctly rendered
+				// due to addition of first section/row/module margin-top/padding-top which is needed for transparent
+				// primary nav
+				var $firstSection = $('.et_pb_section:visible:first');
+				var $firstRow = $firstSection.find('.et_pb_row:visible:first');
+				var $firstModule = $firstSection.find('.et_pb_module:visible:first');
+
+				var firstSectionHasParallax = $firstSection.hasClass('et_pb_section_parallax');
+				var firstRowHasParallax = $firstRow.hasClass('et_pb_section_parallax');
+				var firstModuleHasParallax = $firstModule.hasClass('et_pb_section_parallax');
+
+				if (firstSectionHasParallax || firstRowHasParallax || firstModuleHasParallax) {
+					$(window).trigger('resize.etTrueParallaxBackground');
+				}
+
 			} else if( et_is_fixed_nav ) {
 
 				$main_container_wrapper.css( 'paddingTop', header_height );
 
 			}
 
+			$mainHeaderClone.remove();
 			et_change_primary_nav_position( 0 );
+			$(document).trigger('et-pb-header-height-calculated');
 		}
+		window.et_fix_page_container_position = et_fix_page_container_position;
 
 		// Save container width on page load for reference
-		$et_container.data( 'previous-width', $et_container.width() );
+		$et_container.data('previous-width', parseInt($et_container.width()));
+
+		var update_page_container_position = et_debounce(function () {
+			et_fix_page_container_position();
+			if (typeof et_fix_fullscreen_section === 'function') {
+				et_fix_fullscreen_section();
+			}
+		}, 200);
 
 		$( window ).resize( function(){
 			var window_width                = parseInt( $et_window.width() ),
-				et_container_previous_width = parseInt( $et_container.data('previous-width') ),
+				has_container               = $et_container.length > 0,
+				et_container_previous_width = !has_container ? 0 : parseInt( $et_container.data('previous-width') ),
 				et_container_css_width      = $et_container.css( 'width' ),
 				et_container_width_in_pixel = ( typeof et_container_css_width !== 'undefined' ) ? et_container_css_width.substr( -1, 1 ) !== '%' : '',
-				et_container_actual_width   = ( et_container_width_in_pixel ) ? parseInt( $et_container.width() ) : ( ( parseInt( $et_container.width() ) / 100 ) * window_width ), // $et_container.width() doesn't recognize pixel or percentage unit. It's our duty to understand what it returns and convert it properly
-				containerWidthChanged       = et_container_previous_width !== et_container_actual_width,
+				et_container_actual_width   = !has_container ? 0 : et_container_width_in_pixel ? parseInt( $et_container.width() ) : ( ( parseInt( $et_container.width() ) / 100 ) * window_width ), // $et_container.width() doesn't recognize pixel or percentage unit. It's our duty to understand what it returns and convert it properly
+				containerWidthChanged       = $et_container.length && et_container_previous_width !== et_container_actual_width,
 				$slide_menu_container       = $( '.et_slide_in_menu_container' ),
+				$adminbar                   = isBuilder ? window.top.jQuery('#wpadminbar') : $('#wpadminbar'),
 				page_container_margin;
 
-			if ( et_is_fixed_nav && containerWidthChanged ) {
-				if ( typeof update_page_container_position != 'undefined' ){
-					clearTimeout( update_page_container_position );
-				}
-
-				var update_page_container_position = setTimeout( function() {
-					et_fix_page_container_position();
-					if ( typeof et_fix_fullscreen_section === 'function' ) {
-						et_fix_fullscreen_section();
-					}
-				}, 200 );
+			if (et_is_fixed_nav && containerWidthChanged) {
+				update_page_container_position();
 
 				// Update container width data for future resizing reference
-				$et_container.data('previous-width', et_container_actual_width );
+				$et_container.data('previous-width', et_container_actual_width);
 			}
 
 			if ( et_hide_nav ) {
 				et_hide_nav_transform();
 			}
 
-			if ( $( '#wpadminbar' ).length && et_is_fixed_nav && window_width >= 740 && window_width <= 782 ) {
+			// Update header and primary adjustment when transitioning across breakpoints or inside visual builder
+			if (($adminbar.length && et_is_fixed_nav && window_width >= 740 && window_width <= 782) || isBuilder) {
 				et_calculate_header_values();
 
 				et_change_primary_nav_position( 0 );
@@ -836,6 +942,10 @@
 			et_set_right_vertical_menu();
 		} );
 
+		if (isBuilder && jQuery('.et_header_style_fullscreen .et_slide_in_menu_container').length > 0) {
+			jQuery(window).resize(et_pb_resize_fullscreen_menu);
+		}
+
 		$( window ).ready( function(){
 			if ( $.fn.fitVids ) {
 				$( '#main-content' ).fitVids( { customSelector: "iframe[src^='http://www.hulu.com'], iframe[src^='http://www.dailymotion.com'], iframe[src^='http://www.funnyordie.com'], iframe[src^='https://embed-ssl.ted.com'], iframe[src^='http://embed.revision3.com'], iframe[src^='https://flickr.com'], iframe[src^='http://blip.tv'], iframe[src^='http://www.collegehumor.com']"} );
@@ -847,7 +957,10 @@
 				et_calculate_header_values();
 			}
 
-			et_fix_page_container_position();
+			// Run container position calculation with 0 timeout to make sure all elements are ready for proper calculation.
+			setTimeout(function() {
+				et_fix_page_container_position();
+			}, 0);
 
 			// Minified JS is ordered differently to avoid jquery-migrate to cause js error.
 			// This might cause hiccup on some specific configuration (ie. parallax of first module on transparent nav)
@@ -870,8 +983,12 @@
 				}
 			}
 
-			if ( $('p.demo_store').length ) {
-				$('#footer-bottom').css('margin-bottom' , $('p.demo_store').innerHeight());
+			if ( $('p.demo_store').length && $('p.demo_store').is(':visible') ) {
+				$('#footer-bottom').css('margin-bottom', $('p.demo_store').innerHeight());
+
+				$('.woocommerce-store-notice__dismiss-link').click(function() {
+					$('#footer-bottom').css('margin-bottom', '');
+				});
 			}
 
 			if ( $.fn.waypoint ) {
@@ -1129,6 +1246,11 @@
 				$( window ).on( 'scroll', et_pb_window_side_nav_scroll_init );
 			}
 		};
+
+		if ($('body').is('.et-fb, .et-bfb')) {
+			// Debounce slow function
+			window.et_pb_side_nav_page_init = et_debounce(window.et_pb_side_nav_page_init, 200);
+		}
 
 		et_pb_side_nav_page_init();
 
@@ -1442,6 +1564,7 @@
 
 		$menu_container.toggleClass( 'et_pb_fullscreen_menu_opened' );
 		$( 'body' ).toggleClass( 'et_pb_fullscreen_menu_active' );
+		et_pb_resize_fullscreen_menu();
 
 		if ( $menu_container.hasClass( 'et_pb_fullscreen_menu_opened' ) ) {
 			$menu_container.addClass( 'et_pb_fullscreen_menu_animated' );
@@ -1452,6 +1575,22 @@
 			setTimeout( function() {
 				$menu_container.removeClass( 'et_pb_fullscreen_menu_animated' );
 			}, 1000 );
+		}
+	}
+
+	function et_pb_resize_fullscreen_menu(e) {
+		if (isBuilder) {
+			var $menu = jQuery('.et_header_style_fullscreen .et_slide_in_menu_container.et_pb_fullscreen_menu_opened');
+			if ($menu.length > 0) {
+				var height = jQuery(window.top).height();
+				// Account for padding
+				height -= parseInt($menu.css('padding-top'), 10);
+				// and AdminBar
+				if ($menu.closest('.admin-bar').length > 0) {
+					height -= 32;
+				}
+				$menu.find('.et_pb_fullscreen_nav_container').css('max-height', height);
+			}
 		}
 	}
 

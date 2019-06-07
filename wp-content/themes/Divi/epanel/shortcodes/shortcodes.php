@@ -947,17 +947,21 @@ if ( ! function_exists( 'et_content_helper' ) ){
 	}
 }
 
-add_action('admin_init', 'et_init_shortcodes');
-function et_init_shortcodes(){
-	if ( current_user_can( 'edit_posts' ) && current_user_can( 'edit_pages' ) ) {
-		if ( in_array(basename($_SERVER['PHP_SELF']), array('post-new.php', 'page-new.php', 'post.php', 'page.php') ) ) {
-			add_filter('mce_buttons', 'et_filter_mce_button');
-			add_filter('mce_external_plugins', 'et_filter_mce_plugin');
-			add_action('admin_head','et_add_simple_buttons');
-			add_action('edit_form_advanced', 'et_advanced_buttons');
-			add_action('edit_page_form', 'et_advanced_buttons');
-		}
+// Hook later into the request lifecycle so that we can check Gutenberg status.
+// 'wp' is not run on edit pages so we use the next best thing.
+add_action( 'admin_head', 'et_init_shortcodes' );
+function et_init_shortcodes() {
+	$is_edit_url = in_array( basename( $_SERVER['PHP_SELF'] ), array( 'post-new.php', 'page-new.php', 'post.php', 'page.php' ) );
+
+	if ( ! is_admin() || ! $is_edit_url || ! current_user_can( 'edit_posts' ) || ! current_user_can( 'edit_pages' ) || et_core_is_gutenberg_enabled() ) {
+		return;
 	}
+
+	add_filter('mce_buttons', 'et_filter_mce_button');
+	add_filter('mce_external_plugins', 'et_filter_mce_plugin');
+	add_action('edit_form_advanced', 'et_advanced_buttons');
+	add_action('edit_page_form', 'et_advanced_buttons');
+	et_add_simple_buttons();
 }
 
 function et_filter_mce_button($buttons) {

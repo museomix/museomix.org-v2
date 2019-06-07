@@ -20,6 +20,7 @@ class edit extends Component {
     savePost: PropTypes.func.isRequired,
     setAttributes: PropTypes.func.isRequired,
     isSavingPost: PropTypes.func.isRequired,
+    isSavingMetaBoxes: PropTypes.func.isRequired,
     attributes: PropTypes.object.isRequired,
   }
 
@@ -120,19 +121,22 @@ class edit extends Component {
     this.setState({ editor });
 
     if (this.save(editor)) {
-      // If post is saving, don't switch yet
-      this.unsubscribe = subscribe(this.waitForSave);
+      // If post is saving, don't switch yet.
+      setTimeout(() => {
+        this.unsubscribe = subscribe(this.waitForSave);
+      }, 0);
     } else {
       this.switchEditor(editor);
     }
   }
 
   // Call the controller switchEditor method and pass it the old content.
-  // switchEditor = editor => switchEditor(editor, this.getSavedMeta().old);
   switchEditor = editor => switchEditor(editor, this.props.attributes.old);
 
+  isSaving = () => this.props.isSavingPost() || this.props.isSavingMetaBoxes()
+
   waitForSave = () => {
-    if (this.props.isSavingPost() || !this.unsubscribe) {
+    if (this.isSaving() || !this.unsubscribe) {
       // If still saving, do nothing
       return;
     }
@@ -182,5 +186,9 @@ export default hot(module)(compose(
     'isSavingPost',
     'isCleanNewPost',
     'getCurrentPost',
+  ])),
+  // Add 'core/edit-post' selectors to HOC props
+  withSelect(select => pick(select('core/edit-post'), [
+    'isSavingMetaBoxes',
   ])),
 )(edit));

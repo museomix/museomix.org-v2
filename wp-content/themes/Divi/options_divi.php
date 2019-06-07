@@ -191,6 +191,12 @@ $options = array (
                    "std" => "on",
                    "desc" =>esc_html__( "Here you can choose to display the Google+ Icon on your homepage. ", $themename ) ),
 
+			array( 'name' => esc_html__( 'Show Instagram Icon', $themename ),
+                   'id' => $shortname . '_show_instagram_icon',
+                   'type' => 'checkbox',
+                   'std' => ( true === et_divi_is_fresh_install() ) ? 'on' : 'false',
+                   'desc' => esc_html__( 'Here you can choose to display the Instagram Icon on your homepage. ', $themename ) ),
+
 			array( "name" =>esc_html__( "Show RSS Icon", $themename ),
                    "id" => $shortname . "_show_rss_icon",
                    "type" => "checkbox2",
@@ -217,6 +223,13 @@ $options = array (
                    "type" => "text",
                    "validation_type" => "url",
 				   "desc" =>esc_html__( "Enter the URL of your Google+ Profile. ", $themename ) ),
+
+			array( 'name' => esc_html__( 'Instagram Profile Url', $themename ),
+                   'id' => $shortname . '_instagram_url',
+                   'std' => '#',
+                   'type' => 'text',
+                   'validation_type' => 'url',
+				   'desc' => esc_html__( 'Enter the URL of your Instagram Profile. ', $themename ) ),
 
 			array( "name" =>esc_html__( "RSS Icon Url", $themename ),
                    "id" => $shortname . "_rss_url",

@@ -99,7 +99,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				),
 			),
 			'max_width'  => array(
-				'css' => array(
+				'css'     => array(
 					'module_alignment' => '%%order_class%%',
 				),
 				'options' => array(
@@ -107,6 +107,27 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 						'label' => esc_html__( 'Section Alignment', 'et_builder' ),
 					),
 				),
+				'extra'   => array(
+					'inner' => array(
+						'css' => array(
+							'main' => '%%order_class%% > .et_pb_row',
+						),
+						'options' => array(
+							'width'     => array(
+								'label'           => esc_html__( 'Inner Width', 'et_builder' ),
+								'depends_show_if' => 'on',
+							),
+							'max_width' => array(
+								'label'           => esc_html__( 'Inner Max Width', 'et_builder' ),
+								'depends_show_if' => 'on',
+							),
+							'module_alignment' => array(
+								'label'           => esc_html__( 'Inner Module Alignment', 'et_builder' ),
+								'depends_show_if' => 'on',
+							),
+						)
+					)
+				)
 			),
 			'fonts'      => false,
 			'text'       => false,
@@ -137,97 +158,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'toggle_slug'     => 'layout',
 				'default_on_front'=> 'off',
 			),
-			'make_fullwidth' => array(
-				'label'             => esc_html__( 'Make This Section Fullwidth', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'layout',
-				'options'           => array(
-					'off' => esc_html__( 'No', 'et_builder' ),
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-				),
-				'default'           => 'off',
-				'depends_show_if'   => 'off',
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'width',
-				'specialty_only'    => 'yes',
-			),
-			'use_custom_width' => array(
-				'label'             => esc_html__( 'Use Custom Width', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'layout',
-				'options'           => array(
-					'off' => esc_html__( 'No', 'et_builder' ),
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-				),
-				'default'           => 'off',
-				'affects'           => array(
-					'make_fullwidth',
-					'custom_width',
-					'width_unit',
-				),
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'width',
-				'specialty_only'    => 'yes',
-			),
-			'width_unit' => array(
-				'label'             => esc_html__( 'Unit', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'layout',
-				'options'           => array(
-					'on'  => esc_html__( 'px', 'et_builder' ),
-					'off' => '%',
-				),
-				'default'           => 'on',
-				'button_options'    => array(
-					'button_type' => 'equal',
-				),
-				'depends_show_if'   => 'on',
-				'affects'           => array(
-					'custom_width_px',
-					'custom_width_percent',
-				),
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'width',
-				'specialty_only'    => 'yes',
-			),
-			'custom_width_px' => array(
-				'default'             => '1080px',
-				'label'               => esc_html__( 'Custom Width', 'et_builder' ),
-				'type'                => 'range',
-				'option_category'     => 'layout',
-				'depends_show_if_not' => 'off',
-				'validate_unit'       => true,
-				'fixed_unit'          => 'px',
-				'range_settings'      => array(
-					'min'  => 500,
-					'max'  => 2600,
-					'step' => 1,
-				),
-				'tab_slug'            => 'advanced',
-				'toggle_slug'         => 'width',
-				'specialty_only'      => 'yes',
-				'hover'               => 'tabs',
-			),
-			'custom_width_percent' => array(
-				'default'         => '80%',
-				'label'           => esc_html__( 'Custom Width', 'et_builder' ),
-				'type'            => 'range',
-				'option_category' => 'layout',
-				'depends_show_if' => 'off',
-				'validate_unit'   => true,
-				'fixed_unit'      => '%',
-				'range_settings'  => array(
-					'min'  => 0,
-					'max'  => 100,
-					'step' => 1,
-				),
-				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'width',
-				'specialty_only'  => 'yes',
-				'hover'           => 'tabs',
-			),
 			'make_equal' => array(
 				'label'             => esc_html__( 'Equalize Column Heights', 'et_builder' ),
+				'description'       => esc_html__( 'Equalizing column heights will force all columns to assume the height of the tallest column in the row. All columns will have the same height, keeping their appearance uniform.', 'et_builder' ),
 				'type'              => 'yes_no_button',
 				'option_category'   => 'layout',
 				'options'           => array(
@@ -241,6 +174,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			),
 			'use_custom_gutter' => array(
 				'label'             => esc_html__( 'Use Custom Gutter Width', 'et_builder' ),
+				'description'       => esc_html__( 'Enable this option to define custom gutter width for this section.', 'et_builder' ),
 				'type'              => 'yes_no_button',
 				'option_category'   => 'layout',
 				'options'           => array(
@@ -260,9 +194,11 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'type'             => 'range',
 				'option_category'  => 'layout',
 				'range_settings'   => array(
-					'min'  => 1,
-					'max'  => 4,
-					'step' => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'step'      => 1,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'depends_show_if'  => 'on',
 				'tab_slug'         => 'advanced',
@@ -272,6 +208,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'fixed_range'      => true,
 				'default_on_front' => et_get_option( 'gutter_width', 3 ),
 				'hover'            => 'tabs',
+				'description'      => esc_html__( 'Gutter width controls the space between each column in a row. Lowering the gutter width will cause modules to become closer together.', 'et_builder' ),
 			),
 			'columns_background' => array(
 				'type'            => 'column_settings_background',
@@ -295,6 +232,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			'specialty' => array(
 				'type'    => 'skip',
 				'default_on_front' => 'off',
+				'affects'          => array( 'inner_width', 'inner_max_width', ),
 			),
 			'columns_css' => array(
 				'type'            => 'column_settings_css',
@@ -317,7 +255,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			),
 			'__video_background' => array(
 				'type' => 'computed',
-				'computed_callback' => array( 'ET_Builder_Section', 'get_video_background' ),
+				'computed_callback' => array( 'ET_Builder_Module_Helper_ResponsiveOptions', 'get_video_background' ),
 				'computed_depends_on' => array(
 					'background_video_mp4',
 					'background_video_webm',
@@ -439,12 +377,6 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 	public function get_transition_fields_css_props() {
 		$fields = parent::get_transition_fields_css_props();
 
-		$fields['custom_width_px'] = array( 'max-width' => '%%order_class%%' );
-		$fields['custom_width_percent'] = array(
-			'max-width' => '%%order_class%% > .et_pb_row',
-			'width'     => '%%order_class%% > .et_pb_row',
-		);
-
 		// Section Dividers Height
 		foreach ( array( 'top', 'bottom' ) as $placement ) {
 			// Inside sprintf, the double %% prints a literal '%' character
@@ -518,14 +450,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		$padding_3_last_edited                        = $this->props['padding_3_last_edited'];
 		$gutter_width                                 = $this->props['gutter_width'];
 		$gutter_width_hover                           = $this->get_hover_value( 'gutter_width' );
-		$use_custom_width                             = $this->props['use_custom_width'];
-		$custom_width_px                              = $this->props['custom_width_px'];
-		$custom_width_px_hover                        = $this->get_hover_value( 'custom_width_px' );
-		$custom_width_percent                         = $this->props['custom_width_percent'];
-		$custom_width_percent_hover                   = $this->get_hover_value( 'custom_width_percent' );
-		$width_unit                                   = $this->props['width_unit'];
 		$make_equal                                   = $this->props['make_equal'];
-		$make_fullwidth                               = $this->props['make_fullwidth'];
 		$global_module                                = $this->props['global_module'];
 		$use_custom_gutter                            = $this->props['use_custom_gutter'];
 		$module_id_1                                  = $this->props['module_id_1'];
@@ -599,6 +524,11 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		$background_video_pause_outside_viewport_3    = $this->props['background_video_pause_outside_viewport_3'];
 		$prev_background_color                        = $this->props['prev_background_color'];
 		$next_background_color                        = $this->props['next_background_color'];
+
+		// Background Color.
+		$is_background_color_responsive = et_pb_responsive_options()->is_responsive_enabled( $this->props, 'background' );
+		$background_color_tablet        = $is_background_color_responsive ? et_pb_responsive_options()->get_any_value( $this->props, 'background_color_tablet' ) : '';
+		$background_color_phone         = $is_background_color_responsive ? et_pb_responsive_options()->get_any_value( $this->props, 'background_color_phone' ) : '';
 
 		$hover = et_pb_hover_options();
 
@@ -819,55 +749,6 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				array( $parallax_3, $parallax_method_3 ),
 			);
 
-			if ( 'on' === $make_fullwidth && 'off' === $use_custom_width ) {
-				$this->add_classname('et_pb_specialty_fullwidth');
-			}
-
-			if ( 'on' === $use_custom_width ) {
-				ET_Builder_Element::set_style( $function_name, array(
-					'selector'    => '%%order_class%% > .et_pb_row',
-					'declaration' => sprintf(
-						'max-width:%1$s !important;
-						%2$s',
-						'on' === $width_unit ? esc_attr( sprintf( '%1$spx', intval( $custom_width_px ) ) ) : esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent ) ) ),
-						'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent ) ) ) : ''
-					),
-				) );
-
-				switch ( $width_unit ) {
-					case 'on':
-						if ( ! et_builder_is_hover_enabled( 'custom_width_px', $this->props ) ) {
-							break;
-						}
-
-						ET_Builder_Element::set_style( $function_name, array(
-							'selector'    => '%%order_class%% > .et_pb_row:hover',
-							'declaration' => sprintf(
-								'max-width:%1$s !important;',
-								esc_attr( sprintf( '%1$spx', intval( $custom_width_px_hover ) ) )
-							),
-						) );
-
-						break;
-					default:
-						if ( ! et_builder_is_hover_enabled( 'custom_width_percent', $this->props ) ) {
-							break;
-						}
-
-						ET_Builder_Element::set_style( $function_name, array(
-							'selector'    => '%%order_class%% > .et_pb_row:hover',
-							'declaration' => sprintf(
-								'max-width:%1$s !important;
-							%2$s',
-								esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent_hover ) ) ),
-								esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent_hover ) ) )
-							),
-						) );
-
-						break;
-				}
-			}
-
 			$et_pb_column_css = array(
 				'css_class'               => array( $module_class_1, $module_class_2, $module_class_3 ),
 				'css_id'                  => array( $module_id_1, $module_id_2, $module_id_3 ),
@@ -906,15 +787,13 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			$background_video = $this->video_background();
 		}
 
-		if ( '' !== $background_color && 'rgba(255,255,255,0)' !== $background_color ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_section',
-				'declaration' => sprintf(
-					'background-color:%s !important;',
-					esc_attr( $background_color )
-				),
-			) );
-		}
+		// Background Color.
+		$background_color_values = array(
+			'desktop' => 'rgba(255,255,255,0)' !== $background_color ? esc_html( $background_color ) : '',
+			'tablet'  => 'rgba(255,255,255,0)' !== $background_color_tablet ? esc_html( $background_color_tablet ) : '',
+			'phone'   => 'rgba(255,255,255,0)' !== $background_color_phone ? esc_html( $background_color_phone ) : '',
+		);
+		et_pb_responsive_options()->generate_responsive_css( $background_color_values, '%%order_class%%.et_pb_section', 'background-color', $function_name, ' !important;', 'color' );
 
 		// Background hover styles
 		$bg_color = $hover->get_value( 'background_color', $this->props );
@@ -928,7 +807,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			) );
 		}
 
-		$is_transparent_background = 'rgba(255,255,255,0)' === $background_color || ( et_is_builder_plugin_active() && '' === $background_color );
+		// Transparent is default for Builder Plugin, but not for theme
+		$page_setting_section_background = et_builder_settings_get( 'et_pb_section_background_color', get_the_ID() );
+		$is_transparent_background = 'rgba(255,255,255,0)' === $background_color || ( et_is_builder_plugin_active() && '' === $background_color && '' === $page_setting_section_background );
 
 		if ( '' !== $background_video_mp4 || '' !== $background_video_webm || ( '' !== $background_color && ! $is_transparent_background ) || '' !== $background_image ) {
 			$this->add_classname( 'et_pb_with_background' );
@@ -967,44 +848,49 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		// pass section number for background color usage.
 		$divider->count = $this->render_count();
 
-		// Check if style is not default.
-		if ( '' !== $this->props['bottom_divider_style'] ) {
-			// get an svg for using in ::before
-			$divider->process_svg( 'bottom', $this->props );
+		// Divider Placement.
+		foreach ( array( 'bottom', 'top' ) as $placement ) {
+			// Divider Responsive.
+			foreach ( array( 'desktop', 'tablet', 'phone' ) as $device ) {
+				// Ensure responsive settings for style is active on tablet and phone.
+				$is_desktop          = 'desktop' === $device;
+				$is_responsive_style = et_pb_responsive_options()->is_responsive_enabled( $this->props, "{$placement}_divider_style" );
 
-			// apply responsive styling
-			$bottom_divider_responsive = et_pb_get_responsive_status( $this->props['bottom_divider_height_last_edited'] ) || et_pb_get_responsive_status( $this->props['bottom_divider_repeat_last_edited'] );
+				// Get all responsive values if it's exist and not empty.
+				$values = array();
+				if ( ! $is_desktop ) {
+					$values = et_pb_responsive_options()->get_any_responsive_values( $this->props, array(
+						"{$placement}_divider_color"       => '',
+						"{$placement}_divider_height"      => '',
+						"{$placement}_divider_repeat"      => '',
+						"{$placement}_divider_flip"        => '',
+						"{$placement}_divider_arrangement" => '',
+					), false, $device );
+				}
 
-			if ( $bottom_divider_responsive ) {
-				$divider->process_svg( 'bottom', $this->props, 'tablet' );
-				$divider->process_svg( 'bottom', $this->props, 'phone' );
+				// Get Divider Style.
+				$divider_style = $is_desktop || ! empty( $values ) ? et_pb_responsive_options()->get_any_value( $this->props, "{$placement}_divider_style" ) : '';
+				if ( ! $is_desktop && $is_responsive_style ) {
+					$divider_style = et_pb_responsive_options()->get_any_value( $this->props, "{$placement}_divider_style", '', true, $device );
+				}
+
+				// Check if style is not default.
+				if ( '' !== $divider_style ) {
+					// get an svg for using in ::before
+					$breakpoint = ! $is_desktop ? $device : '';
+					$divider->process_svg( $placement, $this->props, $breakpoint, $values );
+
+					// Get the placeholder for the bottom/top.
+					if ( 'bottom' === $placement && '' === $bottom ) {
+						$bottom = $divider->get_svg( 'bottom' );
+					} else if ( 'top' === $placement && '' === $top ) {
+						$top = $divider->get_svg( 'top' );
+					}
+
+					// add a corresponding class
+					$this->add_classname( $divider->classes );
+				}
 			}
-
-			// get the placeholder for the bottom
-			$bottom = $divider->get_svg( 'bottom' );
-
-			// add a corresponding class
-			$this->add_classname( $divider->classes );
-		}
-
-		// Check if style is not default.
-		if ( '' !== $this->props['top_divider_style'] ) {
-			// process the top section divider.
-			$divider->process_svg( 'top', $this->props );
-
-			// apply responsive styling
-			$top_divider_responsive = et_pb_get_responsive_status( $this->props['top_divider_height_last_edited'] ) || et_pb_get_responsive_status( $this->props['top_divider_repeat_last_edited'] );
-
-			if ( $top_divider_responsive ) {
-				$divider->process_svg( 'top', $this->props, 'tablet' );
-				$divider->process_svg( 'top', $this->props, 'phone' );
-			}
-
-			// get the placeholder for the top
-			$top = $divider->get_svg( 'top' );
-
-			// add a corresponding class
-			$this->add_classname( $divider->classes );
 		}
 
 		// Remove automatically added classnames
@@ -1034,10 +920,12 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			( 'on' === $specialty ? '</div> <!-- .et_pb_row -->' : '' ), // 6
 			( '' !== $background_image && 'on' === $parallax
 				? sprintf(
-					'<div class="et_parallax_bg%2$s%3$s" style="background-image: url(%1$s);"></div>',
+					'%4$s<div class="et_parallax_bg%2$s%3$s" style="background-image: url(%1$s);"></div>%5$s',
 					esc_attr( $background_image ),
 					( 'off' === $parallax_method ? ' et_pb_parallax_css' : '' ),
-					( ( 'off' !== $inner_shadow && 'off' === $parallax_method ) ? ' et_pb_inner_shadow' : '' )
+					( ( 'off' !== $inner_shadow && 'off' === $parallax_method ) ? ' et_pb_inner_shadow' : '' ),
+					!et_core_is_fb_enabled() ? '' : '<div class="et_parallax_bg_wrap">',
+					!et_core_is_fb_enabled() ? '' : '</div>'
 				)
 				: ''
 			), // 7
@@ -1147,16 +1035,28 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				),
 			),
 			'max_width'             => array(
-				'use_max_width' => false,
 				'css'           => array(
 					'module_alignment' => '%%order_class%%.et_pb_row',
 				),
 				'options' => array(
+					'width' => array(
+						'default' => '80%',
+					),
+					'max_width' => array(
+						'default'        => '1080px',
+						'range_settings' => array(
+							'min'  => 0,
+							'max'  => 2560,
+							'step' => 1,
+						),
+					),
 					'module_alignment' => array(
 						'label' => esc_html__( 'Row Alignment', 'et_builder' ),
+						'mobile_options' => true,
+						'description'    => esc_html__( 'Rows can be aligned to the left, right or center. By default, rows are centered within their parent section.', 'et_builder' ),
 					),
 				),
-				'toggle_slug'     => 'alignment',
+				'toggle_slug'     => 'width',
 				'toggle_title'    => esc_html__( 'Alignment', 'et_builder' ),
 				'toggle_priority' => 50,
 			),
@@ -1254,94 +1154,6 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 
 	function get_fields() {
 		$fields = array(
-			'make_fullwidth' => array(
-				'label'             => esc_html__( 'Make This Row Fullwidth', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'layout',
-				'options'           => array(
-					'off' => esc_html__( 'No', 'et_builder' ),
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-				),
-				'default'           => 'off',
-				'depends_show_if'   => 'off',
-				'description'       => esc_html__( 'Enable this option to extend the width of this row to the edge of the browser window.', 'et_builder' ),
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'width',
-			),
-			'use_custom_width' => array(
-				'label'             => esc_html__( 'Use Custom Width', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'layout',
-				'options'           => array(
-					'off' => esc_html__( 'No', 'et_builder' ),
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-				),
-				'default'           => 'off',
-				'affects'           => array(
-					'make_fullwidth',
-					'custom_width',
-					'width_unit',
-				),
-				'description'       => esc_html__( 'Change to Yes if you would like to adjust the width of this row to a non-standard width.', 'et_builder' ),
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'width',
-			),
-			'width_unit' => array(
-				'label'             => esc_html__( 'Unit', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'layout',
-				'options'           => array(
-					'on'  => esc_html__( 'px', 'et_builder' ),
-					'off' => '%',
-				),
-				'default'           => 'on',
-				'button_options'    => array(
-					'button_type' => 'equal',
-				),
-				'depends_show_if'   => 'on',
-				'affects'           => array(
-					'custom_width_px',
-					'custom_width_percent',
-				),
-				'tab_slug'          => 'advanced',
-				'toggle_slug'       => 'width',
-			),
-			'custom_width_px' => array(
-				'default'             => '1080px',
-				'label'               => esc_html__( 'Custom Width', 'et_builder' ),
-				'type'                => 'range',
-				'option_category'     => 'layout',
-				'depends_show_if_not' => 'off',
-				'validate_unit'       => true,
-				'fixed_unit'          => 'px',
-				'range_settings'      => array(
-					'min'  => 500,
-					'max'  => 2600,
-					'step' => 1,
-				),
-				'description'         => esc_html__( 'Define custom width for this Row', 'et_builder' ),
-				'tab_slug'            => 'advanced',
-				'toggle_slug'         => 'width',
-				'hover'               => 'tabs',
-			),
-			'custom_width_percent' => array(
-				'default'         => '80%',
-				'label'           => esc_html__( 'Custom Width', 'et_builder' ),
-				'type'            => 'range',
-				'option_category' => 'layout',
-				'depends_show_if' => 'off',
-				'validate_unit'   => true,
-				'fixed_unit'      => '%',
-				'range_settings'  => array(
-					'min'  => 0,
-					'max'  => 100,
-					'step' => 1,
-				),
-				'description'     => esc_html__( 'Define custom width for this Row', 'et_builder' ),
-				'tab_slug'        => 'advanced',
-				'toggle_slug'     => 'width',
-				'hover'           => 'tabs',
-			),
 			'use_custom_gutter' => array(
 				'label'             => esc_html__( 'Use Custom Gutter Width', 'et_builder' ),
 				'type'              => 'yes_no_button',
@@ -1363,9 +1175,11 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'type'             => 'range',
 				'option_category'  => 'layout',
 				'range_settings'   => array(
-					'min'  => 1,
-					'max'  => 4,
-					'step' => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'step'      => 1,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'depends_show_if'  => 'on',
 				'description'      => esc_html__( 'Adjust the spacing between each column in this row.', 'et_builder' ),
@@ -1377,7 +1191,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'hover'            => 'tabs',
 			),
 			'custom_padding' => array(
-				'label'           => esc_html__( 'Custom Padding', 'et_builder' ),
+				'label'           => esc_html__( 'Padding', 'et_builder' ),
 				'type'            => 'custom_padding',
 				'mobile_options'  => true,
 				'option_category' => 'layout',
@@ -1385,6 +1199,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'margin_padding',
 				'hover'           => 'tabs',
+				'allowed_units'   => array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' ),
 			),
 			'custom_padding_tablet' => array(
 				'type'        => 'skip',
@@ -1406,15 +1221,18 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'default_on_front' => '',
 			),
 			'custom_margin' => array(
-				'label'           => esc_html__( 'Custom Margin', 'et_builder' ),
+				'label'           => esc_html__( 'Margin', 'et_builder' ),
+				'description'     => esc_html__( 'Margin adds extra space to the outside of the element, increasing the distance between the element and other items on the page.', 'et_builder' ),
 				'type'            => 'custom_margin',
 				'option_category' => 'layout',
 				'tab_slug'        => 'advanced',
 				'hover'           => 'tabs',
 				'toggle_slug'     => 'margin_padding',
+				'allowed_units'   => array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' ),
 			),
 			'make_equal' => array(
 				'label'             => esc_html__( 'Equalize Column Heights', 'et_builder' ),
+				'description'       => esc_html__( 'Equalizing column heights will force all columns to assume the height of the tallest column in the row. All columns will have the same height, keeping their appearance uniform.', 'et_builder' ),
 				'type'              => 'yes_no_button',
 				'option_category'   => 'layout',
 				'options'           => array(
@@ -1464,7 +1282,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			),
 			'__video_background' => array(
 				'type' => 'computed',
-				'computed_callback' => array( 'ET_Builder_Row', 'get_video_background' ),
+				'computed_callback' => array( 'ET_Builder_Module_Helper_ResponsiveOptions', 'get_video_background' ),
 				'computed_depends_on' => array(
 					'background_video_mp4',
 					'background_video_webm',
@@ -1580,12 +1398,6 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 	public function get_transition_fields_css_props() {
 		$fields = parent::get_transition_fields_css_props();
 
-		$fields['custom_width_px'] = array( 'max-width' => '%%order_class%%' );
-		$fields['custom_width_percent'] = array(
-			'max-width' => '%%order_class%%',
-			'width'     => '%%order_class%%',
-		);
-
 		for ( $i = 1; $i <= 6; $i ++ ) {
 			$selector = "%%order_class%% > .et_pb_column:nth-child({$i})";
 			$fields["background_color_{$i}"] = array( 'background-color' => $selector );
@@ -1601,7 +1413,6 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$custom_padding_phone                         = $this->props['custom_padding_phone'];
 		$custom_padding_last_edited                   = $this->props['custom_padding_last_edited'];
 		$column_padding_mobile                        = $this->props['column_padding_mobile'];
-		$make_fullwidth                               = $this->props['make_fullwidth'];
 		$make_equal                                   = $this->props['make_equal'];
 		$background_color_1                           = $this->props['background_color_1'];
 		$background_color_2                           = $this->props['background_color_2'];
@@ -1684,12 +1495,6 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$padding_mobile                               = $this->props['padding_mobile'];
 		$gutter_width                                 = $this->props['gutter_width'];
 		$gutter_width_hover                           = $this->get_hover_value( 'gutter_width' );
-		$use_custom_width                             = $this->props['use_custom_width'];
-		$custom_width_px                              = $this->props['custom_width_px'];
-		$custom_width_px_hover                        = et_pb_hover_options()->get_value( 'custom_width_px', $this->props, $custom_width_px );
-		$custom_width_percent                         = $this->props['custom_width_percent'];
-		$custom_width_percent_hover                   = et_pb_hover_options()->get_value( 'custom_width_percent', $this->props, $custom_width_percent );
-		$width_unit                                   = $this->props['width_unit'];
 		$global_module                                = $this->props['global_module'];
 		$use_custom_gutter                            = $this->props['use_custom_gutter'];
 		$parallax_1                                   = $this->props['parallax_1'];
@@ -2307,61 +2112,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			}
 		}
 
-		if ( 'on' === $make_fullwidth && 'off' === $use_custom_width ) {
-			$this->add_classname( 'et_pb_row_fullwidth' );
-		}
-
-		if ( 'on' === $use_custom_width ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%',
-				'declaration' => sprintf(
-					'max-width:%1$s !important;
-					%2$s',
-					'on' === $width_unit ? esc_attr( sprintf( '%1$spx', intval( $custom_width_px ) ) ) : esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent ) ) ),
-					'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent ) ) ) : ''
-				),
-			) );
-
-			switch ( $width_unit ) {
-				case 'on':
-					if ( $custom_width_px === $custom_width_px_hover ) {
-						break;
-					}
-
-					ET_Builder_Element::set_style( $function_name, array(
-						'selector'    => '%%order_class%%:hover',
-						'declaration' => sprintf(
-							'max-width:%1$s !important;',
-							esc_attr( sprintf( '%1$spx', intval( $custom_width_px_hover ) ) )
-						),
-					) );
-
-					break;
-				default:
-					if ( $custom_width_percent === $custom_width_percent_hover ) {
-						break;
-					}
-
-					ET_Builder_Element::set_style( $function_name, array(
-						'selector'    => '%%order_class%%:hover',
-						'declaration' => sprintf(
-							'max-width:%1$s !important;
-							%2$s',
-							esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent_hover ) ) ),
-							esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent_hover ) ) )
-						),
-					) );
-
-					break;
-			}
-		}
-
 		$parallax_image = $this->get_parallax_image_background();
 		$background_video = $this->video_background();
-
-		if ( $et_pb_rendering_column_content_row ) {
-			$et_pb_rendering_column_content_row = false;
-		}
 
 		// CSS Filters
 		$this->add_classname( $this->generate_css_filters( $function_name ) );
@@ -2380,6 +2132,11 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		// reset the global column settings to make sure they are not affected by internal content
 		// This has to be done after inner content's shortcode being parsed
 		$et_pb_all_column_settings = $et_pb_all_column_settings_backup;
+
+		// Reset row's column content flag
+		if ( $et_pb_rendering_column_content_row ) {
+			$et_pb_rendering_column_content_row = false;
+		}
 
 		$output = sprintf(
 			'<div%4$s class="%2$s%7$s"%8$s>
@@ -2430,6 +2187,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'options' => array(
 					'module_alignment' => array(
 						'label' => esc_html__( 'Row Alignment', 'et_builder' ),
+						'description' => esc_html__( 'Rows can be aligned to the left, right or center. By default, rows are centered within their parent section.', 'et_builder' ),
 					),
 				),
 			),
@@ -2510,7 +2268,8 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 	function get_fields() {
 		$fields = array(
 			'custom_padding' => array(
-				'label'           => esc_html__( 'Custom Padding', 'et_builder' ),
+				'label'           => esc_html__( 'Padding', 'et_builder' ),
+				'description'     => esc_html__( 'Padding adds extra space to the inside of the element, increasing the distance between the edge of the element and its inner contents.', 'et_builder' ),
 				'type'            => 'custom_padding',
 				'mobile_options'  => true,
 				'option_category' => 'layout',
@@ -2518,6 +2277,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'margin_padding',
 				'hover'           => 'tabs',
+				'allowed_units'   => array( '%', 'em', 'rem', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' ),
 			),
 			'custom_padding_tablet' => array(
 				'type'        => 'skip',
@@ -2556,9 +2316,11 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'type'             => 'range',
 				'option_category'  => 'layout',
 				'range_settings'   => array(
-					'min'  => 1,
-					'max'  => 4,
-					'step' => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'step'      => 1,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'depends_show_if'  => 'on',
 				'description'      => esc_html__( 'Adjust the spacing between each column in this row.', 'et_builder' ),
@@ -2571,6 +2333,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			),
 			'make_equal' => array(
 				'label'             => esc_html__( 'Equalize Column Heights', 'et_builder' ),
+				'description'       => esc_html__( 'Equalizing column heights will force all columns to assume the height of the tallest column in the row. All columns will have the same height, keeping their appearance uniform.', 'et_builder' ),
 				'type'              => 'yes_no_button',
 				'option_category'   => 'layout',
 				'options'           => array(
@@ -2720,8 +2483,6 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 
 	public function get_transition_fields_css_props() {
 		$fields = parent::get_transition_fields_css_props();
-
-		$fields['custom_width_px'] = array( 'max-width' => '%%order_class%%' );
 
 		for ( $i = 1; $i <= 6; $i ++ ) {
 			$selector = "%%order_class%% > .et_pb_column:nth-child({$i})";
@@ -3740,9 +3501,11 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 			$inner_content,
 			( '' !== $background_img && '' !== $parallax_method
 				? sprintf(
-					'<div class="et_parallax_bg%2$s" style="background-image: url(%1$s);"></div>',
+					'%3$s<div class="et_parallax_bg%2$s" style="background-image: url(%1$s);"></div>%4$s',
 					esc_attr( $background_img ),
-					( 'off' === $parallax_method ? ' et_pb_parallax_css' : '' )
+					( 'off' === $parallax_method ? ' et_pb_parallax_css' : '' ),
+					!et_core_is_fb_enabled() ? '' : '<div class="et_parallax_bg_wrap">',
+					!et_core_is_fb_enabled() ? '' : '</div>'
 				)
 				: ''
 			),

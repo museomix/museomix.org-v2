@@ -155,5 +155,3 @@ wp.media.view.MediaFrame.ETSelect = wp.media.view.MediaFrame.Select.extend({
     });
   }
 });
-
-// export default wp.media.view.MediaFrame.ETSelect;

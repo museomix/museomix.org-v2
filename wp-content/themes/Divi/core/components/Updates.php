@@ -45,6 +45,10 @@ final class ET_Core_Updates {
 
 		add_filter( 'gettext', array( $this, 'update_notifications' ), 20, 3 );
 
+		add_filter( 'self_admin_url', array( $this, 'change_plugin_changelog_url' ), 10, 2 );
+		add_filter( 'admin_url', array( $this, 'change_plugin_changelog_url' ), 10, 2 );
+		add_filter( 'network_admin_url', array( $this, 'change_plugin_changelog_url' ), 10, 2 );
+
 		add_action( 'et_core_updates_before_request', array( $this, 'maybe_update_account_status' ) );
 
 		add_action( 'admin_notices', array( $this, 'maybe_show_expired_account_notice' ) );
@@ -446,6 +450,58 @@ final class ET_Core_Updates {
 			</div>',
 			et_get_safe_localization( __( 'Your Elegant Themes subscription has expired. You must <a href="https://www.elegantthemes.com/members-area/" target="_blank">renew your account</a> to regain access to product updates and support. To ensure compatibility and security, it is important to always keep your themes and plugins updated.', 'et-core' ) )
 		);
+	}
+
+	function change_plugin_changelog_url( $url, $path ) {
+		if ( 0 !== strpos( $path, 'plugin-install.php?tab=plugin-information&plugin=' ) ) {
+			return $url;
+		}
+
+		$matches = array();
+
+		$update_transient = get_site_transient( 'et_update_all_plugins' );
+
+		if ( ! is_object( $update_transient ) || empty( $update_transient->response ) ) {
+			return $url;
+		}
+		
+		$et_updated_plugins_data = get_transient( 'et_updated_plugins_data' );
+		$has_last_checked        = ! empty( $update_transient->last_checked ) && ! empty( $et_updated_plugins_data->last_checked );
+
+		/*
+		 * Attempt to use a cached list of updated plugins.
+		 * Re-save the list, whenever the update transient last checked time changes.
+		 */
+		if ( false === $et_updated_plugins_data || ( $has_last_checked && $update_transient->last_checked !== $et_updated_plugins_data->last_checked ) ) {
+			$et_updated_plugins_data = new stdClass();
+
+			if ( ! empty( $update_transient->last_checked ) ) {
+				$et_updated_plugins_data->last_checked = $update_transient->last_checked;
+			}
+
+			foreach ( $update_transient->response as $response_plugin_settings ) {
+				$slug = sanitize_text_field( $response_plugin_settings->slug );
+
+				$et_updated_plugins_data->changelogs[ $slug ] = $response_plugin_settings->url . '?TB_iframe=true&width=1024&height=800';
+			}
+
+			set_transient( 'et_updated_plugins_data', $et_updated_plugins_data );
+		}
+
+		if ( empty( $et_updated_plugins_data->changelogs ) ) {
+			return $url;
+		}
+
+		preg_match( '/plugin=([^&]*)/', $path, $matches );
+
+		$current_plugin_slug = $matches[1];
+
+		// Check if we're dealing with a product that has a custom changelog URL
+		if ( ! empty( $et_updated_plugins_data->changelogs[ $current_plugin_slug ] ) ) {
+			$url = esc_url_raw( $et_updated_plugins_data->changelogs[ $current_plugin_slug ] );
+		}
+
+		return $url;
 	}
 }
 endif;

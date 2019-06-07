@@ -1,5 +1,8 @@
 <?php
 
+require_once 'module/field/Factory.php';
+require_once 'module/helpers/Overflow.php';
+
 
 class ET_Builder_Settings {
 
@@ -17,6 +20,11 @@ class ET_Builder_Settings {
 	 * @var array
 	 */
 	protected static $_PAGE_SETTINGS_FIELDS;
+
+	/**
+	 * @var array
+	 */
+	protected static $_PAGE_SETTINGS_FIELDS_META_KEY_MAP = array();
 
 	/**
 	 * @var array
@@ -141,7 +149,7 @@ class ET_Builder_Settings {
 	}
 
 	protected static function _get_builder_settings_fields() {
-		return array(
+		$builder_settings_fields = array(
 			'et_pb_static_css_file' => self::_get_static_css_generation_field( 'builder' ),
 			'et_pb_css_in_footer'   => array(
 				'type'            => 'yes_no_button',
@@ -173,6 +181,39 @@ class ET_Builder_Settings {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'product_tour',
 			),
+			'et_enable_bfb'   => array(
+				'type'              => 'yes_no_button',
+				'id'                => 'et_enable_bfb',
+				'index'             => -1,
+				'label'             => esc_html__( 'Enable The Latest Divi Builder Experience', 'et_builder' ),
+				'description'       => esc_html__( 'Disabling this option will load the legacy Divi Builder interface when editing a post using the classic WordPress post editor. The legacy builder lacks many features and interface improvements, but it can still be used if you are experiencing trouble with the new interface.', 'et_builder' ),
+				'options'           => array(
+					'on'  => __( 'On', 'et_builder' ),
+					'off' => __( 'Off', 'et_builder' ),
+				),
+				'default'           => 'off',
+				'validation_type'   => 'simple_text',
+				'tab_slug'          => 'advanced',
+				'toggle_slug'       => 'enable_bfb',
+				'main_setting_name' => 'et_bfb_settings',
+				'sub_setting_name'  => 'enable_bfb',
+				'is_global'         => true,
+			),
+			'et_enable_classic_editor'   => array(
+				'type'            => 'yes_no_button',
+				'id'              => 'et_enable_classic_editor',
+				'index'           => -1,
+				'label'           => esc_html__( 'Enable Classic Editor', 'et_builder' ),
+				'description'     => esc_html__( 'Use Classic Editor instead of Gutenberg / Block Editor', 'et_builder' ),
+				'options'         => array(
+					'on'  => __( 'On', 'et_builder' ),
+					'off' => __( 'Off', 'et_builder' ),
+				),
+				'default'         => 'off',
+				'validation_type' => 'simple_text',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'enable_classic_editor',
+			),
 			'et_pb_post_type_integration' => array(
 				'type'            => 'checkbox_list',
 				'usefor'          => 'custom',
@@ -188,6 +229,14 @@ class ET_Builder_Settings {
 				'toggle_slug'     => 'performance',
 			),
 		);
+
+		// Remove "Enable Classic Editor" options for versions of WordPress
+		// that don't have the Gutenberg editor.
+		if ( version_compare( $GLOBALS['wp_version'], '5.0-beta', '<' ) ) {
+			unset( $builder_settings_fields['et_enable_classic_editor'] );
+		}
+
+		return $builder_settings_fields;
 	}
 
 	protected static function _get_builder_settings_in_epanel_format() {
@@ -253,10 +302,19 @@ class ET_Builder_Settings {
 
 	protected static function _get_page_settings_fields() {
 		$fields = array();
+		$overflow = ET_Builder_Module_Fields_Factory::get( 'Overflow' );
 
 		if ( et_pb_is_allowed( 'ab_testing' ) ) {
 			$fields = self::_get_ab_testing_fields();
 		}
+
+		$overflow_fields = $overflow->get_fields( array(
+			'prefix'      => 'et_pb_',
+			'tab_slug'    => 'advanced',
+			'toggle_slug' => 'visibility',
+		) );
+
+		$fields = array_merge( $fields, $overflow_fields );
 
 		$fields = array_merge( $fields, array(
 			'et_pb_custom_css'                    => array(
@@ -282,9 +340,11 @@ class ET_Builder_Settings {
 				'meta_key'       => '_et_pb_gutter_width',
 				'label'          => esc_html__( 'Gutter Width', 'et_builder' ),
 				'range_settings' => array(
-					'step' => 1,
-					'min'  => 1,
-					'max'  => 4,
+					'step'      => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'default'        => et_get_option( 'gutter_width', 3 ),
 				'mobile_options' => false,
@@ -428,6 +488,36 @@ class ET_Builder_Settings {
 		return $fields;
 	}
 
+	/**
+	 * Get page setting fields' meta_key map. Most page settings' field meta key is identical to
+	 * its field['id'] but some fields use different meta_key. Map might need in some situations
+	 *
+	 * @since 3.20
+	 *
+	 * @param bool $meta_key_to_id reverse mapping if set to false
+	 *
+	 * @return array
+	 */
+	public static function get_page_setting_meta_key_map( $meta_key_to_id = true ) {
+		static $map = array();
+
+		// Less likely to change, populate it once will be sufficient
+		if ( empty( $map ) ) {
+			foreach ( self::_get_page_settings_fields() as $field_id => $field ) {
+				if ( isset( $field['meta_key'] ) ) {
+					// The map can be reversed if needed
+					if ( $meta_key_to_id ) {
+						$map[ $field['meta_key'] ] = $field_id;
+					} else {
+						$map[ $field_id ] = $field['meta_key'];
+					}
+				}
+			}
+		}
+
+		return $map;
+	}
+
 	protected static function _get_page_settings_values( $post_id ) {
 		$post_id = $post_id ? $post_id : get_the_ID();
 
@@ -435,6 +525,8 @@ class ET_Builder_Settings {
 			return self::$_PAGE_SETTINGS_VALUES[ $post_id ];
 		}
 
+		$overflow = et_pb_overflow();
+		$OVERFLOW_DEFAULT = ET_Builder_Module_Helper_Overflow::OVERFLOW_DEFAULT;
 		$is_default = array();
 
 		// Page settings fields
@@ -474,9 +566,16 @@ class ET_Builder_Settings {
 		$is_default[]                        = strtolower( $et_pb_content_area_background_color ) === $default ? 'et_pb_content_area_background_color' : '';
 
 		$section_background_color            = get_post_meta( $post_id, '_et_pb_section_background_color', true );
+
 		$default                             = $fields['et_pb_section_background_color']['default'];
 		$et_pb_section_background_color      = '' !== $section_background_color ? $section_background_color : $default;
 		$is_default[]                        = strtolower( $et_pb_section_background_color ) === $default ? 'et_pb_section_background_color' : '';
+
+		$overflow_x                          = (string) get_post_meta( $post_id, $overflow->get_field_x( '_et_pb_' ), true );
+		$is_default[]                        = empty( $overflow_x ) || $overflow_x == $OVERFLOW_DEFAULT ? $overflow->get_field_x( 'et_pb_' ) : '';
+
+		$overflow_y                          = (string) get_post_meta( $post_id, $overflow->get_field_y( '_et_pb_' ), true );
+		$is_default[]                        = empty( $overflow_y ) || $overflow_y == $OVERFLOW_DEFAULT ? $overflow->get_field_y( 'et_pb_' ) : '';
 
 		$static_css_file       = get_post_meta( $post_id, '_et_pb_static_css_file', true );
 		$default               = $fields['et_pb_static_css_file']['default'];
@@ -501,13 +600,15 @@ class ET_Builder_Settings {
 			'et_pb_content_area_background_color'    => strtolower( $et_pb_content_area_background_color ),
 			'et_pb_section_background_color'         => strtolower( $et_pb_section_background_color ),
 			'et_pb_static_css_file'                  => $et_pb_static_css_file,
-			'et_pb_post_settings_title'              => $post->post_title,
-			'et_pb_post_settings_excerpt'            => $post->post_excerpt,
+			'et_pb_post_settings_title'              => $post ? $post->post_title : '',
+			'et_pb_post_settings_excerpt'            => $post ? $post->post_excerpt : '',
 			'et_pb_post_settings_image'              => get_post_thumbnail_id( $post_id ),
 			'et_pb_post_settings_categories'         => self::_get_object_terms( $post_id, 'category' ),
 			'et_pb_post_settings_tags'               => self::_get_object_terms( $post_id, 'post_tag' ),
 			'et_pb_post_settings_project_categories' => self::_get_object_terms( $post_id, 'project_category' ),
 			'et_pb_post_settings_project_tags'       => self::_get_object_terms( $post_id, 'project_tag' ),
+			et_pb_overflow()->get_field_x( 'et_pb_' ) => $overflow_x,
+			et_pb_overflow()->get_field_y( 'et_pb_' ) => $overflow_y,
 		);
 		/**
 		 * Filters Divi Builder page settings values.
@@ -591,36 +692,7 @@ class ET_Builder_Settings {
 	}
 
 	public static function get_registered_post_type_options() {
-		$blacklist      = et_builder_get_blacklisted_post_types();
-
-		// Extra and Library layouts shouldn't appear in Theme Options as configurable post types.
-		$blacklist      = array_merge( $blacklist, array( 'et_pb_layout', 'layout' ) );
-		$raw_post_types = get_post_types( array(
-			'show_ui' => true,
-		), 'objects' );
-		$post_types     = array();
-
-		foreach ( $raw_post_types as $post_type ) {
-			$is_explicitly_supported = in_array( $post_type->name, et_builder_get_third_party_post_types() );
-			$is_blacklisted          = in_array( $post_type->name, $blacklist );
-			$supports_editor         = post_type_supports( $post_type->name, 'editor' );
-			$is_public               = et_builder_is_post_type_public( $post_type->name );
-
-			if ( ! $is_explicitly_supported && ( $is_blacklisted || ! $supports_editor || ! $is_public ) ) {
-				continue;
-			}
-
-			$post_types[] = $post_type;
-		}
-
-		usort( $post_types, 'ET_Builder_Settings::sort_post_types' );
-
-		$post_type_options = array_combine(
-			wp_list_pluck( $post_types, 'name' ),
-			wp_list_pluck( $post_types, 'label' )
-		);
-
-		return $post_type_options;
+		return et_get_registered_post_type_options( 'ET_Builder_Settings::sort_post_types' );
 	}
 
 	public static function sort_post_types( $a, $b ) {
@@ -685,11 +757,16 @@ class ET_Builder_Settings {
 		$class = get_class( $this );
 
 		if ( ! is_admin() ) {
+			// Setup post meta callback registration on preview page. Priority has to be less than 10
+			// so get_post_meta used on self::_get_page_settings_values() are affected
+			add_action( 'wp', array( $this, '_register_preview_post_metadata' ), 5 );
+
 			return;
 		}
 
 		add_action( 'et_builder_settings_update_option', array( $class, 'update_option_cb'), 10, 3 );
 
+		// setup plugin style options, rather than epanel
 		if ( et_is_builder_plugin_active() ) {
 			add_filter( 'et_builder_plugin_dashboard_sections', array( $class, 'add_plugin_dashboard_sections' ) );
 			add_filter( 'et_builder_plugin_dashboard_fields_data', array( $class, 'add_plugin_dashboard_fields_data' ) );
@@ -943,21 +1020,26 @@ class ET_Builder_Settings {
 	 * }
 	 */
 	public static function get_toggles() {
+		$utils = ET_Core_Data_Utils::instance();
 
 		// Get current post type singular name and use it as toggle title.
-		$post_type = get_post_type( et_core_page_resource_get_the_ID() );
+		$post_type = wp_doing_ajax() ? $utils->array_get( $_POST, 'et_post_type' ) : get_post_type( et_core_page_resource_get_the_ID() );
+
 		$post_type_obj = get_post_type_object( $post_type );
 
 		$toggles = array(
-			'main_content'  => $post_type_obj->labels->singular_name,
-			'background'    => esc_html__( 'Background', 'et_builder' ),
-			'color_palette' => esc_html__( 'Color Palette', 'et_builder' ),
-			'custom_css'    => esc_html__( 'Custom CSS', 'et_builder' ),
-			'performance'   => esc_html__( 'Performance', 'et_builder' ),
-			'product_tour'  => esc_html__( 'Product Tour', 'et_builder' ),
-			'spacing'       => esc_html__( 'Spacing', 'et_builder' ),
-			'ab_testing'    => esc_html__( 'Split Testing', 'et_builder' ),
-			'text'          => esc_html__( 'Text', 'et_builder' ),
+			'main_content'          => ! empty( $post_type_obj ) ? $post_type_obj->labels->singular_name : '',
+			'background'            => esc_html__( 'Background', 'et_builder' ),
+			'color_palette'         => esc_html__( 'Color Palette', 'et_builder' ),
+			'custom_css'            => esc_html__( 'Custom CSS', 'et_builder' ),
+			'enable_bfb'            => esc_html__( 'Enable The Latest Divi Builder Experience', 'et_builder' ),
+			'enable_classic_editor' => esc_html__( 'Enable Classic Editor', 'et_builder' ),
+			'performance'           => esc_html__( 'Performance', 'et_builder' ),
+			'product_tour'          => esc_html__( 'Product Tour', 'et_builder' ),
+			'spacing'               => esc_html__( 'Spacing', 'et_builder' ),
+			'ab_testing'            => esc_html__( 'Split Testing', 'et_builder' ),
+			'text'                  => esc_html__( 'Text', 'et_builder' ),
+			'visibility'            => esc_html__( 'Visibility', 'et_builder' ),
 		);
 
 		/**
@@ -1044,6 +1126,100 @@ class ET_Builder_Settings {
 		}
 
 		return self::$_BUILDER_SETTINGS_VALUES[ $setting ];
+	}
+
+	/**
+	 * Register filter callback for modifying page settings post meta value based on current
+	 * autosave data if current page is valid builder preview page
+	 *
+	 * @since 3.20
+	 *
+	 * @return void
+	 */
+	public static function _register_preview_post_metadata() {
+		if ( ! is_user_logged_in() || ! is_preview() || ! et_pb_is_pagebuilder_used() ) {
+			return;
+		}
+
+		// Populate page settings fields meta_key map. Most page setting field id is identical (sans
+		// `_` prefix) to its meta_key name but some field has completely different meta_key name
+		foreach ( self::$_PAGE_SETTINGS_FIELDS as $field_id => $field ) {
+			$meta_key = isset( $field['meta_key'] ) ? $field['meta_key'] : '_' . $field_id;
+
+			self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ] = $field_id;
+		}
+
+		// Register filter for modifying page setting's post_meta value
+		add_filter( 'get_post_metadata', array( 'ET_Builder_Settings', 'modify_preview_post_metadata' ), 10, 4 );
+	}
+
+	/**
+	 * Get page settings' post meta value in preview page. This method should only be called on
+	 * preview page only
+	 *
+	 * @since 3.20
+	 *
+	 * @return array
+	 */
+	public static function get_preview_post_metadata() {
+		static $preview_post_metadata = null;
+
+		// Value retrieval should only be done once
+		if ( is_null( $preview_post_metadata ) ) {
+			// Get autosave data of current post of current user
+			$current_user_id    = get_current_user_id();
+			$preview_post_metadata = get_post_meta(
+				get_the_ID(),
+				"_et_builder_settings_autosave_{$current_user_id}",
+				true
+			);
+
+			// Returned value should be array
+			if ( ! is_array( $preview_post_metadata ) ) {
+				$preview_post_metadata = array();
+			}
+		}
+
+		return $preview_post_metadata;
+	}
+
+	/**
+	 * Modify page settings' post meta value in preview page. This should only be hooked after
+	 * checking whether current page is valid preview page or not
+	 *
+	 * @see get_metadata()
+	 *
+	 * @since 3.20
+	 *
+	 * @param null|array|string $value
+	 * @param int               $object_id
+	 * @param string            $meta_key
+	 * @param bool              $single
+	 *
+	 * @return null|array|string
+	 */
+	public static function modify_preview_post_metadata( $value, $object_id, $meta_key, $single ) {
+		$current_user_id = get_current_user_id();
+
+		// Bail if $meta_key value is equal to meta_key value used to save current page autosave data
+		if ( "_et_builder_settings_autosave_{$current_user_id}" === $meta_key ) {
+			return $value;
+		}
+
+		// Bail if $meta_key is not page settings field's meta key
+		if ( ! isset( self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ] ) ) {
+			return $value;
+		}
+
+		// Bail if current $meta_key value doesn't exist on preview page autosave data
+		$preview_post_meta_key = self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ];
+		$preview_post_metadata = self::get_preview_post_metadata();
+
+		if ( ! isset( $preview_post_metadata[ $preview_post_meta_key ] ) ) {
+			return $value;
+		}
+
+		return $preview_post_metadata[ $preview_post_meta_key ];
 	}
 }
 

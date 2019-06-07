@@ -45,19 +45,14 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 						'default' => 'h1',
 					),
 				),
-				'form_field'   => array(
-					'label'    => esc_html__( 'Form Field', 'et_builder' ),
-					'css'      => array(
-						'main' => implode( ', ', array(
-								"{$this->main_css_element} .input",
-								"{$this->main_css_element} .input::placeholder",
-								"{$this->main_css_element} .input::-webkit-input-placeholder",
-								"{$this->main_css_element} .input::-moz-placeholder",
-								"{$this->main_css_element} .input:-ms-input-placeholder",
-								"{$this->main_css_element} .input[type=checkbox] + label",
-								"{$this->main_css_element} .input[type=radio] + label",
-							) ),
-						'important' => 'plugin_only',
+				'captcha' => array(
+					'label'           => esc_html__( 'Captcha', 'et_builder' ),
+					'css'             => array(
+						'main' => "{$this->main_css_element} .et_pb_contact_captcha_question",
+					),
+					'hide_text_align' => true,
+					'line_height'     => array(
+						'default' => '1.7em',
 					),
 				),
 			),
@@ -78,13 +73,18 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
-						'main'        => "{$this->main_css_element}.et_pb_module .et_pb_button",
-						'plugin_main' => "{$this->main_css_element}.et_pb_module .et_pb_button",
+						'main'         => "{$this->main_css_element}.et_pb_module .et_pb_button",
+						'limited_main' => "{$this->main_css_element}.et_pb_module .et_pb_button",
 					),
 					'no_rel_attr' => true,
 					'box_shadow'  => array(
 						'css' => array(
 							'main' => '%%order_class%% .et_pb_contact_submit',
+						),
+					),
+					'margin_padding' => array(
+						'css' => array(
+							'important' => 'all',
 						),
 					),
 				),
@@ -103,6 +103,50 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'css' => array(
 					'text_orientation' => '%%order_class%% input, %%order_class%% textarea, %%order_class%% label',
 					'text_shadow'      => '%%order_class%%, %%order_class%% input, %%order_class%% textarea, %%order_class%% label, %%order_class%% select',
+				),
+			),
+			'form_field'           => array(
+				'form_field' => array(
+					'label'         => esc_html__( 'Fields', 'et_builder' ),
+					'css'           => array(
+						'main'                   => '%%order_class%% .input',
+						'background_color'       => '%%order_class%% .input, %%order_class%% .input[type="checkbox"] + label i, %%order_class%% .input[type="radio"] + label i',
+						'background_color_hover' => '%%order_class%% .input:hover, %%order_class%% .input[type="checkbox"]:hover + label i, %%order_class%% .input[type="radio"]:hover + label i',
+						'placeholder_focus'      => '%%order_class%% p .input:focus::-webkit-input-placeholder, %%order_class%% p .input:focus::-moz-placeholder, %%order_class%% p .input:focus:-ms-input-placeholder, %%order_class%% p textarea:focus::-webkit-input-placeholder, %%order_class%% p textarea:focus::-moz-placeholder, %%order_class%% p textarea:focus:-ms-input-placeholder',
+						'padding'                => '%%order_class%% .et_pb_contact_field .input',
+						'margin'                 => '%%order_class%% .et_pb_contact_field',
+					),
+					'box_shadow'    => false,
+					'border_styles' => false,
+					'font_field'    => array(
+						'css' => array(
+							'main'  => implode( ', ', array(
+								"{$this->main_css_element} .input",
+								"{$this->main_css_element} .input::placeholder",
+								"{$this->main_css_element} .input::-webkit-input-placeholder",
+								"{$this->main_css_element} .input::-moz-placeholder",
+								"{$this->main_css_element} .input:-ms-input-placeholder",
+								"{$this->main_css_element} .input[type=checkbox] + label",
+								"{$this->main_css_element} .input[type=radio] + label",
+							) ),
+							'hover' => array(
+								"{$this->main_css_element} .input:hover",
+								"{$this->main_css_element} .input:hover::placeholder",
+								"{$this->main_css_element} .input:hover::-webkit-input-placeholder",
+								"{$this->main_css_element} .input:hover::-moz-placeholder",
+								"{$this->main_css_element} .input:hover:-ms-input-placeholder",
+								"{$this->main_css_element} .input[type=checkbox]:hover + label",
+								"{$this->main_css_element} .input[type=radio]:hover + label",
+							),
+						),
+					),
+					'margin_padding' => array(
+						'css'        => array(
+							'main'    => '%%order_class%% .input',
+							'padding' => '%%order_class%% .et_pb_contact_field .input',
+							'margin'  => '%%order_class%% .et_pb_contact_field',
+						),
+					),
 				),
 			),
 		);
@@ -146,7 +190,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 	function get_fields() {
 		$fields = array(
 			'captcha' => array(
-				'label'           => esc_html__( 'Display Captcha', 'et_builder' ),
+				'label'           => esc_html__( 'Show Captcha', 'et_builder' ),
 				'type'            => 'yes_no_button',
 				'option_category' => 'configuration',
 				'options'         => array(
@@ -158,7 +202,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'default_on_front' => 'on',
 			),
 			'email' => array(
-				'label'           => esc_html__( 'Email', 'et_builder' ),
+				'label'           => esc_html__( 'Email Address', 'et_builder' ),
 				'type'            => 'text',
 				'option_category' => 'basic_option',
 				'description'     => et_get_safe_localization( sprintf(
@@ -215,20 +259,12 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'dynamic_content' => 'text',
 			),
 			'submit_button_text' => array(
-				'label'           => esc_html__( 'Submit Button Text', 'et_builder' ),
+				'label'           => esc_html__( 'Submit Button', 'et_builder' ),
 				'type'            => 'text',
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define the text of the form submit button.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
 				'dynamic_content' => 'text',
-			),
-			'form_background_color' => array(
-				'label'             => esc_html__( 'Form Field Background Color', 'et_builder' ),
-				'type'              => 'color-alpha',
-				'custom_color'      => true,
-				'toggle_slug'       => 'form_field',
-				'tab_slug'          => 'advanced',
-				'hover'             => 'tabs',
 			),
 		);
 
@@ -238,7 +274,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 	public function get_transition_fields_css_props() {
 		$fields = parent::get_transition_fields_css_props();
 
-		$fields['form_background_color'] = array(
+		$fields['form_field_background_color'] = array(
 			'background-color' => implode(', ', array(
 				'%%order_class%% .input',
 				'%%order_class%% .input[type="checkbox"]+label i',
@@ -261,19 +297,15 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		global $et_pb_half_width_counter;
+		global $et_pb_half_width_counter, $et_pb_contact_form_num;
 
 		$et_pb_half_width_counter = 0;
 
-		$module_id                   = $this->props['module_id'];
 		$captcha                     = $this->props['captcha'];
 		$email                       = $this->props['email'];
 		$title                       = $this->_esc_attr( 'title' );
 		$form_field_text_color       = $this->props['form_field_text_color'];
-		$form_background_color       = $this->props['form_background_color'];
-		$form_background_color_hover = $this->get_hover_value( 'form_background_color' );
 		$button_custom               = $this->props['custom_button'];
-		$custom_icon                 = $this->props['button_icon'];
 		$submit_button_text          = $this->props['submit_button_text'];
 		$custom_message              = $this->props['custom_message'];
 		$use_redirect                = $this->props['use_redirect'];
@@ -281,7 +313,10 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$success_message             = $this->_esc_attr( 'success_message' );
 		$header_level                = $this->props['title_level'];
 
-		global $et_pb_contact_form_num;
+		$custom_icon_values          = et_pb_responsive_options()->get_property_values( $this->props, 'button_icon' );
+		$custom_icon                 = isset( $custom_icon_values['desktop'] ) ? $custom_icon_values['desktop'] : '';
+		$custom_icon_tablet          = isset( $custom_icon_values['tablet'] ) ? $custom_icon_values['tablet'] : '';
+		$custom_icon_phone           = isset( $custom_icon_values['phone'] ) ? $custom_icon_values['phone'] : '';
 
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
@@ -292,7 +327,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'color: %1$s%2$s;',
 					esc_html( $form_field_text_color ),
-					et_is_builder_plugin_active() ? ' !important' : ''
+					et_builder_has_limitation( 'force_use_global_important' ) ? ' !important' : ''
 				),
 			) );
 
@@ -301,29 +336,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'background-color: %1$s%2$s;',
 					esc_html( $form_field_text_color ),
-					et_is_builder_plugin_active() ? ' !important' : ''
-				),
-			) );
-		}
-
-		if ( '' !== $form_background_color ) {
-			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%% .input, %%order_class%% .input[type="checkbox"] + label i, %%order_class%% .input[type="radio"] + label i',
-				'declaration' => sprintf(
-					'background-color: %1$s%2$s;',
-					esc_html( $form_background_color ),
-					et_is_builder_plugin_active() ? ' !important' : ''
-				),
-			) );
-		}
-
-		if ( et_builder_is_hover_enabled( 'form_background_color', $this->props ) ) {
-			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%%:hover .input, %%order_class%%:hover .input[type="checkbox"] + label i, %%order_class%%:hover .input[type="radio"] + label i',
-				'declaration' => sprintf(
-					'background-color: %1$s%2$s;',
-					esc_html( $form_background_color_hover ),
-					et_is_builder_plugin_active() ? ' !important' : ''
+					et_builder_has_limitation( 'force_use_global_important' ) ? ' !important' : ''
 				),
 			) );
 		}
@@ -334,16 +347,14 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 
 		$content = $this->content;
 
-		$nonce_result = isset( $_POST['_wpnonce-et-pb-contact-form-submitted'] ) && wp_verify_nonce( $_POST['_wpnonce-et-pb-contact-form-submitted'], 'et-pb-contact-form-submit' ) ? true : false;
-
 		$et_error_message = '';
 		$et_contact_error = false;
 		$current_form_fields = isset( $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] ) ? $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] : '';
 		$hidden_form_fields = isset( $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] ) ? $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] : false;
 		$contact_email = '';
 		$processed_fields_values = array();
-		$utils = self::$data_utils;
 
+		$nonce_result = isset( $_POST['_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num] ) && wp_verify_nonce( $_POST['_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num], 'et-pb-contact-form-submit' ) ? true : false;
 
 		// check that the form was submitted and et_pb_contactform_validate field is empty to protect from spam
 		if ( $nonce_result && isset( $_POST['et_pb_contactform_submit_' . $et_pb_contact_form_num] ) && empty( $_POST['et_pb_contactform_validate_' . $et_pb_contact_form_num] ) ) {
@@ -360,9 +371,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				// check all fields on current form and generate error message if needed
 				if ( ! empty( $fields_data_array ) ) {
 					foreach( $fields_data_array as $index => $value ) {
-						// sanitize all the values of this array
-						$value = $utils->sanitize_text_fields( $value );
-
 						// check all the required fields, generate error message if required field is empty
 						$field_value = isset( $_POST[ $value['field_id'] ] ) ? trim( $_POST[ $value['field_id'] ] ) : '';
 
@@ -384,7 +392,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 
 						// prepare the array of processed field values in convenient format
 						if ( false === $et_contact_error ) {
-							$processed_fields_values[ $value['original_id'] ]['value'] = sanitize_text_field( $field_value );
+							$processed_fields_values[ $value['original_id'] ]['value'] = $field_value;
 							$processed_fields_values[ $value['original_id'] ]['label'] = $value['field_label'];
 						}
 					}
@@ -420,7 +428,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				// insert the data from contact form into the message pattern
 				foreach ( $processed_fields_values as $key => $value ) {
 					// strip all tags from each field. Don't strip tags from the entire message to allow using HTML in the pattern.
-					$message_pattern = str_ireplace( "%%{$key}%%", $value['value'], $message_pattern );
+					$message_pattern = str_ireplace( "%%{$key}%%", wp_strip_all_tags( $value['value'] ), $message_pattern );
 				}
 
 				if ( false !== $hidden_form_fields ) {
@@ -453,7 +461,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				$message_pattern = wp_strip_all_tags( $message_pattern );
 			}
 
-			$http_host = str_replace( 'www.', '', sanitize_text_field( $_SERVER['HTTP_HOST'] ) );
+			$http_host = str_replace( 'www.', '', $_SERVER['HTTP_HOST'] );
 
 			$headers[] = "From: \"{$contact_name}\" <mail@{$http_host}>";
 
@@ -519,7 +527,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 						<input type="text" value="" name="et_pb_contactform_validate_%7$s" class="et_pb_contactform_validate_field" />
 						<div class="et_contact_bottom_container">
 							%2$s
-							<button type="submit" class="et_pb_contact_submit et_pb_button%6$s"%5$s>%3$s</button>
+							<button type="submit" class="et_pb_contact_submit et_pb_button%6$s"%5$s%9$s%10$s>%3$s</button>
 						</div>
 						%4$s
 					</form>
@@ -527,14 +535,16 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				esc_url( get_permalink( get_the_ID() ) ),
 				(  'on' === $captcha ? $et_pb_captcha : '' ),
 				esc_html( $submit_button_text ),
-				wp_nonce_field( 'et-pb-contact-form-submit', '_wpnonce-et-pb-contact-form-submitted', true, false ),
+				wp_nonce_field( 'et-pb-contact-form-submit', '_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num, true, false ),
 				'' !== $custom_icon && 'on' === $button_custom ? sprintf(
 					' data-icon="%1$s"',
 					esc_attr( et_pb_process_font_icon( $custom_icon ) )
-				) : '',
+				) : '', // #5
 				'' !== $custom_icon && 'on' === $button_custom ? ' et_pb_custom_button_icon' : '',
 				esc_attr( $et_pb_contact_form_num ),
-				$content
+				$content,
+				'' !== $custom_icon_tablet && 'on' === $button_custom ? sprintf( ' data-icon-tablet="%1$s"', esc_attr( et_pb_process_font_icon( $custom_icon_tablet ) ) ) : '',
+				'' !== $custom_icon_phone && 'on' === $button_custom ? sprintf( ' data-icon-phone="%1$s"', esc_attr( et_pb_process_font_icon( $custom_icon_phone ) ) ) : '' // #10
 			);
 		}
 
@@ -548,6 +558,9 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		// Remove automatically added classname
 		$this->remove_classname( $render_slug );
 
+		// Contact form should always have the ID. Use saved ID or generate automatically
+		$module_id = '' !== $this->module_id(false) ? $this->module_id(false) : 'et_pb_contact_form_' . $et_pb_contact_form_num;
+
 		$output = sprintf( '
 			<div id="%4$s" class="%5$s" data-form_unique_num="%6$s"%7$s>
 				%9$s
@@ -560,10 +573,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			( '' !== $title ? sprintf( '<%2$s class="et_pb_contact_main_title">%1$s</%2$s>', et_core_esc_previously( $title ), et_pb_process_header_level( $header_level, 'h1' ) ) : '' ),
 			$et_error_message,
 			$form,
-			( '' !== $module_id
-				? esc_attr( $module_id )
-				: esc_attr( 'et_pb_contact_form_' . $et_pb_contact_form_num )
-			),
+			esc_attr( $module_id ),
 			$this->module_classname( $render_slug ),
 			esc_attr( $et_pb_contact_form_num ),
 			'on' === $use_redirect && '' !== $redirect_url ? sprintf( ' data-redirect_url="%1$s"', esc_attr( $redirect_url ) ) : '',

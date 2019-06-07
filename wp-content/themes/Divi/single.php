@@ -30,7 +30,14 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 		<div id="content-area" class="clearfix">
 			<div id="left-area">
 			<?php while ( have_posts() ) : the_post(); ?>
-				<?php if (et_get_option('divi_integration_single_top') !== '' && et_get_option('divi_integrate_singletop_enable') === 'on') echo et_core_intentionally_unescaped( et_get_option('divi_integration_single_top'), 'html' ); ?>
+				<?php
+				/**
+				 * Fires before the title and post meta on single posts.
+				 *
+				 * @since 3.18.8
+				 */
+				do_action( 'et_before_post' );
+				?>
 				<article id="post-<?php the_ID(); ?>" <?php post_class( 'et_pb_post' ); ?>>
 					<?php if ( ( 'off' !== $show_default_title && $is_page_builder_used ) || ! $is_page_builder_used ) { ?>
 						<div class="et_post_meta_wrapper">
@@ -131,17 +138,20 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 					<?php
 					if ( et_get_option('divi_468_enable') === 'on' ){
 						echo '<div class="et-single-post-ad">';
-						if ( et_get_option('divi_468_adsense') !== '' ) echo et_core_intentionally_unescaped( et_get_option('divi_468_adsense'), 'html' );
+						if ( et_get_option('divi_468_adsense') !== '' ) echo et_core_intentionally_unescaped( et_core_fix_unclosed_html_tags( et_get_option('divi_468_adsense') ), 'html' );
 						else { ?>
 							<a href="<?php echo esc_url(et_get_option('divi_468_url')); ?>"><img src="<?php echo esc_attr(et_get_option('divi_468_image')); ?>" alt="468" class="foursixeight" /></a>
 				<?php 	}
 						echo '</div> <!-- .et-single-post-ad -->';
 					}
-				?>
 
-					<?php if (et_get_option('divi_integration_single_bottom') !== '' && et_get_option('divi_integrate_singlebottom_enable') === 'on') echo et_core_intentionally_unescaped( et_get_option('divi_integration_single_bottom'), 'html' ); ?>
+					/**
+					 * Fires after the post content on single posts.
+					 *
+					 * @since 3.18.8
+					 */
+					do_action( 'et_after_post' );
 
-					<?php
 						if ( ( comments_open() || get_comments_number() ) && 'on' === et_get_option( 'divi_show_postcomments', 'on' ) ) {
 							comments_template( '', true );
 						}

@@ -59,7 +59,7 @@ class ET_Builder_Module_Code extends ET_Builder_Module {
 	function get_fields() {
 		$fields = array(
 			'raw_content' => array(
-				'label'           => esc_html__( 'Content', 'et_builder' ),
+				'label'           => esc_html__( 'Code', 'et_builder' ),
 				'type'            => 'codemirror',
 				'mode'            => 'html',
 				'option_category' => 'basic_option',
@@ -87,7 +87,7 @@ class ET_Builder_Module_Code extends ET_Builder_Module {
 					%1$s
 				</div> <!-- .et_pb_code_inner -->
 			</div> <!-- .et_pb_code -->',
-			$this->content,
+			$this->fix_wptexturized_scripts( $this->content ),
 			$this->module_id(),
 			$this->module_classname( $render_slug ),
 			$video_background,

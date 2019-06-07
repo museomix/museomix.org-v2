@@ -10,7 +10,7 @@ import edit from './edit';
 const name = 'divi/placeholder';
 const tag = `wp:${name}`;
 const unwrap = content => content.replace(RegExp(`<!-- /?${tag} /?-->`, 'g'), '');
-const encode = content => unwrap(content).replace(/<!-- (\/)?wp:([^:]+) -->/g, '<!-- $1divi:$2 -->');
+const encode = content => unwrap(content).replace(/<!-- (\/)?wp:(.+?) (\/?)-->/g, '<!-- $1divi:$2 $3-->');
 const wrap = content => `<!-- ${tag} -->${encode(content)}<!-- /${tag} -->`;
 const shortcode = (content) => {
   if (isEmpty(content) || content.indexOf('[et_pb_section') >= 0) {
@@ -55,6 +55,7 @@ const icon = (
 export default {
   name,
   tag,
+  unwrap,
   settings: {
     title,
     description,

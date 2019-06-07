@@ -522,7 +522,7 @@ class ET_Core_Data_Utils {
 	/**
 	 * Recursively traverses an array and escapes the keys and values according to passed escaping function.
 	 *
-	 * @since ??
+	 * @since 3.17.3
 	 *
 	 * @param array  $values            The array to be recursively escaped.
 	 * @param string $escaping_function The escaping function to be used on keys and values. Default 'esc_html'. Optional.

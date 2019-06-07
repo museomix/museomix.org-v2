@@ -397,8 +397,22 @@ class ET_Builder_Library {
 				}
 			}
 
-			$layout->name            = et_core_intentionally_unescaped( self::__( $title, '@layoutsLong' ), 'react_jsx' );
-			$layout->short_name      = et_core_intentionally_unescaped( self::__( $short_name, '@layoutsShort' ), 'react_jsx' );
+			$layout->name = $layout->short_name = '';
+
+			if ( $title ) {
+				// Remove periods since we use dot notation to retrieve translation
+				str_replace( '.', '', $title );
+
+				$layout->name = et_core_intentionally_unescaped( self::__( $title, '@layoutsLong' ), 'react_jsx' );
+			}
+
+			if ( $short_name ) {
+				// Remove periods since we use dot notation to retrieve translation
+				str_replace( '.', '', $title );
+
+				$layout->short_name = et_core_intentionally_unescaped( self::__( $short_name, '@layoutsShort' ), 'react_jsx' );
+			}
+
 			$layout->slug            = $post->post_name;
 			$layout->url             = esc_url( wp_make_link_relative( get_permalink( $post ) ) );
 
@@ -790,9 +804,13 @@ class ET_Builder_Library {
 		 *
 		 * @param array[] $custom_tabs See {@self::builder_library_modal_custom_tabs()} return value.
 		 */
-		return apply_filters( 'et_builder_library_modal_custom_tabs', array(
-			'existing_pages' => esc_html__( 'Your Existing Pages', 'et_builder' ),
-		), $post_type );
+		$custom_tabs = array();
+
+		if ( 'layout' !== $post_type ) {
+			$custom_tabs['existing_pages'] = esc_html__( 'Your Existing Pages', 'et_builder' );
+		}
+
+		return apply_filters( 'et_builder_library_modal_custom_tabs', $custom_tabs, $post_type );
 	}
 
 	/**
@@ -972,9 +990,17 @@ class ET_Builder_Library {
 			'data'    => $result,
 		) );
 
-		$tmp_file = tempnam( '/tmp', 'et' );
+		$tmp_dir = function_exists( 'sys_get_temp_dir' ) ? sys_get_temp_dir() : '/tmp';
+
+		$tmp_file = tempnam( $tmp_dir, 'et' );
 
 		@file_put_contents( $tmp_file, $response );
+
+		// Remove any previous buffered content since we're setting `Content-Length` header
+		// based on $response value only.
+		while ( ob_get_level() ) {
+			ob_end_clean();
+		}
 
 		header( 'Content-Length: ' . @filesize( $tmp_file ) );
 

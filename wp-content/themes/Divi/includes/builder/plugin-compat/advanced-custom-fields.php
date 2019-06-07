@@ -18,8 +18,26 @@ class ET_Builder_Plugin_Compat_Advanced_Custom_Fields extends ET_Builder_Plugin_
 	 * @since 3.17.2
 	 */
 	public function __construct() {
-		$this->plugin_id = 'advanced-custom-fields/acf.php';
+		$this->plugin_id = $this->_get_plugin_id();
 		$this->init_hooks();
+	}
+
+	/**
+	 * Get the currently activated ACF plugin id as the FREE and PRO versions are separate plugins.
+	 *
+	 * @since 3.18
+	 *
+	 * @return string
+	 */
+	protected function _get_plugin_id() {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$pro  = 'advanced-custom-fields-pro/acf.php';
+		$free = 'advanced-custom-fields/acf.php';
+
+		return is_plugin_active( $pro ) ? $pro : $free;
 	}
 
 	/**

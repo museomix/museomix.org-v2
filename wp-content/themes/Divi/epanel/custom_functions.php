@@ -15,8 +15,14 @@ add_theme_support( 'automatic-feed-links' );
 
 add_action( 'init', 'et_activate_features' );
 
-function et_activate_features(){
-	define( 'ET_SHORTCODES_VERSION', et_get_theme_version() );
+function et_activate_features() {
+	if ( ! defined( 'ET_SHORTCODES_VERSION' ) ) {
+		define( 'ET_SHORTCODES_VERSION', et_get_theme_version() );
+	}
+
+	if ( ! defined( 'ET_SHORTCODES_DIR' ) ) {
+		define( 'ET_SHORTCODES_DIR', get_template_directory_uri() . '/epanel/shortcodes' );
+	}
 
 	/* activate shortcodes */
 	require_once TEMPLATEPATH . '/epanel/shortcodes/shortcodes.php';
@@ -134,6 +140,11 @@ if ( ! function_exists( 'et_epanel_handle_custom_css_output' ) ):
 function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 	global $wp_current_filter, $shortname;
 
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return $css;
+	}
+
 	if ( ! $css || ! in_array( 'wp_head', $wp_current_filter ) || is_admin() && ! is_customize_preview() ) {
 		return $css;
 	}
@@ -145,7 +156,7 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 	$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
 	$disabled_post   = $disabled_global || ( $is_singular && 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true ) );
 
-	$forced_inline     = $is_preview || $disabled_global || $disabled_post;
+	$forced_inline     = $is_preview || $disabled_global || $disabled_post || post_password_required();
 	$builder_in_footer = 'on' === et_get_option( 'et_pb_css_in_footer', 'off' );
 
 	$unified_styles = $is_singular && ! $forced_inline && ! $builder_in_footer && et_core_is_builder_used_on_current_request();
@@ -213,7 +224,7 @@ if ( ! function_exists( 'et_get_option' ) ) {
 
 			$et_one_row_option_name = $et_theme_options_name . '_' . $option_name;
 		} else {
-			$option_value = get_option( $option_name );
+			$option_value = $force_default_value ? get_option( $option_name, $default_value ) : get_option( $option_name );
 		}
 
 		// option value might be equal to false, so check if the option is not set in the database
@@ -240,6 +251,12 @@ if ( ! function_exists( 'et_update_option' ) ) {
 
 		if ( $is_new_global_setting && '' !== $global_setting_main_name && '' !== $global_setting_sub_name ) {
 			$global_setting = get_option( $global_setting_main_name, array() );
+
+			// $global_setting has to be array otherwise setting can't be saved so it needs
+			// to be treated as empty array
+			if ( ! is_array( $global_setting ) ) {
+				$global_setting = array();
+			}
 
 			$global_setting[ $global_setting_sub_name ] = $new_value;
 
@@ -325,14 +342,16 @@ if ( ! function_exists( 'truncate_post' ) ) {
 			// Remove embed shortcode from post content
 			$truncate = preg_replace( '@\[embed[^\]]*?\].*?\[\/embed]@si', '', $truncate );
 
-			// Remove scripts from the post content
-			$truncate = wp_kses_post( html_entity_decode( $truncate ) );
+			// Remove script and style tags from the post content
+			$truncate = wp_strip_all_tags( $truncate );
 
 			if ( $strip_shortcodes ) {
 				$truncate = et_strip_shortcodes( $truncate );
 			} else {
+				// Check if content should be overridden with a custom value.
+				$custom = apply_filters( 'et_truncate_post_use_custom_content', false, $truncate, $post );
 				// apply content filters
-				$truncate = apply_filters( 'the_content', $truncate );
+				$truncate = false === $custom ? apply_filters( 'the_content', $truncate ) : $custom;
 			}
 
 			/**
@@ -445,8 +464,10 @@ if ( ! function_exists( 'et_first_image' ) ) {
 			$unprocessed_content = et_strip_shortcodes( $post->post_content, true );
 		}
 
+		// Check if content should be overridden with a custom value.
+		$custom = apply_filters( 'et_first_image_use_custom_content', false, $unprocessed_content, $post );
 		// apply the_content filter to execute all shortcodes and get the correct image from the processed content
-		$processed_content = apply_filters( 'the_content', $unprocessed_content );
+		$processed_content = false === $custom ? apply_filters( 'the_content', $unprocessed_content ) : $custom;
 
 		$output = preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $processed_content, $matches );
 		if ( isset( $matches[1][0] ) ) $img = $matches[1][0];
@@ -534,6 +555,7 @@ if ( ! function_exists( 'print_thumbnail' ) ) {
 		if ( empty( $post ) ) global $post, $et_theme_image_sizes;
 
 		$output = '';
+		$raw = false;
 
 		$et_post_id = ! empty( $et_post_id ) ? (int) $et_post_id : $post->ID;
 
@@ -561,17 +583,24 @@ if ( ! function_exists( 'print_thumbnail' ) ) {
 			$allow_new_thumb_method = !$external_source && $new_method && empty( $cropPosition );
 
 			if ( $allow_new_thumb_method && !empty( $thumbnail ) ) {
-				$et_crop = get_post_meta( $post->ID, 'et_nocrop', true );
-				$et_crop = empty( $et_crop ) ? true : false;
-				$new_method_thumb = et_resize_image( et_path_reltoabs( $thumbnail ), $width, $height, $et_crop );
-				if ( is_wp_error( $new_method_thumb ) ) $new_method_thumb = '';
+				if ( 'data:image' === substr( $thumbnail, 0, 10 ) ) {
+					$new_method_thumb = $thumbnail;
+					$raw              = true;
+				} else {
+					$et_crop          = get_post_meta( $post->ID, 'et_nocrop', true );
+					$et_crop          = empty( $et_crop ) ? true : false;
+					$new_method_thumb = et_resize_image( et_path_reltoabs( $thumbnail ), $width, $height, $et_crop );
+					if ( is_wp_error( $new_method_thumb ) ) {
+						$new_method_thumb = '';
+					}
+				}
 			}
 
 			$thumbnail = $new_method_thumb;
 		}
 
 		if ( false === $forstyle ) {
-			$output = '<img src="' . esc_url( $thumbnail ) . '"';
+			$output = '<img src="' . ( $raw ? $thumbnail : esc_url( $thumbnail ) ) . '"';
 
 			if ( ! empty( $class ) ) $output .= " class='" . esc_attr( $class ) . "' ";
 
@@ -796,8 +825,16 @@ add_action( 'wp_head', 'head_addons', 7 );
 
 function integration_head(){
 	global $shortname;
+
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return;
+	}
+
 	$integration_head = et_get_option( $shortname . '_integration_head' );
 	if ( ! empty( $integration_head ) && et_get_option( $shortname . '_integrate_header_enable' ) === 'on' ) {
+
+		$integration_head = et_core_fix_unclosed_html_tags( $integration_head );
 		echo et_core_intentionally_unescaped( $integration_head, 'html' );
 	}
 }
@@ -806,8 +843,16 @@ add_action( 'wp_head', 'integration_head', 12 );
 
 function integration_body(){
 	global $shortname;
+
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return;
+	}
+
 	$integration_body = et_get_option( $shortname . '_integration_body' );
 	if ( ! empty( $integration_body ) && et_get_option( $shortname . '_integrate_body_enable' ) === 'on' ) {
+
+		$integration_body = et_core_fix_unclosed_html_tags( $integration_body );
 		echo et_core_intentionally_unescaped( $integration_body, 'html' );
 	}
 }
@@ -816,8 +861,16 @@ add_action( 'wp_footer', 'integration_body', 12 );
 
 function integration_single_top(){
 	global $shortname;
+
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return;
+	}
+
 	$integration_single_top = et_get_option( $shortname . '_integration_single_top' );
 	if ( ! empty( $integration_single_top ) && et_get_option( $shortname . '_integrate_body_enable' ) === 'on' ) {
+
+		$integration_single_top = et_core_fix_unclosed_html_tags( $integration_single_top );
 		echo et_core_intentionally_unescaped( $integration_single_top, 'html' );
 	}
 }
@@ -826,8 +879,16 @@ add_action( 'et_before_post', 'integration_single_top', 12 );
 
 function integration_single_bottom(){
 	global $shortname;
+
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return;
+	}
+
 	$integration_single_bottom = et_get_option( $shortname . '_integration_single_bottom' );
 	if ( ! empty( $integration_single_bottom ) && et_get_option( $shortname . '_integrate_body_enable' ) === 'on' ) {
+
+		$integration_single_bottom = et_core_fix_unclosed_html_tags( $integration_single_bottom );
 		echo et_core_intentionally_unescaped( $integration_single_bottom, 'html' );
 	}
 }
@@ -1559,7 +1620,7 @@ function et_add_fullwidth_body_class( $classes ){
 	return $classes;
 }
 
-function et_add_responsive_shortcodes_css(){
+function et_add_responsive_shortcodes_css() {
 	global $shortname;
 
 	if ( 'on' === et_get_option( $shortname . '_responsive_shortcodes', 'on' ) )

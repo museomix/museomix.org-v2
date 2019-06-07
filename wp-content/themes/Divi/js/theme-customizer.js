@@ -2142,7 +2142,7 @@
 				$phone_number = $( '#et-info-phone' );
 			}
 
-			if ( to !== '' ) {
+			if ( to.trim() !== '' ) {
 				$phone_number.show().html( to );
 			} else {
 				$phone_number.hide();
@@ -2167,7 +2167,7 @@
 				$email = $( '#et-info-email' );
 			}
 
-			if ( to !== '' ) {
+			if ( to.trim() !== '' ) {
 				$email.show().text( to );
 			} else {
 				$email.hide();
@@ -2707,7 +2707,8 @@
 						'et_divi[et_pb_testimonial-portrait_width]',
 						'width',
 						'.et_pb_testimonial_portrait',
-						to
+						to,
+						true
 					);
 				} );
 			} );
@@ -2718,7 +2719,8 @@
 						'et_divi[et_pb_testimonial-portrait_height]',
 						'height',
 						'.et_pb_testimonial_portrait',
-						to
+						to,
+						true
 					);
 				} );
 			} );

@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.17.6';
+window.et_builder_version = '3.23.3';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -423,8 +423,13 @@ window.et_builder_product_name = 'Divi';
 		cleanContent       = cleanContent.replace(trimSpace, '');
 
 		try {
-			var parsedContent = JSON.parse(cleanContent);
+			// Test for encoded dynamic content.
+			if (/^@ET-DC@(.*?)@$/.test(cleanContent)) {
+				return true;
+			}
 
+			// Test for legacy JSON-encoded dynamic content.
+			var parsedContent = JSON.parse(cleanContent);
 			if (typeof parsedContent.dynamic !== 'undefined' && true === parsedContent.dynamic) {
 				return true;
 			}
@@ -433,7 +438,7 @@ window.et_builder_product_name = 'Divi';
 		}
 
 		return false;
-	}
+	};
 
 	$( document ).ready( function() {
 
@@ -5319,7 +5324,8 @@ window.et_builder_product_name = 'Divi';
 				view = new ET_PageBuilder.AdvancedModuleSettingEditViewContainer( {
 					view : this,
 					attributes : {
-						show_settings_clicked : ( event ? true : false )
+						show_settings_clicked : ( event ? true : false ),
+						'data-module_type': this.model.get('module_type')
 					}
 				} );
 
@@ -7198,8 +7204,10 @@ window.et_builder_product_name = 'Divi';
 					global_module_elements = [ 'et_pb_global_parent', 'global_parent_cid' ];
 
 				// Add newly generated cid and parent to the pasted view
-				view.cid    = cid;
-				view.parent = parent;
+				view.cid     = cid;
+				view.parent  = parent;
+				// set `created` to manually to not open module settings when pasted
+				view.created = 'manually';
 
 				if ( typeof is_main_parent !== 'undefined' && 'main_parent' === is_main_parent ) {
 					view.pasted_module = true;
@@ -7703,7 +7711,7 @@ window.et_builder_product_name = 'Divi';
 				this.listenTo( ET_PageBuilder_Events, 'et-pb-loading:ended', this.endLoadingAnimation );
 				this.listenTo( ET_PageBuilder_Events, 'et-pb-content-updated', this.recalculateModulesOrder );
 				this.listenTo( ET_PageBuilder_Events, 'et-advanced-module:updated_order', this.updateAdvancedModulesOrder );
-				this.listenTo( ET_PageBuilder_Events, 'et-pb-content-updated', this.updateYoastContent );
+				this.listenTo(ET_PageBuilder_Events, 'et-pb-content-updated', _.debounce(this.updateYoastContent, 500));
 
 				this.$builder_toggle_button = $( 'body' ).find( '#et_pb_toggle_builder' );
 				this.$builder_toggle_button_wrapper = $( 'body' ).find( '.et_pb_toggle_builder_wrapper' );
@@ -7756,6 +7764,19 @@ window.et_builder_product_name = 'Divi';
 				this.$loading_animation.hide();
 
 				this.isLoading = false;
+				try {
+					// Only triggered when reloading the page using the following line in devtools console:
+					// localStorage.setItem('et_page_loading', Date.now()); window.location.reload();
+					var started = window.localStorage.getItem('et_page_loading');
+					if (started) {
+						console.log(
+							'Builder load : %c%f',
+							'color: red',
+							parseInt((Date.now() - parseInt(started, 10)) / 10, 10) / 100
+						);
+						window.localStorage.removeItem('et_page_loading');
+					}
+				} catch (e) {}
 			},
 
 			pageBuilderIsActive : function() {
@@ -8440,6 +8461,10 @@ window.et_builder_product_name = 'Divi';
 						}
 
 						module_settings = _.extend(module_settings, prefixed_attributes);
+					}
+
+					if ('section' === shortcode_name && 'on' === module_settings['et_pb_specialty']) {
+						shortcode_content = et_maybe_fix_specialty_columns(shortcode_content);
 					}
 
 					if (typeof module_settings['specialty_columns'] !== 'undefined') {
@@ -9412,28 +9437,116 @@ window.et_builder_product_name = 'Divi';
 				});
 			},
 
-			// reload content for the Yoast after it was changed in builder
+			parseShortcode: function(shortcode, callback, shortcodeID) {
+				var msie = document.documentMode;
+				// Make sure the iframeID is unique.
+				// It's possible that several requests will be started at the same time and now() will return the same value, so append random number.
+				var iframeID = 'et-fb-preview-' + Date.now() + '-' + Math.floor((Math.random() * 1000) + 1);
+				var previewUrl = et_pb_options.preview_url + '&et_pb_preview=true&et_pb_preview_nonce=' + et_pb_options.et_pb_preview_nonce + '&iframe_id=' + iframeID;
+
+				// Roll in the next lifecycle to get correct shortcode wrapper's width
+				setTimeout(function() {
+				  var $shortcodeWrapper = $('*[data-shortcode-id="' + shortcodeID +'"]');
+				  var shortcodeWidth = $shortcodeWrapper.length ? $shortcodeWrapper.width() + 'px' : '100%';
+
+				  var $iframe = jQuery('<iframe />', {
+					id: iframeID,
+					src: previewUrl,
+					style: 'position: absolute; bottom: 0; left: 0; opacity: 0; pointer-events: none; width:' + shortcodeWidth + '; height: 100%;'
+				  });
+
+				  var hasRenderPage = false;
+				  var request_data = {
+					et_pb_preview_nonce : et_pb_options.et_pb_preview_nonce,
+					shortcode           : shortcode,
+					post_title          : $('#title').val(),
+					post_id             : et_pb_options.postId
+				  };
+
+				  /**
+				   * Append iframe to body.
+				   * component DOM hasn't ready at this point so it needs to be appended to <body>
+				   */
+				  $('body').append($iframe);
+
+					/**
+					 * Load iframe's content into page
+					 */
+					$iframe.load(function() {
+						/**
+						 * Prevent unnecessary load
+						 */
+						if (hasRenderPage) {
+						return;
+						}
+
+						var preview = document.getElementById(iframeID);
+
+						/**
+						 * IE9 below fix (They have postMessage, but it has to be in string)
+						 */
+						if (!_.isUndefined(msie) && msie < 10) {
+							request_data = JSON.stringify(request_data);
+						}
+
+						/**
+						 * Pass shortcode structure to iFrame to be displayed
+						 */
+						preview.contentWindow.postMessage(request_data, previewUrl);
+
+						/**
+						 * Flag to prevent unnecessary load
+						 */
+						hasRenderPage = true;
+
+						/**
+						 * Create IE compatible event handler
+						 */
+						var childListenerMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+						var childListener = window[childListenerMethod];
+						var childListenerEvent = childListenerMethod == "attachEvent" ? "onmessage" : "message";
+
+						/**
+						 * Listen to message from child window
+						 */
+						childListener(childListenerEvent, function(event) {
+							if (event.data.iframe_id === iframeID && _.isString(event.data.html)) {
+								callback(event.data);
+
+								/**
+							 	* Remove event since the data has been passed to callback
+							 	*/
+								$iframe.remove();
+							}
+						}, false);
+					});
+				}, 0);
+
+				return;
+			},
+
+			// Reload content for the Yoast after it was changed in builder
 			updateYoastContent : function() {
 				if ( ! et_pb_is_yoast_seo_active() ) {
 					return;
 				}
 
-				var content = et_pb_get_content( 'content', true );
+				var content                 = et_pb_get_content( 'content', true );
+				var _loadingSpinnerHTML     = '<svg class="yoast-svg-icon et-pb-yoast-loading yoast-svg-icon-loading-spinner SvgIcon__StyledSvg-jBzRth mPAyu" aria-hidden="true" role="img" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 66" fill="#64a60a" style="position: absolute; background: #fff; border-radius: 5px; max-width: 18px;"><circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg>';
+				var $yoastAnalysisContainer = $('#yoast-readability-analysis-collapsible-metabox');
 
-				// perform the do_shortcode for the current content from builder and force Yoast to reload
-				$.ajax( {
-					type: "POST",
-					url: et_pb_options.ajaxurl,
-					data: {
-						action : 'et_pb_yoast_execute_content_shortcodes',
-						et_admin_load_nonce : et_pb_options.et_admin_load_nonce,
-						et_pb_unprocessed_data : content
-					},
-					success: function( data ) {
-						et_pb_processed_yoast_content = data;
-						YoastSEO.app.pluginReloaded( 'ET_PB_Yoast_Content' );
-					}
-				} );
+				// Remove our loader if exists
+				$('.et-pb-yoast-loading').remove();
+
+				// Add loader icon on top of the Yoast icon to show the progress
+				$yoastAnalysisContainer.find('svg').first().after(_loadingSpinnerHTML);
+
+				// Parse the current content from builder and force Yoast to reload with updated data
+				this.parseShortcode(content, function(response) {
+					var pageHTML = !_.isUndefined(response.html) ? response.html : '';
+					et_pb_processed_yoast_content = pageHTML;
+					YoastSEO.app.pluginReloaded('ET_PB_Yoast_Content');
+				}, 'yoast_preview_content');
 			},
 
 			// calculate and add the module_order attribute for the module.
@@ -10368,7 +10481,7 @@ window.et_builder_product_name = 'Divi';
 			$gallery_button.click( function( event ) {
 				var $this_el = $(this),
 					$gallery_ids = $gallery_button.next( '.et-pb-gallery' ),
-					$gallery_orderby = $gallery_button.closest( '.et-pb-options-tab' ).find( '.et-pb-option-gallery_orderby .et-pb-gallery-ids-field' );
+					$gallery_orderby = $gallery_button.closest('.et-pb-options-tab').find('#et_pb_gallery_orderby');
 
 				event.preventDefault();
 
@@ -13770,6 +13883,18 @@ window.et_builder_product_name = 'Divi';
 			return content.trim();
 		}
 
+		// Make sure Specialty Section contains inner rows and inner columns.
+		function et_maybe_fix_specialty_columns(content) {
+			return content.replace(/(\[et_pb_(row |row_inner) [\s\S]*?\][\s\S]*\[\/et_pb_(row |row_inner)\])/mi, et_fix_specialty_columns);
+		}
+
+		function et_fix_specialty_columns(rows) {
+			var fixed_content = rows.replace(/et_pb_row /g, 'et_pb_row_inner ').replace(/et_pb_row\]/g, 'et_pb_row_inner]');
+			fixed_content = fixed_content.replace(/et_pb_column /g, 'et_pb_column_inner ').replace(/et_pb_column\]/g, 'et_pb_column_inner]');
+
+			return fixed_content;
+		}
+
 		function et_get_editor_mode() {
 			var et_editor_mode = 'tinymce';
 
@@ -15655,7 +15780,7 @@ window.et_builder_product_name = 'Divi';
 					number,
 					length;
 
-				if ( range_input_value === '' && ! initial_value_set ) {
+				if (isNaN(parseFloat(range_input_value)) && ! initial_value_set) {
 					$this_el.val( 0 );
 					$range_input.data( 'initial_value_set', true );
 
@@ -15742,7 +15867,6 @@ window.et_builder_product_name = 'Divi';
 				$validate_unit_field.each( function() {
 					var $this_el = $(this),
 						value    = et_pb_sanitize_input_unit_value( $.trim( $this_el.val() ) );
-
 					$this_el.val( value );
 				} );
 			}
@@ -15837,6 +15961,10 @@ window.et_builder_product_name = 'Divi';
 
 			if ( 'section' === module_type ) {
 				module_type = 'et_pb_section';
+			}
+
+			if ('row' === module_type) {
+				module_type = 'et_pb_row';
 			}
 
 			if ( has( window.et_pb_module_field_dependencies, module_type ) ) {
@@ -15952,6 +16080,7 @@ window.et_builder_product_name = 'Divi';
 
 						var $affected_field          = $(field);
 						var $affected_container      = $affected_field.closest( '.et-pb-option' );
+						var use_new_depends_method   = $affected_container.hasClass('et-pb-new-depends');
 						var is_text_trigger          = 'text' === $this_field.attr( 'type' ); // need to know if trigger is text field
 						var show_if                  = $affected_container.data( 'depends_show_if' ) || 'on';
 						var show_if_not              = is_text_trigger ? '' : $affected_container.data( 'depends_show_if_not' );
@@ -15967,6 +16096,8 @@ window.et_builder_product_name = 'Divi';
 							is_text_trigger
 							&&
 							! $this_field.is( ':visible' )
+							||
+							use_new_depends_method
 						) {
 							return;
 						}
@@ -16052,26 +16183,26 @@ window.et_builder_product_name = 'Divi';
 						});
 					});
 				} );
-
-				// trigger change event for all dependant ( affected ) fields to show on settings page load
-				setTimeout( function() {
-					// make all settings visible to properly enable all affected fields
-					$settings_tab.css( { 'display' : 'block' } );
-
-					// include fields using more advanced dependency declaration instead of html5 data attrs
-					$et_affect_fields = $et_affect_fields.add( $other_et_affects );
-
-					$et_affect_fields.data( 'is_rendering_setting_view', true );
-
-					et_pb_update_affected_fields( $et_affect_fields );
-
-					$et_affect_fields.data( 'is_rendering_setting_view', false );
-
-					// After all affected fields is being processed return all tabs to the initial state
-					$settings_tab.css( { 'display' : 'none' } );
-					et_pb_open_current_tab();
-				}, 100 );
 			}
+
+			// trigger change event for all dependant ( affected ) fields to show on settings page load
+			setTimeout( function() {
+				// make all settings visible to properly enable all affected fields
+				$settings_tab.css( { 'display' : 'block' } );
+
+				// include fields using more advanced dependency declaration instead of html5 data attrs
+				$et_affect_fields = $et_affect_fields.add( $other_et_affects );
+
+				$et_affect_fields.data( 'is_rendering_setting_view', true );
+
+				et_pb_update_affected_fields( $et_affect_fields );
+
+				$et_affect_fields.data( 'is_rendering_setting_view', false );
+
+				// After all affected fields is being processed return all tabs to the initial state
+				$settings_tab.css( { 'display' : 'none' } );
+				et_pb_open_current_tab();
+			}, 100 );
 
 			setTimeout(function() {
 				// Hide all empty toggles which may appear in Settings Modal
@@ -16340,6 +16471,7 @@ window.et_builder_product_name = 'Divi';
 				range_processed = typeof range_value === 'string' ? range_value.trim() : range_value,
 				range_digit     = parseFloat( range_processed ),
 				range_string    = range_processed.toString().replace( range_digit, '' ),
+				range_default   = $range_field.data('default'),
 				result;
 
 			// no need to use Number.isNaN there. parseFloat guarantees that we have a number or `NaN` value at this point.
@@ -16360,7 +16492,7 @@ window.et_builder_product_name = 'Divi';
 				}
 			}
 
-			result = range_digit.toString() + range_string;
+			result = (range_digit.toString() + range_string) || range_default;
 
 			if ( update_element_value && result !== range_value ) {
 				$range_input.val( result );
@@ -16397,6 +16529,10 @@ window.et_builder_product_name = 'Divi';
 			var default_value = et_pb_get_default_setting_value($element).toLowerCase();
 			var current_value = _.isUndefined(ET_PageBuilder.Helpers.getSettingValue($element)) ? '' : ET_PageBuilder.Helpers.getSettingValue($element).toString().toLowerCase();
 			var is_range_option  = $element.hasClass('et-pb-range');
+
+			if (undefined === current_value || '' === String(current_value)) {
+				return true;
+			}
 
 			if ($element.is('select')  && default_value === '' && $element.prop('selectedIndex') === 0) {
 				return true;
@@ -16646,7 +16782,7 @@ window.et_builder_product_name = 'Divi';
 			}
 
 			if( isNaN( parseFloat( value ) ) ) {
-				return '';
+				return value;
 			}
 
 			result = parseFloat( value );
@@ -18046,7 +18182,7 @@ window.et_builder_product_name = 'Divi';
 				},
 				success: function( data ){
 					var global_content_is_different = false;
-					if ( data.error ) {
+					if (! data || data.error) {
 						// if global template not found, then make module and all child modules not global.
 						var this_view = ET_PageBuilder_Layout.getView( module_cid );
 
@@ -19070,6 +19206,9 @@ window.et_builder_product_name = 'Divi';
 			 */
 			ET_PB_Yoast_Content.prototype.et_pb_update_content = function( data ) {
 				var final_content = et_pb_processed_yoast_content || et_pb_options.yoast_content;
+
+				// Remove our loader
+				$('.et-pb-yoast-loading').remove();
 
 				return final_content;
 			};

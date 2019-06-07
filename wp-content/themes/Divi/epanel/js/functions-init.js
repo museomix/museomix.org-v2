@@ -304,7 +304,7 @@
 			});
 		}
 
-		if ( typeof etCore !== 'undefined' ) {
+		if ( typeof etCore !== 'undefined' && typeof etCore.portability !== 'undefined' ) {
 			// Portability integration.
 			etCore.portability.save = function( callback ) {
 				epanel_save( callback, false );

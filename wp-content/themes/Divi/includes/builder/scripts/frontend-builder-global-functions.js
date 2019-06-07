@@ -26,7 +26,7 @@
 		}
 
 		$( 'html, body' ).animate( { scrollTop :  $scroll_position }, speed, easing );
-	}
+	};
 
 	window.et_pb_form_placeholders_init = function( $form ) {
 		$form.find('input:text, input[type="email"], input[type="url"], textarea').each(function(index,domEle){
@@ -50,7 +50,7 @@
 			if ( jQuery(this).siblings('span.required').length ) et_label_text += jQuery(this).siblings('span.required').text();
 			if (jQuery(this).val() === "") jQuery(this).val( et_label_text );
 		});
-	}
+	};
 
 	window.et_duplicate_menu = function( menu, append_to, menu_id, menu_class, menu_click_event ){
 		append_to.each( function() {
@@ -85,7 +85,7 @@
 		} );
 
 		$('#mobile_menu .centered-inline-logo-wrap').remove();
-	}
+	};
 
 	// remove placeholder text before form submission
 	window.et_pb_remove_placeholder_text = function( $form ) {
@@ -99,7 +99,7 @@
 					$et_current_input.val( '' );
 			}
 		});
-	}
+	};
 
 	window.et_fix_fullscreen_section = function() {
 		var $et_window = $(window);
@@ -111,7 +111,7 @@
 
 			$et_window.on( 'resize', $.proxy( et_calc_fullscreen_section, $this_section ) );
 		});
-	}
+	};
 
 	window.et_bar_counters_init = function( $bar_item ) {
 		if ( ! $bar_item.length ) {
@@ -121,7 +121,7 @@
 		$bar_item.css({
 			'width' : parseFloat( $bar_item.attr( 'data-width' ) ) + '%'
 		});
-	}
+	};
 
 	window.et_fix_pricing_currency_position = function( $pricing_table ) {
 		var $all_pricing_tables = typeof $pricing_table !== 'undefined' ? $pricing_table : $( '.et_pb_pricing_table' );
@@ -143,35 +143,52 @@
 			// adjust the margin of currency sign to make sure it doesn't overflow the price
 			$currency.css( { 'marginLeft' : - $currency.width() + 'px' } );
 		});
-	}
+	};
 
 	window.et_pb_set_responsive_grid = function( $grid_items_container, single_item_selector ) {
-		setTimeout( function() {
-			var container_width = $grid_items_container.innerWidth(),
-				$grid_items = $grid_items_container.find( single_item_selector ),
-				item_width = $grid_items.outerWidth( true ),
-				last_item_margin = item_width - $grid_items.outerWidth(),
-				columns_count = Math.round( ( container_width + last_item_margin ) / item_width ),
-				counter = 1,
-				first_in_row = 1;
+		setTimeout(function () {
+			var container_width = $grid_items_container.innerWidth();
+			var $grid_items = $grid_items_container.find(single_item_selector);
+			var item_width = $grid_items.outerWidth(true);
+			var last_item_margin = item_width - $grid_items.outerWidth();
+			var columns_count = Math.round((container_width + last_item_margin) / item_width);
+			var counter = 1;
+			var first_in_row = 1;
+			var $first_in_last_row = $();
 
-			$grid_items.removeClass( 'last_in_row first_in_row' );
-			$grid_items.filter(':visible').each( function() {
-				var $this_el = $( this );
+			$grid_items.removeClass('last_in_row first_in_row on_last_row');
+			$grid_items.filter(':visible').each(function () {
+				var $this_element = $(this);
 
-				if ( ! $this_el.hasClass( 'inactive' ) ) {
-					if ( first_in_row === counter ) {
-						$this_el.addClass( 'first_in_row' );
-					}
-
-					if ( 0 === counter % columns_count ) {
-						$this_el.addClass( 'last_in_row' );
+				if (!$this_element.hasClass('inactive')) {
+					if (first_in_row === counter) {
+						$this_element.addClass('first_in_row');
+						$first_in_last_row = $this_element;
+					} else if (0 === counter % columns_count) {
+						$this_element.addClass('last_in_row');
 						first_in_row = counter + 1;
 					}
 					counter++;
 				}
 			});
-		}, 1 ); // need this timeout to make sure all the css applied before calculating sizes
+			if ($first_in_last_row.length) {
+				var $module = $first_in_last_row.parents('.et_pb_module');
+				//set margin bottom to 0 if the gallery is the last module on the column
+				if ($module.is(':last-child')) {
+					var column = $first_in_last_row.parents('.et_pb_column')[0];
+					$(column).find('.et_pb_grid_item').removeClass('on_last_row');
+					// keep gutter margin if gallery has pagination
+					var pagination = $module.find('.et_pb_gallery_pagination');
+					if (0 === pagination.length) {
+						pagination = $module.find('.et_pb_portofolio_pagination');
+					}
+					if (0 === pagination.length || (pagination.length > 0 && !pagination.is(':visible'))) {
+						$first_in_last_row.addClass('on_last_row');
+						$first_in_last_row.nextAll().addClass('on_last_row');
+					}
+				}
+			}
+		}, 1); // need this timeout to make sure all the css applied before calculating sizes
 	};
 
 	window.et_pb_set_tabs_height = function( $tabs_module ) {
@@ -199,7 +216,7 @@
 			// determine the height of the tallest tab
 			if ( $all_tabs.length ) {
 				// remove the height attribute if it was added to calculate the height correctly
-				$tab_controls.removeAttr( 'style' );
+				$tab_controls.children('li').removeAttr('style');
 
 				$all_tabs.each( function() {
 					var tab_height = $( this ).outerHeight();
@@ -216,10 +233,10 @@
 
 			if ( 0 !== max_height ) {
 				// set the height of tabs container based on the height of the tallest tab
-				$tab_controls.css( 'min-height', max_height );
+				$tab_controls.children('li').css('height', max_height);
 			}
 		});
-	}
+	};
 
 	window.et_pb_box_shadow_apply_overlay = function (el) {
 		var pointerEventsSupport = document.body.style.pointerEvents !== undefined
@@ -238,7 +255,7 @@
 		} else {
 			$(el).addClass('.et-box-shadow-no-overlay');
 		}
-	}
+	};
 
 	window.et_pb_init_nav_menu = function($et_menus) {
 		$et_menus.each(function() {
@@ -319,7 +336,7 @@
 			// mark the menu as ready
 			$et_menu.data('et-is-menu-ready', 'ready');
 		});
-	}
+	};
 
 	window.et_pb_toggle_nav_menu = function($element, state, delay) {
 		if ( 'open' === state ) {
@@ -338,7 +355,7 @@
 				}
 			}, closeDelay );
 		}
-	}
+	};
 
 	window.et_pb_apply_sticky_image_effect = function($sticky_image_el) {
 		var $row                = $sticky_image_el.closest('.et_pb_row');
@@ -372,5 +389,5 @@
 		if (! $section.hasClass(sticky_mobile_class) && $column.is($lastColumnInRow)) {
 			$section.addClass(sticky_mobile_class);
 		}
-	}
+	};
 })(jQuery);
