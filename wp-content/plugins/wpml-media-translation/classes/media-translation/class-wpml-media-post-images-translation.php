@@ -35,6 +35,8 @@ class WPML_Media_Post_Images_Translation implements IWPML_Action {
 
 	private $captions_map = array();
 
+	private $translate_locks = array();
+
 	public function __construct(
 		WPML_Media_Translated_Images_Update $images_updater,
 		SitePress $sitepress,
@@ -76,31 +78,39 @@ class WPML_Media_Post_Images_Translation implements IWPML_Action {
 	 * @param int $post_id
 	 */
 	public function translate_images( $post_id ) {
+		if ( isset( $this->translate_locks[ $post_id ] ) ) {
+			return;
+		}
+
+		$this->translate_locks[ $post_id ] = true;
 
 		$post = get_post( $post_id );
 
 		if ( ! $post ) {
-			return null;
+			return;
 		}
 
+		/** @var WPML_Post_Element $post_element */
 		$post_element    = $this->translation_element_factory->create( $post_id, 'post' );
 		$source_language = $post_element->get_source_language_code();
-		$language        = $post_element->get_language_code();
+
 		if ( null !== $source_language ) {
 
-			$this->translate_images_in_post_content( $post, $language, $source_language );
-			$this->translate_images_in_custom_fields( $post_id, $language, $source_language );
+			$this->translate_images_in_post_content( $post, $post_element );
+			$this->translate_images_in_custom_fields( $post_id );
 
 		} else { // is original
 			foreach ( array_keys( $this->sitepress->get_active_languages() ) as $target_language ) {
+				/** @var WPML_Post_Element $translation */
 				$translation = $post_element->get_translation( $target_language );
 				if ( null !== $translation && $post_id !== $translation->get_id() ) {
-					$this->translate_images_in_post_content( get_post( $translation->get_id() ), $target_language, $language );
-					$this->translate_images_in_custom_fields( $translation->get_id(), $target_language, $language );
+					$this->translate_images_in_post_content( get_post( $translation->get_id() ), $translation );
+					$this->translate_images_in_custom_fields( $translation->get_id() );
 				}
 			}
-
 		}
+
+		unset( $this->translate_locks[ $post_id ] );
 	}
 
 	/**
@@ -115,24 +125,38 @@ class WPML_Media_Post_Images_Translation implements IWPML_Action {
 
 	/**
 	 * @param WP_Post $post
-	 * @param string $target_language
-	 * @param string $source_language
+	 * @param WPML_Post_Element $post_element
 	 */
-	private function translate_images_in_post_content( WP_Post $post, $target_language, $source_language ) {
-		$post_content_filtered = $this->images_updater->replace_images_with_translations(
-			$post->post_content,
-			$target_language,
-			$source_language
-		);
-		if ( $post_content_filtered !== $post->post_content ) {
-			$this->wpdb->update(
-				$this->wpdb->posts,
-				array( 'post_content' => $post_content_filtered ),
-				array( 'ID' => $post->ID ),
-				array( '%s' ),
-				array( '%d' )
+	private function translate_images_in_post_content( WP_Post $post, WPML_Post_Element $post_element ) {
+
+		if ( (bool) apply_filters( 'wpml_pb_should_body_be_translated', true, $post, 'translate_images_in_post_content' ) ) {
+			$post_content_filtered = $this->images_updater->replace_images_with_translations(
+				$post->post_content,
+				$post_element->get_language_code(),
+				$post_element->get_source_language_code()
 			);
+
+			if ( $post_content_filtered !== $post->post_content ) {
+				$this->wpdb->update(
+					$this->wpdb->posts,
+					array( 'post_content' => $post_content_filtered ),
+					array( 'ID' => $post->ID ),
+					array( '%s' ),
+					array( '%d' )
+				);
+			}
+		} elseif ( $this->is_updated_from_media_translation_menu() ) {
+			do_action( 'wpml_pb_resave_post_translation', $post_element );
 		}
+	}
+
+	private function is_updated_from_media_translation_menu() {
+		$allowed_actions = array(
+			'wpml_media_save_translation',
+			'wpml_media_translate_media_url_in_posts',
+		);
+
+		return isset( $_POST['action'] ) && in_array( $_POST['action'], $allowed_actions, true );
 	}
 
 	/**
@@ -175,8 +199,6 @@ class WPML_Media_Post_Images_Translation implements IWPML_Action {
 
 		foreach ( $posts as $post_id ) {
 			$this->translate_images( $post_id );
-
-			do_action( 'wpml_media_after_translate_media_in_post_content', $post_id, $attachment_id, $_POST[ 'translated-language' ] );
 		}
 	}
 

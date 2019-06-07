@@ -36,7 +36,6 @@ class WPML_Media_Image_Translate {
 	 */
 	public function get_translated_image( $attachment_id, $language, $size = null ) {
 		$image_url              = '';
-
 		$attachment             = new WPML_Post_Element( $attachment_id, $this->sitepress );
 		$attachment_translation = $attachment->get_translation( $language );
 
@@ -62,8 +61,7 @@ class WPML_Media_Image_Translate {
 	 */
 	public function get_translated_image_by_url( $img_src, $source_language, $target_language ) {
 
-		$attachment_by_url = $this->attachment_by_url_factory->create( $img_src, $source_language );
-		$attachment_id = $attachment_by_url->get_id();
+		$attachment_id = $this->get_attachment_id_by_url( $img_src, $source_language );
 
 		if ( $attachment_id ) {
 			$size = $this->get_image_size_from_url( $img_src, $attachment_id );
@@ -81,24 +79,25 @@ class WPML_Media_Image_Translate {
 	}
 
 	/**
+	 * @param string $img_src
+	 * @param string $source_language
+	 *
+	 * @return int
+	 */
+	public function get_attachment_id_by_url( $img_src, $source_language ) {
+		$attachment_by_url = $this->attachment_by_url_factory->create( $img_src, $source_language );
+		return (int) $attachment_by_url->get_id();
+	}
+
+	/**
 	 * @param string $url
 	 * @param int $attachment_id
 	 *
 	 * @return string
 	 */
 	private function get_image_size_from_url( $url, $attachment_id ) {
-		$size = null;
-
-		$thumb_file_name      = basename( $url );
-		$attachment_meta_data = wp_get_attachment_metadata( $attachment_id );
-		foreach ( $attachment_meta_data['sizes'] as $key => $size_array ) {
-			if ( $thumb_file_name === $size_array['file'] ) {
-				$size = $key;
-				break;
-			}
-		}
-
-		return $size;
+		$media_sizes = new WPML_Media_Sizes();
+		return $media_sizes->get_image_size_from_url( $url, $attachment_id );
 	}
 
 	/**

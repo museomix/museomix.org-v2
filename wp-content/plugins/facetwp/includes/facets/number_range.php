@@ -19,16 +19,16 @@ class FacetWP_Facet_Number_Range extends FacetWP_Facet
         $fields = empty( $params['facet']['fields'] ) ? 'both' : $params['facet']['fields'];
 
         if ( 'exact' == $fields ) {
-            $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" placeholder="' . __( 'Number', 'fwp' ) . '" />';
+            $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" placeholder="' . __( 'Number', 'fwp-front' ) . '" />';
         }
         if ( 'both' == $fields || 'min' == $fields ) {
-            $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" placeholder="' . __( 'Min', 'fwp' ) . '" />';
+            $output .= '<input type="text" class="facetwp-number facetwp-number-min" value="' . esc_attr( $value[0] ) . '" placeholder="' . __( 'Min', 'fwp-front' ) . '" />';
         }
         if ( 'both' == $fields || 'max' == $fields ) {
-            $output .= '<input type="text" class="facetwp-number facetwp-number-max" value="' . esc_attr( $value[1] ) . '" placeholder="' . __( 'Max', 'fwp' ) . '" />';
+            $output .= '<input type="text" class="facetwp-number facetwp-number-max" value="' . esc_attr( $value[1] ) . '" placeholder="' . __( 'Max', 'fwp-front' ) . '" />';
         }
 
-        $output .= '<input type="button" class="facetwp-submit" value="' . __( 'Go', 'fwp' ) . '" />';
+        $output .= '<input type="button" class="facetwp-submit" value="' . __( 'Go', 'fwp-front' ) . '" />';
 
         return $output;
     }
@@ -48,8 +48,7 @@ class FacetWP_Facet_Number_Range extends FacetWP_Facet
         $max = ( '' == $values[1] ) ? false : FWP()->helper->format_number( $values[1] );
 
         $fields = isset( $facet['fields'] ) ? $facet['fields'] : 'both';
-        $compare_type = isset( $facet['compare_type'] ) ? $facet['compare_type'] : '';
-        $compare_type = empty( $compare_type ) ? 'basic' : $compare_type;
+        $compare_type = empty( $facet['compare_type'] ) ? 'basic' : $facet['compare_type'];
         $is_dual = ! empty( $facet['source_other'] );
 
         if ( $is_dual && 'basic' != $compare_type ) {

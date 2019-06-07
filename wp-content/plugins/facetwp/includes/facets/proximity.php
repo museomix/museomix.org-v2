@@ -60,7 +60,7 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
 
         ob_start();
 ?>
-        <input type="text" class="facetwp-location" value="<?php echo esc_attr( $location_name ); ?>" placeholder="<?php _e( 'Enter location', 'fwp' ); ?>" />
+        <input type="text" class="facetwp-location" value="<?php echo esc_attr( $location_name ); ?>" placeholder="<?php _e( 'Enter location', 'fwp-front' ); ?>" autocomplete="off" />
 
         <?php if ( 'dropdown' == $radius_ui ) : ?>
 
@@ -174,7 +174,7 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
         // Pass extra options into Places Autocomplete
         $options = apply_filters( 'facetwp_proximity_autocomplete_options', [] );
         FWP()->display->json['proximity']['autocomplete_options'] = $options;
-        FWP()->display->json['proximity']['clearText'] = __( 'Clear location', 'fwp' );
+        FWP()->display->json['proximity']['clearText'] = __( 'Clear location', 'fwp-front' );
         FWP()->display->json['proximity']['queryDelay'] = 250;
         FWP()->display->json['proximity']['minLength'] = 3;
     }
@@ -312,7 +312,7 @@ class FacetWP_Facet_Proximity_Core extends FacetWP_Facet
 
         if ( FWP()->helper->facet_setting_exists( 'type', 'proximity' ) ) {
             $options['distance'] = [
-                'label' => __( 'Distance', 'fwp' ),
+                'label' => __( 'Distance', 'fwp-front' ),
                 'query_args' => [
                     'orderby' => 'post__in',
                     'order' => 'ASC',

@@ -1120,7 +1120,7 @@ class IWP_MMB_Backup {
 							if (is_array($dirlist)) $dirlist=array_shift($dirlist);
 						}
 
-						if (count($dirlist)>0) {
+						if (!empty($dirlist)) {
 							$created = $this->create_zip($dirlist, $youwhat, $backup_file_basename, $index);
 							# Now, store the results
 							if (!is_string($created) && !is_array($created)) $iwp_backup_core->log("$youwhat: create_zip returned an error");
@@ -1510,6 +1510,12 @@ class IWP_MMB_Backup {
 		$microtime = microtime(true);
 
 		global $iwp_backup_core;
+		$table_sans_prefix = substr($table_name, strlen($this->table_prefix_raw));
+		$default_exclude_tables = explode(',', IWP_MMB_Backup_Options::get_iwp_backup_option('IWP_default_exclude_tables', IWP_DATA_OPTIONAL_TABLES));
+		if (in_array($table_sans_prefix, $default_exclude_tables)) {
+			$iwp_backup_core->log("Table $table_name: Data skipped (table is marked as non-essential)");
+			return true;
+		}
 
 		// Deal with Windows/old MySQL setups with erroneous table prefixes differing in case
 		// Can't get binary mysqldump to make this transformation
@@ -1635,12 +1641,13 @@ class IWP_MMB_Backup {
 
 		# Some tables have optional data, and should be skipped if they do not work
 		$table_sans_prefix = substr($table, strlen($this->table_prefix_raw));
-		$data_optional_tables = ('wp' == $this->whichdb) ? apply_filters('IWP_data_optional_tables', explode(',', IWP_DATA_OPTIONAL_TABLES)) : array();
+		$data_optional_tables = ('wp' == $this->whichdb) ? explode(',', IWP_MMB_Backup_Options::get_iwp_backup_option('IWP_default_exclude_tables', IWP_DATA_OPTIONAL_TABLES)) : array();
 		if (in_array($table_sans_prefix, $data_optional_tables)) {
-			if (!$iwp_backup_core->something_useful_happened && !empty($iwp_backup_core->current_resumption) && ($iwp_backup_core->current_resumption - $iwp_backup_core->last_successful_resumption > 2)) {
-				$iwp_backup_core->log("Table $table: Data skipped (previous attempts failed, and table is marked as non-essential)");
+			//if (!$iwp_backup_core->something_useful_happened && !empty($iwp_backup_core->current_resumption) && ($iwp_backup_core->current_resumption - $iwp_backup_core->last_successful_resumption > 2)) {
+				// $iwp_backup_core->log("Table $table: Data skipped (previous attempts failed, and table is marked as non-essential)");
+				$iwp_backup_core->log("Table $table: Data skipped (table is marked as non-essential)");
 				return true;
-			}
+			//}
 		}
 
 		if('VIEW' != $table_type && ($segment == 'none' || $segment >= 0)) {
@@ -1731,7 +1738,26 @@ class IWP_MMB_Backup {
 		$encryption = IWP_MMB_Backup_Options::get_iwp_backup_option('IWP_encryptionphrase');
 		if (strlen($encryption) > 0) {
 			$iwp_backup_core->log("Attempting to encrypt backup file");
-			$result = apply_filters('IWP_encrypt_file', null, $file, $encryption, $this->whichdb, $this->whichdb_suffix);
+			try {
+				$result = apply_filters('IWP_encrypt_file', null, $file, $encryption, $this->whichdb, $this->whichdb_suffix);
+			} catch (Exception $e) {
+				$log_message = 'Exception ('.get_class($e).') occurred during encryption: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
+				error_log($log_message);
+				// @codingStandardsIgnoreLine
+				if (function_exists('wp_debug_backtrace_summary')) $log_message .= ' Backtrace: '.wp_debug_backtrace_summary();
+				$iwp_backup_core->log($log_message);
+				$iwp_backup_core->log(sprintf(__('A PHP exception (%s) has occurred: %s', 'InfiniteWP'), get_class($e), $e->getMessage()), 'error');
+				die();
+			// @codingStandardsIgnoreLine
+			} catch (Error $e) {
+				$log_message = 'PHP Fatal error ('.get_class($e).') has occurred during encryption. Error Message: '.$e->getMessage().' (Code: '.$e->getCode().', line '.$e->getLine().' in '.$e->getFile().')';
+				error_log($log_message);
+				// @codingStandardsIgnoreLine
+				if (function_exists('wp_debug_backtrace_summary')) $log_message .= ' Backtrace: '.wp_debug_backtrace_summary();
+				$iwp_backup_core->log($log_message);
+				$iwp_backup_core->log(sprintf(__('A PHP fatal error (%s) has occurred: %s', 'InfiniteWP'), get_class($e), $e->getMessage()), 'error');
+				die();
+			}
 			if (null === $result) {
 				return basename($file);
 			}

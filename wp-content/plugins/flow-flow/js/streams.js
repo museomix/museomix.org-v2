@@ -481,7 +481,7 @@ var ff_templates = {
     <h1>USEFUL LINKS</h1>\
     <a href="http://go.social-streams.com/help">Help Center</a><br>\
     <a href="https://social-streams.com/">Social Stream Apps</a><br>\
-    <a href="http://go.social-streams.com/twitter">Twitter</a><br>\
+    <a href="/wp-content/plugins/flow-flow/flow-flow-debug.log" target="_blank">Debug Log</a><br>\
     <a href="http://go.social-streams.com/facebook">Facebook</a>\
     </div>\
     </div>\
@@ -811,8 +811,7 @@ Posts to load during update\
                 <div class="hint hint-pro">\
                     <h1>Content to show</h1>\
                     <ul>\
-                        <li><b>User feed</b> — enter username e.g. <i>elainen</i>.</li>\
-                        <li><b>User board</b> — enter user board slug e.g. <i>elainen/cute-animals</i>.</li>\
+                        <li><b>User board</b> — enter user board slug e.g. <i>elainen/cute-animals</i></li>\
                     </ul>\
                 </div>\
             </div>\

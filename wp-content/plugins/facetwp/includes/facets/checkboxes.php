@@ -128,8 +128,8 @@ class FacetWP_Facet_Checkboxes extends FacetWP_Facet
 
         if ( 0 < $soft_limit && $soft_limit <= $key ) {
             $output .= '</div>';
-            $output .= '<a class="facetwp-toggle">' . __( 'See {num} more', 'fwp' ) . '</a>';
-            $output .= '<a class="facetwp-toggle facetwp-hidden">' . __( 'See less', 'fwp' ) . '</a>';
+            $output .= '<a class="facetwp-toggle">' . __( 'See {num} more', 'fwp-front' ) . '</a>';
+            $output .= '<a class="facetwp-toggle facetwp-hidden">' . __( 'See less', 'fwp-front' ) . '</a>';
         }
 
         return $output;

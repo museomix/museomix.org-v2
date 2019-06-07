@@ -1,4 +1,5 @@
 <?php namespace flow\social;
+use InstagramScraper\Endpoints;
 use InstagramScraper\Exception\InstagramNotFoundException;
 use InstagramScraper\Instagram;
 use InstagramScraper\Model\Media;
@@ -36,11 +37,17 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 //		require_once $context['root'] . 'libs/phpFastCache.php';
 		Request::verifyPeer(false);
 		Request::verifyHost(false);
+		Request::curlOpt( CURLOPT_IPRESOLVE, $feed->use_ipv4 ? CURL_IPRESOLVE_V4 : CURL_IPRESOLVE_V6);
+		Request::curlOpt( CURLOPT_FOLLOWLOCATION, true);
+	}
+
+	public function getCount() {
+		return 50;
 	}
 
 	public function deferredInit($feed) {
 		$accessToken = $feed->instagram_access_token;
-		$this->url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={$accessToken}&count={$this->getCount()}";
+		$this->url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={$accessToken}&count={$this->getCount()}&hl=en";
 		if (isset($feed->{'timeline-type'})) {
 			$this->timeline = $feed->{'timeline-type'};
 			switch ($this->timeline) {
@@ -50,7 +57,7 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 					//$this->userMeta = $this->getUserMeta($userId, $accessToken);
 					//$this->url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={$accessToken}&count={$this->getCount()}";
 					if (empty($content)){
-						$this->url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={$accessToken}&count={$this->getCount()}";
+						$this->url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={$accessToken}&count={$this->getCount()}&hl=en";
 					}
 					else {
 						$this->url = $content;
@@ -64,15 +71,15 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 					$this->alternative = true;
 					break;
 				case 'location':
-					$locationID = $feed->content;
-					$this->url = "https://api.instagram.com/v1/locations/{$locationID}/media/recent?access_token={$accessToken}&count={$this->getCount()}";
-					//$this->alternative = true;
+//					$locationID = $feed->content;
+//					$this->url = "https://api.instagram.com/v1/locations/{$locationID}/media/recent?access_token={$accessToken}&count={$this->getCount()}";
+					$this->alternative = true;
 					break;
 				case 'coordinates':
 					$coordinates = explode(',', $feed->content);
 					$lat = trim($coordinates[0]);
 					$lng = trim($coordinates[1]);
-					$this->url = "https://api.instagram.com/v1/media/search?lat={$lat}&lng={$lng}&access_token={$accessToken}&count={$this->getCount()}";
+					$this->url = "https://api.instagram.com/v1/media/search?lat={$lat}&lng={$lng}&access_token={$accessToken}&count={$this->getCount()}&hl=en";
 					break;
 			}
 		}
@@ -96,10 +103,9 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 					$medias = $instagram->getMediasByTag($this->url, $this->getCount());
 					$forced_loading_of_post = true;
 					break;
-//				case 'location':
-//					$location = $instagram->getLocationById('380503552017025');
-//					$medias = $instagram->getMediasByLocationId('380503552017025', $this->getCount());
-//					break;
+				case 'location':
+					$locationID = $this->feed->content;
+					$medias = $instagram->getMediasByLocationId($locationID, $this->getCount());
 			}
 
 			foreach ( $medias as $media ) {
@@ -288,7 +294,6 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 	}
 	
     private function getCaption($text){
-		$text = FFFeedUtils::removeEmoji( (string) $text );
 		return $this->hashtagLinks($text);
     }
 
@@ -363,15 +368,23 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 //		}
 //	}
 
+	/**
+	 * @param $item
+	 *
+	 * @return array
+	 */
 	public function getComments($item) {
 		if (empty($item) || is_object($item)){
-			return array();
+			return [];
 		}
 
 		$result = [];
 		$objectId = $item;
 		$instagram = new Instagram();
-		$media = $instagram->getMediaById($objectId);
+		$code = $this->getCodeFromId($objectId);
+		$mediaLink = Endpoints::getMediaPageLink($code);
+		$media = $instagram->getMediaByUrl($mediaLink);
+//		$media = $instagram->getMediaById($objectId);
 		//$comments = $instagram->getMediaCommentsById($objectId);
 		$comments = array_slice($media->getComments(), 0, 5);
 		foreach ( $comments as $comment ) {
@@ -466,6 +479,8 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 	 * @param string $username
 	 *
 	 * @return \InstagramScraper\Model\Account
+	 * @throws LASocialException
+	 * @throws \InstagramScraper\Exception\InstagramException
 	 */
 	private function getAccount($username){
 		if (!array_key_exists($username, $this->accounts)){
@@ -483,6 +498,8 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 	 * @param string $id
 	 *
 	 * @return \InstagramScraper\Model\Account
+	 * @throws LASocialException
+	 * @throws \InstagramScraper\Exception\InstagramException
 	 */
 	private function getAccountById($id){
 		if (!array_key_exists($id, $this->accounts)){
@@ -494,5 +511,25 @@ class FFInstagram extends FFBaseFeed implements LAFeedWithComments{
 			}
 		}
 		return $this->accounts[$id];
+	}
+
+	private function getCodeFromId($id) {
+		$parts = explode('_', $id);
+		$id = $parts[0];
+		$alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+		$code = '';
+		while ($id > 0) {
+			if (PHP_INT_SIZE === 4 && function_exists('bcmod')){
+				$remainder = bcmod($id, 64);
+				$t = bcsub($id, $remainder);
+				$id = bcdiv($t, 64);
+			}
+			else {
+				$remainder = $id % 64;
+				$id = ($id - $remainder) / 64;
+			}
+			$code = $alphabet{$remainder} . $code;
+		};
+		return $code;
 	}
 }

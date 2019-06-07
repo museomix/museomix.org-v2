@@ -17,7 +17,7 @@ class IWP_MMB_Optimize extends IWP_MMB_Core
 		$text = '';
 
 		if (isset($cleanupType["clean-revisions"])) {
-			$values = self::cleanup_type_process('revisions');
+			$values = self::cleanup_type_process('revisions', $cleanupType['numberOfRevisions']);
 			$text .= "<span class='wpm_results'>" . $values['message'] . "</span>";
 			$cleanup_values['value_array']['revisions'] = $values['value'];
 		}
@@ -86,17 +86,29 @@ class IWP_MMB_Optimize extends IWP_MMB_Core
 		}
 	}
 	
-	function cleanup_type_process($cleanupType){
+	function cleanup_type_process($cleanupType, $numberOfRevisions = 0){
 		global $wpdb;
 		$clean = ""; $message = "";
 		$message_array = array();
 		//$message_array['value'] = array();
 		$optimized = array();
-	
+
 		switch ($cleanupType) {
 			
 			case "revisions":
-				$clean = "DELETE FROM $wpdb->posts WHERE post_type = 'revision'";
+				$revisionWhere = '';
+				if (!empty($numberOfRevisions) && $numberOfRevisions != 0) {
+					$revisionQuery = "SELECT ID FROM $wpdb->posts WHERE post_type = 'revision' order by ID desc LIMIT ". $numberOfRevisions;
+					$revisionIDs = $wpdb->get_results( $revisionQuery, ARRAY_N );
+					$revisionsIDsArray = array();
+					foreach ($revisionIDs as $key => $revisionID) {
+						if ($revisionID) {
+							$revisionsIDsArray[]= $revisionID[0];
+						}
+					}
+					$revisionWhere = " AND ID NOT IN('".implode("', '", $revisionsIDsArray)."')";
+				}
+				$clean = "DELETE FROM $wpdb->posts WHERE post_type = 'revision'".$revisionWhere;
 				$revisions = $wpdb->query( $clean );
 				$message .= __('Post revisions deleted - ', 'wp-optimize') . $revisions;
 				$message_array['value'] = $revisions;

@@ -293,8 +293,18 @@ class IWP_MMB_Helper
     function set_client_message_id($message_id = false)
     {
         if ($message_id) {
-            add_option('iwp_client_action_message_id', $message_id) or update_option('iwp_client_action_message_id', $message_id);
-            return $message_id;
+             if (is_multisite()) {
+                global $wpdb;
+                $blogIDs = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
+                foreach ($blogIDs as $blogID) {
+                    update_blog_option($blogID, 'iwp_client_action_message_id', $message_id);
+                }
+                return true;
+            } else {
+               update_option('iwp_client_action_message_id', $message_id);
+               return $message_id;
+            }
+            
         }
         return false;
     }
@@ -306,10 +316,21 @@ class IWP_MMB_Helper
     
     function set_admin_panel_public_key($public_key = false)
     {
-        if ($public_key && !get_option('iwp_client_public_key')) {
-            add_option('iwp_client_public_key', base64_encode($public_key));
+
+         if (is_multisite()) {
+            global $wpdb;
+            $blogIDs = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
+            foreach ($blogIDs as $blogID) {
+                update_blog_option($blogID, 'iwp_client_public_key', base64_encode($public_key));
+            }
             return true;
+        } else {
+            if ($public_key && !get_option('iwp_client_public_key')) {
+                add_option('iwp_client_public_key', base64_encode($public_key));
+                return true;
+            }
         }
+
         return false;
     }
     

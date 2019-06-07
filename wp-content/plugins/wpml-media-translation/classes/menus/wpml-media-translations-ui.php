@@ -83,7 +83,7 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 				'original_language'        => __( 'Original language', 'wpml-media' ),
 				'no_attachments'           => __( 'No attachments found', 'wpml-media' ),
 				'add_translation'          => __( 'Add media file translation', 'wpml-media' ),
-				'edit_translation'         => __( 'Edit translation', 'wpml-media' ),
+				'edit_translation'         => __( 'Edit %s translation', 'wpml-media' ),
 				'original'                 => __( 'Original:', 'wpml-media' ),
 				'translation'              => __( 'Translation:', 'wpml-media' ),
 				'file'                     => __( 'File', 'wpml-media' ),
@@ -253,6 +253,7 @@ class WPML_Media_Translations_UI extends WPML_Templates_Factory {
 
 			$attachments[] = array(
 				'post'         => $attachment,
+				'mime_type'    => $is_image ? 'image/*' : $attachment->post_mime_type,
 				'is_image'     => $is_image,
 				'file_name'    => basename( $media_file_original ),
 				'alt'          => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),

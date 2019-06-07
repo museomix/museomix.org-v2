@@ -107,7 +107,7 @@ class FacetWP_Facet_Rating extends FacetWP_Facet
      * Output front-end scripts
      */
     function front_scripts() {
-        FWP()->display->json['rating']['& up'] = __( '& up', 'fwp' );
-        FWP()->display->json['rating']['Undo'] = __( 'Undo', 'fwp' );
+        FWP()->display->json['rating']['& up'] = __( '& up', 'fwp-front' );
+        FWP()->display->json['rating']['Undo'] = __( 'Undo', 'fwp-front' );
     }
 }

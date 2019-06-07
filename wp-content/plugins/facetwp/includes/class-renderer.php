@@ -113,7 +113,7 @@ class FacetWP_Renderer
         // Run the query once (prevent duplicate queries when preloading)
         if ( empty( $this->query_args ) ) {
 
-            // Support "post__in" arg
+            // Support "post__in"
             if ( empty( $query_args['post__in'] ) ) {
                 $query_args['post__in'] = [];
             }
@@ -126,6 +126,9 @@ class FacetWP_Renderer
 
             // Narrow the posts based on the selected facets
             $post_ids = $this->get_filtered_post_ids();
+
+            // Preserve SQL_CALC_FOUND_ROWS
+            unset( $this->query_args['no_found_rows'] );
 
             // Update the SQL query
             if ( ! empty( $post_ids ) ) {
@@ -167,12 +170,25 @@ class FacetWP_Renderer
 
         // Debug
         if ( 'on' == FWP()->helper->get_setting( 'debug_mode', 'off' ) ) {
-            $output['settings']['debug'] = [
+            $debug = [
                 'query_args'    => $this->query_args,
                 'sql'           => $this->query->request,
                 'facets'        => $this->facets,
                 'template'      => $this->template,
             ];
+
+            // Reduce debug payload
+            if ( ! empty( $this->query_args['post__in'] ) ) {
+                $debug['query_args']['post__in_count'] = count( $this->query_args['post__in'] );
+                $debug['query_args']['post__in'] = array_slice( $this->query_args['post__in'], 0, 10 );
+
+                $debug['sql'] = preg_replace_callback( '/posts.ID IN \((.*?)\)/s', function( $matches ) {
+                    $count = substr_count( $matches[1], ',' ) + 1;
+                    return "posts.ID IN (<$count IDs>)";
+                }, $debug['sql'] );
+
+                $output['settings']['debug'] = $debug;
+            }
         }
 
         // Generate the template HTML
@@ -381,6 +397,7 @@ class FacetWP_Renderer
             'update_post_term_cache' => false,
             'cache_results' => false,
             'no_found_rows' => true,
+            'nopaging' => true, // prevent "offset" issues
             'fields' => 'ids',
         ] );
 
@@ -513,7 +530,7 @@ class FacetWP_Renderer
      * @return string
      */
     function get_result_count( $params = [] ) {
-        $text_of = __( 'of', 'fwp' );
+        $text_of = __( 'of', 'fwp-front' );
 
         $page = (int) $params['page'];
         $per_page = (int) $params['per_page'];
@@ -547,32 +564,32 @@ class FacetWP_Renderer
 
         $options = [
             'default' => [
-                'label' => __( 'Sort by', 'fwp' ),
+                'label' => __( 'Sort by', 'fwp-front' ),
                 'query_args' => []
             ],
             'title_asc' => [
-                'label' => __( 'Title (A-Z)', 'fwp' ),
+                'label' => __( 'Title (A-Z)', 'fwp-front' ),
                 'query_args' => [
                     'orderby' => 'title',
                     'order' => 'ASC',
                 ]
             ],
             'title_desc' => [
-                'label' => __( 'Title (Z-A)', 'fwp' ),
+                'label' => __( 'Title (Z-A)', 'fwp-front' ),
                 'query_args' => [
                     'orderby' => 'title',
                     'order' => 'DESC',
                 ]
             ],
             'date_desc' => [
-                'label' => __( 'Date (Newest)', 'fwp' ),
+                'label' => __( 'Date (Newest)', 'fwp-front' ),
                 'query_args' => [
                     'orderby' => 'date',
                     'order' => 'DESC',
                 ]
             ],
             'date_asc' => [
-                'label' => __( 'Date (Oldest)', 'fwp' ),
+                'label' => __( 'Date (Oldest)', 'fwp-front' ),
                 'query_args' => [
                     'orderby' => 'date',
                     'order' => 'ASC',
@@ -629,8 +646,8 @@ class FacetWP_Renderer
         // Only show pagination when > 1 page
         if ( 1 < $total_pages ) {
 
-            $text_page      = __( 'Page', 'fwp' );
-            $text_of        = __( 'of', 'fwp' );
+            $text_page      = __( 'Page', 'fwp-front' );
+            $text_of        = __( 'of', 'fwp-front' );
 
             // "Page 5 of 150"
             $output .= '<span class="facetwp-pager-label">' . "$text_page $page $text_of $total_pages</span>";
@@ -680,7 +697,7 @@ class FacetWP_Renderer
         $options = apply_filters( 'facetwp_per_page_options', [ 10, 25, 50, 100 ] );
 
         $output = '<select class="facetwp-per-page-select">';
-        $output .= '<option value="">' . __( 'Per page', 'fwp' ) . '</option>';
+        $output .= '<option value="">' . __( 'Per page', 'fwp-front' ) . '</option>';
         foreach ( $options as $option ) {
             $output .= '<option value="' . $option . '">' . $option . '</option>';
         }

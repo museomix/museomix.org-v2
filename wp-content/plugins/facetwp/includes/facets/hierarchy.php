@@ -64,7 +64,7 @@ class FacetWP_Facet_Hierarchy extends FacetWP_Facet
 
             $output[] = [
                 'facet_value'           => '',
-                'facet_display_value'   => __( 'Any', 'fwp' ),
+                'facet_display_value'   => __( 'Any', 'fwp-front' ),
                 'depth'                 => 0,
                 'counter'               => 1,
             ];
@@ -148,8 +148,8 @@ class FacetWP_Facet_Hierarchy extends FacetWP_Facet
 
             if ( $num_visible < $num ) {
                 $output .= '</div>';
-                $output .= '<a class="facetwp-toggle">' . __( 'See more', 'fwp' ) . '</a>';
-                $output .= '<a class="facetwp-toggle facetwp-hidden">' . __( 'See less', 'fwp' ) . '</a>';
+                $output .= '<a class="facetwp-toggle">' . __( 'See more', 'fwp-front' ) . '</a>';
+                $output .= '<a class="facetwp-toggle facetwp-hidden">' . __( 'See less', 'fwp-front' ) . '</a>';
             }
 
             for ( $i = 0; $i <= $last_depth; $i++ ) {

@@ -23,13 +23,13 @@
 		cols = $(cols);
 		cols.each(function() {
 			var col = $(this);
-			var id = col.find('input[name="id"]').val();
+			var id = col.find('input[data-name="id"]').val();
 
 			// Quick Renamer
 			(function() {
 				var wrap = col;
 				var button = wrap.find('.button.rename');
-				var input = wrap.find('input[name="filename"]');
+				var input = wrap.find('input[data-name="filename"]');
 
 				button.on('click', function(ev) {
 					ev.preventDefault();
@@ -53,7 +53,7 @@
 			(function() {
 				var wrap = col;
 				var button = wrap.find('.button.auto-rename');
-				var input = wrap.find('input[name="filename"]');
+				var input = wrap.find('input[data-name="filename"]');
 
 				button.on('mouseover', function(ev) {
 					if (isBusy(col)) return;
@@ -202,7 +202,7 @@
 	 */
 	function rename(col, newName) {
 		col = $(col);
-		var id = col.find('input[name="id"]').val();
+		var id = col.find('input[data-name="id"]').val();
 
 		var data = {
 			action: 'mfrh_rename_media',
@@ -246,7 +246,7 @@
 	 */
 	function update(col, newName) {
 		col = $(col);
-		var id = col.find('input[name="id"]').val();
+		var id = col.find('input[data-name="id"]').val();
 
 		// Update the filename information in 'File' column
 		if (typeof newName == 'string') {

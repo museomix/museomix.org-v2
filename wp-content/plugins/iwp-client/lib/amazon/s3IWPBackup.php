@@ -120,7 +120,13 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 				$as3_directory =  $this->site_name;
 			}
 		}	
-		   
+		if (empty($as3_bucket_region)) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/lib/S3.php");
+			$s3 = new IWP_MMB_S3(trim($as3_access_key), trim(str_replace(' ', '+', $as3_secure_key)), false, 's3.amazonaws.com');
+			$as3_bucket_region = $s3->getBucketLocationNew($as3_bucket);
+			if (empty($as3_bucket_region) && false !== $as3_bucket_region) $as3_bucket_region = null;
+		}
+
 		if($s3_retrace_count<=3){
 			try{
 		
@@ -159,13 +165,16 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 				if((iwp_mmb_get_file_size($backup_file) <= 5*1024*1024)){
 					//new starts
 					echo "<br>small backup so single upload<br>";
-					
-					$s3->putObject(array(
+					$putArray = array(
 					'Bucket'     => $as3_bucket,
 					'SourceFile' => $backup_file,
 					'Key'        => $as3_file,
 					'ACL' => 'private'
-					));
+					);
+					if ($server_side_encryption == 1) {
+						$putArray['ServerSideEncryption']='AES256';
+					}
+					$s3->putObject($putArray);
 					$current_file_num += 1;
 					$resArray = array (
 					  'status' => "completed",
@@ -214,12 +223,15 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 						echo "iwpmsg initiating multiCall upload";
 						//get the uploadID
 						$filename = $backup_file;
-						$result = $s3->createMultipartUpload(array(
-						'Bucket'       => $as3_bucket,
-						'Key'          => $as3_file,
-						'ACL'          => 'private',
-					
-						));
+						$putArray = array(
+						'Bucket'     => $as3_bucket,
+						'Key'        => $as3_file,
+						'ACL' => 'private'
+						);
+						if ($server_side_encryption == 1) {
+							$putArray['ServerSideEncryption']='AES256';
+						}
+						$result = $s3->createMultipartUpload($putArray);
 					
 						$parts = array();
 						$uploadId = $result['UploadId'];	
@@ -425,6 +437,12 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 		}
 		extract($args);
 		$temp = '';
+		if (empty($as3_bucket_region)) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/lib/S3.php");
+			$s3 = new IWP_MMB_S3(trim($as3_access_key), trim(str_replace(' ', '+', $as3_secure_key)), false, 's3.amazonaws.com');
+			$as3_bucket_region = $s3->getBucketLocationNew($as3_bucket);
+			if (empty($as3_bucket_region) && false !== $as3_bucket_region) $as3_bucket_region = null;
+		}
 		try{
 		if (empty($as3_bucket_region)) {
 			$s3 = S3Client::factory(array(
@@ -486,7 +504,12 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
 			require_once($GLOBALS['iwp_mmb_plugin_dir'].'/lib/amazon/autoload.php');
 		}
         extract($args);
-		
+		if (empty($as3_bucket_region)) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/lib/S3.php");
+			$s3 = new IWP_MMB_S3(trim($as3_access_key), trim(str_replace(' ', '+', $as3_secure_key)), false, 's3.amazonaws.com');
+			$as3_bucket_region = $s3->getBucketLocationNew($as3_bucket);
+			if (empty($as3_bucket_region) && false !== $as3_bucket_region) $as3_bucket_region = null;
+		}
 		if(!is_array($backup_file))
 		{
 			$temp_backup_file = $backup_file;
@@ -552,11 +575,28 @@ class IWP_MMB_S3_MULTICALL extends IWP_MMB_Backup_Multicall
     }
 	
 	function postUploadS3Verification($backup_file, $destFile, $type = "", $as3_bucket = "", $as3_access_key = "", $as3_secure_key = "", $as3_bucket_region = "", $size1, $size2, $return_size = false){
-		$s3 = S3Client::factory(array(
-			'key'=>$as3_access_key,
-			'secret'=>trim(str_replace(' ', '+', $as3_secure_key)),
-			'region' => $as3_bucket_region,
-		));
+		if (empty($as3_bucket_region)) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/lib/S3.php");
+			$s3 = new IWP_MMB_S3(trim($as3_access_key), trim(str_replace(' ', '+', $as3_secure_key)), false, 's3.amazonaws.com');
+			$as3_bucket_region = $s3->getBucketLocationNew($as3_bucket);
+			if (empty($as3_bucket_region) && false !== $as3_bucket_region) $as3_bucket_region = null;
+		}
+		if (empty($as3_bucket_region)) {
+			$s3 = S3Client::factory(array(
+				'key' => trim($as3_access_key),
+				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+				'region' => $as3_bucket_region,
+				'ssl.certificate_authority' => false
+			));
+		}else{
+			$s3 = S3Client::factory(array(
+				'key' => trim($as3_access_key),
+				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+				'region' => $as3_bucket_region,
+				'signature' => 'v4',
+				'ssl.certificate_authority' => false
+			));
+		}
 		if(!$s3){
 			return false;
 		}
@@ -655,12 +695,17 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
 
             if(filesize($backup_file) <5*1024*1024){
                 try{
-					$s3->putObject(array(
-						'Bucket'     => $as3_bucket,
-						'SourceFile' => $backup_file,
-						'Key'        => $as3_file,
-						'ACL' => 'private'
-					));
+
+                	$putArray = array(
+					'Bucket'     => $as3_bucket,
+					'SourceFile' => $backup_file,
+					'Key'        => $as3_file,
+					'ACL' => 'private'
+					);
+					if ($server_side_encryption == 1) {
+						$putArray['ServerSideEncryption']='AES256';
+					}
+					$s3->putObject($putArray);
                    return true;
         }catch (Exception $e){
          $err = $e->getMessage();
@@ -775,6 +820,12 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
 				$as3_directory =  $this->site_name;
 			}
 		}
+		if (empty($as3_bucket_region)) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/lib/S3.php");
+			$s3 = new IWP_MMB_S3(trim($as3_access_key), trim(str_replace(' ', '+', $as3_secure_key)), false, 's3.amazonaws.com');
+			$as3_bucket_region = $s3->getBucketLocationNew($as3_bucket);
+			if (empty($as3_bucket_region) && false !== $as3_bucket_region) $as3_bucket_region = null;
+		}
         try{
             if (empty($as3_bucket_region)) {
             	$s3 = S3Client::factory(array(
@@ -811,4 +862,46 @@ class IWP_MMB_S3_SINGLECALL extends IWP_MMB_Backup_Multicall
       		return false;
       }
     }
+}
+
+function iwpRepositoryAmazons3($args){
+	require_once($GLOBALS['iwp_mmb_plugin_dir'] . '/lib/amazon/autoload.php');
+	
+	extract($args);
+	try{
+		if (empty($as3_bucket_region)) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/lib/S3.php");
+			$s3 = new IWP_MMB_S3(trim($as3_access_key), trim(str_replace(' ', '+', $as3_secure_key)), false, 's3.amazonaws.com');
+			$as3_bucket_region = $s3->getBucketLocationNew($as3_bucket);
+			if (empty($as3_bucket_region) && false !== $as3_bucket_region) $as3_bucket_region = null;
+		}
+		if (empty($as3_bucket_region)) {
+			$s3 = S3Client::factory(array(
+				'key' => trim($as3_access_key),
+				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+				'region' => $as3_bucket_region,
+				'ssl.certificate_authority' => false
+			));
+		}else{
+			$s3 = S3Client::factory(array(
+				'key' => trim($as3_access_key),
+				'secret' => trim(str_replace(' ', '+', $as3_secure_key)),
+				'region' => $as3_bucket_region,
+				'signature' => 'v4',
+				'ssl.certificate_authority' => false
+			));
+		}
+
+		$objects = $s3->getIterator('ListObjects', array(
+			'Bucket' => $as3_bucket,
+		));
+		foreach ($objects as $object){
+			echo $s3->getObjectUrl($as3_bucket,$object['Key']);
+			break; 
+		}
+		return array('status' => 'success');
+	}
+	catch (Exception $e){
+         return array('error' => $e->getMessage(), 'error_code' => 's3_cloud_backup_verification_failed');
+	}
 }

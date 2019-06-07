@@ -25,7 +25,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @package   FlowFlowAdmin
  * @author    Looks Awesome <email@looks-awesome.com>
  * @link      http://looks-awesome.com
- * @copyright 2014-2017 Looks Awesome
+ * @copyright Looks Awesome
  */
 class FlowFlowAdmin extends LAAdminBase{
 	/**

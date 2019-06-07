@@ -1,6 +1,6 @@
 <?php
 
-class WPML_Media_Post_Media_Usage_Factory implements IWPML_Backend_Action_Loader {
+class WPML_Media_Post_Media_Usage_Factory implements IWPML_Backend_Action_Loader, IWPML_Frontend_Action_Loader {
 
 	public function create(){
 		global $sitepress;

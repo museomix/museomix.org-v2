@@ -14,6 +14,8 @@
  * @property string $max_php_size Skip PHP source files this size or larger
  * @property bool $po_utf8_bom Whether to prepend PO and POT files with UTF-8 byte order mark
  * @property string $po_width PO/POT file maximum line width (wrapping) zero to disable
+ * @property bool $jed_pretty Whether to pretty print JSON JED files
+ * @property bool $ajax_files Whether to submit PO data as concrete files
  */
 class Loco_data_Settings extends Loco_data_Serializable {
 
@@ -41,6 +43,8 @@ class Loco_data_Settings extends Loco_data_Serializable {
         'max_php_size' => '100K',
         'po_utf8_bom' => false,
         'po_width' => '79',
+        'jed_pretty' => false,
+        'ajax_files' => false,
     );
 
 
@@ -212,7 +216,7 @@ class Loco_data_Settings extends Loco_data_Serializable {
     
     
     /**
-     * Map a file extension to registered types
+     * Map a file extension to registered types, defaults to "php"
      * @param string
      * @return string php, js or twig
      */
@@ -222,4 +226,5 @@ class Loco_data_Settings extends Loco_data_Serializable {
         $types['twig'] = 'twig'; // <- temporary hack in lieu of dedicated twig extractor
         return isset($types[$x]) ? $types[$x] : 'php';
     }
+   
 }

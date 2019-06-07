@@ -14,7 +14,7 @@
 
 define('PFC_PHP_EXT', 'php');
 define('PFC_BIN_DIR', __DIR__ . '/../bin/');
-define('PFC_IGNORE_COMPOSER_WARNING', true);
+if ( !defined('PFC_IGNORE_COMPOSER_WARNING') ) define('PFC_IGNORE_COMPOSER_WARNING', true);
 
 /**
  * Register Autoload

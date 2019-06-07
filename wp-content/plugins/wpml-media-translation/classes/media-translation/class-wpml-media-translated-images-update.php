@@ -47,15 +47,9 @@ class WPML_Media_Translated_Images_Update {
 		foreach ( $imgs as $img ) {
 
 			if ( isset( $img['attachment_id'] ) ) {
-				$attachment_id = $img['attachment_id'];
-				$size          = $this->media_sizes->get_attachment_size( $img );
-
-				if ( $size ) {
-					$translated_src = $this->image_translator->get_translated_image( $attachment_id, $target_language, $size );
-				} else {
-					$translated_src = $this->get_translated_image_by_url( $target_language, $source_language, $img );
-				}
-
+				$attachment_id  = $img['attachment_id'];
+				$size           = $this->media_sizes->get_attachment_size( $img );
+				$translated_src = $this->image_translator->get_translated_image( $attachment_id, $target_language, $size );
 			} else {
 				$translated_src = $this->get_translated_image_by_url( $target_language, $source_language, $img );
 			}

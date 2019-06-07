@@ -16,18 +16,22 @@ abstract class FFBaseFeed implements FFFeed{
 	/** @var \stdClass */
 	public $feed;
 
-    private $id;
-    /** @var FFImageSizeCacheBase */
-    protected $cache;
-    private $count;
-    private $imageWidth;
+	private $id;
+	/** @var FFImageSizeCacheBase */
+	protected $cache;
+	private $count;
+	private $imageWidth;
 	private $type;
-	/** @var  Exclude words */
+	/**
+	 * Exclude words
+	 * @var  array $filterByWords */
 	private $filterByWords;
-    /** @var  Include words */
+	/**
+	 * Include words
+	 * @var array $include */
 	private $include;
 	private $criticalError = true;
-    protected $errors;
+	protected $errors;
 	protected $context;
 
 	function __construct( $type ) {
@@ -219,8 +223,14 @@ abstract class FFBaseFeed implements FFFeed{
                             return true;
                         }
                         break;
-                    default:
-                        if (!empty($word) && ((mb_strpos(mb_strtolower($post->text), $word) !== false) || (isset($post->header) && mb_strpos(mb_strtolower($post->header), $word) !== false))) {
+                    case '$':
+                        $word = mb_substr($word, 1);
+                        if ( !empty($word) && ((mb_strpos( mb_strtolower( strip_tags( $post->text ) ), '#' . $word) !== false) || (isset($post->header) && mb_strpos( mb_strtolower( strip_tags( $post->header ) ), '#' . $word) !== false))) {
+                            return true;
+                        }
+                        break;
+                     default:
+                        if ( !empty($word) && ((mb_strpos( mb_strtolower( strip_tags( $post->text ) ), $word) !== false) || (isset($post->header) && mb_strpos( mb_strtolower( strip_tags( $post->header ) ), $word) !== false))) {
                             return true;
                         }
                         break;
@@ -271,7 +281,7 @@ abstract class FFBaseFeed implements FFFeed{
 		if ($post == null) return false;
 
 		$suitable = $this->includePost($post);
-		if($suitable){
+		if( $suitable ){
             $suitable = $this->excludePost($post);
         }
 

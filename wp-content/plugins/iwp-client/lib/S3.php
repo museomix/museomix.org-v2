@@ -1010,6 +1010,23 @@ class IWP_MMB_S3
 		return (isset($rest->body[0]) && (string)$rest->body[0] !== '') ? (string)$rest->body[0] : 'US';
 	}
 
+	public static function getBucketLocationNew($bucket)
+	{
+
+		$rest = new IWP_MMB_S3Request('GET', $bucket, '', self::$endpoint, self::$use_dns_bucket_name);
+		$rest->setParameter('location', null);
+		$rest = $rest->getResponse();
+		if ($rest->error === false && $rest->code !== 200)
+			$rest->error = array('code' => $rest->code, 'message' => 'Unexpected HTTP status');
+		if ($rest->error !== false)
+		{
+			self::__triggerError(sprintf("IWP_MMB_S3::getBucketLocation({$bucket}): [%s] %s",
+			$rest->error['code'], $rest->error['message']), __FILE__, __LINE__);
+			return false;
+		}
+		return (isset($rest->body[0]) && (string)$rest->body[0] !== '') ? (string)$rest->body[0] : '';
+	}
+
 
 	/**
 	* Set object or bucket Access Control Policy

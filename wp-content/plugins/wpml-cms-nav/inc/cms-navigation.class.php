@@ -42,7 +42,7 @@ class WPML_CMS_Navigation{
         }
 
 	    // Setup the WP-Admin resources
-	    add_action( 'admin_init', array( $this, 'admin_init' ) );
+	    add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_resources' ) );
         // Setup the WP-Admin menus
         add_action('wpml_admin_menu_configure', array($this, 'menu'));
         
@@ -88,22 +88,52 @@ class WPML_CMS_Navigation{
 		add_action( 'widgets_init', array( $this, 'sidebar_navigation_widget_init' ) );
 
 		// Load resources
-		add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_styles' ) );
 	}
 
-	function script_and_styles() {
-	}
+	function enqueue_admin_resources( $hook ) {
+		if ( self::get_menu_slug() === $hook ) {
+			wp_enqueue_script(
+				'wpml-cms-nav-js',
+				WPML_CMS_NAV_PLUGIN_URL . '/res/js/navigation.js',
+				array(),
+				WPML_CMS_NAV_VERSION
+			);
 
-	function admin_init() {
-		wp_enqueue_script( 'wpml-cms-nav-js', WPML_CMS_NAV_PLUGIN_URL . '/res/js/navigation.js', array(), WPML_CMS_NAV_VERSION );
-	}
-
-	function wp_enqueue_scripts() {
-		if ( ! defined( 'ICL_DONT_LOAD_NAVIGATION_CSS' ) || ! ICL_DONT_LOAD_NAVIGATION_CSS ) {
-			wp_enqueue_style( 'wpml-cms-nav-css', WPML_CMS_NAV_PLUGIN_URL . '/res/css/navigation.css', array(), WPML_CMS_NAV_VERSION );
+			if ( $this->should_load_css_styles() ) {
+				wp_enqueue_style(
+					'wpml-cms-nav-css',
+					WPML_CMS_NAV_PLUGIN_URL . '/res/css/navigation.css',
+					array(),
+					WPML_CMS_NAV_VERSION
+				);
+			}
 		}
-		$this->cms_navigation_css();
+	}
 
+	function enqueue_frontend_styles() {
+		if ( $this->should_load_css_styles() ) {
+			wp_enqueue_style(
+				'cms-navigation-style-base',
+				WPML_CMS_NAV_PLUGIN_URL . '/res/css/cms-navigation-base.css',
+				array(),
+				WPML_CMS_NAV_VERSION,
+				'screen'
+			);
+
+			wp_enqueue_style(
+				'cms-navigation-style',
+				WPML_CMS_NAV_PLUGIN_URL . '/res/css/cms-navigation.css',
+				array(),
+				WPML_CMS_NAV_VERSION,
+				'screen'
+			);
+		}
+	}
+
+	/** @return bool */
+	private function should_load_css_styles() {
+		return ! defined( 'ICL_DONT_LOAD_NAVIGATION_CSS' ) || ! ICL_DONT_LOAD_NAVIGATION_CSS;
 	}
 
     function _no_wpml_warning(){
@@ -142,9 +172,13 @@ class WPML_CMS_Navigation{
 		$menu['page_title'] = __( 'Navigation', 'sitepress' );
 		$menu['menu_title'] = __( 'Navigation', 'sitepress' );
 		$menu['capability'] = 'wpml_manage_navigation';
-		$menu['menu_slug']  = basename( WPML_CMS_NAV_PLUGIN_PATH ) . '/menu/navigation.php';
+		$menu['menu_slug']  = self::get_menu_slug();
 
 		do_action( 'wpml_admin_menu_register_item', $menu );
+	}
+
+	private static function get_menu_slug() {
+		return basename( WPML_CMS_NAV_PLUGIN_PATH ) . '/menu/navigation.php';
 	}
     
     function save_form(){
@@ -172,25 +206,23 @@ class WPML_CMS_Navigation{
         $this->settings['breadcrumbs_separator'] = stripslashes($_POST['icl_breadcrumbs_separator']);
         
         $this->save_settings();
-        
-        // clear the cms navigation caches
-		/** @var $offsite_url_cache wpml_cms_nav_cache */
-		$offsite_url_cache = $this->cache[ 'offsite_url_cache' ];
-		$offsite_url_cache->clear();
-        
-        $wpdb->query("TRUNCATE {$wpdb->prefix}icl_cms_nav_cache");
+
+        $this->clear_cache();
 
 		return true;
     }
     
     function clear_cache(){
-        global $wpdb;        
-        // clear the cache.
-		/** @var $offsite_url_cache wpml_cms_nav_cache */
-		$offsite_url_cache = $this->cache[ 'offsite_url_cache' ];
-		$offsite_url_cache->clear();
-        $wpdb->query("TRUNCATE {$wpdb->prefix}icl_cms_nav_cache");
-        
+        global $wpdb;
+
+        if ( $this->should_use_cache() ) {
+	        // clear the cache.
+	        /** @var $offsite_url_cache wpml_cms_nav_cache */
+	        $offsite_url_cache = $this->cache['offsite_url_cache'];
+	        $offsite_url_cache->clear();
+	        $wpdb->query( "TRUNCATE {$wpdb->prefix}icl_cms_nav_cache" );
+        }
+
         return true;
     }
         
@@ -208,7 +240,7 @@ class WPML_CMS_Navigation{
         }
         
         $output = null;
-        $use_cache = isset($this->settings['cache']) && $this->settings['cache'] && !(defined('WPML_CMS_NAV_DISABLE_CACHE') && WPML_CMS_NAV_DISABLE_CACHE);
+        $use_cache = $this->should_use_cache();
 		$cache_key = false;
 
         if ($use_cache) {
@@ -326,27 +358,33 @@ class WPML_CMS_Navigation{
                     echo $this->settings['breadcrumbs_separator'];
                 }
             }
-            
+
             if(is_home() && $page_for_posts && !isset($post_type_name)){                
                 echo get_the_title($page_for_posts);
-            }elseif(($post_type) && get_query_var($post_type)){                
-                the_post();
-                echo get_the_title();
-                rewind_posts();
-            }elseif(is_page() && $page_on_front!=$post->ID){                        
-                the_post();
+            }elseif(
+                    (
+                            is_page() ||
+                            ( isset( $post_types[$post_type]->hierarchical ) && $post_types[$post_type]->hierarchical )
+                    ) && $page_on_front !== $post->ID
+            ){
+	            the_post();
 	            if ( $this->post_has_ancestors( $post ) ) {
-                    $ancestors = array_reverse($post->ancestors);
-                    foreach($ancestors as $anc){
-                        if($page_on_front==$anc) {continue;}
-                        ?>
-                        <a href="<?php echo get_permalink($anc); ?>"><?php echo get_the_title($anc) ?></a><?php 
-                            echo $this->settings['breadcrumbs_separator']; 
-                    }            
-                }    
-                echo get_the_title();
-                rewind_posts();
-            }elseif(is_single()){                
+		            $ancestors = array_reverse($post->ancestors);
+
+		            foreach($ancestors as $anc){
+			            if($page_on_front==$anc) {continue;}
+			            ?>
+                        <a href="<?php echo get_permalink($anc); ?>"><?php echo get_the_title($anc) ?></a><?php
+			            echo $this->settings['breadcrumbs_separator'];
+		            }
+	            }
+	            echo get_the_title();
+	            rewind_posts();
+            }elseif(($post_type) && get_query_var($post_type)) {
+	            the_post();
+	            echo get_the_title();
+	            rewind_posts();
+            }elseif(is_single()){
                 the_post();
                 $cat = get_the_category();
 				if ( isset( $cat ) && is_array( $cat ) && count( $cat ) ) {
@@ -412,6 +450,8 @@ class WPML_CMS_Navigation{
                     );
             }            
         }
+
+
         echo $output;
     }    
     
@@ -832,13 +872,8 @@ class WPML_CMS_Navigation{
 	}
 
 	function cms_navigation_update_post_settings($post_id, $post){
-        global $wpdb;
-                         
-        // clear the caches
-		/** @var $offsite_url_cache wpml_cms_nav_cache */
-		$offsite_url_cache = $this->cache[ 'offsite_url_cache' ];
-		$offsite_url_cache->clear();
-        $wpdb->query("TRUNCATE {$wpdb->prefix}icl_cms_nav_cache");
+
+        $this->clear_cache();
 
 		if ( ( isset( $post->post_status ) && $post->post_status === 'auto-draft' )
 		     || ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
@@ -985,16 +1020,6 @@ class WPML_CMS_Navigation{
         }
         </script>
         <?php
-    }    
-    
-    function cms_navigation_css(){
-        if(defined('ICL_DONT_LOAD_NAVIGATION_CSS') && ICL_DONT_LOAD_NAVIGATION_CSS){
-            return;
-        }
-        wp_enqueue_style('cms-navigation-style-base',
-            WPML_CMS_NAV_PLUGIN_URL . '/res/css/cms-navigation-base.css', array(), WPML_CMS_NAV_VERSION, 'screen');            
-        wp_enqueue_style('cms-navigation-style', 
-            WPML_CMS_NAV_PLUGIN_URL . '/res/css/cms-navigation.css', array(), WPML_CMS_NAV_VERSION, 'screen');            
     }
     
     function sidebar_navigation_widget_init(){
@@ -1093,4 +1118,10 @@ class WPML_CMS_Navigation{
 		return isset( $post->ancestors ) && is_array( $post->ancestors ) && count( $post->ancestors ) > 0;
 	}
 
+	/**
+	 * @return bool
+	 */
+	private function should_use_cache() {
+		return (bool) isset( $this->settings['cache'] ) && $this->settings['cache'] && ! ( defined( 'WPML_CMS_NAV_DISABLE_CACHE' ) && WPML_CMS_NAV_DISABLE_CACHE );
+	}
 }

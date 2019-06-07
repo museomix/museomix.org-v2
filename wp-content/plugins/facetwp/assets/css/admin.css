@@ -28,15 +28,15 @@ a:hover {
 
 .facetwp-logo {
     line-height: 28px;
-    background: url(../images/logo.png) no-repeat;
-    background-size: 38px 28px;
+    background: url('../images/logo.svg') no-repeat;
+    background-size: 36px 28px;
     display: inline-block;
-    width: 38px;
+    width: 36px;
 }
 
 .facetwp-version {
     font-size: 11px;
-    margin-right: 14px;
+    margin: 0 12px 0 6px;
     color: #906DBE;
 }
 
@@ -238,16 +238,11 @@ a:hover {
     padding-bottom: 40px;
 }
 
-.facetwp-grid {
-    display: grid;
-    grid-template-columns: 1fr 30%;
-    grid-gap: 5px;
-}
-
 .facetwp-btn {
     display: inline-block;
     cursor: pointer;
     padding: 3px 6px;
+    margin-left: 6px;
     border: 1px solid #dc3545;
     border-radius: 3px;
     font-size: 12px;
@@ -262,13 +257,23 @@ a:hover {
 }
 
 .facetwp-region h3 {
-    margin-top: 0;
     font-weight: normal;
     font-size: 16px;
     line-height: 26px;
 }
 
-.facetwp-region input[type="text"],
+.facetwp-region > h3 {
+    margin: 0 0 40px 0;
+}
+
+.facetwp-region > h3 a {
+    display: inline-block;
+    border-bottom: 3px solid #50b7ff;
+    color: #50b7ff;
+    cursor: pointer;
+}
+
+.facetwp-region input[type='text'],
 .facetwp-region select {
     width: 200px;
 }
@@ -359,68 +364,65 @@ a:hover {
 
 /* Cards UI */
 
-.facetwp-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 5px;
-}
-
 .facetwp-card {
-    position: relative;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    background-color: #fff;
     cursor: pointer;
 }
 
-.facetwp-card:hover {
-    border-color: #50b7ff;
+.facetwp-card:nth-child(even) {
+    background-color: #f8f8f8;
 }
 
-.content-templates .facetwp-cards {
-    grid-template-columns: 1fr;
+.facetwp-card,
+.facetwp-table-header {
+    display: grid;
+    grid-template-columns: 30px 1fr 30px 1fr 1fr 90px;
+    line-height: 20px;
+    padding: 8px;
 }
 
-.content-templates .facetwp-card {
-    background: #f8f8f8;
+.facetwp-region-templates .facetwp-card,
+.facetwp-region-templates .facetwp-table-header {
+    grid-template-columns: 30px 1fr 30px 1fr 1fr;
 }
 
-.facetwp-cards .card-delete {
-    position: absolute;
+.facetwp-table-header {
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+}
+
+.facetwp-card .card-drag {
+    cursor: move;
+    color: #ddd;
+}
+
+.facetwp-card > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.facetwp-card > div:hover {
+    white-space: normal;
+}
+
+.facetwp-card .card-delete {
     visibility: hidden;
-    width: 20px;
-    height: 20px;
-    line-height: 1;
-    top: 0;
-    right: 0;
-    color: #fff;
-    background-color: #50b7ff;
+    position: relative;
 }
 
-.facetwp-cards .card-delete::after {
+.facetwp-card .card-delete::after {
     content: '\f335';
     font: 400 20px/1 dashicons;
+    height: 20px;
+    color: #dc3545;
 }
 
-.facetwp-cards .card-label,
-.facetwp-cards .card-type {
-    display: inline-block;
-}
-
-.facetwp-cards .card-label {
-    cursor: move;
-}
-
-.facetwp-cards .card-type {
-    color: #999;
-    padding-left: 6px;
-    visibility: hidden;
-}
-
-.facetwp-card:hover .card-type,
 .facetwp-card:hover .card-delete {
     visibility: visible;
+}
+
+.facetwp-card:hover .card-label {
+    color: #209cee;
 }
 
 /* Settings page */
@@ -434,25 +436,6 @@ a:hover {
     font-style: italic;
 }
 
-.facetwp-subnav input.facetwp-search {
-    font-size: 13px;
-    padding: 6px 36px 6px 12px;
-    width: 300px;
-}
-
-.facetwp-subnav .search-wrap {
-    position: relative;
-}
-
-.facetwp-subnav .search-wrap::after {
-    content: '\f179';
-    position: absolute;
-    top: -4px;
-    right: 6px;
-    font: 400 24px/1 dashicons;
-    color: #333;
-}
-
 .facetwp-region .facetwp-subnav a {
     display: inline-block;
     font-size: 16px;
@@ -461,6 +444,11 @@ a:hover {
     border-bottom: 3px solid transparent;
     cursor: pointer;
     color: #333;
+}
+
+.facetwp-region-facets .facetwp-subnav a,
+.facetwp-region-templates .facetwp-subnav a {
+    margin: 0;
 }
 
 .facetwp-subnav a.active {
@@ -508,7 +496,7 @@ a:hover {
 }
 
 #powerTip:before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: -10px;
@@ -581,10 +569,17 @@ a:hover {
 
 .qb-wrap .qb-remove {
     font-size: 20px;
-    margin-left: 5px;
-    vertical-align: top;
+    vertical-align: middle;
     cursor: pointer;
     color: #dc3545;
+}
+
+.qb-wrap .fs-wrap {
+    vertical-align: middle;
+}
+
+.qb-wrap .fs-wrap .fs-label {
+    line-height: 26px;
 }
 
 .qb-wrap .multiselect {
@@ -592,24 +587,6 @@ a:hover {
     vertical-align: middle;
     max-width: 300px;
     width: auto;
-}
-
-/* Responsive */
-
-@media (max-width: 960px) {
-    .content-facets .facetwp-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .facetwp-grid {
-        grid-template-columns: 1fr 40%;
-    }
-}
-
-@media (max-width: 782px) {
-    .facetwp-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Boolean toggle */
@@ -640,7 +617,7 @@ a:hover {
 
 .facetwp-slider:before {
     position: absolute;
-    content: "";
+    content: '';
     height: 16px;
     width: 16px;
     left: 4px;
@@ -885,7 +862,7 @@ a:hover {
     border-bottom: 1px solid #ddd;
 }
 
-.popover-search input[type="text"] {
+.popover-search input[type='text'] {
     width: 200px;
     box-shadow: none;
     outline-style: none;
@@ -917,7 +894,7 @@ a:hover {
     margin-bottom: 10px;
 }
 
-.builder-setting input[type="number"] {
+.builder-setting input[type='number'] {
     width: 60px;
 }
 
@@ -930,8 +907,8 @@ a:hover {
     display: none;
 }
 
-.builder-setting .utrbl input[type="text"],
-.builder-setting .utrbl input[type="number"] {
+.builder-setting .utrbl input[type='text'],
+.builder-setting .utrbl input[type='number'] {
     width: 46px;
     height: auto;
 }
@@ -960,4 +937,28 @@ a:hover {
 .builder-setting .text-style-icons span.active {
     background-color: #333;
     color: #fff;
+}
+
+/* Color picker */
+
+.color-wrap {
+    position: relative;
+}
+
+.color-wrap .color-canvas {
+    display: inline-block;
+}
+
+.color-wrap .color-preview {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 21px;
+    width: 21px;
+    z-index: 1;
+}
+
+.color-wrap input.color-input {
+    width: 120px;
+    padding-left: 30px;
 }

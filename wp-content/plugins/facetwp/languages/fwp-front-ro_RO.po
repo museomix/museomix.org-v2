@@ -1,0 +1,174 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: FacetWP (front)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-30 19:01+0000\n"
+"PO-Revision-Date: 2019-01-30 14:12-0500\n"
+"Last-Translator: Matt Gibbs <hello@facetwp.com>\n"
+"Language-Team: Romanian\n"
+"Language: ro_RO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n==0 || (n!=1 && n%100>=1 && "
+"n%100<=19) ? 1 : 2);\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Loco-Version: 2.2.0; wp-5.0.3\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: includes/class-renderer.php:519 includes/class-renderer.php:636
+msgid "of"
+msgstr "din"
+
+#: includes/class-renderer.php:553
+msgid "Sort by"
+msgstr "Sortare după"
+
+#: includes/class-renderer.php:557
+msgid "Title (A-Z)"
+msgstr "Titlu (A-Z)"
+
+#: includes/class-renderer.php:564
+msgid "Title (Z-A)"
+msgstr "Titlu (Z-A)"
+
+#: includes/class-renderer.php:571
+msgid "Date (Newest)"
+msgstr "Data (cele mai noi)"
+
+#: includes/class-renderer.php:578
+msgid "Date (Oldest)"
+msgstr "Data (cea mai veche)"
+
+#: includes/class-renderer.php:635
+msgid "Page"
+msgstr "Pagină"
+
+#: includes/class-renderer.php:686
+msgid "Per page"
+msgstr "Per pagină"
+
+#: includes/facets/slider.php:20
+msgid "Reset"
+msgstr "Reset"
+
+#: includes/facets/checkboxes.php:131
+msgid "See {num} more"
+msgstr "Vezi {num} mai multe"
+
+#: includes/facets/checkboxes.php:132 includes/facets/hierarchy.php:152
+msgid "See less"
+msgstr "Vedea mai puțin"
+
+#: includes/facets/fselect.php:119 includes/facets/fselect.php:188
+#: includes/facets/dropdown.php:59 includes/facets/hierarchy.php:67
+msgid "Any"
+msgstr "Orice"
+
+#: includes/facets/fselect.php:193
+msgid "{n} selected"
+msgstr "{n} selectat"
+
+#: includes/facets/fselect.php:194
+msgid "Search"
+msgstr "Caută"
+
+#: includes/facets/fselect.php:195
+msgid "No results found"
+msgstr "Niciun rezultat găsit"
+
+#: includes/facets/number_range.php:22
+msgid "Number"
+msgstr "Număr"
+
+#: includes/facets/number_range.php:25
+msgid "Min"
+msgstr "Min"
+
+#: includes/facets/number_range.php:28
+msgid "Max"
+msgstr "Max"
+
+#: includes/facets/number_range.php:31 includes/facets/autocomplete.php:64
+msgid "Go"
+msgstr "Mergi"
+
+#: includes/facets/search.php:19
+msgid "Enter keywords"
+msgstr "Introdu cuvinte cheie"
+
+#: includes/facets/date_range.php:22
+msgid "Date"
+msgstr "Data"
+
+#: includes/facets/date_range.php:25
+msgid "Start Date"
+msgstr "Data de început"
+
+#: includes/facets/date_range.php:28
+msgid "End Date"
+msgstr "Data de sfârșit"
+
+#: includes/facets/date_range.php:112
+msgid "Clear"
+msgstr "Sterge"
+
+#: includes/facets/date_range.php:113
+msgid "from"
+msgstr "de la"
+
+#: includes/facets/date_range.php:114
+msgid "to"
+msgstr "catre"
+
+#: includes/facets/proximity.php:63
+msgid "Enter location"
+msgstr "Vă rugăm să introduceți ID-ul Locatiei"
+
+#: includes/facets/proximity.php:177
+msgid "Clear location"
+msgstr "Ștergeți locația"
+
+#: includes/facets/proximity.php:315
+msgid "Distance"
+msgstr "Distanță"
+
+#: includes/facets/hierarchy.php:151
+msgid "See more"
+msgstr "Vezi mai mult"
+
+#: includes/facets/autocomplete.php:61
+msgid "Start typing"
+msgstr "Începeți să tastați"
+
+#: includes/facets/autocomplete.php:97
+msgid "No results"
+msgstr "Nici un rezultat"
+
+#: includes/facets/rating.php:110
+msgid "& up"
+msgstr "& up"
+
+#: includes/facets/rating.php:111
+msgid "Undo"
+msgstr "Anulare"
+
+#: includes/integrations/woocommerce/woocommerce.php:407
+msgid "In Stock"
+msgstr "În stoc"
+
+#: includes/integrations/woocommerce/woocommerce.php:407
+msgid "Out of Stock"
+msgstr "Stoc epuizat"
+
+#: includes/integrations/woocommerce/woocommerce.php:415
+msgid "On Sale"
+msgstr "La reducere"
+
+#: includes/integrations/acf/acf.php:262
+msgid "Yes"
+msgstr "Da"
+
+#: includes/integrations/acf/acf.php:262
+msgid "No"
+msgstr "Nu"

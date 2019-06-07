@@ -69,11 +69,14 @@ class FacetWP_Ajax
                 if ( 0 === strpos( $key, $prefix ) ) {
                     $new_key = substr( $key, strlen( $prefix ) );
                     $new_val = stripslashes( $val );
-                    if ( ! in_array( $new_key, [ 'paged', 'per_page', 'sort' ] ) ) {
-                        $new_val = explode( ',', $new_val );
-                    }
 
-                    $this->url_vars[ $new_key ] = $new_val;
+                    if ( '' !== $new_val ) {
+                        if ( ! in_array( $new_key, [ 'paged', 'per_page', 'sort' ] ) ) {
+                            $new_val = explode( ',', $new_val );
+                        }
+
+                        $this->url_vars[ $new_key ] = $new_val;
+                    }
                 }
             }
 
@@ -407,8 +410,15 @@ class FacetWP_Ajax
      * Keep track of indexing progress
      */
     function heartbeat() {
-        echo FWP()->indexer->get_progress();
-        exit;
+        $output = [
+            'pct' => FWP()->indexer->get_progress()
+        ];
+
+        if ( -1 == $output['pct'] ) {
+            $output['rows'] = FWP()->helper->get_row_counts();
+        }
+
+        wp_send_json( $output );
     }
 
 

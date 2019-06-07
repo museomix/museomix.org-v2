@@ -68,6 +68,17 @@ class IWP_MMB_PURGE_CACHE extends IWP_MMB_Core
 			}
 		}
 
+		if (empty($params) || isset($params['auto_optimize'])) {
+			$response = $this->deleteAllautoptimizeCache();
+			if (!empty($response['success'])) {
+				$text .= "<span class='wpm_results_db'> Autoptimize"." : " . $response['success'] . "</span><br>";
+				$cleanup_values['value_array']['auto_optimize'] = $values['value'];
+			}elseif(!empty($response['error'])){
+				$text .= "<span class='wpm_results_db'> Autoptimize"." : " . $response['error'] . "</span><br>";
+				$cleanup_values['value_array']['auto_optimize'] = 'Autoptimize';
+			}
+		}
+
 		if ($text !==''){
 			$cleanup_values['message'] = $text;
 			return $cleanup_values;
@@ -142,6 +153,21 @@ class IWP_MMB_PURGE_CACHE extends IWP_MMB_Core
 		if ( is_plugin_active( 'wp-rocket/wp-rocket.php' ) ) {
 			@include_once(WP_PLUGIN_DIR . '/wp-rocket/wp-rocket.php');
 			if (function_exists('rocket_clean_domain') && function_exists('rocket_clean_minify') && function_exists('rocket_clean_cache_busting') && function_exists('create_rocket_uniqid')) {
+	    		return true;
+	    	}
+	    }
+		return false;
+	}
+
+	/*
+	  * Public function, Will return the Comet cache plugin is loaded or not
+	  */
+
+	public function checkAutoptimizePlugin() {
+		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		if ( is_plugin_active( 'autoptimize/autoptimize.php' ) ) {
+			@include_once(WP_PLUGIN_DIR . 'autoptimize/autoptimize.php');
+			if (class_exists('autoptimizeCache')) {
 	    		return true;
 	    	}
 	    }
@@ -238,6 +264,18 @@ class IWP_MMB_PURGE_CACHE extends IWP_MMB_Core
 			return array('success' => 'All cache files have been deleted');
 		} else {
 			return array('error'=>"WP Rocket not activated", 'error_code' => 'comet_cache_plugin_is_not_activated');
+		}
+	}
+
+	public function deleteAllautoptimizeCache(){
+		if ($this->checkAutoptimizePlugin()) {
+			$wp_auto_optimize = autoptimizeCache::clearall();
+			if ($wp_auto_optimize == false) {
+				return array('error' => 'Unable to perform Autoptimize cache', 'error_code' => 'auto_optimize_cache_plugin_delete_cache');
+			}
+			return array('success' => 'All cache files have been deleted');
+		}else {
+			return array('error'=>"Autoptimize not activated", 'error_code' => 'auto_optimize_plugin_is_not_activated');
 		}
 	}
 

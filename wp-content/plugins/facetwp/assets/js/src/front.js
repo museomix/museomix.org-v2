@@ -105,7 +105,7 @@ window.FWP = window.FWP || {};
 
     FWP.helper.detect_loop = function(node) {
         var curNode = null;
-        var iterator = document.createNodeIterator(node, NodeFilter.SHOW_COMMENT, FWP.helper.node_filter, false);
+        var iterator = document.createNodeIterator(node, NodeFilter.SHOW_COMMENT);
         while (curNode = iterator.nextNode()) {
             if (8 === curNode.nodeType && 'fwp-loop' === curNode.nodeValue) {
                 return curNode.parentNode;
@@ -113,11 +113,6 @@ window.FWP = window.FWP || {};
         }
 
         return false;
-    }
-
-
-    FWP.helper.node_filter = function() {
-        return NodeFilter.FILTER_ACCEPT;
     }
 
 
@@ -185,7 +180,7 @@ window.FWP = window.FWP || {};
             FWP.facet_type[facet_name] = facet_type;
 
             // Plugin hook
-            wp.hooks.doAction('facetwp/refresh/' + facet_type, $this, facet_name);
+            FWP.hooks.doAction('facetwp/refresh/' + facet_type, $this, facet_name);
 
             // Support custom loader
             var do_loader = true;
@@ -392,7 +387,7 @@ window.FWP = window.FWP || {};
             }
         };
 
-        settings = wp.hooks.applyFilters('facetwp/ajax_settings', settings );
+        settings = FWP.hooks.applyFilters('facetwp/ajax_settings', settings );
         FWP.jqXHR = $.ajax(endpoint, settings);
     }
 
@@ -431,7 +426,7 @@ window.FWP = window.FWP || {};
         }
 
         if (false !== inject) {
-            if (! wp.hooks.applyFilters('facetwp/template_html', false, { 'response': response, 'html': inject })) {
+            if (! FWP.hooks.applyFilters('facetwp/template_html', false, { 'response': response, 'html': inject })) {
                 $('.facetwp-template').html(inject);
             }
         }
@@ -481,7 +476,7 @@ window.FWP = window.FWP || {};
         $(document).trigger('facetwp-loaded');
 
         // Allow final actions
-        wp.hooks.doAction('facetwp/loaded');
+        FWP.hooks.doAction('facetwp/loaded');
 
         // Detect "back-forward" cache
         FWP.is_bfcache = true;
@@ -517,7 +512,7 @@ window.FWP = window.FWP || {};
             FWP.frozen_facets = {};
         }
 
-        wp.hooks.doAction('facetwp/reset');
+        FWP.hooks.doAction('facetwp/reset');
 
         FWP.is_reset = true;
         FWP.refresh();
@@ -567,11 +562,11 @@ window.FWP = window.FWP || {};
             console.error('Facets should not be inside the "facetwp-template" container');
         }
 
-        wp.hooks.doAction('facetwp/ready');
+        FWP.hooks.doAction('facetwp/ready');
 
         // Generate the user selections
         if (FWP.extras.selections) {
-            wp.hooks.addAction('facetwp/loaded', function() {
+            FWP.hooks.addAction('facetwp/loaded', function() {
                 var selections = '';
                 $.each(FWP.facets, function(key, val) {
                     if (val.length < 1 || ! isset(FWP.settings.labels[key])) {
@@ -580,7 +575,7 @@ window.FWP = window.FWP || {};
 
                     var choices = val;
                     var facet_type = $('.facetwp-facet-' + key).attr('data-type');
-                    choices = wp.hooks.applyFilters('facetwp/selections/' + facet_type, choices, {
+                    choices = FWP.hooks.applyFilters('facetwp/selections/' + facet_type, choices, {
                         'el': $('.facetwp-facet-' + key),
                         'selected_values': choices
                     });

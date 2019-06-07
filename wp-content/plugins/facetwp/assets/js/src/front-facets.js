@@ -13,7 +13,7 @@
 
     var ac_selected = false;
 
-    wp.hooks.addAction('facetwp/refresh/autocomplete', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/autocomplete', function($this, facet_name) {
         var val = $this.find('.facetwp-autocomplete').val() || '';
         FWP.facets[facet_name] = val;
     });
@@ -23,7 +23,15 @@
             var $this = $(this);
             var $parent = $this.closest('.facetwp-facet');
             var facet_name = $parent.attr('data-name');
-            var opts = wp.hooks.applyFilters('facetwp/set_options/autocomplete', {
+
+            // ignore the current facet's selections
+            var post_data = FWP.build_post_data();
+            var facet_values = JSON.parse(JSON.stringify(FWP.facets)); // clone
+            facet_values[facet_name] = ''; // clear value
+            post_data.facets = JSON.stringify(facet_values);
+
+            // initialize
+            var opts = FWP.hooks.applyFilters('facetwp/set_options/autocomplete', {
                 serviceUrl: ('wp' === FWP.template) ? document.URL : FWP_JSON.ajaxurl,
                 type: 'POST',
                 minChars: 3,
@@ -38,7 +46,7 @@
                 params: {
                     action: 'facetwp_autocomplete_load',
                     facet_name: facet_name,
-                    data: FWP.build_post_data()
+                    data: post_data
                 }
             }, { 'facet_name': facet_name });
             $this.autocomplete(opts);
@@ -61,7 +69,7 @@
 
     /* ======== Checkboxes ======== */
 
-    wp.hooks.addAction('facetwp/refresh/checkboxes', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/checkboxes', function($this, facet_name) {
         var selected_values = [];
         $this.find('.facetwp-checkbox.checked').each(function() {
             selected_values.push($(this).attr('data-value'));
@@ -69,7 +77,7 @@
         FWP.facets[facet_name] = selected_values;
     });
 
-    wp.hooks.addFilter('facetwp/selections/checkboxes', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/checkboxes', function(output, params) {
         var choices = [];
         $.each(params.selected_values, function(idx, val) {
             var choice = params.el.find('.facetwp-checkbox[data-value="' + val + '"]').clone();
@@ -146,7 +154,7 @@
 
     /* ======== Radio ======== */
 
-    wp.hooks.addAction('facetwp/refresh/radio', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/radio', function($this, facet_name) {
         var selected_values = [];
         $this.find('.facetwp-radio.checked').each(function() {
             selected_values.push($(this).attr('data-value'));
@@ -154,7 +162,7 @@
         FWP.facets[facet_name] = selected_values;
     });
 
-    wp.hooks.addFilter('facetwp/selections/radio', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/radio', function(output, params) {
         var choices = [];
         $.each(params.selected_values, function(idx, val) {
             var choice = params.el.find('.facetwp-radio[data-value="' + val + '"]').clone();
@@ -178,13 +186,13 @@
 
     /* ======== Date Range ======== */
 
-    wp.hooks.addAction('facetwp/refresh/date_range', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/date_range', function($this, facet_name) {
         var min = $this.find('.facetwp-date-min').pVal() || '';
         var max = $this.find('.facetwp-date-max').pVal() || '';
         FWP.facets[facet_name] = ('' !== min || '' !== max) ? [min, max] : [];
     });
 
-    wp.hooks.addFilter('facetwp/selections/date_range', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/date_range', function(output, params) {
         var vals = params.selected_values;
         var $el = params.el;
         var out = '';
@@ -229,7 +237,7 @@
             var facet_name = $this.closest('.facetwp-facet').attr('data-name');
             flatpickr_opts.altFormat = FWP.settings[facet_name].format;
 
-            var opts = wp.hooks.applyFilters('facetwp/set_options/date_range', flatpickr_opts, {
+            var opts = FWP.hooks.applyFilters('facetwp/set_options/date_range', flatpickr_opts, {
                 'facet_name': facet_name,
                 'element': $this
             });
@@ -240,12 +248,12 @@
 
     /* ======== Dropdown ======== */
 
-    wp.hooks.addAction('facetwp/refresh/dropdown', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/dropdown', function($this, facet_name) {
         var val = $this.find('.facetwp-dropdown').val();
         FWP.facets[facet_name] = val ? [val] : [];
     });
 
-    wp.hooks.addFilter('facetwp/selections/dropdown', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/dropdown', function(output, params) {
         return params.el.find('.facetwp-dropdown option:selected').text();
     });
 
@@ -261,7 +269,7 @@
 
     /* ======== fSelect ======== */
 
-    wp.hooks.addAction('facetwp/refresh/fselect', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/fselect', function($this, facet_name) {
         var val = $this.find('select').val();
         if (null === val || '' === val) {
             val = [];
@@ -272,7 +280,7 @@
         FWP.facets[facet_name] = val;
     });
 
-    wp.hooks.addFilter('facetwp/selections/fselect', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/fselect', function(output, params) {
         var choices = [];
         $.each(params.selected_values, function(idx, val) {
             var choice = params.el.find('.facetwp-dropdown option[value="' + val + '"]').text();
@@ -295,7 +303,7 @@
                 return row;
             };
 
-            var opts = wp.hooks.applyFilters('facetwp/set_options/fselect', settings, {
+            var opts = FWP.hooks.applyFilters('facetwp/set_options/fselect', settings, {
                 'facet_name': facet_name
             });
 
@@ -336,7 +344,7 @@
 
     /* ======== Hierarchy ======== */
 
-    wp.hooks.addAction('facetwp/refresh/hierarchy', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/hierarchy', function($this, facet_name) {
         var selected_values = [];
         $this.find('.facetwp-link.checked').each(function() {
             selected_values.push($(this).attr('data-value'));
@@ -344,7 +352,7 @@
         FWP.facets[facet_name] = selected_values;
     });
 
-    wp.hooks.addFilter('facetwp/selections/hierarchy', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/hierarchy', function(output, params) {
         return params.el.find('.facetwp-link.checked').text();
     });
 
@@ -364,13 +372,13 @@
 
     /* ======== Number Range ======== */
 
-    wp.hooks.addAction('facetwp/refresh/number_range', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/number_range', function($this, facet_name) {
         var min = $this.find('.facetwp-number-min').val() || '';
         var max = $this.find('.facetwp-number-max').val() || '';
         FWP.facets[facet_name] = ('' !== min || '' !== max) ? [min, max] : [];
     });
 
-    wp.hooks.addFilter('facetwp/selections/number_range', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/number_range', function(output, params) {
         return params.selected_values[0] + ' - ' + params.selected_values[1];
     });
 
@@ -568,7 +576,7 @@
         $facet.find('.facetwp-radius-dist').text(e.target.value);
     });
 
-    wp.hooks.addAction('facetwp/refresh/proximity', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/proximity', function($this, facet_name) {
         var lat = $this.find('.facetwp-lat').val();
         var lng = $this.find('.facetwp-lng').val();
         var radius = $this.find('.facetwp-radius').val();
@@ -578,7 +586,7 @@
             [lat, lng, radius, location] : [];
     });
 
-    wp.hooks.addFilter('facetwp/selections/proximity', function(label, params) {
+    FWP.hooks.addFilter('facetwp/selections/proximity', function(label, params) {
         return FWP_JSON['proximity']['clearText'];
     });
 
@@ -591,7 +599,7 @@
         }, 250)
     };
 
-    wp.hooks.addAction('facetwp/refresh/search', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/search', function($this, facet_name) {
         var val = $this.find('.facetwp-search').val() || '';
         FWP.facets[facet_name] = val;
     });
@@ -616,7 +624,7 @@
 
     /* ======== Slider ======== */
 
-    wp.hooks.addAction('facetwp/refresh/slider', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/slider', function($this, facet_name) {
         FWP.facets[facet_name] = [];
 
         // settings have already been loaded
@@ -627,7 +635,7 @@
         }
     });
 
-    wp.hooks.addAction('facetwp/set_label/slider', function($this) {
+    FWP.hooks.addAction('facetwp/set_label/slider', function($this) {
         var facet_name = $this.attr('data-name');
         var min = FWP.settings[facet_name]['lower'];
         var max = FWP.settings[facet_name]['upper'];
@@ -654,7 +662,7 @@
         $this.find('.facetwp-slider-label').html(label);
     });
 
-    wp.hooks.addFilter('facetwp/selections/slider', function(output, params) {
+    FWP.hooks.addFilter('facetwp/selections/slider', function(output, params) {
         return params.el.find('.facetwp-slider-label').text();
     });
 
@@ -683,12 +691,12 @@
             if (parseFloat(opts.range.min) >= parseFloat(opts.range.max)) {
                 FWP.settings[facet_name]['lower'] = opts.range.min;
                 FWP.settings[facet_name]['upper'] = opts.range.max;
-                wp.hooks.doAction('facetwp/set_label/slider', $parent);
+                FWP.hooks.doAction('facetwp/set_label/slider', $parent);
                 return;
             }
 
             // custom slider options
-            var slider_opts = wp.hooks.applyFilters('facetwp/set_options/slider', {
+            var slider_opts = FWP.hooks.applyFilters('facetwp/set_options/slider', {
                 range: opts.range,
                 start: opts.start,
                 step: parseFloat(opts.step),
@@ -701,7 +709,7 @@
             slider.noUiSlider.on('update', function(values, handle) {
                 FWP.settings[facet_name]['lower'] = values[0];
                 FWP.settings[facet_name]['upper'] = values[1];
-                wp.hooks.doAction('facetwp/set_label/slider', $parent);
+                FWP.hooks.doAction('facetwp/set_label/slider', $parent);
             });
             slider.noUiSlider.on('set', function() {
                 FWP.frozen_facets[facet_name] = 'hard';
@@ -726,7 +734,7 @@
 
     /* ======== Rating ======== */
 
-    wp.hooks.addAction('facetwp/refresh/rating', function($this, facet_name) {
+    FWP.hooks.addAction('facetwp/refresh/rating', function($this, facet_name) {
         var selected_values = [];
         $this.find('.facetwp-star.selected').each(function() {
             var val = $(this).attr('data-value');

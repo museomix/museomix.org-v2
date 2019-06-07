@@ -22,7 +22,7 @@
 .facetwp-loading {
     width: 20px;
     height: 20px;
-    background: url(../images/loading.png) no-repeat;
+    background: url('../images/loading.png') no-repeat;
     background-size: 20px 20px;
     animation: spin 700ms infinite linear;
 }
@@ -44,7 +44,7 @@
 }
 
 .facetwp-checkbox {
-    background: url(../images/checkbox.png) 0 50% no-repeat;
+    background: url('../images/checkbox.png') 0 50% no-repeat;
     background-size: 14px 14px;
     margin-bottom: 4px;
     padding-left: 20px;
@@ -52,7 +52,7 @@
 }
 
 .facetwp-checkbox.checked {
-    background-image: url(../images/checkbox-on.png);
+    background-image: url('../images/checkbox-on.png');
 }
 
 .facetwp-checkbox.disabled,
@@ -68,7 +68,7 @@
 /* Radio */
 
 .facetwp-radio {
-    background: url(../images/radio.png) 0 50% no-repeat;
+    background: url('../images/radio.png') 0 50% no-repeat;
     background-size: 14px 14px;
     margin-bottom: 4px;
     padding-left: 20px;
@@ -76,7 +76,7 @@
 }
 
 .facetwp-radio.checked {
-    background-image: url(../images/radio-on.png);
+    background-image: url('../images/radio-on.png');
 }
 
 /* Date range */
@@ -97,6 +97,22 @@
 .facetwp-type-fselect .fs-wrap.fs-disabled .fs-option {
     opacity: 0.4;
     cursor: default;
+}
+
+.facetwp-type-fselect .fs-option .fs-option-label {
+    white-space: nowrap;
+}
+
+.facetwp-type-fselect .fs-option.d1 .fs-option-label {
+    padding-left: 20px;
+}
+
+.facetwp-type-fselect .fs-option.d2 .fs-option-label {
+    padding-left: 40px;
+}
+
+.facetwp-type-fselect .fs-option.d3 .fs-option-label {
+    padding-left: 60px;
 }
 
 /* Hierarchy */
@@ -138,10 +154,6 @@
     cursor: pointer;
 }
 
-.noUi-target {
-    padding: 0 15px;
-}
-
 /* Search */
 
 .facetwp-search-wrap {
@@ -166,7 +178,7 @@
     content: '';
     width: 20px;
     height: 20px;
-    background: url(../images/icon-search.png) no-repeat;
+    background: url('../images/icon-search.png') no-repeat;
     background-size: 20px 20px;
 }
 
@@ -230,18 +242,18 @@ input.facetwp-location {
     content: '';
     width: 20px;
     height: 20px;
-    background: url(../images/icon-locate.png) no-repeat;
+    background: url('../images/icon-locate.png') no-repeat;
     background-size: 20px 20px;
 }
 
 .locate-me.f-loading:before {
-    background: url(../images/loading.png) no-repeat;
+    background: url('../images/loading.png') no-repeat;
     background-size: 20px 20px;
     animation: spin 700ms infinite linear;
 }
 
 .locate-me.f-reset:before {
-    background: url(../images/icon-close.png) no-repeat;
+    background: url('../images/icon-close.png') no-repeat;
     background-size: 20px 20px;
 }
 
@@ -297,7 +309,7 @@ input.facetwp-location {
     cursor: pointer;
 
     padding-right: 16px;
-    background-image: url(../images/icon-close.png);
+    background-image: url('../images/icon-close.png');
     background-size: 12px 12px;
     background-repeat: no-repeat;
     background-position: right center;

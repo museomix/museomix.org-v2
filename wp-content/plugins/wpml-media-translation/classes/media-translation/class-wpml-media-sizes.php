@@ -55,11 +55,11 @@ class WPML_Media_Sizes {
 	}
 
 	/**
-	 * @param $img
+	 * @param array $img
 	 *
 	 * @return null|string
 	 */
-	public function get_attachment_size( $img ) {
+	public function get_attachment_size( array $img ) {
 		$size = null;
 		if ( array_key_exists( 'size', $img ) ) {
 			$size = $img['size'];
@@ -69,6 +69,9 @@ class WPML_Media_Sizes {
 		}
 		if ( ! $size ) {
 			$size = $this->get_size_from_attributes( $img );
+		}
+		if ( ! $size ) {
+			$size = $this->get_size_from_url( $img );
 		}
 
 		return $size;
@@ -96,5 +99,41 @@ class WPML_Media_Sizes {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param array $img
+	 *
+	 * @return null|string
+	 */
+	private function get_size_from_url( array $img ) {
+		$size = null;
+
+		if ( isset( $img['attributes']['src'], $img['attachment_id'] ) ) {
+			$size = $this->get_image_size_from_url( $img['attributes']['src'], $img['attachment_id'] );
+		}
+
+		return $size;
+	}
+
+	/**
+	 * @param $url
+	 * @param $attachment_id
+	 *
+	 * @return null|string
+	 */
+	public function get_image_size_from_url( $url, $attachment_id ) {
+		$size = null;
+
+		$thumb_file_name      = basename( $url );
+		$attachment_meta_data = wp_get_attachment_metadata( $attachment_id );
+		foreach ( $attachment_meta_data['sizes'] as $key => $size_array ) {
+			if ( $thumb_file_name === $size_array['file'] ) {
+				$size = $key;
+				break;
+			}
+		}
+
+		return $size;
 	}
 }

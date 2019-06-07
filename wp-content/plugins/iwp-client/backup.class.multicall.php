@@ -137,6 +137,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 	
 	function trigger_check($datas)
 	{
+		global $iwp_multicall_hisID;
 		if(!empty($datas))
 		{
 			$this->set_resource_limit();
@@ -167,6 +168,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			$is_s3 = false;
 			$is_s3 = $this->check_if_s3_backup($action, $datas['backupParentHID']);
 			
+			$iwp_multicall_hisID = $datas['backupParentHID'];
 			if(method_exists('IWP_MMB_Backup_Multicall', $action) || !empty($is_s3)){
 				manual_debug('', 'triggerStart');
 				if(empty($is_s3)){
@@ -204,7 +206,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 	
 	function set_backup_task($params)
 	{
-		global $iwp_mmb_activities_log;
+		global $iwp_mmb_activities_log, $iwp_multicall_hisID;
 		
 		if(!empty($params))
 		{
@@ -212,7 +214,6 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			// if ($disk_space != false) {
 			// 	iwp_mmb_response(array('error' =>  'Your disk space is very low available space: '.$disk_space.'MB'), false);
 			// }
-			initialize_manual_debug();
 			$this->cleanup();
 			$initialize_result = refresh_iwp_files_db();
 			if(is_array($initialize_result) && isset($initialize_result['error'])){
@@ -264,7 +265,9 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			$historyID = $params['args']['parentHID'];
 			
 			$this->hisID = $historyID;
+			$iwp_multicall_hisID = $historyID;
 					
+			initialize_manual_debug();
 			
 			$setMemory = $this->set_resource_limit();
 
@@ -320,7 +323,13 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 					return $this->statusLog($historyID, array('stage' => 'verification', 'status' => 'error', 'statusMsg' => IWP_PCLZIP_TEMPORARY_DIR.' directory is not writable. Please set 755 or 777 file permission and try again.', 'statusCode' => 'pclzip_dir_not_writable'));
 				}
 			}
-			
+			if ((!defined('DISABLE_IWP_CLOUD_VERIFICATION')) && (empty($params['args']['disable_iwp_cloud_verification']))) {
+				$backup_repo_test_obj = new IWP_BACKUP_REPO_TEST();
+				$backup_repo_test_result = $backup_repo_test_obj->repositoryTestConnection($params['account_info']);
+				if (!empty($backup_repo_test_result['error']) && $backup_repo_test_result['status'] != 'success') {
+					return $this->statusLog($historyID, array('stage' => 'backup_repo_test', 'status' => 'error', 'statusMsg' => $backup_repo_test_result['error'], 'statusCode' => $backup_repo_test_result['error_code']));
+				}
+			}
 			//if verification is ok then store the settings in the options table
 			$backup_settings_values = array();
 			$backup_settings_values['file_block_size'] = $params['args']['file_block_size'];
@@ -390,6 +399,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
     {	
     	$requestParams = $this->getRequiredData($historyID, "requestParams");
 		$db_loop_break_time = $requestParams['args']['db_loop_break_time'];
+		$exclude_tables =$requestParams['args']['exclude_tables'];
     	$responseParams = $this -> getRequiredData($historyID,"responseParams");
 		$file = $responseParams['file_name'];
 		
@@ -415,11 +425,41 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
         $brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
 		//$command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables "' . DB_NAME . '" > ' . $brace . $file . $brace;
         $command0 = $wpdb->get_col('SHOW TABLES LIKE "'.$wpdb->base_prefix.'%"');
-        $wp_tables = join("\" \"",$command0);
-        $command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables --extended-insert=FALSE "' . DB_NAME . '" "'.$wp_tables.'" > ' . $brace . $file . $brace;
+        $full_table = array();
+        $structure_only_table = array();
+		if (!empty($exclude_tables)) {
+			foreach ($command0 as $tk => $table) {
+				foreach ($exclude_tables as $ke => $exclude_table) {
+					$structure = false;
+					if (strpos($table, $exclude_table)) {
+						$structure = true;
+						break;
+					}
+				}
+				if ($structure) {
+					$structure_only_table [] = $table;
+				}else{
+					$full_table [] = $table;
+ 				}
+			}
+		}else{
+			$full_table = $command0;
+		}
+        $wp_tables = join("\" \"",$full_table);
+        $skipThisTable = false;
+        $command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --max_allowed_packet=1M --skip-comments --skip-set-charset --allow-keywords --dump-date --add-drop-table --skip-lock-tables --extended-insert "' . DB_NAME . '" "'.$wp_tables.'" > ' . $brace . $file . $brace;
+        
+
 		iwp_mmb_print_flush('DB DUMP CMD: Start');
         ob_start();
         update_option('iwp_multical_db_dump_flag', 1);
+        if (!empty($structure_only_table)) {
+        	$wp_tables = join("\" \"",$structure_only_table);
+        	$structure_command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables --no-data "' . DB_NAME . '" "'.$wp_tables.'" >> ' . $brace . $file . $brace;
+        	// $result = $this->iwp_mmb_exec($structure_command);
+        	$command.=' && '.$structure_command;
+
+        }
         $result = $this->iwp_mmb_exec($command);
         ob_get_clean();
 		iwp_mmb_print_flush('DB DUMP CMD: End');
@@ -799,6 +839,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 		$file_loop_break_time = $requestParams['args']['file_loop_break_time'];
 		$db_loop_break_time = $requestParams['args']['db_loop_break_time'];
 		$zip_split_size = $requestParams['args']['zip_split_size'];
+		$exclude_tables =$requestParams['args']['exclude_tables'];
 		$responseParams = $this -> getRequiredData($historyID,"responseParams");
 		$file = $responseParams['file_name'];
 		$total_time_part = 0;
@@ -916,8 +957,17 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 				//$left_out_count = '';
 			}
 			//Skip log tables 
-			if (strpos($table[0], 'wsal_metadata')) {
-					continue;
+			$skipThisTable = false;
+			if (!empty($exclude_tables)) {
+				foreach ($exclude_tables as $ke => $exclude_table) {
+					if (strpos($table[0], $exclude_table)) {
+							$skipThisTable = true;
+							break;
+					}
+				}
+			}
+			if ($skipThisTable) {
+				continue;
 			}
 			$count = $wpdb->get_var("SELECT count(*) FROM $table[0]");
 			$count_field = 1;
@@ -951,8 +1001,18 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 			{            
 				$count = 1;                
 			}
-			$table_description = $wpdb->get_results("DESCRIBE $table[0]", ARRAY_A);
-			$table_description = iwp_modify_table_description($table_description);
+			$table_structure = $wpdb->get_results("DESCRIBE $table[0]");
+			$search = array("\x00", "\x0a", "\x0d", "\x1a");
+			$replace = array('\0', '\n', '\r', '\Z');
+			$defs = array();
+			$integer_fields = array();
+			foreach ($table_structure as $struct) {
+				if ( (0 === strpos($struct->Type, 'tinyint')) || (0 === strpos(strtolower($struct->Type), 'smallint')) ||
+					(0 === strpos(strtolower($struct->Type), 'mediumint')) || (0 === strpos(strtolower($struct->Type), 'int')) || (0 === strpos(strtolower($struct->Type), 'bigint')) ) {
+						$defs[strtolower($struct->Field)] = ( null === $struct->Default ) ? 'NULL' : $struct->Default;
+						$integer_fields[strtolower($struct->Field)] = "1";
+				}
+			}
 			for($i = 0; $i < $count; $i++){
 				if($done_count > 0)
 				{
@@ -1018,13 +1078,29 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 							/*********New Method ends Here******************/	
 
 							/**********Old Method start here ************/
-							$value = addslashes($value);
-							$value = preg_replace("/\n/Ui", "\\n", $value);
-							$value = str_replace("\n", "\\n", $value);
-							$value = str_replace("\r", "\\r", $value);
-							$num_values == $j ? $dump_data .= "'" . $value . "'" : $dump_data .= "'" . $value . "', ";
+							// $value2 = $value;
+							// $value = addslashes($value);
+							// $value = preg_replace("/\n/Ui", "\\n", $value);
+							// $value = str_replace("\n", "\\n", $value);
+							// $value = str_replace("\r", "\\r", $value);
+							// $num_values == $j ? $dump_data .= "'" . $value . "'" : $dump_data .= "'" . $value . "', ";
 							/*************** Old Method ends here ********/
 							
+							/**********Phoenix Method start here ************/
+							if (isset($integer_fields[strtolower($key)])) {
+								// make sure there are no blank spots in the insert syntax,
+								// yet try to avoid quotation marks around integers
+								$value = ( null === $value || '' === $value) ? $defs[strtolower($key)] : $value;
+								$value = ( '' === $value ) ? "''" : $value;
+							} else {
+								$value = (null === $value) ? 'NULL' : "'" . str_replace($search, $replace, str_replace('\'', '\\\'', str_replace('\\', '\\\\', $value))) . "'";
+							}
+
+							/**********Phoenix Method end here ************/
+
+							$num_values == $j ? $dump_data .= $value: $dump_data .= $value . ", ";
+
+
 							$j++;
 							unset($value);
 							if($total_time_part > $db_loop_break_time)
@@ -1268,6 +1344,8 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
             "pgcache",
             "objectcache",
             "wp-snapshots",
+            "site_map.xml",
+            "iwp-clone-log.txt",
         );
 		manual_debug('', 'beforeExclude', 0);
 		if((!empty($exclude_file_size))||(!empty($exclude_extensions)))
@@ -1491,6 +1569,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 		$time = microtime(true);
 		$start = $time;
 		//$archive = new IWPPclZip('../archive.zip');
+		global $archive;
 		$archive = new IWPPclZip($backup_file);
 		if($category == 'dbZip')
 		{
@@ -1937,6 +2016,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 		$start = $time;
 		//include_once 'pclzip.class.php';
 		//include_once 'pclzip.class.split.php';
+		global $archive;
 		$archive = new IWPPclZip($backup_file);
 		if($category == 'dbZip')
 		{
@@ -2711,6 +2791,7 @@ class IWP_MMB_Backup_Multicall extends IWP_MMB_Core
 	{
   		global $wpdb,$insertID;
 		$this->wpdb_reconnect();
+		iwp_mmb_create_backup_status_table();
   		if(empty($historyID))
 		{
   			$insert  = $wpdb->insert($wpdb->base_prefix.'iwp_backup_status',array( 'stage' => $statusArray['stage'], 'status' => $statusArray['status'],  'action' => $params['args']['action'], 'type' => $params['args']['type'],'category' => $params['args']['what'],'historyID' => $params['args']['parentHID'],'finalStatus' => 'pending','startTime' => microtime(true), 'lastUpdateTime' => microtime(true), 'endTime' => '','statusMsg' => $statusArray['statusMsg'],'requestParams' => serialize($params),'taskName' => $params['task_name']), array( '%s', '%s','%s', '%s', '%s', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s' ) );
@@ -4021,7 +4102,7 @@ function ftp_backup($historyID,$args = '')
         $login = @ftp_login($conn_id, $ftp_username, $ftp_password);
         if ($login === false) {
             return array(
-                'error' => 'FTP login failed for ' . $ftp_username . ', ' . $ftp_password,
+                'error' => 'FTP user name and password invalid',
                 'partial' => 1, 'error_code' => 'ftp_login_failed'
             );
         }
@@ -4354,7 +4435,7 @@ function ftp_backup($historyID,$args = '')
              * SFTP section start here phpseclib library is used for this functionality
              */
             $iwp_mmb_plugin_dir = WP_PLUGIN_DIR . '/' . basename(dirname(__FILE__));
-            $path = $iwp_mmb_plugin_dir.'/lib/phpseclib';
+            $path = $iwp_mmb_plugin_dir.'/lib/phpseclib/phpseclib/phpseclib';
             set_include_path(get_include_path() . PATH_SEPARATOR . $path);
             include_once('Net/SFTP.php');
 
@@ -4368,7 +4449,7 @@ function ftp_backup($historyID,$args = '')
             }
             if (!$sftp->login($ftp_username, $ftp_password)) {
                 return array(
-                                            'error' => 'FTP login failed for ' . $ftp_username . ', ' . $ftp_password,
+                                            'error' => 'FTP user name and password invalid',
                                             'partial' => 1
                             );
             } else {
@@ -4669,7 +4750,7 @@ function ftp_backup($historyID,$args = '')
 						echo " thisChunkTimeTaken".$chunkTimeTaken;
 						$dBoxTimeTaken = $dBoxCompleteTime - $dBoxStartTime;
 						$dBoxTimeLeft = $upload_loop_break_time - $dBoxTimeTaken;								//calculating time left for the dBOX upload .. 
-						$dBoxTimeLeft = $dBoxTimeLeft - 5;														//for safe time limit
+						$dBoxTimeLeft = $dBoxTimeLeft;														//for safe time limit
 						echo " dBoxTimeLeft".$dBoxTimeLeft;
 						//$halfOfLoopTime = (($upload_loop_break_time / 2) - 1);
 						if(($dBoxTimeLeft <= $chunkTimeTaken)||($status == 'completed'))			//if the time Left for the dropbox upload is less than the time to upload a single chunk break the loop 
@@ -4735,17 +4816,18 @@ function ftp_backup($historyID,$args = '')
 						// Try the indicated offset
 						$we_tried = $matches[1];
 						$offset = $matches[2];
-						if($oldVersion){
+						/*if($oldVersion){
 							$chunkResult = $dropbox->chunked_upload($backup_file, $dropbox_destination, true, $uploadid, $offset, $readsize, $isCommit);
 						}else{
 							$chunkResult = $dropbox->chunked_upload($backup_file ,$dropbox_destination, true, $uploadid, $offset, $isCommit);
-						}
+						}*/
+						echo "Submitted input out of alignment";
 						$result_arr = array();
-						$result_arr['response_data'] = $chunkResult;
 						$result_arr['nextFunc'] = 'dropbox_backup';
 						$result_arr['dropboxArgs'] = $tempArgs;
-						$offset = isset($chunkResult['offset']) ? $chunkResult['offset'] : 0;
-						$uploadid = isset($chunkResult['upload_id']) ? $chunkResult['upload_id'] : 0; 
+						$chunkResult['offset'] = isset($offset) ? $offset : 0;
+						$chunkResult['uploadid'] = isset($prevChunkResults['upload_id']) ? $prevChunkResults['upload_id'] : 0; 
+						$result_arr['response_data'] = $chunkResult;
 						$resArray = array (
 						  'backupParentHID' => $historyID,
 						  'status' => 'partiallyCompleted'
@@ -5776,7 +5858,7 @@ function ftp_backup($historyID,$args = '')
 					$fileSizeUploaded = $statusArray['progress'];
 					
 					$googleTimeTaken = microtime(1) - $GLOBALS['IWP_MMB_PROFILING']['ACTION_START'];
-					if(($googleTimeTaken > 10)&&($status != true)){
+					if(($googleTimeTaken > $upload_loop_break_time)&&($status != true)){
 						$chunkResult['resumeURI'] = $resumeURI;
 						$chunkResult['fileSizeUploaded'] = $fileSizeUploaded;
 						
@@ -6253,6 +6335,10 @@ function ftp_backup($historyID,$args = '')
 									}
 									$results[] = $this_backup_file;
 								}
+								$results[]	 = 'DE_clMemoryPeak.'.$historyID.'.txt';
+								$results[]  = 'DE_clMemoryUsage.'.$historyID.'.txt';
+								$results[] 	 = 'DE_clTimeTaken.'.$historyID.'.txt';
+								$results[]	 = 'DE_clCPUUsage.'.$historyID.'.txt';
                             }
                         }
                     }
@@ -6524,29 +6610,44 @@ function ftp_backup($historyID,$args = '')
 			if(file_exists(WP_CONTENT_DIR . '/DE_clMemoryPeak.php')){ @unlink(WP_CONTENT_DIR . '/DE_clMemoryPeak.php');}
 			if(file_exists(WP_CONTENT_DIR . '/DE_clMemoryUsage.php')){ @unlink(WP_CONTENT_DIR . '/DE_clMemoryUsage.php');}
 			if(file_exists(WP_CONTENT_DIR . '/DE_clTimeTaken.php')){ @unlink(WP_CONTENT_DIR . '/DE_clTimeTaken.php');}
-			return true;
-			global $debug_count, $every_count;
+			if(file_exists(WP_CONTENT_DIR . '/DE_clCPUUsage.php')){ @unlink(WP_CONTENT_DIR . '/DE_clCPUUsage.php');}
+			if (defined('DISABLE_IWP_MULTICALL_DEBUG') && DISABLE_IWP_MULTICALL_DEBUG) {
+				return ;
+			}
+
+			global $debug_count, $every_count, $iwp_multicall_hisID;
+			$memoryPeakLog	 = 'DE_clMemoryPeak.'.$iwp_multicall_hisID.'.txt';
+			$memoryUsageLog  = 'DE_clMemoryUsage.'.$iwp_multicall_hisID.'.txt';
+			$timeTakenLog 	 = 'DE_clTimeTaken.'.$iwp_multicall_hisID.'.txt';
+			$cpuUsageLog	 = 'DE_clCPUUsage.'.$iwp_multicall_hisID.'.txt';
 			$debug_count = 0;
 			$every_count = 0;
-			
+			if (function_exists('sys_getloadavg')) {
+				$cpu_load = sys_getloadavg();
+				$current_cpu_load = $cpu_load[0];
+			}
 			$this_memory_peak_in_mb = memory_get_peak_usage();
 			$this_memory_peak_in_mb = $this_memory_peak_in_mb / 1048576;
 			$this_memory_in_mb = memory_get_usage();
 			$this_memory_in_mb = $this_memory_in_mb / 1048576;
 			$this_time_taken = microtime(true) - $GLOBALS['IWP_MMB_PROFILING']['ACTION_START'];
 			
-			file_put_contents(WP_CONTENT_DIR . '/DE_clMemoryPeak.php',$debug_count . $printText . "  " . round($this_memory_peak_in_mb, 2) ."\n");
-			file_put_contents(WP_CONTENT_DIR . '/DE_clMemoryUsage.php',$debug_count . $printText . "  " . round($this_memory_in_mb, 2) ."\n");
-			file_put_contents(WP_CONTENT_DIR . '/DE_clTimeTaken.php',$debug_count . $printText . "  " . round($this_time_taken, 2) ."\n");
+			file_put_contents(IWP_BACKUP_DIR . '/'.$memoryPeakLog,$debug_count . $printText . "  " . round($this_memory_peak_in_mb, 2) ."\n");
+			file_put_contents(IWP_BACKUP_DIR . '/'.$memoryUsageLog,$debug_count . $printText . "  " . round($this_memory_in_mb, 2) ."\n");
+			file_put_contents(IWP_BACKUP_DIR . '/'.$timeTakenLog,$debug_count . $printText . "  " . round($this_time_taken, 2) ."\n");
+			file_put_contents(IWP_BACKUP_DIR . '/'.$cpuUsageLog,$debug_count . $printText . "  " . $current_cpu_load ."\n");
 }
 	}
 	
 	if( !function_exists('manual_debug') ){
 		function manual_debug($conditions = '', $printText = '', $forEvery = 0){
-			return true;
+			if (defined('DISABLE_IWP_MULTICALL_DEBUG') && DISABLE_IWP_MULTICALL_DEBUG) {
+				return ;
+			}
+
 			global $debug_count;
 			$debug_count++;
-			$printText = '-' . $printText; 
+			$printText = '  ' . $printText; 
 			
 			global $every_count;
 			//$conditions = 'printOnly';
@@ -6566,23 +6667,36 @@ function ftp_backup($historyID,$args = '')
 	
 	if( !function_exists('print_memory_debug') ){
 		function print_memory_debug($debug_count, $conditions = '', $printText = ''){
-			
+			global $iwp_multicall_hisID;
 			$this_memory_peak_in_mb = memory_get_peak_usage();
 			$this_memory_peak_in_mb = $this_memory_peak_in_mb / 1048576;
 			$this_memory_in_mb = memory_get_usage();
 			$this_memory_in_mb = $this_memory_in_mb / 1048576;
 			$this_time_taken = microtime(true) - $GLOBALS['IWP_MMB_PROFILING']['ACTION_START'];
+			$current_cpu_load = 0;
+			$memoryPeakLog	 = 'DE_clMemoryPeak.'.$iwp_multicall_hisID.'.txt';
+			$memoryUsageLog  = 'DE_clMemoryUsage.'.$iwp_multicall_hisID.'.txt';
+			$timeTakenLog 	 = 'DE_clTimeTaken.'.$iwp_multicall_hisID.'.txt';
+			$cpuUsageLog	 = 'DE_clCPUUsage.'.$iwp_multicall_hisID.'.txt';
+			if (function_exists('sys_getloadavg')) {
+				$cpu_load = sys_getloadavg();
+				$current_cpu_load = $cpu_load[0];
+			}
+
 			if($conditions == 'printOnly'){
 				if($this_memory_peak_in_mb >= 34){
-					file_put_contents(WP_CONTENT_DIR . '/DE_clMemoryPeak.php',$debug_count . $printText . "  " . round($this_memory_peak_in_mb, 2) ."\n",FILE_APPEND);
-					file_put_contents(WP_CONTENT_DIR . '/DE_clMemoryUsage.php',$debug_count . $printText . "  " . round($this_memory_in_mb, 2) ."\n",FILE_APPEND);
-					file_put_contents(WP_CONTENT_DIR . '/DE_clTimeTaken.php',$debug_count . $printText . "  " . round($this_time_taken, 2) ."\n",FILE_APPEND);
+					file_put_contents(IWP_BACKUP_DIR . '/'.$memoryPeakLog,$debug_count . $printText . "  " . round($this_memory_peak_in_mb, 2) ."\n",FILE_APPEND);
+					file_put_contents(IWP_BACKUP_DIR . '/'.$memoryUsageLog,$debug_count . $printText . "  " . round($this_memory_in_mb, 2) ."\n",FILE_APPEND);
+					file_put_contents(IWP_BACKUP_DIR . '/'.$timeTakenLog,$debug_count . $printText . "  " . round($this_time_taken, 2) ."\n",FILE_APPEND);
+					file_put_contents(IWP_BACKUP_DIR . '/'.$cpuUsageLog,$debug_count . $printText . "  " . $current_cpu_load ."\n",FILE_APPEND);
 				}
 			}
 			else{
-				file_put_contents(WP_CONTENT_DIR . '/DE_clMemoryPeak.php',$debug_count . $printText . "  " . round($this_memory_peak_in_mb, 2) ."\n",FILE_APPEND);
-				file_put_contents(WP_CONTENT_DIR . '/DE_clMemoryUsage.php',$debug_count . $printText . "  " . round($this_memory_in_mb, 2) ."\n",FILE_APPEND);
-				file_put_contents(WP_CONTENT_DIR . '/DE_clTimeTaken.php',$debug_count . $printText . "  " . round($this_time_taken, 2) ."\n",FILE_APPEND);
+				file_put_contents(IWP_BACKUP_DIR . '/'.$memoryPeakLog,$debug_count . $printText . "  " . round($this_memory_peak_in_mb, 2) ."\n",FILE_APPEND);
+				file_put_contents(IWP_BACKUP_DIR . '/'.$memoryUsageLog,$debug_count . $printText . "  " . round($this_memory_in_mb, 2) ."\n",FILE_APPEND);
+				file_put_contents(IWP_BACKUP_DIR . '/'.$timeTakenLog,$debug_count . $printText . "  " . round($this_time_taken, 2) ."\n",FILE_APPEND);
+					file_put_contents(IWP_BACKUP_DIR . '/'.$cpuUsageLog,$debug_count . $printText . "  " . $current_cpu_load ."\n",FILE_APPEND);
+
 			}
 		}
 	}

@@ -13,7 +13,7 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
      * @return string "po", "pot" or "mo"
      * @throws Loco_error_Exception
      */
-    private static function ext( Loco_fs_File $file ){
+    public static function ext( Loco_fs_File $file ){
         $ext = rtrim( strtolower( $file->extension() ), '~' );
         if( 'po' === $ext || 'pot' === $ext || 'mo' === $ext ){
             return $ext;
@@ -45,9 +45,8 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
         if( 'mo' === self::ext($file) ){
             throw new InvalidArgumentException('PO only');
         }
-        return new Loco_gettext_Data( array(
-            array( 'source' => '', 'target' => LocoPoHeaders::snip( $file->getContents() ) )
-        ) );
+        $po = new LocoPoParser( $file->getContents() );
+        return new Loco_gettext_Data( $po->parse(1) );
     }
 
 
@@ -56,7 +55,8 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
      * @return Loco_gettext_Data
      */
     public static function fromSource( $src ){
-        return new Loco_gettext_Data( loco_parse_po($src) );
+        $p = new LocoPoParser($src);
+        return new Loco_gettext_Data( $p->parse() );
     }
 
 
@@ -65,16 +65,46 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
      * @return Loco_gettext_Data
      */
     public static function fromBinary( $bin ){
-        return new Loco_gettext_Data( loco_parse_mo($bin) );
+        $p = new LocoMoParser($bin);
+        return new Loco_gettext_Data( $p->parse() );
     }
 
 
     /**
-     * Create a dummy/empty instance 
+     * Create a dummy/empty instance with minimum content to be a valid PO file.
      * @return Loco_gettext_Data
      */
-    public static function dummy(){      
-        return new Loco_gettext_Data( array( array('source'=>'','target'=>'') ) );
+    public static function dummy(){
+        return new Loco_gettext_Data( array( array('source'=>'','target'=>'Language:') ) );
+    }
+
+
+    /**
+     * Ensure PO source is UTF-8. 
+     * Required if we want PO code when we're not parsing it. e.g. source view
+     * @param string
+     * @return string
+     */
+    public static function ensureUtf8( $src ){
+        loco_check_extension('mbstring');
+        $src = loco_remove_bom($src,$cs);
+        if( ! $cs ){
+            // read PO header, requiring partial parse
+            try {
+                $cs = LocoPoHeaders::fromSource($src)->getCharset();
+            }
+            catch( Loco_error_ParseException $e ){
+                Loco_error_AdminNotices::debug( $e->getMessage() );
+            }
+            // fall back on detection which will only work for latin1
+            if( ! $cs ){
+                $cs = mb_detect_encoding($src,array('UTF-8','ISO-8859-1'),true);
+            }
+        }
+        if( $cs && 'UTF-8' !== $cs ){
+            $src = mb_convert_encoding($src,'UTF-8',array($cs) );
+        }
+        return $src;
     }
 
 
@@ -114,6 +144,52 @@ class Loco_gettext_Data extends LocoPoIterator implements JsonSerializable {
             $po = "\xEF\xBB\xBF".$po;
         }
         return $po;
+    }
+
+
+    /**
+     * Split JavaScript messages out of document, based on file reference mapping
+     * @return array
+     */
+    public function splitJs(){
+        // TODO take file extension from config
+        $messages = $this->splitRefs( array('js'=>'js','jsx'=>'js') );
+        return isset($messages['js']) ? $messages['js'] : array();
+    }
+    
+
+
+    /**
+     * Compile JED flavour JSON
+     * @param string text domain for JED metadata
+     * @param LocoPoMessage[] pre-compiled messages
+     * @return string
+     */
+    public function jedize( $domain, array $po ){
+        $head = $this->getHeaders();
+        // start locale_data with JED header
+        $data = array( '' => array (
+            'domain' => $domain,
+            'lang' => $head['language'],
+            'plural-forms' => $head['plural-forms'],
+        ) );
+        /* @var LocoPoMessage $msg */
+        foreach( $po as $msg ){
+            $data[ $msg->getKey() ] = $msg->getMsgstrs();
+        }
+        // pretty formatting for debugging
+        $json_options = 0;
+        if( Loco_data_Settings::get()->jed_pretty ){
+            $json_options |= loco_constant('JSON_PRETTY_PRINT') | loco_constant('JSON_UNESCAPED_SLASHES') | loco_constant('JSON_UNESCAPED_UNICODE');
+        }
+        return json_encode( array (
+            'translation-revision-date' => $head['po-revision-date'],
+            'generator' => $head['x-generator'],
+            'domain' => $domain,
+            'locale_data' => array (
+                $domain => $data,
+            ),
+        ), $json_options );
     }
 
 

@@ -438,7 +438,8 @@ endif;
   function getFileList($p_filelist)                                   //own function to get the folder and files List
   {
 	$startTime = microtime(true);
-	
+	global $next_file_index, $total_count;
+
     $v_result=1;
 
     // ----- Reset the error handler
@@ -576,7 +577,7 @@ endif;
 	// ----- Expand the filelist (expand directories)
 	$startTImeForlist = microtime(true);
 	$prevFileList = array();
-	$next_file_index = 0;
+  $next_file_index =0;
 	$complete_folder_list = array();
 	$historyID = $v_options[IWP_PCLZIP_OPT_HISTORY_ID];
 	if($historyID)
@@ -612,17 +613,19 @@ endif;
 	//if(empty($complete_folder_list))
 	if(true)
 	{
-		global $total_count;
+		global $old_next_file_index;
 		$old_next_file_index = $next_file_index;
 		
-		
+		global $iwp_v_options;
+    $iwp_v_options = $v_options;
 		/* $folder_list_result = $this->getFolderListManual('F:\\wamp\\www\\plugin_for_bugs/wp-dark/', $v_options, $next_file_index);
 		if(!empty($folder_list_result) && $folder_list_result['break']){
 			$next_file_index = $folder_list_result['loop_count'];
 		} */
 		
 		//first am getting the number of directories and its list
-		foreach($v_filedescr_list as $value)
+    /* //old method file iterator
+    foreach($v_filedescr_list as $value)
 		{
 			$folder_list = array();
 			if(is_dir($value['filename']))
@@ -644,6 +647,17 @@ endif;
 				}
 			}
 		}
+    */
+    include_once $GLOBALS['iwp_mmb_plugin_dir'].'/iwp-file-iterator.php';
+    if ($next_file_index == 0) {
+      # code...
+      scan_entire_site($v_filedescr_list);
+    }
+      $folder_list_result = iwp_iterator();
+      if(!empty($folder_list_result) && $folder_list_result['break']){
+            $next_file_index = $folder_list_result['loop_count'];
+      }
+
 			}
 	
 	if(empty($folder_list_result)){
@@ -791,9 +805,10 @@ endif;
 		global $total_count;
 		$total_count++;
 		$this_result = false;
-		if($total_count >= $next_file_index){
+   
+		//if($total_count >= $next_file_index){
 			$to_be_expanded_array = array( 0 => array( 'filename' => $absPath ) );
-			$v_result = $this->privFileDescrExpand($to_be_expanded_array, $v_options, "getFileList");
+      $v_result = $this->privFileDescrExpand($to_be_expanded_array, $v_options, "getFileList");
 			if($v_result == 1 && !empty($to_be_expanded_array)){
 				foreach($to_be_expanded_array as $key => $value){
 					$this_result = save_in_iwp_files_db(0, $value);
@@ -805,7 +820,7 @@ endif;
 				}
 				$total_FL_count++;
 			}
-		}
+		//}
 		return $this_result;
   }
   
@@ -820,6 +835,7 @@ endif;
     }
     return false;
   }
+
   
   //---------------------------------------------------------------------------------
   // --------------------------------------------------------------------------------
@@ -3199,6 +3215,7 @@ endif;
       if (   ($p_filedescr_list[$j]['type'] != 'virtual_file')
           && (!file_exists($p_filedescr_list[$j]['filename']))) {
         IWPPclZip::privErrorLog(IWP_PCLZIP_ERR_MISSING_FILE, "File '".$p_filedescr_list[$j]['filename']."' does not exist");
+      continue;
         return IWPPclZip::errorCode();
       }
 

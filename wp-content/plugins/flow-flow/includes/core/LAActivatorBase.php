@@ -80,13 +80,15 @@ abstract class LAActivatorBase{
 	public final function loadPlugin(){
 		
 		$this->beforePluginLoad();
+
+        $this->registerShutdownActions();
 		
 		if (defined('FF_USE_WP_CRON') && FF_USE_WP_CRON){
-			$this->registrationCronActions();
+			$this->registerCronActions();
 		}
 		
 		if (defined('DOING_AJAX') && DOING_AJAX){
-			$this->registrationAjaxActions();
+			$this->registerAjaxActions();
 		}
 		else {
 			if (is_admin()){
@@ -114,9 +116,9 @@ abstract class LAActivatorBase{
 	
 	protected abstract function initContext($file);
 	
-	protected abstract function registrationCronActions();
+	protected abstract function registerCronActions();
 	
-	protected abstract function registrationAjaxActions();
+	protected abstract function registerAjaxActions();
 	
 	protected abstract function renderAdminSide();
 	

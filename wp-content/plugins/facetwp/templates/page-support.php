@@ -7,13 +7,10 @@ class FacetWP_Support
 
 
     function __construct() {
-        $activation = get_option( 'facetwp_activation' );
-
-        if ( ! empty( $activation ) ) {
-            $activation = json_decode( $activation, true );
-            if ( 'success' == $activation['status'] ) {
-                $this->payment_id = $activation['payment_id'];
-            }
+        if ( FWP()->helper->is_license_active() ) {
+            $activation = get_option( 'facetwp_activation' );
+            $activation = json_decode( $activation );
+            $this->payment_id = $activation->payment_id;
         }
     }
 

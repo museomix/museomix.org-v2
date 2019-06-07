@@ -11,7 +11,7 @@ class UpdraftPlus_BackupModule_s3generic extends UpdraftPlus_BackupModule_s3 {
 
 	protected $use_v4 = false;
 
-	protected function set_region($obj, $region = '', $bucket_name = '') {
+	protected function set_region($obj, $region = '', $bucket_name = '') {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$config = $this->get_config();
 		$endpoint = ('' != $region && 'n/a' != $region) ? $region : $config['endpoint'];
 		$log_message = "Set endpoint: $endpoint";
@@ -22,7 +22,7 @@ class UpdraftPlus_BackupModule_s3generic extends UpdraftPlus_BackupModule_s3 {
 			$obj->setPort($port);
 		}
 		global $updraftplus;
-		if ($updraftplus->backup_time) $updraftplus->log($log_message);
+		if ($updraftplus->backup_time) $this->log($log_message);
 		$obj->setEndpoint($endpoint);
 	}
 
@@ -53,9 +53,11 @@ class UpdraftPlus_BackupModule_s3generic extends UpdraftPlus_BackupModule_s3 {
 	/**
 	 * Retrieve specific options for this remote storage module
 	 *
+	 * @param Boolean $force_refresh - if set, and if relevant, don't use cached credentials, but get them afresh
+	 *
 	 * @return Array - an array of options
 	 */
-	protected function get_config() {
+	protected function get_config($force_refresh = false) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$opts = $this->get_options();
 		$opts['whoweare'] = 'S3';
 		$opts['whoweare_long'] = __('S3 (Compatible)', 'updraftplus');
@@ -92,6 +94,17 @@ class UpdraftPlus_BackupModule_s3generic extends UpdraftPlus_BackupModule_s3 {
 	 */
 	public function transform_options_for_template($opts) {
 		return $opts;
+	}
+	
+	/**
+	 * Check whether options have been set up by the user, or not
+	 *
+	 * @param Array $opts - the potential options
+	 *
+	 * @return Boolean
+	 */
+	public function options_exist($opts) {
+		return (parent::options_exist($opts) && !empty($opts['endpoint']));
 	}
 	
 	/**

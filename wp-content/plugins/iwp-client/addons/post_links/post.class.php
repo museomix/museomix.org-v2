@@ -475,7 +475,8 @@ class IWP_MMB_Post extends IWP_MMB_Core
 		
 		if(!empty($filter_posts))
  		{ 
-  			$where.=" AND post_title LIKE '%".esc_sql($filter_posts)."%'";
+            $cus_sql= " OR ID IN(SELECT post_id FROM ".$wpdb->prefix."postmeta WHERE 1=1 AND (meta_value LIKE '%".esc_sql($filter_posts)."%'))";
+  			$where.=" AND (post_title LIKE '%".esc_sql($filter_posts)."%'".$cus_sql.")";
 	 	}
  
 		if(!empty($iwp_get_posts_date_from) && !empty($iwp_get_posts_date_to))
@@ -505,7 +506,7 @@ class IWP_MMB_Post extends IWP_MMB_Core
 		
 		$limit = ($iwp_get_posts_range) ? ' LIMIT ' . esc_sql($iwp_get_posts_range) : ' LIMIT 500';
 		
-		$sql_query = "$wpdb->posts  WHERE post_status!='auto-draft' AND post_status!='inherit' AND post_type='post' ".$where." ORDER BY post_date DESC";
+		$sql_query = "$wpdb->posts  WHERE post_status!='auto-draft' AND post_status!='inherit' AND (post_type='post' OR post_type = 'link_library_links') ".$where." ORDER BY post_date DESC";
 		
 		$total = array();
 		$posts = array();
@@ -518,7 +519,7 @@ class IWP_MMB_Post extends IWP_MMB_Core
 		if($iwp_get_posts_range && !empty($iwp_get_posts_date_from) && !empty($iwp_get_posts_date_to) && $total['total_num'] < $iwp_get_posts_range) {
     	  
 			$sql_query = "$wpdb->posts 
-                WHERE post_status!='auto-draft' AND post_status!='inherit' AND post_type='post'  AND post_date <= '".esc_sql($iwp_get_posts_date_to)."' 
+                WHERE post_status!='auto-draft' AND post_status!='inherit' AND (post_type='post' OR post_type = 'link_library_links')  AND post_date <= '".esc_sql($iwp_get_posts_date_to)."' 
 				ORDER BY post_date DESC
                 LIMIT " . esc_sql($iwp_get_posts_range);
 			

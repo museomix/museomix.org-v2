@@ -6,7 +6,7 @@
  * @author    Looks Awesome <email@looks-awesome.com>
  *
  * @link      http://looks-awesome.com
- * @copyright 2014-2016 Looks Awesome
+ * @copyright Looks Awesome
  */
 $options = $context['options'];
 $auth = $context['auth_options'];

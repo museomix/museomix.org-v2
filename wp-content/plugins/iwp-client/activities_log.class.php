@@ -94,8 +94,7 @@ class IWP_MMB_Activities_log {
 	}
 	
 	function iwp_mmb_save_iwp_activities($iwp_type, $iwp_action, $activities_type, $params, $userid) {
-		global $wpdb,$iwp_activities_log_post_type;
-		
+		global $wpdb,$iwp_activities_log_post_type, $wpdb;
 		if(!$this->iwp_mmb_get_is_save_activity_log()) {
 			return false;
 		}
@@ -110,7 +109,9 @@ class IWP_MMB_Activities_log {
 		if(!empty($GLOBALS['activities_log_datetime'])) {
 			$iwp_activities['post_date'] = $iwp_activities['post_date_gmt'] = $iwp_activities['post_modified'] = $iwp_activities['post_modified_gmt'] = $GLOBALS['activities_log_datetime'];
 		}
-				
+		if (is_multisite() && in_array($iwp_action, array('now', 'schedule','multiCallNow'))) {
+			$wpdb->set_blog_id(1);
+		}
 		$post_id = wp_insert_post( $iwp_activities );
 		
 		unset($iwp_activities);
@@ -289,7 +290,7 @@ class IWP_MMB_Activities_log {
 		
 		$theme = $this->iwp_mmb_get_theme_details($theme_slug);
 		
-		if(!count($theme)) {
+		if(empty($theme) || !is_array($theme)) {
 			return false;
 		}
 	
@@ -705,6 +706,29 @@ class IWP_MMB_Activities_log {
 			$wordfence_instance = $iwp_mmb_core->get_wordfence_instance();
 			$logCounts = $wordfence_instance->getLogCounts($params['fromDate'], $params['toDate']);
 			$return['detailed'][$wordfence]['details'] = $logCounts;
+		}
+		if (in_array($backups_key, $params['actions']) && iwp_mmb_is_WPTC()) {
+			$query = "SELECT backup_id from ".$wpdb->base_prefix."wptc_backups WHERE backup_id >='".$params['fromDate']."' AND backup_id<='".$params['toDate']."'";
+			$wptc_backup_counts = 0;
+			$wptc_backups = $wpdb->get_results($query,ARRAY_A);
+			if (!empty($wptc_backups)) {
+				$wptc_backups_details = array();
+				foreach ($wptc_backups as $key => $backup) {
+					$wptc_backup_counts ++;
+					$details =  array();
+					$date = date('M d, y',$backup['backup_id']);
+					$time = date('g',$backup['backup_id']).':'.date('i',$backup['backup_id']).' '.date('a',$backup['backup_id']);
+					$details['time'] = $time;
+					$details['date'] = $date;
+					$details['type'] = 'Files & DB';
+					$wptc_backups_details[] =  $details;
+				}
+				$parentDetails = $return['detailed']['backups']['details'];
+				$parentDetails = array_merge($parentDetails,$wptc_backups_details);
+				$return['detailed']['backups']['count']+=$wptc_backup_counts;
+				$return['detailed']['backups']['details']= $parentDetails;
+				$return['count']['backups']+=$wptc_backup_counts;
+			}
 		}
 		iwp_mmb_response($return, true);		
 	}

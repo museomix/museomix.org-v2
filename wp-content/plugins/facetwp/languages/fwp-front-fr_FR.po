@@ -1,0 +1,173 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: FacetWP (front)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-30 19:01+0000\n"
+"PO-Revision-Date: 2019-01-30 14:15-0500\n"
+"Last-Translator: Matt Gibbs <hello@facetwp.com>\n"
+"Language-Team: French (France)\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Loco-Version: 2.2.0; wp-5.0.3\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: includes/class-renderer.php:519 includes/class-renderer.php:636
+msgid "of"
+msgstr "de"
+
+#: includes/class-renderer.php:553
+msgid "Sort by"
+msgstr "Trier par"
+
+#: includes/class-renderer.php:557
+msgid "Title (A-Z)"
+msgstr "Titre (A-Z)"
+
+#: includes/class-renderer.php:564
+msgid "Title (Z-A)"
+msgstr "Titre (Z-A)"
+
+#: includes/class-renderer.php:571
+msgid "Date (Newest)"
+msgstr "Date (plus récent)"
+
+#: includes/class-renderer.php:578
+msgid "Date (Oldest)"
+msgstr "Date (la plus ancienne)"
+
+#: includes/class-renderer.php:635
+msgid "Page"
+msgstr "Page"
+
+#: includes/class-renderer.php:686
+msgid "Per page"
+msgstr "Par page"
+
+#: includes/facets/slider.php:20
+msgid "Reset"
+msgstr "Réinitialiser"
+
+#: includes/facets/checkboxes.php:131
+msgid "See {num} more"
+msgstr "Voir {num} plus"
+
+#: includes/facets/checkboxes.php:132 includes/facets/hierarchy.php:152
+msgid "See less"
+msgstr "Voir moins"
+
+#: includes/facets/fselect.php:119 includes/facets/fselect.php:188
+#: includes/facets/dropdown.php:59 includes/facets/hierarchy.php:67
+msgid "Any"
+msgstr "Tous"
+
+#: includes/facets/fselect.php:193
+msgid "{n} selected"
+msgstr "{n} sélectionné"
+
+#: includes/facets/fselect.php:194
+msgid "Search"
+msgstr "Rechercher"
+
+#: includes/facets/fselect.php:195
+msgid "No results found"
+msgstr "Aucun résultat trouvé"
+
+#: includes/facets/number_range.php:22
+msgid "Number"
+msgstr "Nombre"
+
+#: includes/facets/number_range.php:25
+msgid "Min"
+msgstr "Min"
+
+#: includes/facets/number_range.php:28
+msgid "Max"
+msgstr "Max"
+
+#: includes/facets/number_range.php:31 includes/facets/autocomplete.php:64
+msgid "Go"
+msgstr "Aller"
+
+#: includes/facets/search.php:19
+msgid "Enter keywords"
+msgstr "Rechercher par nom"
+
+#: includes/facets/date_range.php:22
+msgid "Date"
+msgstr "Date"
+
+#: includes/facets/date_range.php:25
+msgid "Start Date"
+msgstr "Date de début"
+
+#: includes/facets/date_range.php:28
+msgid "End Date"
+msgstr "Date de fin"
+
+#: includes/facets/date_range.php:112
+msgid "Clear"
+msgstr "Effacer"
+
+#: includes/facets/date_range.php:113
+msgid "from"
+msgstr "de"
+
+#: includes/facets/date_range.php:114
+msgid "to"
+msgstr "à"
+
+#: includes/facets/proximity.php:63
+msgid "Enter location"
+msgstr "Entrez la localisation"
+
+#: includes/facets/proximity.php:177
+msgid "Clear location"
+msgstr "Effacer l’emplacement"
+
+#: includes/facets/proximity.php:315
+msgid "Distance"
+msgstr "Distance"
+
+#: includes/facets/hierarchy.php:151
+msgid "See more"
+msgstr "Voir plus"
+
+#: includes/facets/autocomplete.php:61
+msgid "Start typing"
+msgstr "Commencer à taper"
+
+#: includes/facets/autocomplete.php:97
+msgid "No results"
+msgstr "Aucun résultat"
+
+#: includes/facets/rating.php:110
+msgid "& up"
+msgstr "& up"
+
+#: includes/facets/rating.php:111
+msgid "Undo"
+msgstr "Annuler"
+
+#: includes/integrations/woocommerce/woocommerce.php:407
+msgid "In Stock"
+msgstr "En stock"
+
+#: includes/integrations/woocommerce/woocommerce.php:407
+msgid "Out of Stock"
+msgstr "Rupture de stock"
+
+#: includes/integrations/woocommerce/woocommerce.php:415
+msgid "On Sale"
+msgstr "Promo"
+
+#: includes/integrations/acf/acf.php:262
+msgid "Yes"
+msgstr "Oui"
+
+#: includes/integrations/acf/acf.php:262
+msgid "No"
+msgstr "Non"

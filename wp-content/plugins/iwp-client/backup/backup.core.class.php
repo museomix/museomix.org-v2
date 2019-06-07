@@ -1245,7 +1245,7 @@ class IWP_MMB_Backup_Core {
 			die;
 		}
 		
-		if ($this->current_resumption >= 9 && false == $this->newresumption_scheduled) {
+		if ($this->current_resumption >=5  && false == $this->newresumption_scheduled) {
 			$this->log("This is resumption ".$this->current_resumption.", but meaningful activity is still taking place; so a new one will be scheduled");
 			// We just use max here to make sure we get a number at all
 			$resume_interval = max($this->jobdata_get('resume_interval'), 75);
@@ -3683,7 +3683,8 @@ CREATE TABLE $wpdb->signups (
 				$cron_disable = true;
 				$cron_params = $this->get_cron($job_id);
 			}
-			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_disable' => $cron_disable, 'cron_params' =>$cron_params, 'wp_content_url' => content_url()));
+			$cron_do_action = $this->is_cron_do_action_need($job_id);
+			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_disable' => $cron_disable, 'cron_params' =>$cron_params, 'wp_content_url' => content_url(),'cron_do_action' =>$cron_do_action));
 		} elseif ($result == '0') {
 			$cron = $this->get_cron($job_id);
 			if ($cron == false) {
@@ -3703,7 +3704,13 @@ CREATE TABLE $wpdb->signups (
 					wp_cron();
 				}
 			}
-			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_data' => $cron, 'wp_content_url' => content_url()) );
+			$cron_params = array();
+			if (( defined('DISABLE_WP_CRON') && DISABLE_WP_CRON )) {
+				$cron_disable = true;
+				$cron_params = $this->get_cron($job_id);
+			}
+			$cron_do_action = $this->is_cron_do_action_need($job_id);
+			return array('success'=>array('status' => 'partiallyCompleted', 'params' => $params['params'], 'jobdata'=>$job_data, 'cron_data' => $cron, 'cron_disable' => $cron_disable, 'cron_params' =>$cron_params, 'wp_content_url' => content_url(),'cron_do_action' =>$cron_do_action) );
 		}
 
 	}
@@ -3804,6 +3811,24 @@ CREATE TABLE $wpdb->signups (
 		}
 	}
 
+	public function get_cron_data($job_id = false) {
+
+		$cron = get_option('cron');
+		if (!is_array($cron)) $cron = array();
+		if (false === $job_id) return $cron;
+
+		foreach ($cron as $time => $job) {
+			if (isset($job['IWP_backup_resume'])) {
+				foreach ($job['IWP_backup_resume'] as $hook => $info) {
+					if (isset($info['args'][1]) && $job_id == $info['args'][1]) {
+						$jobdata = $this->jobdata_getarray($job_id);
+						return (!is_array($jobdata)) ? false : $info['args'];
+					}
+				}
+			}
+		}
+	}
+
 	public function last_backup_staus() {
 		$last_backup = array();
 		$IWP_last_backup = IWP_MMB_Backup_Options::get_iwp_backup_option('IWP_last_backup');
@@ -3879,6 +3904,11 @@ CREATE TABLE $wpdb->signups (
 		if (!empty($params['args']['exclude_extensions']) && !defined('IWP_EXCLUDE_EXTENSIONS')) {
 			define('IWP_EXCLUDE_EXTENSIONS', $params['args']['exclude_extensions']);
 		}
+		if (!empty($params['args']['IWP_encryptionphrase'])) {
+			IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_encryptionphrase', $params['args']['IWP_encryptionphrase']);
+		}else{
+			IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_encryptionphrase', false);
+		}
 
 		if (!empty($params['account_info'])) {
 			if (!empty($params['account_info']['iwp_ftp'])) {
@@ -3890,7 +3920,8 @@ CREATE TABLE $wpdb->signups (
 					'path' => $ftp_details['ftp_remote_folder'],
 					'port' => $ftp_details['ftp_port'],
 					'ftp_site_folder' => $ftp_details['ftp_site_folder'],
-					'passive' => $ftp_details['ftp_passive']?true:false
+					'passive' => $ftp_details['ftp_passive']?true:false,
+					'key' => $ftp_details['ftp_key'],
 				);
 				if ($ftp_details['use_sftp']) {
 					update_option('IWP_service', 'sftp');
@@ -3958,6 +3989,11 @@ CREATE TABLE $wpdb->signups (
 		if (!empty($params['args']['limit'])) {
 			update_option('IWP_retain', $params['args']['limit']);
 			update_option('IWP_retain_db', $params['args']['limit']);
+		}
+
+		if (!empty($params['args']['exclude_tables'])) {
+			$exclude_tables = @implode(',', $params['args']['exclude_tables']);
+			update_option('IWP_default_exclude_tables', $exclude_tables);
 		}
 	}
 
@@ -4554,6 +4590,7 @@ CREATE TABLE $wpdb->signups (
 		$our_files['backup_meta_file'] = $backup_file_basename;
 		$our_files['old_file_path'] = ABSPATH;
 		$our_files['old_url'] = get_option('siteurl');
+		$our_files['IWP_encryptionphrase'] = IWP_MMB_Backup_Options::get_iwp_backup_option('IWP_encryptionphrase');
 		$backup_dir = $this->backups_dir_location();
 		$backup_meta_file = $backup_dir.'/'.$backup_file_basename;
 		$meta_file_handle = fopen($backup_meta_file, 'w');
@@ -4856,12 +4893,22 @@ CREATE TABLE $wpdb->signups (
 					'pass' => $ftp_details['ftp_password'],
 					'host' => $ftp_details['ftp_hostname'],
 					'path' => $ftp_details['ftp_remote_folder'],
+					'port' => $ftp_details['ftp_port'],
 					'ftp_site_folder' => $ftp_details['ftp_site_folder'],
 					'passive' => $ftp_details['ftp_passive']?true:false
 				);
 				if ($ftp_details['use_sftp']) {
+					update_option('IWP_service', 'sftp');
 					IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_sftp', $opts);
 				}else{
+					update_option('IWP_service', 'ftp');
+					if(!empty($ftp_details['ftp_ssl'])){
+						$opts['host'] = $opts['host'].':'.$opts['port'];
+						unset($opts['port']);
+						IWP_MMB_Backup_Options::delete_iwp_backup_option('IWP_ssl_nossl');
+					}else{
+						IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_ssl_nossl', 1);
+					}
 					IWP_MMB_Backup_Options::update_iwp_backup_option('IWP_ftp', $opts);
 				}
 			}elseif (!empty($params['account_info']['iwp_amazon_s3'])) {
@@ -4920,5 +4967,30 @@ CREATE TABLE $wpdb->signups (
 				@unlink($iwp_backup_dir.'/'.$entry);
 			}
 		}
+	}
+
+	public function is_cron_do_action_need($job_id){
+		$time = time();
+		$cron_time = $this->get_cron($job_id);
+		if (empty($cron_time[0]) || $time < $cron_time[0]) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public function iwp_pheonix_backup_cron_do_action($params){
+		$job_id = $params['params']['backup_id'];
+
+		$is_cron_do_action_need = $this->is_cron_do_action_need($job_id);
+		if ($is_cron_do_action_need == false) {
+			return false;
+		}
+		$cron_data = $this->get_cron_data($job_id);
+		if (!empty($cron_data)) {
+			wp_clear_scheduled_hook('IWP_backup_resume', $cron_data);
+			do_action( 'IWP_backup_resume', $cron_data[0], $cron_data[1] );
+		}
+
 	}
 }

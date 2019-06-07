@@ -131,6 +131,8 @@ abstract class LABase {
 	public final function enqueue_scripts() {
 	    // Customization 16.08.18, JS opts added in public.php instead
 //         $this->enqueueScripts();
+        // make sure jQuery is always on page
+        wp_enqueue_script('jquery');
 	}
 	
 	public final function processAjaxRequest() {
@@ -348,7 +350,7 @@ abstract class LABase {
 		$_REQUEST['action'] = @filter_var( trim( $_REQUEST['action'] ), FILTER_SANITIZE_STRING );
 		if (isset($_REQUEST['page'])) $_REQUEST['page'] = filter_var( trim( $_REQUEST['page'] ), FILTER_SANITIZE_NUMBER_INT);
 		if (isset($_REQUEST['countOfPages'])) $_REQUEST['countOfPages'] = filter_var( trim( $_REQUEST['countOfPages'] ), FILTER_SANITIZE_NUMBER_INT);
-		if (isset($_REQUEST['hash'])){
+		if (isset($_REQUEST['hash']) && !empty($_REQUEST['hash'])){
 			$hash = filter_var( $_REQUEST['hash'], FILTER_VALIDATE_REGEXP, array("options"=>array('regexp' => '/^\d{10}[.]\w{96}$/')));
 			if (false === $hash){
 				status_header(400);

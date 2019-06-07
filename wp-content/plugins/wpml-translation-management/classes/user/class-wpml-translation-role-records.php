@@ -7,7 +7,7 @@ abstract class WPML_Translation_Roles_Records {
 	const MIN_SEARCH_LENGTH        = 3;
 
 	/** @var wpdb $wpdb */
-	private $wpdb;
+	protected $wpdb;
 
 	/** @var WPML_WP_User_Query_Factory $user_query_factory */
 	private $user_query_factory;
@@ -37,6 +37,26 @@ abstract class WPML_Translation_Roles_Records {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Delete records for all users
+	 */
+	public function delete_all() {
+		$users = $this->get_users_with_capability();
+		foreach( $users as $user ) {
+			$this->delete( $user->ID );
+		}
+	}
+
+	/**
+	 * Delete the record for the user
+	 *
+	 * @param int $user_id
+	 */
+	public function delete( $user_id ) {
+		$user = new WP_User( $user_id );
+		$user->remove_cap( $this->get_capability() );
 	}
 
 	/**
@@ -86,12 +106,16 @@ abstract class WPML_Translation_Roles_Records {
 		foreach ( $users as $user_id ) {
 			$user_data = get_userdata( $user_id );
 			if ( $user_data ) {
+				$language_pair_records = new WPML_Language_Pair_Records( $this->wpdb, new WPML_Language_Records( $this->wpdb ) );
+				$language_pairs        = $language_pair_records->get( $user_id );
+
 				$result    = (object) array(
-					'ID'           => $user_data->ID,
-					'full_name'    => trim( $user_data->first_name . ' ' . $user_data->last_name ),
-					'user_login'   => $user_data->user_login,
-					'user_email'   => $user_data->user_email,
-					'display_name' => $user_data->display_name,
+					'ID'             => $user_data->ID,
+					'full_name'      => trim( $user_data->first_name . ' ' . $user_data->last_name ),
+					'user_login'     => $user_data->user_login,
+					'user_email'     => $user_data->user_email,
+					'display_name'   => $user_data->display_name,
+					'language_pairs' => $language_pairs,
 				);
 				$results[] = $result;
 			}

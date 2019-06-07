@@ -12,7 +12,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @author    Looks Awesome <email@looks-awesome.com>
  *
  * @link      http://looks-awesome.com
- * @copyright 2014-2017 Looks Awesome
+ * @copyright Looks Awesome
  */
 class FFMigration_3_4 implements ILADBMigration {
 

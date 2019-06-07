@@ -56,7 +56,7 @@ class FacetWP_Facet_Dropdown extends FacetWP_Facet
             $values = FWP()->helper->sort_taxonomy_values( $params['values'], $facet['orderby'] );
         }
 
-        $label_any = empty( $facet['label_any'] ) ? __( 'Any', 'fwp' ) : $facet['label_any'];
+        $label_any = empty( $facet['label_any'] ) ? __( 'Any', 'fwp-front' ) : $facet['label_any'];
         $label_any = facetwp_i18n( $label_any );
 
         $output .= '<select class="facetwp-dropdown">';

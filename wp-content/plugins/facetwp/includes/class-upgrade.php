@@ -28,7 +28,6 @@ class FacetWP_Upgrade
             id BIGINT unsigned not null auto_increment,
             post_id INT unsigned,
             facet_name VARCHAR(50),
-            facet_source VARCHAR(255),
             facet_value VARCHAR(50),
             facet_display_value VARCHAR(200),
             term_id INT unsigned default '0',
@@ -36,8 +35,8 @@ class FacetWP_Upgrade
             depth INT unsigned default '0',
             variation_id INT unsigned default '0',
             PRIMARY KEY (id),
+            INDEX post_id_idx (post_id),
             INDEX facet_name_idx (facet_name),
-            INDEX facet_source_idx (facet_source),
             INDEX facet_name_value_idx (facet_name, facet_value)
         ) DEFAULT CHARSET=utf8";
         dbDelta( $sql );
@@ -70,6 +69,30 @@ class FacetWP_Upgrade
             $wpdb->query( "ALTER TABLE {$wpdb->prefix}facetwp_index MODIFY facet_value VARCHAR(50)" );
             $wpdb->query( "ALTER TABLE {$wpdb->prefix}facetwp_index MODIFY facet_display_value VARCHAR(200)" );
             $wpdb->query( "CREATE INDEX facet_name_value_idx ON {$wpdb->prefix}facetwp_index (facet_name, facet_value)" );
+        }
+
+        if ( version_compare( $this->last_version, '3.3.2', '<' ) ) {
+            $wpdb->query( "CREATE INDEX post_id_idx ON {$wpdb->prefix}facetwp_index (post_id)" );
+            $wpdb->query( "DROP INDEX facet_source_idx ON {$wpdb->prefix}facetwp_index" );
+            $wpdb->query( "ALTER TABLE {$wpdb->prefix}facetwp_index DROP COLUMN facet_source" );
+        }
+
+        if ( version_compare( $this->last_version, '3.3.3', '<' ) ) {
+            if ( function_exists( 'SWP' ) ) {
+                $engines = array_keys( SWP()->settings['engines'] );
+                $settings = get_option( 'facetwp_settings' );
+                $settings = json_decode( $settings, true );
+
+                foreach ( $settings['facets'] as $key => $facet ) {
+                    if ( 'search' == $facet['type'] ) {
+                        if ( in_array( $facet['search_engine'], $engines ) ) {
+                            $settings['facets'][ $key ]['search_engine'] = 'swp_' . $facet['search_engine'];
+                        }
+                    }
+                }
+
+                update_option( 'facetwp_settings', json_encode( $settings ) );
+            }
         }
     }
 }

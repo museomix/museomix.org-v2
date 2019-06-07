@@ -27,7 +27,7 @@ class UpdraftPlus_BackupModule_email extends UpdraftPlus_BackupModule {
 			if (file_exists($fullpath) && filesize($fullpath) > UPDRAFTPLUS_WARN_EMAIL_SIZE) {
 				$size_in_mb_of_big_file = round(filesize($fullpath)/1048576, 1);
 				$toobig_hash = md5($file);
-				$updraftplus->log($file.': '.sprintf(__('This backup archive is %s MB in size - the attempt to send this via email is likely to fail (few email servers allow attachments of this size). If so, you should switch to using a different remote storage method.', 'updraftplus'), $size_in_mb_of_big_file), 'warning', 'toobigforemail_'.$toobig_hash);
+				$this->log($file.': '.sprintf(__('This backup archive is %s MB in size - the attempt to send this via email is likely to fail (few email servers allow attachments of this size). If so, you should switch to using a different remote storage method.', 'updraftplus'), $size_in_mb_of_big_file), 'warning', 'toobigforemail_'.$toobig_hash);
 			}
 
 			$any_attempted = false;
@@ -39,7 +39,7 @@ class UpdraftPlus_BackupModule_email extends UpdraftPlus_BackupModule {
 					foreach (explode(',', $addr) as $sendmail_addr) {
 	
 						$send_short = (strlen($sendmail_addr)>5) ? substr($sendmail_addr, 0, 5).'...' : $sendmail_addr;
-						$updraftplus->log("$file: email to: $send_short");
+						$this->log("$file: email to: $send_short");
 						$any_attempted = true;
 	
 						$subject = __("WordPress Backup", 'updraftplus').': '.get_bloginfo('name').' (UpdraftPlus '.$updraftplus->version.') '.get_date_from_gmt(gmdate('Y-m-d H:i:s', $updraftplus->backup_time), 'Y-m-d H:i');
@@ -50,7 +50,7 @@ class UpdraftPlus_BackupModule_email extends UpdraftPlus_BackupModule {
 				} else {
 					$log_message = apply_filters('updraftplus_email_backup_skip_log_message', '', $addr, $ind, $descrip_type);
 					if (!empty($log_message)) {
-						$updraftplus->log($log_message);
+						$this->log($log_message);
 					}
 					$any_skip = true;
 				}
@@ -63,12 +63,12 @@ class UpdraftPlus_BackupModule_email extends UpdraftPlus_BackupModule {
 				}
 				$updraftplus->uploaded_file($file);
 			} elseif ($any_attempted) {
-				$updraftplus->log('Mails were not sent successfully');
-				$updraftplus->log(__('The attempt to send the backup via email failed (probably the backup was too large for this method)', 'updraftplus'), 'error');
+				$this->log('Mails were not sent successfully');
+				$this->log(__('The attempt to send the backup via email failed (probably the backup was too large for this method)', 'updraftplus'), 'error');
 			} elseif ($any_skip) {
-				$updraftplus->log('No email addresses were configured to send email to '.$descrip_type);
+				$this->log('No email addresses were configured to send email to '.$descrip_type);
 			} else {
-				$updraftplus->log('No email addresses were configured to send to');
+				$this->log('No email addresses were configured to send to');
 			}
 		}
 		return null;
@@ -94,7 +94,7 @@ class UpdraftPlus_BackupModule_email extends UpdraftPlus_BackupModule {
 
 				$used = apply_filters('updraftplus_email_whichaddresses',
 					sprintf(__("Your site's admin email address (%s) will be used.", 'updraftplus'), get_bloginfo('admin_email').' - <a href="'.esc_attr(admin_url('options-general.php')).'">'.__("configure it here", 'updraftplus').'</a>').
-					' <a href="'.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/reporting/").'">'.sprintf(__('For more options, use the "%s" add-on.', 'updraftplus'), __('Reporting', 'updraftplus')).'</a>'
+					' <a href="'.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/reporting/").'" target="_blank">'.sprintf(__('For more options, use the "%s" add-on.', 'updraftplus'), __('Reporting', 'updraftplus')).'</a>'
 				);
 
 				echo $used.' '.sprintf(__('Be aware that mail servers tend to have size limits; typically around %s MB; backups larger than any limits will likely not arrive.', 'updraftplus'), '10-20');

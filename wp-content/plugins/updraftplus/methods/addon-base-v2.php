@@ -63,7 +63,7 @@ abstract class UpdraftPlus_RemoteStorage_Addons_Base_v2 extends UpdraftPlus_Back
 	protected function required_configuration_keys() {
 	}
 
-	public function upload_files($ret, $backup_array) {
+	public function upload_files($ret, $backup_array) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		global $updraftplus;
 
@@ -127,7 +127,7 @@ abstract class UpdraftPlus_RemoteStorage_Addons_Base_v2 extends UpdraftPlus_Back
 
 	}
 
-	public function delete_files($ret, $files, $ignore_it = false) {
+	public function delete_files($ret, $files, $ignore_it = false) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		global $updraftplus;
 
@@ -273,7 +273,7 @@ abstract class UpdraftPlus_RemoteStorage_Addons_Base_v2 extends UpdraftPlus_Back
 	 *
 	 * @return Boolean
 	 */
-	protected function options_exist($opts) {
+	public function options_exist($opts) {
 		if (is_array($opts) && !empty($opts)) return true;
 		return false;
 	}

@@ -87,6 +87,8 @@ class FFPosts extends FFBaseFeed implements LAFeedWithComments {
 	private function getText( $post ) {
 		$text = ($this->use_excerpt === true) ? $post['post_excerpt'] :  $post['post_content'];
 		$text = ($this->shortcodes == 'strip') ? strip_shortcodes($this->removeVcShortcodes($text)) : do_shortcode($text);
+        // workaround for divi shortcodes
+		$text = preg_replace('/\[\/?et_pb.*?\]/', '', $text);
 		return $text;
 	}
 

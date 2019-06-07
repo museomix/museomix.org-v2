@@ -82,6 +82,4 @@ return array(
     'WPML_Media_Usage_Factory' => $baseDir . '/classes/media-usage/class-wpml-media-usage-factory.php',
     'WPML_Media_Welcome_Notice' => $baseDir . '/classes/menus/wpml-media-welcome-notice.php',
     'WPML_Media_Welcome_Notice_Factory' => $baseDir . '/classes/menus/wpml-media-welcome-notice-factory.php',
-    'xrstf\\Composer52\\AutoloadGenerator' => $vendorDir . '/xrstf/composer-php52/lib/xrstf/Composer52/AutoloadGenerator.php',
-    'xrstf\\Composer52\\Generator' => $vendorDir . '/xrstf/composer-php52/lib/xrstf/Composer52/Generator.php',
 );

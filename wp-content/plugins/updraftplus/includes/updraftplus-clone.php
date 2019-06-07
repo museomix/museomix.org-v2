@@ -104,6 +104,7 @@ class UpdraftPlus_Clone extends UpdraftPlus_Login {
 
 		$action = 'updraftplus_clone_create';
 		if (empty($data['site_url'])) $data['site_url'] = trailingslashit(network_site_url());
+		if (empty($data['label'])) $data['label'] = sprintf(__('Clone of %s', 'updraftplus'), trailingslashit(network_site_url()));
 		if (empty($data['install_info']['table_prefix'])) $data['install_info']['table_prefix'] = $table_prefix;
 		$subdirectory = parse_url(network_site_url(), PHP_URL_PATH);
 		if (empty($data['install_info']['subdirectory'])) $data['install_info']['subdirectory'] = !empty($subdirectory) ? $subdirectory : '/';
@@ -154,6 +155,22 @@ class UpdraftPlus_Clone extends UpdraftPlus_Login {
 
 		$response = $this->send_remote_request($data, $action);
 		
+		return $this->parse_response($response);
+	}
+
+	/**
+	 * Executes the clone checkin. Connects and sends request to UpdraftPlus and returns the response coming from the server
+	 *
+	 * @internal
+	 * @param array $data - The submitted form data
+	 * @return array      - The response from the request
+	 */
+	public function clone_checkin($data) {
+		$action = 'updraftplus_clone_checkin';
+		if (empty($data['site_url'])) $data['site_url'] = trailingslashit(network_site_url());
+
+		$response = $this->send_remote_request($data, $action);
+
 		return $this->parse_response($response);
 	}
 

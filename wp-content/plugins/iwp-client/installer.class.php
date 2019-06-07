@@ -185,7 +185,6 @@ class IWP_MMB_Installer extends IWP_MMB_Core
             }
         }
         }
-        ob_clean();
         $this->iwp_mmb_maintenance_mode(false);
         return $install_info;
     }
@@ -294,7 +293,6 @@ class IWP_MMB_Installer extends IWP_MMB_Core
         if (!empty($upgrade_translations)) {
             $upgrades['translations'] = $this->upgrade_translations($upgrade_translations,$userid);
         }
-        ob_clean();
         $this->iwp_mmb_maintenance_mode(false);
         return $upgrades;
     }
@@ -337,7 +335,6 @@ class IWP_MMB_Installer extends IWP_MMB_Core
         ob_start();
         $current = (object)$current;
 
-        if (!function_exists('wp_version_check') || !function_exists('get_core_checksums'))
             include_once(ABSPATH . '/wp-admin/includes/update.php');
         
         @wp_version_check();
@@ -474,14 +471,12 @@ class IWP_MMB_Installer extends IWP_MMB_Core
                     
                     
                     $update_core = update_core($working_dir, $wp_dir);
-                    ob_end_clean();
                     
                     $this->iwp_mmb_maintenance_mode(false);
                     if (is_wp_error($update_core))
                         return array(
                             'error' => $this->iwp_mmb_get_error($update_core), 'error_code' => 'upgrade_core_wp_error'
                         );
-                    ob_end_flush();
 					$iwp_mmb_activities_log->iwp_mmb_save_iwp_activities('core', 'update', $iwp_activities_log_post_type, $current, $userid);
                     return array(
                         'upgraded' => 'updated'
@@ -587,7 +582,6 @@ class IWP_MMB_Installer extends IWP_MMB_Core
 						}
                     }
                 }
-                ob_end_clean();
                 return array(
                     'upgraded' => $return
                 );
@@ -596,7 +590,6 @@ class IWP_MMB_Installer extends IWP_MMB_Core
                     'error' => 'Upgrade failed.', 'error_code' => 'upgrade_failed_upgrade_plugins'
                 );
         } else {
-            ob_end_clean();
             return array(
                 'error' => 'WordPress update required first.', 'error_code' => 'upgrade_plugins_wordPress_update_required_first'
             );
@@ -662,7 +655,6 @@ class IWP_MMB_Installer extends IWP_MMB_Core
                     'error' => 'Upgrade failed.', 'error_code' => 'upgrade_failed_upgrade_themes'
                 );
         } else {
-            ob_end_clean();
             return array(
                 'error' => 'WordPress update required first', 'error_code' => 'wordPress_update_required_first_upgrade_themes'
             );
@@ -1197,6 +1189,35 @@ class IWP_MMB_Installer extends IWP_MMB_Core
 
         // Update the download link
         $GLOBALS['ithemes-updater-settings']->flush('forced');
+    }
+    function get_additional_plugin_updates()
+    {
+
+        $additional_updates = array();
+
+        if (is_plugin_active('woocommerce/woocommerce.php') && $this->has_woocommerce_db_update()) {
+            $additional_updates['woocommerce/woocommerce.php'] = 1;
+        }
+
+        return $additional_updates;
+    }
+
+    function has_woocommerce_db_update()
+    {
+        $current_db_version = get_option('woocommerce_db_version', null);
+        $current_wc_version = get_option('woocommerce_version');
+        if (version_compare($current_wc_version, '3.0.0', '<')) {
+            return true;
+        }
+
+        if (!is_callable('WC_Install::get_db_update_callbacks')) {
+            return false;
+        }
+
+        /** @handled static */
+        $updates = WC_Install::get_db_update_callbacks();
+
+        return !is_null($current_db_version) && version_compare($current_db_version, max(array_keys($updates)), '<');
     }
 }
 ?>

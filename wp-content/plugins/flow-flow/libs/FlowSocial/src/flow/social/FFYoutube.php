@@ -40,7 +40,7 @@ class FFYoutube extends FFHttpRequestFeed implements LAFeedWithComments {
 				case 'user_timeline':
 					$this->userlink = "https://www.youtube.com/user/{$content}";
 					$profileUrl = "https://www.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails&forUsername={$content}" . $this->apiKeyPart;
-					$this->profile = $this->getProfile($profileUrl, $content);
+					$this->profile = $this->getProfile($profileUrl);
 					$this->url = "https://www.googleapis.com/youtube/v3/playlistItems?part=id%2Csnippet&playlistId={$this->profile->uploads}&maxResults=50" . $this->apiKeyPart;
 					break;
 				case 'channel':

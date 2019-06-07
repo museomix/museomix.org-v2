@@ -6,7 +6,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @package   FlowFlow
  * @author    Looks Awesome <email@looks-awesome.com>
  * @link      http://looks-awesome.com
- * @copyright 2014-2016 Looks Awesome
+ * @copyright Looks Awesome
  */
 class FlowFlowException extends \ErrorException {
 	public function __construct( $message = "", $code = 0, $filename = __FILE__, $lineno = __LINE__, $previous ) {

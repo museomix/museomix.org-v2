@@ -54,8 +54,12 @@ class WPML_Media_Selector implements IWPML_Action {
 	}
 
 	public function load_images_selector() {
-		$post_id   = (int) $_POST['post_id'];
-		$languages = array_map( 'sanitize_text_field', $_POST['languages'] );
+		$post_id = (int) $_POST['post_id'];
+		if ( isset( $_POST['languages'] ) && is_array( $_POST['languages'] ) ) {
+			$languages = array_map( 'sanitize_text_field', $_POST['languages'] );
+		} else {
+			$languages = array();
+		}
 
 		$media_files_list  = $this->get_media_files_list( $post_id, $languages );
 		$media_files_count = count( $media_files_list );

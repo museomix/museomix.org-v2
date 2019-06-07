@@ -98,14 +98,8 @@ class FacetWP_Updater
      * Display an update message for plugin list screens
      */
     function in_plugin_update_message( $plugin_data, $r ) {
-        $activation = get_option( 'facetwp_activation' );
-
-        if ( ! empty( $activation ) ) {
-            $activation = json_decode( $activation, true );
-
-            if ( empty( $activation['status'] ) || 'success' != $activation['status'] ) {
-                echo '<br />' . __( 'Please activate or renew your license for automatic updates.', 'fwp' );
-            }
+        if ( ! FWP()->helper->is_license_active() ) {
+            echo '<br />' . __( 'Please activate or renew your license for automatic updates.', 'fwp' );
         }
     }
 }

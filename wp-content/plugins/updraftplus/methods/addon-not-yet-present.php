@@ -19,13 +19,13 @@ class UpdraftPlus_BackupModule_AddonNotYetPresent extends UpdraftPlus_BackupModu
 		$this->error_msg_trans = sprintf(__('This remote storage method (%s) requires PHP %s or later.', 'updraftplus'), $this->description, $this->required_php);
 	}
 
-	public function backup($backup_array) {
+	public function backup($backup_array) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		global $updraftplus;
 
-		$updraftplus->log("You do not have the UpdraftPlus ".$this->method.' add-on installed - get it from '.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").'');
+		$this->log("You do not have the UpdraftPlus ".$this->method.' add-on installed - get it from '.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").'');
 		
-		$updraftplus->log(sprintf(__('You do not have the UpdraftPlus %s add-on installed - get it from %s', 'updraftplus'), $this->description, ''.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").''), 'error', 'missingaddon-'.$this->method);
+		$this->log(sprintf(__('You do not have the UpdraftPlus %s add-on installed - get it from %s', 'updraftplus'), $this->description, ''.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").''), 'error', 'missingaddon-'.$this->method);
 		
 		return false;
 
@@ -59,19 +59,19 @@ class UpdraftPlus_BackupModule_AddonNotYetPresent extends UpdraftPlus_BackupModu
 		return array('multi_options', 'config_templates');
 	}
 
-	public function delete($files, $method_obj = false, $sizeinfo = array()) {
+	public function delete($files, $method_obj = false, $sizeinfo = array()) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		global $updraftplus;
 
-		$updraftplus->log('You do not have the UpdraftPlus '.$this->method.' add-on installed - get it from '.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").'');
+		$this->log('You do not have the UpdraftPlus '.$this->method.' add-on installed - get it from '.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").'');
 		
-		$updraftplus->log(sprintf(__('You do not have the UpdraftPlus %s add-on installed - get it from %s', 'updraftplus'), $this->description, ''.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").''), 'error', 'missingaddon-'.$this->method);
+		$this->log(sprintf(__('You do not have the UpdraftPlus %s add-on installed - get it from %s', 'updraftplus'), $this->description, ''.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/").''), 'error', 'missingaddon-'.$this->method);
 
 		return false;
 
 	}
 
-	public function listfiles($match = 'backup_') {
+	public function listfiles($match = 'backup_') {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		return new WP_Error('no_addon', sprintf(__('You do not have the UpdraftPlus %s add-on installed - get it from %s', 'updraftplus'), $this->description, ''.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/")));
 	}
 
@@ -81,7 +81,7 @@ class UpdraftPlus_BackupModule_AddonNotYetPresent extends UpdraftPlus_BackupModu
 	 * @return String - the template, ready for substitutions to be carried out
 	 */
 	public function get_configuration_template() {
-		$link = sprintf(__('%s support is available as an add-on', 'updraftplus'), $this->description).' - <a href="'.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/".$this->method."/").'">'.__('follow this link to get it', 'updraftplus');
+		$link = sprintf(__('%s support is available as an add-on', 'updraftplus'), $this->description).' - <a href="'.apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/".$this->method."/").'" target="_blank">'.__('follow this link to get it', 'updraftplus');
 
 		$default = '
 		<tr class="updraftplusmethod '.$this->method.'">

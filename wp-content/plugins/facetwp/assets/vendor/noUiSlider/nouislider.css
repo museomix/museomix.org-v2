@@ -1,0 +1,74 @@
+.noUi-target,
+.noUi-target * {
+    box-sizing: border-box;
+    touch-action: none;
+    user-select: none;
+}
+.noUi-base,
+.noUi-connects {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+.noUi-connects {
+    overflow: hidden;
+    z-index: 0;
+}
+.noUi-connect,
+.noUi-origin {
+    will-change: transform;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transform-origin: 0 0;
+}
+html:not([dir="rtl"]) .noUi-horizontal .noUi-origin {
+    left: auto;
+    right: 0;
+}
+.noUi-horizontal .noUi-origin {
+    height: 0; /* fixes noUi-connect click */
+}
+.noUi-touch-area {
+    height: 100%;
+    width: 100%;
+}
+.noUi-state-tap .noUi-connect,
+.noUi-state-tap .noUi-origin {
+    transition: transform 0.3s;
+}
+.noUi-horizontal {
+    height: 14px;
+}
+.noUi-horizontal .noUi-handle {
+    width: 20px;
+    height: 20px;
+    left: -10px;
+    top: -4px;
+}
+html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
+    right: -10px;
+    left: auto;
+}
+.noUi-target {
+    position: relative;
+    direction: ltr;
+    background: #FAFAFA;
+    border-radius: 4px;
+    border: 1px solid #D3D3D3;
+    padding: 0 8px;
+}
+.noUi-connect {
+    background: #ddd;
+}
+.noUi-handle {
+    position: absolute;
+    border: 1px solid #D9D9D9;
+    border-radius: 3px;
+    background: #FFF;
+    cursor: col-resize;
+}

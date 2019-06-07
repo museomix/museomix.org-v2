@@ -165,6 +165,13 @@ class IWP_MMB_Backup_Singlecall extends IWP_MMB_Core
                 }
                 upgradeOldDropBoxBackupList($this->tasks['account_info']['iwp_dropbox']);
             }
+            if ((!defined('DISABLE_IWP_CLOUD_VERIFICATION')) && (empty($this->tasks['args']['disable_iwp_cloud_verification']))) {
+                $backup_repo_test_obj = new IWP_BACKUP_REPO_TEST();
+                $backup_repo_test_result = $backup_repo_test_obj->repositoryTestConnection($this->tasks['account_info']);
+                if (!empty($backup_repo_test_result['error']) && $backup_repo_test_result['status'] != 'success') {
+                    return array('error' => $backup_repo_test_result['error'], 'error_code' => $backup_repo_test_result['error_code']);
+                }
+            }
 						
 			extract($params);			
 										
@@ -191,14 +198,24 @@ class IWP_MMB_Backup_Singlecall extends IWP_MMB_Core
     
      
 function delete_task_now($task_name){
-	global $wpdb;
+	global $wpdb, $iwp_backup_core;
 
 	$table_name = $wpdb->base_prefix . "iwp_backup_status";
 	
 	$tasks = $this->tasks;
 	//unset($tasks[$task_name]);
 	
-	
+	$stats = array();
+    $new_backup_method = $iwp_backup_core->get_backup_history();
+    $task_res = array();
+    if (!empty($new_backup_method)) {
+        foreach ($new_backup_method as $time => $value) {
+            if ($value['label'] == $task_name) {
+                unset($new_backup_method[$time]);
+            }
+        }
+    }
+    $iwp_backup_core->save_history($new_backup_method);
 	$delete_query = "DELETE FROM ".$table_name." WHERE taskName = '".$task_name."' ";
 	$deleteRes = $wpdb->query($delete_query);
 	
@@ -615,6 +632,8 @@ function delete_task_now($task_name){
             "pgcache",
             "objectcache",
             "wp-snapshots",
+            "site_map.xml",
+            "iwp-clone-log.txt",
         );
 		
 		//removing files which are larger than the specified size
@@ -1081,12 +1100,40 @@ function delete_task_now($task_name){
         global $wpdb;
         $paths   = $this->getMySQLPath();
         $brace   = (substr(PHP_OS, 0, 3) == 'WIN') ? '"' : '';
+        $exclude_tables = $this->tasks['args']['exclude_tables'];
 		//$command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables "' . DB_NAME . '" > ' . $brace . $file . $brace;
         $command0 = $wpdb->get_col('SHOW TABLES LIKE "'.$wpdb->base_prefix.'%"');
-        $wp_tables = join("\" \"",$command0);
-        $command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables --extended-insert=FALSE "' . DB_NAME . '" "'.$wp_tables.'" > ' . $brace . $file . $brace;
+        $full_table = array();
+        $structure_only_table = array();
+        if (!empty($exclude_tables)) {
+            foreach ($command0 as $tk => $table) {
+                foreach ($exclude_tables as $ke => $exclude_table) {
+                    $structure = false;
+                    if (strpos($table, $exclude_table)) {
+                        $structure = true;
+                        break;
+                    }
+                }
+                if ($structure) {
+                    $structure_only_table [] = $table;
+                }else{
+                    $full_table [] = $table;
+                }
+            }
+        }else{
+            $full_table = $command0;
+        }
+        $wp_tables = join("\" \"",$full_table);
+        $command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --max_allowed_packet=1M --skip-comments --skip-set-charset --allow-keywords --dump-date --add-drop-table --skip-lock-tables --extended-insert "' . DB_NAME . '" "'.$wp_tables.'" > ' . $brace . $file . $brace;
 		iwp_mmb_print_flush('DB DUMP CMD: Start');
         ob_start();
+        if (!empty($structure_only_table)) {
+            $wp_tables = join("\" \"",$structure_only_table);
+            $structure_command = $brace . $paths['mysqldump'] . $brace . ' --force --host="' . DB_HOST . '" --user="' . DB_USER . '" --password="' . DB_PASSWORD . '" --add-drop-table --skip-lock-tables --no-data "' . DB_NAME . '" "'.$wp_tables.'" >> ' . $brace . $file . $brace;
+            // $result = $this->iwp_mmb_exec($structure_command);
+            $command.=' && '.$structure_command;
+
+        }
         $result = $this->iwp_mmb_exec($command);
         ob_get_clean();
 		iwp_mmb_print_flush('DB DUMP CMD: End');
@@ -1107,7 +1154,7 @@ function delete_task_now($task_name){
     function backup_db_php($file)
     {
         global $wpdb;
-		
+		$exclude_tables = $this->tasks['args']['exclude_tables'];
 		if(empty($GLOBALS['fail_safe_db'])){
 			iwp_mmb_print_flush('DB DUMP PHP Normal: Start');
 			$fp = fopen( $file, 'w' );
@@ -1137,7 +1184,18 @@ function delete_task_now($task_name){
                 $insert_sql .= "\n\n" . $table_descr_query[0][1] . ";\n\n";
 				fwrite( $fp, $insert_sql );
 				$insert_sql = '';
-				
+				$skipThisTable = false;
+                if (!empty($exclude_tables)) {
+                    foreach ($exclude_tables as $ke => $exclude_table) {
+                        if (strpos($table[0], $exclude_table)) {
+                                $skipThisTable = true;
+                                break;
+                        }
+                    }
+                }
+                if ($skipThisTable) {
+                    continue;
+                }
                 $table_query = $wpdb->get_results("SELECT * FROM `$table`", ARRAY_N);
                 $num_fields = $wpdb->num_rows;
                 
@@ -1193,6 +1251,19 @@ function delete_task_now($task_name){
 				$create_table = $wpdb->get_row("SHOW CREATE TABLE $table[0]", ARRAY_N);
             $dump_data = "\n\n" . $create_table[1] . ";\n\n";
             file_put_contents($file, $dump_data, FILE_APPEND);
+
+            $skipThisTable = false;
+            if (!empty($exclude_tables)) {
+                foreach ($exclude_tables as $ke => $exclude_table) {
+                    if (strpos($table[0], $exclude_table)) {
+                            $skipThisTable = true;
+                            break;
+                    }
+                }
+            }
+            if ($skipThisTable) {
+                continue;
+            }
 				
 				$count = $wpdb->get_var("SELECT count(*) FROM $table[0]");
 				if ($count > 100)
@@ -1663,7 +1734,7 @@ function delete_task_now($task_name){
     
     function check_backup_compat()
     {
-        global $wpdb;
+        global $wpdb, $iwp_backup_core;
         $reqs = array();
         $reqs['serverInfo']['server_os']['name'] = 'Server OS';
         if (strpos($_SERVER['DOCUMENT_ROOT'], '/') === 0) {
@@ -1705,28 +1776,28 @@ function delete_task_now($task_name){
         }
         
         if ( !ini_get( 'memory_limit' ) ) {
-		$parent_class_val = 'unknown';
-	} else {
-		$parent_class_val = ini_get( 'memory_limit' );
-	}
+    		$parent_class_val = 'unknown';
+    	} else {
+    		$parent_class_val = ini_get( 'memory_limit' );
+    	}
         $reqs['serverInfo']['php_memory_limit']['name'] = 'PHP Memory Limit';
         $reqs['serverInfo']['php_memory_limit']['status'] = $parent_class_val;
         $reqs['serverInfo']['php_memory_limit']['suggeted'] = '>= 128M (256M+ best)';
         
         if ( preg_match( '/(\d+)(\w*)/', $parent_class_val, $matches ) ) {
-		$parent_class_val = $matches[1];
-		$unit = $matches[2];
-		// Up memory limit if currently lower than 256M.
-		if ( 'g' !== strtolower( $unit ) ) {
-			if ( ( $parent_class_val < 128 ) || ( 'm' !== strtolower( $unit ) ) ) {
-				$reqs['serverInfo']['php_memory_limit']['pass'] = false;
-			} else {
-				$reqs['serverInfo']['php_memory_limit']['pass'] = true;
-			}
-		}
-	} else {
-		$reqs['serverInfo']['php_memory_limit']['pass'] = false;
-	}
+    		$parent_class_val = $matches[1];
+    		$unit = $matches[2];
+    		// Up memory limit if currently lower than 256M.
+    		if ( 'g' !== strtolower( $unit ) ) {
+    			if ( ( $parent_class_val < 128 ) || ( 'm' !== strtolower( $unit ) ) ) {
+    				$reqs['serverInfo']['php_memory_limit']['pass'] = false;
+    			} else {
+    				$reqs['serverInfo']['php_memory_limit']['pass'] = true;
+    			}
+    		}
+    	} else {
+    		$reqs['serverInfo']['php_memory_limit']['pass'] = false;
+    	}
         
         //$reqs['serverInfo']['Site Information']['status'] = $this->getDirectorySize(ABSPATH);
         $tempInfo = $this->getDirectorySize(ABSPATH);
@@ -1856,7 +1927,46 @@ function delete_task_now($task_name){
             $reqs['functionList']['ftp_functions']['pass'] = false;
         }
         $reqs['functionList']['ftp_functions']['suggeted']   = 'N/A';
-        
+        $curl_info = curl_version();
+        $reqs['serverInfo']['curl_version']['name'] = 'Curl Version';
+        $reqs['serverInfo']['curl_version']['status'] = $curl_info['version'];
+        $reqs['serverInfo']['curl_version']['pass']   = true;
+        $reqs['serverInfo']['curl_version']['suggeted']   = 'N/A';
+
+        $reqs['serverInfo']['ssl_ersion']['name'] = 'SSL Version';
+        $reqs['serverInfo']['ssl_ersion']['status'] = $curl_info['ssl_version'];
+        $reqs['serverInfo']['ssl_ersion']['pass']   = true;
+        $reqs['serverInfo']['ssl_ersion']['suggeted']   = 'N/A';
+
+        //$hosting_bytes_free = $iwp_backup_core->get_hosting_disk_quota_free();
+        $quota_free = 'N/A';
+        $no_low_quota = true;
+        $no_low_disk_space  = true;
+        /*if (is_array($hosting_bytes_free)) {
+            $perc = round(100*$hosting_bytes_free[1]/(max($hosting_bytes_free[2], 1)), 1);
+            $quota_free = round($hosting_bytes_free[3]/1048576, 1)." MB";
+            if ($hosting_bytes_free[3] < 1048576*50) {
+                $no_low_quota = true;
+            }
+        }*/
+        $disk_free_space = @disk_free_space(IWP_BACKUP_DIR);
+        if ($disk_free_space == false) {
+            $quota_free = 'Unknown';
+        } else {
+            $disk_free_mb = round($disk_free_space/1048576, 1)." MB";
+            if ($disk_free_space < 50*1048576){
+                $no_low_disk_space = true;
+            }
+        }
+        /*$reqs['serverInfo']['quota_free']['name'] = 'CPanel Quota';
+        $reqs['serverInfo']['quota_free']['status'] = $quota_free;
+        $reqs['serverInfo']['quota_free']['pass']   = $no_low_quota;
+        $reqs['serverInfo']['quota_free']['suggeted']   = 'N/A';*/
+
+        $reqs['serverInfo']['disk_free_space']['name'] = 'Free Disk space';
+        $reqs['serverInfo']['disk_free_space']['status'] = $disk_free_mb;
+        $reqs['serverInfo']['disk_free_space']['pass']   = $no_low_quota;
+        $reqs['serverInfo']['disk_free_space']['suggeted']   = 'N/A';
         return $reqs;
     }
         
@@ -2779,7 +2889,9 @@ function ftp_backup($args)
 		foreach($rows as $key => $value){
 			$task_results = unserialize($value->taskResults);
 			$task_res[$value->taskName][$value->historyID] = $task_results['task_results'][$value->historyID];
-			$task_res[$value->taskName][$value->historyID]['backhack_status'] = $task_results['backhack_status'];
+            if (!empty($task_results['backhack_status'])) {
+    			$task_res[$value->taskName][$value->historyID]['backhack_status'] = $task_results['backhack_status'];
+            }
 		}		
         $stats = $task_res;
 		return $stats;
@@ -3195,7 +3307,7 @@ function ftp_backup($args)
 	function statusLog($historyID = '', $statusArray = array(), $params=array())
 	{
   		global $wpdb,$insertID;
-  		
+  		iwp_mmb_create_backup_status_table();
   		if(empty($historyID))
 		{
   			$insert  = $wpdb->insert($wpdb->base_prefix.'iwp_backup_status',array( 'stage' => $statusArray['stage'], 'status' => $statusArray['status'],  'action' => $params['args']['action'], 'type' => $params['args']['type'],'category' => $params['args']['what'],'historyID' => $GLOBALS['IWP_CLIENT_HISTORY_ID'],'finalStatus' => 'pending','startTime' => microtime(true),'lastUpdateTime' => microtime(true), 'endTime' => '','statusMsg' => $statusArray['statusMsg'],'requestParams' => serialize($params),'taskName' => $params['task_name']), array( '%s', '%s','%s', '%s', '%s', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s' ) );

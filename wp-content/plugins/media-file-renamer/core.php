@@ -15,6 +15,11 @@ class Meow_MFRH_Core {
 		new Meow_MFRH_Updates( $this, $this->admin );
 		load_plugin_textdomain( 'media-file-renamer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
+		$method = apply_filters( 'mfrh_method', 'media_title' );
+
+		if ( $method === 'product_title' && class_exists( 'WooCommerce' ) )
+			include( 'plugins/woocommerce.php' );
+
 		// Those actions/filters are only for the admin screens
 		if ( is_admin() ) {
 			add_filter( 'attachment_fields_to_save', array( $this, 'attachment_fields_to_save' ), 20, 2 );
@@ -212,6 +217,11 @@ SQL;
 		$old_filepath = get_attached_file( $id );
 		$old_filepath = Meow_MFRH_Core::sensitive_file_exists( $old_filepath );
 		$path_parts = mfrh_pathinfo( $old_filepath );
+
+		// If the file doesn't exist, let's not go further.
+		if ( !isset( $path_parts['dirname'] ) || !isset( $path_parts['basename'] ) )
+			return false;
+
 		//print_r( $path_parts );
 		$directory = $path_parts['dirname'];
 		$old_filename = $path_parts['basename'];
@@ -640,7 +650,7 @@ SQL;
 	function move( $media, $newPath ) {
 		$id = null;
 		$post = null;
-		
+
 		// Check the arguments
 		if ( is_numeric( $media ) ) {
 			$id = $media;
@@ -716,9 +726,9 @@ SQL;
 					if ( function_exists( 'wr2x_get_retina' ) ) {
 						$wr2x_old_filepath = $this->str_replace( '.' . $old_ext, '@2x.' . $old_ext, $meta_old_filepath );
 						$wr2x_new_filepath = $this->str_replace( '.' . $old_ext, '@2x.' . $old_ext, $meta_new_filepath );
-						if ( file_exists( $wr2x_old_filepath ) 
+						if ( file_exists( $wr2x_old_filepath )
 							&& ( ( !file_exists( $wr2x_new_filepath ) ) || is_writable( $wr2x_new_filepath ) ) ) {
-							
+
 							// Rename retina file
 							if ( !$this->rename_file( $wr2x_old_filepath, $wr2x_new_filepath, $case_issue ) && !$force_rename ) {
 								$this->log( "[!] Retina $wr2x_old_filepath -> $wr2x_new_filepath" );
@@ -903,9 +913,9 @@ SQL;
 					if ( function_exists( 'wr2x_get_retina' ) ) {
 						$wr2x_old_filepath = $this->str_replace( '.' . $old_ext, '@2x.' . $old_ext, $meta_old_filepath );
 						$wr2x_new_filepath = $this->str_replace( '.' . $new_ext, '@2x.' . $new_ext, $meta_new_filepath );
-						if ( file_exists( $wr2x_old_filepath ) 
+						if ( file_exists( $wr2x_old_filepath )
 							&& ( ( !file_exists( $wr2x_new_filepath ) ) || is_writable( $wr2x_new_filepath ) ) ) {
-							
+
 							// Rename retina file
 							if ( !$this->rename_file( $wr2x_old_filepath, $wr2x_new_filepath, $case_issue ) && !$force_rename ) {
 								$this->log( "[!] Retina $wr2x_old_filepath -> $wr2x_new_filepath" );
@@ -991,7 +1001,7 @@ SQL;
 		}
 
 		// HTTP REFERER set to the new media link
-		if ( isset( $_REQUEST['_wp_original_http_referer'] ) && 
+		if ( isset( $_REQUEST['_wp_original_http_referer'] ) &&
 			strpos( $_REQUEST['_wp_original_http_referer'], '/wp-admin/' ) === false ) {
 			$_REQUEST['_wp_original_http_referer'] = get_permalink( $id );
 		}

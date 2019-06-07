@@ -25,8 +25,11 @@ class FFLinkedIn extends FFHttpRequestFeed {
 	/**
 	 * Search company.
 	 * http://stackoverflow.com.80bola.com/questions/17860616/search-company-api-linkedin
+	 *
+	 * @param \stdClass $feed
 	 */
 	public function deferredInit( $feed ) {
+
 		$token = $feed->linkedin_access_token;
 		$start = 0;
 		$num = $this->getCount();
@@ -36,9 +39,11 @@ class FFLinkedIn extends FFHttpRequestFeed {
 			$event_type = '&event-type=' . $feed->{'event-type'};
 		}
 		$this->url = "https://api.linkedin.com/v1/companies/{$this->company}/updates?oauth2_access_token={$token}&count={$num}&format=json";
+        $this->url .= $event_type;
 		$this->profileUrl = "https://api.linkedin.com/v1/companies/{$this->company}:(id,name,logo-url,square-logo-url)?oauth2_access_token={$token}&format=json";
 
 		$data = $this->getFeedData($this->profileUrl);
+
 		if ( sizeof( $data['errors'] ) > 0 ) {
 			$this->errors[] = array(
 				'type'    => $this->getType(),
@@ -46,6 +51,7 @@ class FFLinkedIn extends FFHttpRequestFeed {
 				'url' => $this->getUrl()
 			);
 		}
+
 		if (isset($data['response'])){
 			$profile = json_decode($data['response']);
 			if (isset($profile->squareLogoUrl) && !empty($profile->squareLogoUrl)){
@@ -75,6 +81,7 @@ class FFLinkedIn extends FFHttpRequestFeed {
 		elseif (isset($item->updateContent->companyJobUpdate)){
 			return $item->updateContent->companyJobUpdate->job->id;
 		}
+		return '';
 	}
 
 	protected function getHeader( $item ) {
@@ -84,6 +91,7 @@ class FFLinkedIn extends FFHttpRequestFeed {
 		elseif (isset($item->updateContent->companyJobUpdate)){
 			return $item->updateContent->companyJobUpdate->job->position->title;
 		}
+		return '';
 	}
 
 	protected function getScreenName( $item ) {
@@ -111,6 +119,7 @@ class FFLinkedIn extends FFHttpRequestFeed {
 			$location = $item->updateContent->companyJobUpdate->job->locationDescription;
 			return $location . '<br>' . $item->updateContent->companyJobUpdate->job->description;
 		}
+		return '';
 	}
 
 	protected function getUserlink( $item ) {

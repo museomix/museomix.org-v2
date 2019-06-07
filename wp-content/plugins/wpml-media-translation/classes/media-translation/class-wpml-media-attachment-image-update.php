@@ -42,7 +42,7 @@ class WPML_Media_Attachment_Image_Update implements IWPML_Action {
 
 			if ( ! isset( $file['error'] ) ) {
 
-				if( 0 === strpos( $file['type'], 'image/' ) ){
+				if( wp_image_editor_supports( array( 'mime_type' => $file['type'] ) ) ){
 
 					$editor = wp_get_image_editor( $file['file'] );
 
@@ -61,11 +61,13 @@ class WPML_Media_Attachment_Image_Update implements IWPML_Action {
 							$thumb_url = $uploads_dir['baseurl'] . $uploads_dir['subdir'] . '/' . $thumb['file'];
 							$thumb_path = $thumb['path'];
 						}
-
 					} else {
 						wp_send_json_error( __( 'Failed to load the image editor', 'wpml-media' ) );
 					}
 
+				} elseif( 0 === strpos( $file['type'], 'image/' ) ) {
+					$thumb_url  = $file['url'];
+					$thumb_path = $file['file'];
 				} else {
 					$thumb_url = wp_mime_type_icon( $original_attachment_id );
 				}

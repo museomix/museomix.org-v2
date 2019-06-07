@@ -3,7 +3,7 @@ Contributors: fernandot
 Donate link: https://www.paypal.me/fernandotellado
 Tags: divi, builder, composer, lightbox, modal, popup
 Requires at least: 4.0
-Tested up to: 5.0
+Tested up to: 5.2
 Stable tag: trunk
 License: GPLv2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -49,6 +49,12 @@ No. The purpose is just the opposite. With this plugin You will not need any oth
 1. Divi Lightbox active in an individual image.
 
 == Changelog ==
+
+= 0.9.5 =
+* Tested up to WordPress 5.2
+
+= 0.9.4 =
+* Tested up to WordPress 5.1
 
 = 0.9.3 =
 * Tested up to WordPress 5.0 tag added

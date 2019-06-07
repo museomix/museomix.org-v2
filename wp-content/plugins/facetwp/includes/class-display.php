@@ -75,10 +75,6 @@ class FacetWP_Display
                 $output .= $preload_data['template'];
                 $output .= '</div>';
 
-                if ( apply_filters( 'facetwp_use_pager_seo', true ) ) {
-                    $output .= $this->get_pager_seo();
-                }
-
                 $this->load_assets = true;
             }
         }
@@ -103,28 +99,6 @@ class FacetWP_Display
         }
 
         $output = apply_filters( 'facetwp_shortcode_html', $output, $atts );
-
-        return $output;
-    }
-
-
-    /**
-     * Build a basic hidden pager for SEO purposes
-     */
-    function get_pager_seo() {
-        $page = FWP()->facet->pager_args['page'];
-        $total_pages = FWP()->facet->pager_args['total_pages'];
-        $url_var = FWP()->helper->get_setting( 'prefix' ) . 'paged';
-
-        $prev_link = ( 2 === $page ) ? remove_query_arg( $url_var ) : add_query_arg( $url_var, $page - 1 );
-        $next_link = add_query_arg( $url_var, $page + 1 );
-        $output = '';
-
-        if ( 1 < $total_pages ) {
-            $output .= ( 1 < $page ) ? '<a href="' . $prev_link . '">Prev</a>' : '';
-            $output .= ( $page < $total_pages ) ? '<a href="' . $next_link . '">Next</a>' : '';
-            $output = '<div class="facetwp-seo">' . $output . '</div>';
-        }
 
         return $output;
     }

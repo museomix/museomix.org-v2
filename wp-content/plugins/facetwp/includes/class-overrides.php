@@ -23,20 +23,20 @@ class FacetWP_Overrides
 
         $facet = FWP()->helper->get_facet_by_name( $params['facet_name'] );
 
+        // Store raw numbers to format later
+        if ( in_array( $facet['type'], [ 'number_range', 'slider' ] ) ) {
+            $this->raw = [
+                'value' => $params['facet_value'],
+                'label' => $params['facet_display_value']
+            ];
+        }
+
         // Support "Other data source" values
         if ( ! empty( $facet['source_other'] ) ) {
             $other_params = $params;
             $other_params['facet_source'] = $facet['source_other'];
             $rows = $class->get_row_data( $other_params );
             $params['facet_display_value'] = $rows[0]['facet_display_value'];
-        }
-
-        // Store raw numbers to format later, if needed
-        if ( in_array( $facet['type'], [ 'number_range', 'slider' ] ) ) {
-            $this->raw = [
-                'value' => $params['facet_value'],
-                'label' => $params['facet_display_value']
-            ];
         }
 
         return $params;
@@ -48,12 +48,12 @@ class FacetWP_Overrides
      */
     function format_numbers( $params, $class ) {
 
-        $value = $params['facet_value'];
-        $label = $params['facet_display_value'];
-
         if ( empty( $this->raw ) ) {
             return $params;
         }
+
+        $value = $params['facet_value'];
+        $label = $params['facet_display_value'];
 
         // Only format if un-altered
         if ( $this->raw['value'] === $value && $this->raw['label'] === $label ) {

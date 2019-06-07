@@ -2,6 +2,9 @@
 
 class WPML_Media_Post_Media_Usage implements IWPML_Action {
 
+	/** @see WPML_Post_Translation::save_post_actions() */
+	const PRIORITY_AFTER_CORE_SAVE_POST_ACTIONS = 200;
+
 	/**
 	 * @var SitePress
 	 */
@@ -27,7 +30,7 @@ class WPML_Media_Post_Media_Usage implements IWPML_Action {
 	}
 
 	public function add_hooks() {
-		add_action( 'save_post', array( $this, 'update_media_usage' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'update_media_usage' ), self::PRIORITY_AFTER_CORE_SAVE_POST_ACTIONS, 2 );
 	}
 
 	/**

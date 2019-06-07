@@ -15,7 +15,7 @@ use flow\social\LAFeedWithComments;
  * @author    Looks Awesome <email@looks-awesome.com>
 
  * @link      http://looks-awesome.com
- * @copyright 2014-2016 Looks Awesome
+ * @copyright Looks Awesome
  *
  * @property \flow\settings\FFStreamSettings stream
  */
@@ -65,27 +65,19 @@ class FFCacheManager implements FFCache{
 							list($new_posts, $existed_posts) = $this->separation($exist_feed_ids, $posts);
 							$countPosts4Insert = sizeof($new_posts);
 							if (FFDB::beginTransaction()){
-								if ($countPosts4Insert > 0) {
-									$hasNewItems = true;
-									$smart_order = 0;
-									usort( $new_posts, array( $this, 'compareByTime' ) );
-									foreach ( $new_posts as $post ) {
-										$post->smart_order = $smart_order;
-										$smart_order++;
-									}
-									$this->db->setSmartOrder($feed_id, $countPosts4Insert);
-								}
-
 								if ('facebook' == $feed->getType()){
-									if ($hasNewItems) {
+									if ($countPosts4Insert > 0) {
 										$this->save( $feed, $new_posts);
-										$this->db->setRandomOrder($feed_id);
 									}
 									$this->updateAdditionalInfo($existed_posts);
 								}
 								else {
 									$this->save( $feed, $posts);
-									$this->db->setRandomOrder($feed_id);
+								}
+
+								if ($countPosts4Insert > 0) {
+									$this->db->setOrders($feed_id);
+									$hasNewItems = true;
 								}
 							}
 						}
@@ -159,14 +151,15 @@ class FFCacheManager implements FFCache{
 
 	protected function getGetFields(){
 		$select  = "post.post_id as id, post.post_type as type, post.user_nickname as nickname, ";
-		$select .= "post.user_screenname as screenname, post.user_pic as userpic, ";
+		$select .= "post.user_pic as userpic, ";
 		$select .= "post.post_timestamp as system_timestamp, ";
 		$select .= "post.location as location, ";
-		$select .= "post.post_text as text, post.user_link as userlink, post.post_permalink as permalink, ";
+		$select .= "post.user_link as userlink, post.post_permalink as permalink, ";
 		$select .= "post.image_url, post.image_width, post.image_height, post.media_url, post.media_type, ";
-		$select .= "post.user_bio, post.user_counts_media, post.user_counts_follows, post.user_counts_followed_by, ";
-		$select .= "post.media_width, post.media_height, post.post_header, post.post_source, post.post_additional, post.feed_id, ";
+		$select .= "post.user_counts_media, post.user_counts_follows, post.user_counts_followed_by, ";
+		$select .= "post.media_width, post.media_height, post.post_source, post.post_additional, post.feed_id, ";
 		$select .= "post.carousel_size ";
+		$select .= FF_ALTERNATIVE_POST_STORAGE ? ", post.post_content " : ", post.user_screenname as screenname, post.post_header, post.post_text as text, post.user_bio ";
 		return $select;
 	}
 
@@ -255,34 +248,69 @@ class FFCacheManager implements FFCache{
 		        $mediaPartOfSql = (isset($post->media) && sizeof($post->media) == 4) ?
 			        FFDB::conn()->parse('`media_url`=?s, `media_width`=?i, `media_height`=?i, `media_type`=?s,',
 			        $post->media['url'], $post->media['width'], $post->media['height'], $post->media['type']) : '';
-				
-				$only4insertPartOfSql = FFDB::conn()->parse('?p, ?u', $only4insertPartOfSqlTemplate, array(
-					'feed_id' => $feed_id,
-					'post_id' => $post->id,
-					'post_type' => $post->type,
-					'post_permalink' => $post->permalink,
-					'user_nickname' => $post->nickname,
-					'user_screenname' => $post->screenname,
-					'user_pic' => $post->userpic,
-					'user_bio' => (isset($post->userMeta->bio) ? json_encode( $post->userMeta->bio . (isset($post->userMeta->website) ? ' ' . $post->userMeta->website : '')) : ''),
-					'user_counts_media' => isset($post->userMeta->counts->media) ? $post->userMeta->counts->media : 0,
-					'user_counts_follows' => isset($post->userMeta->counts->follows) ? $post->userMeta->counts->follows : 0,
-					'user_counts_followed_by' => isset($post->userMeta->counts->followed_by) ? $post->userMeta->counts->followed_by : 0,
-					'user_link' => $post->userlink,
-					'post_source' => isset($post->source) ? $post->source : '',
-					'location' => isset($post->location) ? json_encode($post->location) : '',
-					'smart_order' => $post->smart_order,
-					'post_status' => $status
-				));
-				
-				if (!isset($post->additional)) $post->additional = array();
-				$common = array(
-					'post_header' => @FFDB::conn()->conn->real_escape_string(trim($post->header)),
-					'post_text'   => $this->prepareText($post->text),
-					'post_timestamp' => $this->correctionTimeZone($post->system_timestamp),
-					'post_additional' => json_encode($post->additional),
-					'carousel_size' => 0
-				);
+
+				if (FF_ALTERNATIVE_POST_STORAGE){
+					$post_content = json_encode( [
+						'user_screenname' => $post->screenname,
+						'post_header' => $this->prepareText($post->header),
+						'post_text' => $this->prepareText($post->text),
+						'user_bio' => (isset($post->userMeta->bio) ? ( $post->userMeta->bio . (isset($post->userMeta->website) ? ' ' . $post->userMeta->website : '')) : ''),
+					]);
+
+					$only4insertPartOfSql = FFDB::conn()->parse('?p, ?u', $only4insertPartOfSqlTemplate, array(
+						'feed_id' => $feed_id,
+						'post_id' => $post->id,
+						'post_type' => $post->type,
+						'post_permalink' => $post->permalink,
+						'user_nickname' => $post->nickname,
+						'user_pic' => $post->userpic,
+						'user_counts_media' => isset($post->userMeta->counts->media) ? $post->userMeta->counts->media : 0,
+						'user_counts_follows' => isset($post->userMeta->counts->follows) ? $post->userMeta->counts->follows : 0,
+						'user_counts_followed_by' => isset($post->userMeta->counts->followed_by) ? $post->userMeta->counts->followed_by : 0,
+						'user_link' => $post->userlink,
+						'post_source' => isset($post->source) ? $post->source : '',
+						'location' => isset($post->location) ? json_encode($post->location) : '',
+						'smart_order' => $post->smart_order,
+						'post_status' => $status
+					));
+
+					if (!isset($post->additional)) $post->additional = array();
+					$common = array(
+						'post_content' => $post_content,
+						'post_timestamp' => $this->correctionTimeZone($post->system_timestamp),
+						'post_additional' => json_encode($post->additional),
+						'carousel_size' => 0
+					);
+				}
+				else {
+					$only4insertPartOfSql = FFDB::conn()->parse('?p, ?u', $only4insertPartOfSqlTemplate, array(
+						'feed_id' => $feed_id,
+						'post_id' => $post->id,
+						'post_type' => $post->type,
+						'post_permalink' => $post->permalink,
+						'user_nickname' => $post->nickname,
+						'user_screenname' => $post->screenname,
+						'user_pic' => $post->userpic,
+						'user_bio' => (isset($post->userMeta->bio) ? json_encode( $post->userMeta->bio . (isset($post->userMeta->website) ? ' ' . $post->userMeta->website : '')) : ''),
+						'user_counts_media' => isset($post->userMeta->counts->media) ? $post->userMeta->counts->media : 0,
+						'user_counts_follows' => isset($post->userMeta->counts->follows) ? $post->userMeta->counts->follows : 0,
+						'user_counts_followed_by' => isset($post->userMeta->counts->followed_by) ? $post->userMeta->counts->followed_by : 0,
+						'user_link' => $post->userlink,
+						'post_source' => isset($post->source) ? $post->source : '',
+						'location' => isset($post->location) ? json_encode($post->location) : '',
+						'smart_order' => $post->smart_order,
+						'post_status' => $status
+					));
+
+					if (!isset($post->additional)) $post->additional = array();
+					$common = array(
+						'post_header' => @FFDB::conn()->conn->real_escape_string(trim($post->header)),
+						'post_text'   => $this->prepareText($post->text),
+						'post_timestamp' => $this->correctionTimeZone($post->system_timestamp),
+						'post_additional' => json_encode($post->additional),
+						'carousel_size' => 0
+					);
+				}
 				
 				if (isset($post->carousel) && sizeof($post->carousel) > 1){
 					$this->db->deleteCarousel4Post($feed_id, $post->id);
@@ -338,22 +366,35 @@ class FFCacheManager implements FFCache{
 		$post->id = $row['id'];
 		$post->type = $row['type'];
 		$post->nickname = $row['nickname'];
-		$post->screenname = $row['screenname'];
 		$post->userpic = $row['userpic'];
 		$post->system_timestamp = $row['system_timestamp'];
 		$post->timestamp = FFSettingsUtils::classicStyleDate($row['system_timestamp'], FFGeneralSettings::get()->dateStyle());
-		$post->text = stripslashes($row['text']);
 		$post->location = json_decode($row['location']);
 		$post->userlink = $row['userlink'];
-		$post->user_bio = json_decode($row['user_bio']);
 		$post->user_counts_media = $row['user_counts_media'];
 		$post->user_counts_follows = $row['user_counts_follows'];
 		$post->user_counts_followed_by = $row['user_counts_followed_by'];
 		$post->permalink = $row['permalink'];
-		$post->header = stripslashes($row['post_header']);
+		if (FF_ALTERNATIVE_POST_STORAGE){
+			$post_content = $row['post_content'];
+			$post_content = json_decode($post_content, true);
+
+			$post->screenname = $post_content['user_screenname'];
+			$post->header = $post_content['post_header'];
+			$post->text = $post_content['post_text'];
+			$post->user_bio = $post_content['user_bio'];
+		}
+		else {
+			$post->screenname = $row['screenname'];
+			$post->header = stripslashes($row['post_header']);
+			$post->text = stripslashes($row['text']);
+			$post->user_bio = json_decode($row['user_bio']);
+		}
+
 		$post->mod = $moderation;
 		$post->feed = $row['feed_id'];
 		$post->with_comments = $this->feeds[$post->feed] instanceof LAFeedWithComments;
+
 		if (!empty($row['post_source'])) $post->source = $row['post_source'];
 		if ($row['image_url'] != null){
 			$url = $row['image_url'];
@@ -439,12 +480,6 @@ class FFCacheManager implements FFCache{
 		if ($pos === false) return $hash;
 		if ($pos == 0) return '';
 		return substr($hash, 0, $pos);
-	}
-
-	private function compareByTime($a, $b) {
-		$a_system_date = $a->system_timestamp;
-		$b_system_date = $b->system_timestamp;
-		return ($a_system_date == $b_system_date) ? 0 : ($a_system_date < $b_system_date) ? 1 : -1;
 	}
 
 	private function getDefaultStreamStatus($feed) {

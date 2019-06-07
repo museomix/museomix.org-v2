@@ -9,7 +9,7 @@ class WPML_Media_Set_Posts_Media_Flag_Factory implements IWPML_Backend_Action_Lo
 
 		return new WPML_Media_Set_Posts_Media_Flag(
 			$wpdb,
-			new WPML_Notices( new WPML_Notice_Render() ),
+			wpml_get_admin_notices(),
 			$post_media_usage_factory->create(),
 			new WPML_Media_Post_With_Media_Files_Factory()
 		);

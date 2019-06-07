@@ -10,7 +10,7 @@ if ( ! defined('FF_FACEBOOK_RATE_LIMIT')) define('FF_FACEBOOK_RATE_LIMIT', 200);
  * @author    Looks Awesome <email@looks-awesome.com>
 
  * @link      http://looks-awesome.com
- * @copyright 2014-2016 Looks Awesome
+ * @copyright Looks Awesome
  */
 class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 	const API_VERSION = 'v2.8';
@@ -257,7 +257,7 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 					return true;
 				}
 			}
-			//depricated
+			//deprecated
 			$url = "https://graph.facebook.com/{$api}/{$item->object_id}?fields=images";
 			$original_url = $this->cache->getOriginalUrl($url);
 			if ($original_url == ''){
@@ -474,7 +474,13 @@ class FFFacebook extends FFHttpRequestFeed implements LAFeedWithComments {
 	protected function getCarousel( $item ) {
 		$carousel = parent::getCarousel($item);
 		$subattachments = $this->carousel;
-		if (sizeof($subattachments) > 1){
+
+        // changed 30.01.19, removing first element which is duplicate of main image
+
+		if (sizeof($subattachments) > 2){
+
+            unset($subattachments[0]);
+
 			foreach ($subattachments as $image){
 				$carousel[] = $this->createMedia($image->src, $image->width, $image->height);
 			}

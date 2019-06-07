@@ -212,6 +212,16 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 			update_post_meta( $attachment_id, $meta_key,
 				get_post_meta( $original_attachment_id, $meta_key, true ) );
 		}
+
+		/**
+		 * Fires after attachment post meta is copied
+		 *
+		 * @since 4.1.0
+		 *
+		 * @param int $original_attachment_id The ID of the source/original attachment.
+		 * @param int $attachment_id          The ID of the duplicated attachment.
+		 */
+		do_action( 'wpml_after_copy_attached_file_postmeta', $original_attachment_id, $attachment_id );
 	}
 
 	private function mark_media_as_not_translated( $attachment_id, $language ) {
@@ -238,8 +248,8 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 		return $postarr;
 	}
 
-	private function update_media_file( $attachment_id, $original_attachment_id, $translated_language ) {
-		$transient_key = WPML_Media_Attachment_Image_Update::TRANSIENT_FILE_UPLOAD_PREFIX . $original_attachment_id . '_' . $translated_language;
+	private function update_media_file( $attachment_id, $original_attachment_id, $translated_language_code ) {
+		$transient_key = WPML_Media_Attachment_Image_Update::TRANSIENT_FILE_UPLOAD_PREFIX . $original_attachment_id . '_' . $translated_language_code;
 
 		$media_file_upload = get_transient( $transient_key );
 		if ( $media_file_upload ) {
@@ -253,10 +263,30 @@ class WPML_Media_Save_Translation implements IWPML_Action {
 			$post_data = $this->get_attachment_post_data( $file );
 			$this->wpdb->update( $this->wpdb->posts, $post_data, array( 'ID' => $attachment_id ) );
 			update_attached_file( $attachment_id, $file['file'] );
+
+			/**
+			 * Fires after attached file is updated
+			 *
+			 * @since 4.1.0
+			 *
+			 * @param int $attachment_id The ID of uploaded attachment.
+			 * @param array $file {
+			 *     Uploaded file data.
+			 *
+			 *     @type string file Absolute path to file.
+			 *
+			 *     @type string url File URL.
+			 *
+			 *     @type string type File type.
+			 * }
+			 * @param string $translated_language_code Attachment language code.
+			 */
+			do_action( 'wpml_updated_attached_file', $attachment_id, $file, $translated_language_code );
+
 			wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file['file'] ) );
 
-			$this->mark_media_as_translated( $original_attachment_id, $translated_language );
-			do_action( 'wpml_added_media_file_translation', $original_attachment_id, $file, $translated_language );
+			$this->mark_media_as_translated( $original_attachment_id, $translated_language_code );
+			do_action( 'wpml_added_media_file_translation', $original_attachment_id, $file, $translated_language_code );
 
 			delete_transient( $transient_key );
 		}

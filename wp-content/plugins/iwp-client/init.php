@@ -4,8 +4,9 @@ Plugin Name: InfiniteWP - Client
 Plugin URI: http://infinitewp.com/
 Description: This is the client plugin of InfiniteWP that communicates with the InfiniteWP Admin panel.
 Author: Revmakx
-Version: 1.8.6
+Version: 1.9.2.1
 Author URI: http://www.revmakx.com
+Network: true
 */
 /************************************************************
  * This plugin was modified by Revmakx						*
@@ -28,7 +29,7 @@ if(basename($_SERVER['SCRIPT_FILENAME']) == "init.php"):
     exit;
 endif;
 if(!defined('IWP_MMB_CLIENT_VERSION'))
-	define('IWP_MMB_CLIENT_VERSION', '1.8.6');
+	define('IWP_MMB_CLIENT_VERSION', '1.9.2.1');
 
 
 
@@ -60,6 +61,8 @@ define('IWP_PCLZIP_TEMPORARY_DIR', WP_CONTENT_DIR . '/infinitewp/temp/');
 require_once("$iwp_mmb_plugin_dir/helper.class.php");
 require_once("$iwp_mmb_plugin_dir/backup/backup.options.php");
 require_once("$iwp_mmb_plugin_dir/backup/functions.php");
+require_once("$iwp_mmb_plugin_dir/backup/databaseencrypt.php");
+require_once("$iwp_mmb_plugin_dir/backup/encrypt.php");
 require_once("$iwp_mmb_plugin_dir/core.class.php");
 require_once("$iwp_mmb_plugin_dir/activities_log.class.php");
 require_once("$iwp_mmb_plugin_dir/stats.class.php");
@@ -162,13 +165,12 @@ if( !function_exists ('iwp_mmb_parse_request')) {
 			error_reporting(0);
 			@ini_set("display_errors", 0);
 			
-			iwp_mmb_backup_db_changes();
 			
 			run_hash_change_process();
 			iwp_plugin_compatibility_fix();
 			$action = $iwp_action;
 			$_wp_using_ext_object_cache = false;
-			// @set_time_limit(600);
+			@set_time_limit(600);
 			
 			if (!$iwp_mmb_core->check_if_user_exists($params['username']))
 				iwp_mmb_response(array('error' => 'Username <b>' . $params['username'] . '</b> does not have administrative access. Enter the correct username in the site options.', 'error_code' => 'username_does_not_have_administrative_access'), false);
@@ -187,8 +189,11 @@ if( !function_exists ('iwp_mmb_parse_request')) {
 			
 			$auth = $iwp_mmb_core->authenticate_message($action . $id, $signature, $id);
 			if ($auth === true) {
-				if (!defined('WP_ADMIN') && $action == 'get_stats' || $action == 'do_upgrade' || $action == 'install_addon' || $action == 'edit_plugins_themes' || $action == 'bulk_actions_processor') {
+				if (!defined('WP_ADMIN') && $action == 'get_stats' || $action == 'do_upgrade' || $action == 'install_addon' || $action == 'edit_plugins_themes' || $action == 'bulk_actions_processor' || $action == 'update_broken_link' || $action == 'undismiss_broken_link') {
 					define('WP_ADMIN', true);
+				}
+				if ($action == 'get_stats') {
+					iwp_mu_plugin_loader();
 				}
 				if (is_multisite()) {
 					define('WP_NETWORK_ADMIN', true);
@@ -251,7 +256,7 @@ if (!function_exists ('iwp_mmb_set_request')) {
 		}
 		@ignore_user_abort(true);
 		$GLOBALS['IWP_CLIENT_HISTORY_ID'] = $iwp_mmb_core->request_params['id'];
-		
+		iwp_mmb_backup_db_changes();
 		if(isset($params['username']) && !is_user_logged_in()){
 			$user = function_exists('get_user_by') ? get_user_by('login', $params['username']) : iwp_mmb_get_user_by( 'login', $params['username'] );
 			if (isset($user) && isset($user->ID)) {
@@ -378,7 +383,11 @@ if( !function_exists ( 'iwp_mmb_response' )) {
 		}
 		
 		if( !headers_sent() ){
-			header('HTTP/1.0 200 OK');
+			 $protocol = 'HTTP/1.1';
+        	if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.0') {
+            	$protocol = 'HTTP/1.0';
+        	}			
+        	header($protocol.' 200 OK');
 			header('Content-Type: text/plain');
 		}
 		if (!$send_serialize_response) {
@@ -417,7 +426,7 @@ if( !function_exists ( 'iwp_mmb_add_site' )) {
 		$num = extract($params);
 		
 		if ($num) {
-			if (!get_option('iwp_client_action_message_id') && !get_option('iwp_client_public_key')) {
+			if (!$iwp_mmb_core->get_option('iwp_client_action_message_id') && !$iwp_mmb_core->get_option('iwp_client_public_key')) {
 				$public_key = base64_decode($public_key);
 				
 				
@@ -637,6 +646,21 @@ if( !function_exists ( 'iwp_mmb_trigger_check_new' )) {
 	}
 }
 
+if( !function_exists ( 'iwp_pheonix_backup_cron_do_action' )) {
+//backup multi call trigger and status check.
+	function iwp_pheonix_backup_cron_do_action($params)
+	{
+		global $iwp_backup_core;
+		$return = $iwp_backup_core->iwp_pheonix_backup_cron_do_action($params);
+		
+		if (is_array($return) && array_key_exists('error', $return))
+			iwp_mmb_response($return, false);
+		else {
+			iwp_mmb_response($return, true);
+		}
+	}
+}
+
 if( !function_exists ( 'iwp_mmb_trigger_check' )) {
 //backup multi call trigger and status check.
 	function iwp_mmb_trigger_check($params)
@@ -674,6 +698,7 @@ if( !function_exists ( 'iwp_mmb_backup_now' )) {
 if( !function_exists ( 'iwp_mmb_new_scheduled_backup' )) {
 	function iwp_mmb_new_scheduled_backup($params)
 	{
+		require_once($GLOBALS['iwp_mmb_plugin_dir']."/backup/backup-repo-test.php");
 		global $iwp_backup_core;
 
 		if (!empty($params['backup_nounce'])) {
@@ -690,6 +715,15 @@ if( !function_exists ( 'iwp_mmb_new_scheduled_backup' )) {
 		);
 		// Close browser connection not working for some servers so we suggest IWP_PHOENIX_BACKUP_CRON
 		// iwp_closeBrowserConnection( $msg );
+		if ((!defined('DISABLE_IWP_CLOUD_VERIFICATION')) && (empty($params['args']['disable_iwp_cloud_verification']))) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/backup.class.multicall.php");
+			$backup_repo_test_obj = new IWP_BACKUP_REPO_TEST();
+			$backup_repo_test_result = $backup_repo_test_obj->repositoryTestConnection($params['account_info']);
+			if (!empty($backup_repo_test_result['error']) && $backup_repo_test_result['status'] != 'success') {
+				$return = array('error' => $backup_repo_test_result['error'], 'error_code' => $backup_repo_test_result['error_code']);
+				iwp_mmb_response($return, false);
+			}
+		}
 		if (is_array($msg) && array_key_exists('error', $msg))
 			iwp_closeBrowserConnection($msg, false);
 		else {
@@ -792,6 +826,7 @@ if( !function_exists ( 'iwp_mmb_scheduled_backup' )) {
 if( !function_exists ( 'iwp_mmb_new_run_task_now' )) {
 	function iwp_mmb_new_run_task_now($params)
 	{
+		require_once($GLOBALS['iwp_mmb_plugin_dir']."/backup/backup-repo-test.php");
 		global $iwp_backup_core;
 
 		if (!empty($params['backup_nounce'])) {
@@ -808,6 +843,15 @@ if( !function_exists ( 'iwp_mmb_new_run_task_now' )) {
 		);
 		// Close browser connection not working for some servers so we suggest IWP_PHOENIX_BACKUP_CRON
 		// iwp_closeBrowserConnection( $msg );
+		if ((!defined('DISABLE_IWP_CLOUD_VERIFICATION')) && (empty($params['args']['disable_iwp_cloud_verification']))) {
+			require_once($GLOBALS['iwp_mmb_plugin_dir']."/backup.class.multicall.php");
+			$backup_repo_test_obj = new IWP_BACKUP_REPO_TEST();
+			$backup_repo_test_result = $backup_repo_test_obj->repositoryTestConnection($params['account_info']);
+			if (!empty($backup_repo_test_result['error']) && $backup_repo_test_result['status'] != 'success') {
+				$return = array('error' => $backup_repo_test_result['error'], 'error_code' => $backup_repo_test_result['error_code']);
+				iwp_mmb_response($return, false);
+			}
+		}
 		if (is_array($msg) && array_key_exists('error', $msg))
 			iwp_closeBrowserConnection($msg, false);
 		else {
@@ -2055,6 +2099,11 @@ if (!function_exists('iwp_mmb_backup_db_changes')) {
 		if(version_compare(iwp_mmb_get_site_option('iwp_backup_table_version'), '1.1.4', '<')){
 			iwp_mmb_change_stausMsg_column_type_backup_status_table();
 		}
+
+		$IWP_MMB_BACKUP_PROCESSED_TABLE_VERSION =	iwp_mmb_get_site_option('iwp_backup_processed_iterator_version');
+		if (empty($IWP_MMB_BACKUP_PROCESSED_TABLE_VERSION) || $IWP_MMB_BACKUP_PROCESSED_TABLE_VERSION == false ) {
+			iwp_mmb_create_processed_iterator();
+		}
 	}
 }
 
@@ -2103,6 +2152,43 @@ if(!function_exists('iwp_mmb_create_backup_status_table')){
 
 			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
 				update_option( "iwp_backup_table_version", '1.1.4');
+			}
+		}
+	}
+}
+
+if(!function_exists('iwp_mmb_create_processed_iterator')){
+	//write new backup_status_table changes also in this function.
+	function iwp_mmb_create_processed_iterator(){
+		global $wpdb;
+		if(method_exists($wpdb, 'get_charset_collate')){
+			$charset_collate = $wpdb->get_charset_collate();
+		}
+
+		$table_name = $wpdb->base_prefix . "iwp_processed_iterator";
+
+		if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name){
+			if (!empty($charset_collate)){
+				$cachecollation = $charset_collate;
+			}
+			else{
+				$cachecollation = ' DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci ';
+			}
+
+			$sql = "
+				CREATE TABLE IF NOT EXISTS $table_name (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `name` longtext,
+				  `offset` text,
+				  PRIMARY KEY (`id`)
+				)".$cachecollation." ;
+			";
+
+			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+			dbDelta( $sql );
+
+			if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+				update_option( "iwp_backup_processed_iterator_version", '1.0.0');
 			}
 		}
 	}
@@ -2936,14 +3022,42 @@ function iwp_plugin_compatibility_fix(){
 
 }
 
+function iwp_mu_plugin_loader(){
+	global $iwp_mmb_core;
+	$loaderName = 'mu-iwp-client.php';
+	$mustUsePluginDir = rtrim(WPMU_PLUGIN_DIR, '/');
+	$loaderPath       = $mustUsePluginDir.'/'.$loaderName;
+
+	if (file_exists($loaderPath) && md5($loaderContent) === md5_file($loaderPath)) {
+	    return;
+	}
+	try {
+	    $iwp_mmb_core->registerMustUse($loaderName, $iwp_mmb_core->buildLoaderContent('iwp-client/init.php'));
+	} catch (Exception $e) {
+		iwp_mmb_response(array('error' => 'Unable to write InfiniteWP Client loader:'.$e->getMessage(), 'error_code' => 'iwp_mu_plugin_loader_failed'), false);
+	}
+}
+if(!function_exists('iwp_mmb_is_WPTC')) {
+function iwp_mmb_is_WPTC() {
+	 	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+	 	if ( is_plugin_active( 'wp-time-capsule/wp-time-capsule.php' ) ) {
+	 		return true;
+	 	} else {
+	 		return false;
+	 	}
+	 }
+}
+
 iwp_mmb_set_plugin_priority();
 $iwp_mmb_core = new IWP_MMB_Core();
 $GLOBALS['iwp_mmb_activities_log'] = new IWP_MMB_Activities_log();
 $mmb_core = 1;
 $GLOBALS['iwp_activities_log_post_type'] = 'iwp_log';
 
-if(isset($_GET['auto_login']))
-	$iwp_mmb_core->add_login_action();	
+if(isset($_GET['auto_login'])){
+	$GLOBALS['__itsec_core_is_rest_api_request'] = true;
+	$iwp_mmb_core->add_login_action();
+}
 if (function_exists('register_activation_hook'))
     register_activation_hook( __FILE__ , array( $iwp_mmb_core, 'install' ));
 

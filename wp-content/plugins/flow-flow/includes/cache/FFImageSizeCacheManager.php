@@ -11,7 +11,7 @@ use flow\social\cache\FFImageSizeCacheBase;
  * @author    Looks Awesome <email@looks-awesome.com>
 
  * @link      http://looks-awesome.com
- * @copyright 2014-2016 Looks Awesome
+ * @copyright Looks Awesome
  */
 class FFImageSizeCacheManager extends FFImageSizeCacheBase {
 	const FF_IMG_CACHE_SIZE = 1000;

@@ -27,7 +27,7 @@ class FacetWP_Builder
 
         $this->css['.fwpl-result'] = $this->build_styles( $settings );
 
-        $output = '<div class="fwpl-layout">';
+        $output = '<div class="fwpl-layout ' . $settings['name'] . $css_class . '">';
 
         if ( have_posts() ) {
             while ( have_posts() ) : the_post();
@@ -35,7 +35,7 @@ class FacetWP_Builder
                 // Prevent short-tags from leaking onto other posts
                 $this->data = [];
 
-                $output .= '<div class="fwpl-result ' . $settings['name'] . $css_class . '">';
+                $output .= '<div class="fwpl-result">';
 
                 foreach ( $layout['items'] as $row ) {
                     $output .= $this->render_row( $row );
@@ -179,8 +179,13 @@ class FacetWP_Builder
             $field = substr( $source, 4 );
             $product = wc_get_product( $post->ID );
 
+            // Invalid product
+            if ( ! is_object( $product ) ) {
+                $value = '';
+            }
+
             // Price
-            if ( 'price' == $field || 'sale_price' == $field || 'regular_price' == $field ) {
+            elseif ( 'price' == $field || 'sale_price' == $field || 'regular_price' == $field ) {
                 if ( $product->is_type( 'variable' ) ) {
                     $method_name = "get_variation_$field";
                     $value = $product->$method_name( 'min' ); // get_variation_price()
@@ -300,7 +305,7 @@ class FacetWP_Builder
      */
     function short_tags( $output ) {
         foreach ( $this->data as $tag => $tag_value ) {
-            $pattern = "/({{ $tag }})/s";
+            $pattern = '/({{[ ]?' . $tag . '[ ]?}})/s';
             $tag_value = str_replace( '$', '\$', $tag_value );
             $output = preg_replace( $pattern, $tag_value, $output );
         }
@@ -675,6 +680,9 @@ class FacetWP_Builder
 
         $post_types = get_post_types( [ 'public' => true ], 'objects' );
         $data_sources = FWP()->helper->get_data_sources();
+
+        // Remove ACF choices
+        unset( $data_sources['acf'] );
 
         foreach ( $post_types as $type ) {
             $builder_post_types[] = [

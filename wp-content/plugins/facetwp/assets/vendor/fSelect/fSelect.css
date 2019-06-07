@@ -38,6 +38,11 @@
     right: 5px;
     bottom: 0;
     margin: auto;
+    transition: ease-in 0.15s;
+}
+
+.fs-open .fs-arrow {
+    transform: rotate(-180deg);
 }
 
 .fs-dropdown {

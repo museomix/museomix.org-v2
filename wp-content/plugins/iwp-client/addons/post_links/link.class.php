@@ -21,6 +21,7 @@ class IWP_MMB_Link extends IWP_MMB_Core
     
     function add_link($args)
     {
+    	global $wpdb;
 		extract($args);
     	
     	$params['link_url'] = esc_html($url);
@@ -68,6 +69,9 @@ class IWP_MMB_Link extends IWP_MMB_Core
 			
 			$is_success = wp_insert_link($params);
 			
+			if ($is_success && $Rlink) {
+				$is_success = $wpdb->insert($wpdb->base_prefix."links_extrainfo", array('link_id'=> $is_success, 'link_reciprocal' => $Rlink, 'link_submitter_email' => $submitterMail));
+			}
 			return $is_success ? true : array('error' => 'Failed to add link.', 'error_code' => 'failed_to_add_link'); 
     }
 	
@@ -89,12 +93,12 @@ class IWP_MMB_Link extends IWP_MMB_Core
 		
 		if(!empty($filter_links))
 		{
-           	 $where.=" AND (link_name LIKE '%".esc_sql($filter_links)."%' OR link_url LIKE '%".esc_sql($filter_links)."%')";
+           	 $cus_sql= " OR link_id IN(SELECT link_id FROM ".$wpdb->prefix."links_extrainfo WHERE 1=1 AND (link_reciprocal LIKE '%".esc_sql($filter_links)."%' OR link_submitter_email LIKE '%".esc_sql($filter_links)."%'))";
+           	 $where.=" AND (link_name LIKE '%".esc_sql($filter_links)."%' OR link_url LIKE '%".esc_sql($filter_links)."%'".$cus_sql.")";
 		}
 		
 		$linkcats = $this->getLinkCats();
 		$sql_query = "$wpdb->links WHERE 1=1 ".$where;
-		
 		$links_total = $wpdb->get_results("SELECT count(*) as total_links FROM ".$sql_query);
 		$total=$links_total[0]->total_links;
 		

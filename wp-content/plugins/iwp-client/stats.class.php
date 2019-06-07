@@ -299,6 +299,15 @@ class IWP_MMB_Stats extends IWP_MMB_Core
                  $upgrades                         = false;
             }
         }
+
+        if (isset($options['additional_updates']) && $options['additional_updates']) {
+            $this->get_installer_instance();
+            $upgrades = $this->installer_instance->get_additional_plugin_updates();
+            if (!empty($upgrades)) {
+                 $stats['additional_updates'] = $upgrades;
+                 $upgrades                    = false;
+            }
+        }
         
         return $stats;
     }
@@ -440,7 +449,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
         }
 		
         $stats['client_version']        = IWP_MMB_CLIENT_VERSION;
-        if (!empty($rs)) {
+        if (!empty($r)) {
             $stats['client_new_version']    = $r->new_version;
             $stats['client_new_package']    = $r->package;
         }
@@ -452,6 +461,7 @@ class IWP_MMB_Stats extends IWP_MMB_Core
         $stats['network_install']       = $this->network_admin_install;
         $stats['use_cookie']            = $use_cookie;
         $stats['maintenance_mode']      = get_option('iwp_mmb_maintenance_mode');
+        $stats['site_home']             = get_option('home');
         
         if ( !function_exists('get_filesystem_method') )
             include_once(ABSPATH . 'wp-admin/includes/file.php');
@@ -461,7 +471,17 @@ class IWP_MMB_Stats extends IWP_MMB_Core
 			$stats['maintenance'] = true;
 		}
         $stats['writable'] = $this->is_server_writable();
-        
+        if ($this->iwp_mmb_multisite) {
+            $details = get_blog_details($this->iwp_mmb_multisite);
+            if (isset($details->site_id)) {
+                $details = get_blog_details($details->site_id);
+                if (isset($details->siteurl))
+                    $stats['network_parent'] = $details->siteurl;
+            }
+        }
+        if ($this->iwp_mmb_multisite) {
+            $stats = array_merge($stats, $this->get_multisite_stats());
+        }
         return $stats;
     }
     
@@ -600,9 +620,49 @@ class IWP_MMB_Stats extends IWP_MMB_Core
             include_once(ABSPATH . 'wp-admin/includes/file.php');
         
         $stats['writable'] = $this->is_server_writable();
-        
+         if ($this->iwp_mmb_multisite) {
+            $stats = array_merge($stats, $this->get_multisite_stats());
+        }
         return $stats;
     }
+
+    public function get_multisite_stats()
+    {
+        /** @var $wpdb wpdb */
+        global $current_user, $wpdb;
+        $user_blogs    = get_blogs_of_user($current_user->ID);
+        $network_blogs = (array)$wpdb->get_results("select `blog_id`, `site_id` from `{$wpdb->blogs}`");
+        $mainBlogId    = defined('BLOG_ID_CURRENT_SITE') ? BLOG_ID_CURRENT_SITE : false;
+
+        if (/*$this->network_admin_install != '1' || !is_super_admin($current_user->ID)||*/ empty($network_blogs)) {
+            return array();
+        }
+
+        $stats = array('network_blogs' => array(), 'other_blogs' => array());
+        foreach ($network_blogs as $details) {
+            if (($mainBlogId !== false && $details->blog_id == $mainBlogId) || ($mainBlogId === false && $details->site_id == $details->blog_id)) {
+                continue;
+            } else {
+                $data = get_blog_details($details->blog_id);
+                if (in_array($details->blog_id, array_keys($user_blogs))) {
+                    $stats['network_blogs'][] = $data->siteurl;
+                } else {
+                    $user = get_users(
+                        array(
+                            'blog_id' => $details->blog_id,
+                            'number'  => 1,
+                        )
+                    );
+                    if (!empty($user)) {
+                        $stats['other_blogs'][$data->siteurl] = $user[0]->user_login;
+                    }
+                }
+            }
+        }
+
+        return $stats;
+    }
+
     
     public static function set_hit_count($fix_count = false)
     {

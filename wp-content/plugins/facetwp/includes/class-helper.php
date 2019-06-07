@@ -14,8 +14,8 @@ final class FacetWP_Helper
 
 
     function __construct() {
-        $this->settings = $this->load_settings();
         $this->facet_types = $this->get_facet_types();
+        $this->settings = $this->load_settings();
     }
 
 
@@ -81,33 +81,24 @@ final class FacetWP_Helper
     function load_settings( $last_index = false ) {
         $name = $last_index ? 'facetwp_settings_last_index' : 'facetwp_settings';
         $option = get_option( $name );
-        $settings = ( false !== $option ) ? json_decode( $option, true ) : [];
 
-        if ( empty( $settings['facets'] ) ) {
-            $settings['facets'] = [];
-        }
-        if ( empty( $settings['templates'] ) ) {
-            $settings['templates'] = [];
-        }
-        if ( empty( $settings['settings'] ) ) {
-            $settings['settings'] = [];
-        }
-        if ( ! isset( $settings['settings']['term_permalink'] ) ) {
-            $settings['settings']['term_permalink'] = 'slug'; // Listify compat
-        }
-        if ( ! isset( $settings['settings']['thousands_separator'] ) ) {
-            $settings['settings']['thousands_separator'] = ',';
-        }
-        if ( ! isset( $settings['settings']['decimal_separator'] ) ) {
-            $settings['settings']['decimal_separator'] = '.';
-        }
-        if ( ! isset( $settings['settings']['prefix'] ) ) {
-            $settings['settings']['prefix'] = 'fwp_';
-        }
+        $defaults = [
+            'facets' => [],
+            'templates' => [],
+            'settings' => [
+                'thousands_separator' => ',',
+                'decimal_separator' => '.',
+                'loading_animation' => 'fade',
+                'prefix' => 'fwp_'
+            ]
+        ];
+
+        $settings = ( false !== $option ) ? json_decode( $option, true ) : [];
+        $settings = array_merge( $defaults, $settings );
+        $settings['settings'] = array_merge( $defaults['settings'], $settings['settings'] );
 
         // Store DB-based facet & template names
         $db_names = [];
-        $array_indexes = [];
 
         foreach ( $settings['facets'] as $facet ) {
             $db_names[ 'facet-' . $facet['name'] ] = true;
@@ -121,46 +112,44 @@ final class FacetWP_Helper
         $facets = apply_filters( 'facetwp_facets', $settings['facets'] );
         $templates = apply_filters( 'facetwp_templates', $settings['templates'] );
 
-        // Reset data
-        $settings['facets'] = [];
-        $settings['templates'] = [];
+        $tmp_facets = [];
+        $tmp_templates = [];
 
-        // Distinguish between UI and programmatic
-        foreach ( $facets as $index => $facet ) {
-            $name = 'facet-' . $facet['name'];
-            $is_db_based = isset( $db_names[ $name ] );
+        // Merge DB + code-based facets
+        foreach ( $facets as $facet ) {
+            $name = $facet['name'];
+            $is_db_based = isset( $db_names[ "facet-$name" ] );
 
             if ( ! $is_db_based ) {
                 $facet['_code'] = true;
             }
 
-            if ( ! isset( $array_indexes[ $name ] ) ) { // new entry
-                $array_indexes[ $name ] = $index;
-                $settings['facets'][ $index ] = $facet;
-            }
-            elseif ( ! $is_db_based ) { // code-based overrides DB settings
-                $prev_index = $array_indexes[ $name ];
-                $settings['facets'][ $prev_index ] = $facet;
+            if ( ! $is_db_based || empty( $tmp_facets[ $name ] ) ) {
+
+                // Valid facet type?
+                if ( in_array( $facet['type'], array_keys( $this->facet_types ) ) ) {
+                    $tmp_facets[ $name ] = $facet;
+                }
             }
         }
 
-        foreach ( $templates as $index => $template ) {
-            $name = 'template-' . $template['name'];
-            $is_db_based = isset( $db_names[ $name ] );
+        // Merge DB + code-based templates
+        foreach ( $templates as $template ) {
+            $name = $template['name'];
+            $is_db_based = isset( $db_names[ "template-$name" ] );
 
             if ( ! $is_db_based ) {
                 $template['_code'] = true;
             }
 
-            if ( ! isset( $array_indexes[ $name ] ) ) { // new entry
-                $array_indexes[ $name ] = $index;
-                $settings['templates'][ $index ] = $template;
-            }
-            elseif ( ! $is_db_based ) { // code-based overrides DB settings
-                $prev_index = $array_indexes[ $name ];
-                $settings['templates'][ $prev_index ] = $template;
+            if ( ! $is_db_based || empty( $tmp_templates[ $name ] ) ) {
+                $tmp_templates[ $name ] = $template;
             }
         }
+
+        // Convert back to numerical arrays
+        $settings['facets'] = array_values( $tmp_facets );
+        $settings['templates'] = array_values( $tmp_templates );
 
         // Filtered settings
         return $settings;
@@ -231,6 +220,25 @@ final class FacetWP_Helper
         }
 
         return false;
+    }
+
+
+    /**
+     * Fetch facets using one of its settings
+     * @param string $setting_name
+     * @param mixed $setting_value
+     * @return array
+     */
+    function get_facets_by( $setting, $value ) {
+        $matches = [];
+
+        foreach ( $this->get_facets() as $facet ) {
+            if ( isset( $facet[ $setting ] ) && $value === $facet[ $setting ] ) {
+                $matches[] = $facet;
+            }
+        }
+
+        return $matches;
     }
 
 
@@ -333,6 +341,7 @@ final class FacetWP_Helper
                     $output = mysqli_real_escape_string( $wpdb->dbh, $input );
                 }
                 else {
+                    // Fallback for old PHP versions
                     $output = mysql_real_escape_string( $input, $wpdb->dbh );
                 }
             }
@@ -505,6 +514,24 @@ final class FacetWP_Helper
 
 
     /**
+     * Get row counts for all facets
+     * @since 3.3.4
+     */
+    function get_row_counts() {
+        global $wpdb;
+
+        $output = [];
+        $results = $wpdb->get_results( "SELECT facet_name, COUNT(*) AS row_count FROM {$wpdb->prefix}facetwp_index GROUP BY facet_name" );
+
+        foreach ( $results as $result ) {
+            $output[ $result->facet_name ] = (int) $result->row_count;
+        }
+
+        return $output;
+    }
+
+
+    /**
      * Grab the license key
      * @since 3.0.3
      */
@@ -512,5 +539,24 @@ final class FacetWP_Helper
         $license_key = defined( 'FACETWP_LICENSE_KEY' ) ? FACETWP_LICENSE_KEY : get_option( 'facetwp_license' );
         $license_key = apply_filters( 'facetwp_license_key', $license_key );
         return sanitize_text_field( trim( $license_key ) );
+    }
+
+
+    /**
+     * Determine whether the license is active
+     * @since 3.3.0
+     */
+    function is_license_active() {
+        $activation = get_option( 'facetwp_activation' );
+
+        if ( ! empty( $activation ) ) {
+            $activation = json_decode( $activation );
+
+            if ( isset( $activation->status ) && 'success' == $activation->status ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -3,7 +3,7 @@
 Plugin Name: Divi Lightbox for Images
 Plugin URI: https://servicios.ayudawp.com
 Description: Uses Divi's native lightbox effect to every self linked image, not only for galleries. This plugin only works with Divi theme or Divi builder installed & active.
-Version: 0.9.3
+Version: 0.9.5
 Author: Fernando Tellado
 Author URI: https://tellado.es
 License: GPLv2

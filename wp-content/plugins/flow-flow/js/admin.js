@@ -1662,12 +1662,13 @@ var FlowFlowApp = (function($){
 
       var feeds = this.model.get('feeds');
       var $cont = this.$el.find('.stream-feeds__list');
-      var feed, name;
+      var feed, name, fullName;
       var items = '';
       if (!feeds) return;
       for (var i = 0, len = feeds.length; i < len; i++) {
         feed = feeds[i];
         name = feed.content;
+        fullName = name;
 
         if (!name && feed.type === "wordpress") {
           name = feed['category-name'] || feed['wordpress-type'];
@@ -1680,7 +1681,7 @@ var FlowFlowApp = (function($){
         }
 
         if (name.length > 13) name = name.substr(0, 13) + '...';
-        items += '<span data-id="' +  feed.id +'" class="stream-feeds__item stream-feeds__' + feed.type +  (feed.errors && feed.errors.length ? ' stream-feeds__error' : '') + '"><i class="stream-feeds__icon flaticon-' + feed.type + '"></i>' + stripslashes(name) + '</span>';
+        items += '<span data-tooltip="' + capitaliseFirstLetter( feed.type ) + ' - ' + stripslashes( fullName )  + ' - ID: ' + feed.id + '" data-id="' +  feed.id +'" class="stream-feeds__item stream-feeds__' + feed.type +  (feed.errors && feed.errors.length ? ' stream-feeds__error' : '') + '"><i class="stream-feeds__icon flaticon-' + feed.type + '"></i>' + stripslashes( name ) + '</span>';
       }
       $cont.html('').append(items).closest('.stream-feeds').removeClass('stream-feeds--connecting');
     },
@@ -1764,7 +1765,7 @@ var FlowFlowApp = (function($){
         if (!name && feed.type == "wordpress") {
           name = capitaliseFirstLetter(feed['category-name'] || 'Posts');
         }
-        options += '<option value="' + feed.id + '">' + capitaliseFirstLetter(feed.type) + ' - ' + name + '</option>';
+        options += '<option value="' + feed.id + '">' + capitaliseFirstLetter(feed.type) + ' - ' + name + ' - ' + feed.id  + '</option>';
       }
 
       $select.html('').append(options).closest('.stream-feeds').addClass('stream-feeds--connecting');
@@ -2577,17 +2578,21 @@ var FlowFlowApp = (function($){
           if (feed['timeline-type']) settings['timeline-type'] = feed['timeline-type'];
           if (feed['mod'] === 'yep') settings['mod'] = feed['mod'];
 
-          for (prop in settings) {
+          settings['id'] = 'ID: ' + feed['id'];
+
+          for ( prop in settings ) {
             ikey = capitaliseFirstLetter( prop.replace(' timeline', '').replace('_', ' ').replace('-', ' ').replace('timeline ', '')  );
             ival = stripslashes( settings[prop] );
-            if (prop !== 'content') ival = capitaliseFirstLetter ( ival );
-            if (prop === 'mod') ival = 'moderated';
+            if ( prop !== 'content' ) ival = capitaliseFirstLetter ( ival );
+            if ( prop === 'mod' ) ival = 'moderated';
+
+            if ( !ival ) continue;
 
             ival = ival.replace('_timeline', '').replace('http://', '').replace('https://', '');
             if (ival.length > 20) {
               ival = ival.substring(0, 20) + '...';
             }
-            info = info + '<span><span class="highlight">' + ival + '</span></span>' ;
+            info = info + '<span><span class="highlight' + ( ikey === 'Id' ? ' highlight-id' : '' ) + '">' + ival + '</span></span>' ;
           }
 
           if (feed.cache_lifetime == 5) {

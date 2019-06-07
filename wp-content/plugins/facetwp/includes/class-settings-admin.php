@@ -253,7 +253,6 @@ $false_value = isset( $atts['false_value'] ) ? $atts['false_value'] : 'no';
             'Suffix' => __( 'Suffix', 'fwp' ),
             'Hide item?' => __( 'Hide item?', 'fwp' ),
             'Padding' => __( 'Padding', 'fwp' ),
-            'Unique name' => __( 'Unique name', 'fwp' ),
             'CSS class' => __( 'CSS class', 'fwp' ),
             'Button Border' => __( 'Button border', 'fwp' ),
             'Term URL' => __( 'Term URL', 'fwp' ),
@@ -274,12 +273,12 @@ $false_value = isset( $atts['false_value'] ) ? $atts['false_value'] : 'no';
             'Hit Enter' => __( 'Hit Enter', 'fwp' ),
             'Add sort' => __( 'Add sort', 'fwp' ),
             'Add filter' => __( 'Add filter', 'fwp' ),
+            'Clear' => __( 'Clear', 'fwp' ),
             'Enter term slugs' => __( 'Enter term slugs', 'fwp' ),
             'Enter values' => __( 'Enter values', 'fwp' ),
             'Layout' => __( 'Layout', 'fwp' ),
             'Content' => __( 'Content', 'fwp' ),
             'Style' => __( 'Style', 'fwp' ),
-            'Advanced' => __( 'Advanced', 'fwp' ),
             'Row' => __( 'Row', 'fwp' ),
             'Column' => __( 'Column', 'fwp' ),
             'Start typing' => __( 'Start typing', 'fwp' ),
@@ -307,7 +306,8 @@ $false_value = isset( $atts['false_value'] ) ? $atts['false_value'] : 'no';
             'Stop indexer' => __( 'Stop indexer', 'fwp' ),
             'Loading' => __( 'Loading', 'fwp' ),
             'Importing' => __( 'Importing', 'fwp' ),
-            'Convert to query args' => __( 'Convert to query args', 'fwp' )
+            'Convert to query args' => __( 'Convert to query args', 'fwp' ),
+            'Delete item?' => __( 'Delete item?', 'fwp' )
         ];
     }
 

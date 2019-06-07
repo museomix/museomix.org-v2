@@ -20,58 +20,88 @@ class IWP_MMB_User extends IWP_MMB_Core
     }
     
     function get_users($args){
-			global $wpdb;
-			
-			//$args: $user_roles;
-			if(empty($args))
-				return false;
-				
-			extract($args);
-		
-		$userlevels = array();
+		global $wpdb;
+
+		//$args: $user_roles;
+		if (empty($args)) {
+		    return false;
+		}
+
+		$user_roles      = isset($args['user_roles']) ? $args['user_roles'] : array();
+		$username_filter = isset($args['username_filter']) ? $args['username_filter'] : '';
+
+		$userlevels    = array();
 		$level_strings = array();
-		foreach($user_roles as $user_role){
-		switch(strtolower($user_role)){
-			case 'subscriber' : $userlevels[] = 0; $level_strings[] = $user_role; break;
-			case 'contributor' : $userlevels[] = 1; $level_strings[] = $user_role; break;
-			case 'author' : $userlevels[] = 2; $level_strings[] = $user_role; break;
-			case 'editor' : $userlevels[] = 7; $level_strings[] = $user_role; break;
-			case 'administrator' : $userlevels[] = 10; $level_strings[] = $user_role; break;
-			default: break;
-			}
+		foreach ($user_roles as $user_role) {
+		    switch (strtolower($user_role)) {
+		        case 'subscriber' :
+		            $userlevels[]    = 0;
+		            $level_strings[] = $user_role;
+		            break;
+		        case 'contributor' :
+		            $userlevels[]    = 1;
+		            $level_strings[] = $user_role;
+		            break;
+		        case 'author' :
+		            $userlevels[]    = 2;
+		            $level_strings[] = $user_role;
+		            break;
+		        case 'editor' :
+		            $userlevels[]    = 7;
+		            $level_strings[] = $user_role;
+		            break;
+		        case 'administrator' :
+		            $userlevels[]    = 10;
+		            $level_strings[] = $user_role;
+		            break;
+		        default:
+		            break;
+		    }
 		}
-				
-		$users = array();
-		$userlevel_qry = "('".implode("','",$userlevels)."')";
-		$userlevel_fallback_qry = "('%".implode("%','%",$level_strings)."%')";
-		$field = $wpdb->base_prefix."capabilities";
-		
-		$user_metas = $wpdb->get_results("SELECT * from $wpdb->usermeta WHERE meta_key = '$field' AND meta_value IN $userlevel_fallback_qry");
-		if($user_metas == false || empty($user_metas)){
-			$user_metas = $wpdb->get_results("SELECT * from $wpdb->usermeta WHERE meta_key = 'wp_user_level' AND meta_value IN $userlevel_qry");	
+
+		$users         = array();
+		$userlevel_qry = "('".implode("','", $userlevels)."')";
+		$queryOR       = '';
+		if (!empty($level_strings)) {
+		    foreach ($level_strings as $level) {
+		        if (!empty($queryOR)) {
+		            $queryOR .= ' OR ';
+		        }
+		        $queryOR .= "meta_value LIKE '%{$level}%'";
+		    }
 		}
-		
-		$include = array();
-			if(is_array($user_metas) && !empty($user_metas)){
-				foreach($user_metas as $user_meta){
-					$include[] = $user_meta->user_id;
-				}
-			}
-			
-			$args = array();
-			$args['include'] = $include;
-			$args['fields'] = 'all_with_meta';
-			$temp_users = get_users($args);
-			$user = array();
-			
-			foreach ((array)$temp_users as $temp){
-								
-				$user['user_id'] = $temp->ID;
-				$user['user_login'] = $temp->user_login;
-				$user['wp_capabilities'] = array_keys($temp->$field);
-				
-				$users[] = $user;
-			}
+		$field  = $wpdb->prefix."capabilities";
+		$field2 = $wpdb->prefix."user_level";
+
+		$metaQuery  = "SELECT * from {$wpdb->usermeta} WHERE meta_key = '{$field}' AND ({$queryOR})";
+		$user_metas = $wpdb->get_results($metaQuery);
+
+		if ($user_metas == false || empty($user_metas)) {
+		    $metaQuery  = "SELECT * from {$wpdb->usermeta} WHERE meta_key = '{$field2}' AND meta_value IN {$userlevel_qry}";
+		    $user_metas = $wpdb->get_results($metaQuery);
+		}
+
+		$include = array(0 => 0);
+		if (is_array($user_metas) && !empty($user_metas)) {
+		    foreach ($user_metas as $user_meta) {
+		        $include[] = $user_meta->user_id;
+		    }
+		}
+
+		$args            = array(0, 0);
+		$args['include'] = $include;
+		$args['fields']  = 'all_with_meta';
+		if (!empty($username_filter)) {
+		    $args['search'] = $username_filter;
+		}
+		$temp_users = get_users($args);
+		$user       = array();
+		foreach ((array) $temp_users as $temp) {
+		    $user['user_id']         = $temp->ID;
+		    $user['user_login']      = $temp->user_login;
+		    $user['wp_capabilities'] = array_keys($temp->$field);
+		    $users[]                 = $user;
+		}
 		$users['request_roles'] = $user_roles;
 		return array('users' => $users);
  }

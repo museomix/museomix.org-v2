@@ -51,7 +51,8 @@ class WPML_Media_Post_With_Media_Files {
 
 		if ( $post = get_post( $this->post_id ) ) {
 
-			$post_content_media = $this->media_parser->get_imgs( $post->post_content );
+			$content_to_parse   = apply_filters( 'wpml_media_content_for_media_usage', $post->post_content, $post );
+			$post_content_media = $this->media_parser->get_imgs( $content_to_parse );
 			$media_ids          = $this->_get_ids_from_media_array( $post_content_media );
 
 			if ( $featured_image = get_post_meta( $this->post_id, '_thumbnail_id', true ) ) {
@@ -65,7 +66,7 @@ class WPML_Media_Post_With_Media_Files {
 				$media_ids             = array_merge( $media_ids, $this->_get_ids_from_media_array( $custom_fields_media ) );
 			}
 
-			if ( $gallery_media_ids = $this->get_gallery_media_ids( $post->post_content ) ) {
+			if ( $gallery_media_ids = $this->get_gallery_media_ids( $content_to_parse ) ) {
 				$media_ids = array_unique( array_values( array_merge( $media_ids, $gallery_media_ids ) ) );
 			}
 

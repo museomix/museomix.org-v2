@@ -214,7 +214,7 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 				$incremental_sets = array_keys($backups[$timestamp]['incremental_sets']);
 				// Check if there are more than one timestamp in the incremental set
 				if (1 < count($incremental_sets)) {
-					$incremental_select_html = '<label>'.__('Select your incremental restore point', 'updraftplus').': </label>';
+					$incremental_select_html = '<label>'.__('This backup set contains incremental backups of your files; please select the time you wish to restore your files to', 'updraftplus').': </label>';
 					$incremental_select_html .= '<select name="updraft_incremental_restore_point" id="updraft_incremental_restore_point">';
 					$incremental_sets = array_reverse($incremental_sets);
 					$first_timestamp = $incremental_sets[0];
@@ -276,18 +276,53 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 		return 'pong';
 	}
 	
+	/**
+	 * This function is called via ajax and will update the autobackup notice dismiss time
+	 *
+	 * @return array - an empty array
+	 */
 	public function dismissautobackup() {
 		UpdraftPlus_Options::update_updraft_option('updraftplus_dismissedautobackup', time() + 84*86400);
 		return array();
 	}
-	
+
+	/**
+	 * This function is called via ajax and will update the general notice dismiss time
+	 *
+	 * @return array - an empty array
+	 */
 	public function dismiss_notice() {
 		UpdraftPlus_Options::update_updraft_option('dismissed_general_notices_until', time() + 84*86400);
 		return array();
 	}
-	
+
+	/**
+	 * This function is called via ajax and will update the season notice dismiss time
+	 *
+	 * @return array - an empty array
+	 */
 	public function dismiss_season() {
 		UpdraftPlus_Options::update_updraft_option('dismissed_season_notices_until', time() + 366*86400);
+		return array();
+	}
+
+	/**
+	 * This function is called via ajax and will update the clone php notice dismiss time
+	 *
+	 * @return array - an empty array
+	 */
+	public function dismiss_clone_php_notice() {
+		UpdraftPlus_Options::update_updraft_option('dismissed_clone_php_notices_until', time() + 180 * 86400);
+		return array();
+	}
+
+	/**
+	 * This function is called via ajax and will update the WooCommerce clone notice dismiss time
+	 *
+	 * @return array - an empty array
+	 */
+	public function dismiss_clone_wc_notice() {
+		UpdraftPlus_Options::update_updraft_option('dismissed_clone_wc_notices_until', time() + 90 * 86400);
 		return array();
 	}
 	
@@ -552,22 +587,18 @@ class UpdraftPlus_WPAdmin_Commands extends UpdraftPlus_Commands {
 			if (true !== $zip_opened) {
 				return array('error' => 'UpdraftPlus: opening zip (' . $fullpath . '): failed to open this zip file (object='.$zip_object.', code: '.$zip_opened.')');
 			} else {
-				if ('UpdraftPlus_PclZip' == $zip_object) {
-					$numfiles = $zip->numAll;
-					if (false === $numfiles) {
-						return array('error' => 'UpdraftPlus: reading zip: '.$zip->last_error);
-					}
-				} else {
-					$numfiles = $zip->numFiles;
-				}
+			
+				$numfiles = $zip->numFiles;
 
+				if (false === $numfiles) return array('error' => 'UpdraftPlus: reading zip: '.$zip->last_error);
+					
 				for ($i=0; $i < $numfiles; $i++) {
 					$si = $zip->statIndex($i);
 
 					// Fix for windows being unable to build jstree due to different directory separators being used
 					$si['name'] = str_replace("/", DIRECTORY_SEPARATOR, $si['name']);
 
-					// if it's a dot then we don't want to append this as it will break the id's and the tree structure
+					// if it's a dot then we don't want to append this as it will break the ids and the tree structure
 					if ('.' == dirname($si['name'])) {
 						$node_id = $parent_name;
 					} else {

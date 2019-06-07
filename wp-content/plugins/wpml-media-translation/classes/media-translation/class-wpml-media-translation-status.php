@@ -19,19 +19,16 @@ class WPML_Media_Translation_Status implements IWPML_Action {
 	}
 
 	public function add_hooks() {
-		add_action( 'wpml_tm_send_post_jobs', array( $this, 'set_translation_status_in_progress' ), 10, 5 );
+		add_action( 'wpml_tm_send_post_jobs', array( $this, 'set_translation_status_in_progress' ) );
 		add_action( 'wpml_pro_translation_completed', array( $this, 'save_bundled_media_translation' ), 10, 3 );
 	}
 
-	public function set_translation_status_in_progress( $item_type_name, $item_type, $type_basket_items, $translators, $batch_options ) {
-		foreach ( $type_basket_items as $item ) {
-			if ( isset( $item['media-translation'] ) ) {
-				foreach ( $item['media-translation'] as $attachment_id ) {
-					foreach ( array_keys( $item['to_langs'] ) as $lang ) {
-						$this->set_status( $attachment_id, $lang, self::IN_PROGRESS );
-					}
+	public function set_translation_status_in_progress( WPML_TM_Translation_Batch $batch) {
+		foreach ( $batch->get_elements() as $item ) {
+			foreach ( $item->get_media_to_translations() as $attachment_id ) {
+				foreach ( array_keys( $item->get_target_langs() ) as $lang ) {
+					$this->set_status( $attachment_id, $lang, self::IN_PROGRESS );
 				}
-
 			}
 		}
 	}

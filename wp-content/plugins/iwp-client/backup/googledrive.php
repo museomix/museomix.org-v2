@@ -477,7 +477,8 @@ class IWP_MMB_UploadModule_googledrive extends IWP_MMB_UploadModule {
 
 		try {
 			$parent_id = $this->get_parent_id($opts);
-			$sub_items = $this->get_subitems($parent_id, 'file');
+			$iwp_getSiteName = iwp_getSiteName();
+			$sub_items = $this->get_subitems($parent_id, 'file', $files[0]);
 		} catch (Exception $e) {
 			$iwp_backup_core->log("Google Drive delete: failed to access parent folder: ".$e->getMessage().' (line: '.$e->getLine().', file: '.$e->getFile().')');
 			return false;

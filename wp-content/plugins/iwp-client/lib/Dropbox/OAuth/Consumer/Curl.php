@@ -107,6 +107,8 @@ class IWP_Dropbox_OAuth_Consumer_Curl extends IWP_Dropbox_OAuth_Consumer_Consume
 		 */
 		if (isset($additional['api_v2']) && !empty($request['postfields'])) {
 			$request['postfields'] = json_encode($request['postfields']);
+		}else{
+			$request['postfields'] = json_encode(null);
 		}
 
 		if ($method == 'GET' && $this->outFile) { // GET

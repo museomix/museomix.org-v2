@@ -10,13 +10,13 @@ class WPML_ACF_Attachments {
 	public function load_translated_attachment($value, $post_id, $field) {
 		$newValue = $value;
 
-		if ( is_array($value) ) { // Galleries come in arrays
+		if ( is_serialized($value) ) { // Galleries come in serialized arrays
 			$newValue = array();
-			foreach ( $value as $key => $id ) {
-				$newValue[$key] = icl_object_id( $id, 'attachment' );
+			foreach ( maybe_unserialize($value) as $key => $id ) {
+				$newValue[$key] = apply_filters( 'wpml_object_id', $id, 'attachment', true );
 			}
 		} else { // Single images arrive as simple values
-			$newValue = icl_object_id( $value, 'attachment' );
+			$newValue = apply_filters( 'wpml_object_id', $value, 'attachment', true );
 		}
 
 		return $newValue;

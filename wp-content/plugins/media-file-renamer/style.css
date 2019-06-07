@@ -75,20 +75,20 @@
 	height: 28px;
 	font-size: 11px;
 }
-.mfrh_column input[name="recommended-filename"] {
+.mfrh_column input[data-name="recommended-filename"] {
 	display: none;
 	background-color: white;
 	color: #0073aa;
 }
-.mfrh_column input[name="filename"].hidden {
+.mfrh_column input[data-name="filename"].hidden {
 	display: none;
 }
-.mfrh_column input[name="filename"].hidden ~ input[name="recommended-filename"] {
+.mfrh_column input[data-name="filename"].hidden ~ input[data-name="recommended-filename"] {
 	display: inline-block;
 }
-.mfrh_column input[name="filename"].changed ~ .button.rename {
+.mfrh_column input[data-name="filename"].changed ~ .button.rename {
 	display: inline-block;
 }
-.mfrh_column input[name="filename"].changed ~ .button.auto-rename {
+.mfrh_column input[data-name="filename"].changed ~ .button.auto-rename {
 	display: none;
 }

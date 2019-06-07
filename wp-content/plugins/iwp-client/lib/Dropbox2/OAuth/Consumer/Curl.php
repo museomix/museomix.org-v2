@@ -105,14 +105,21 @@ class Dropbox_Curl extends Dropbox_ConsumerAbstract
             }
         }
         
-        if (isset($request['headers'])) $options[CURLOPT_HTTPHEADER] = $request['headers'];
+        // if (isset($request['headers'])) $options[CURLOPT_HTTPHEADER] = $request['headers'];
 
         /*
             Add check to see if it's an API v2 call if so then json encode the contents. This is so that it is backwards compatible with API v1 endpoints.
          */
         if (isset($additional['api_v2']) && !empty($request['postfields'])) {
             $request['postfields'] = json_encode($request['postfields']);
+        }else{
+            // $key = array_search('Content-Type: application/json', $request['headers']);
+            // if (false !== $key) unset($request['headers'][$key]);// some users facing more delay.
+            if ($call == '2/users/get_space_usage') {
+                $request['postfields'] = json_encode(null);
+            }
         }
+        if (isset($request['headers']) && !empty($request['headers'])) $options[CURLOPT_HTTPHEADER] = $request['headers'];
 
         if ($method == 'GET' && $this->outFile) { // GET
             $options[CURLOPT_RETURNTRANSFER] = false;
@@ -120,11 +127,6 @@ class Dropbox_Curl extends Dropbox_ConsumerAbstract
             $options[CURLOPT_FILE] = $this->outFile;
             $options[CURLOPT_BINARYTRANSFER] = true;
             $options[CURLOPT_FAILONERROR] = true;
-            /*
-                Not sure if this is used, keeping it here for backwards compatibility at the moment.
-                With API v2 the headers are set in the $request they are set above if they are set.
-             */
-            if (isset($additional['headers'])) $options[CURLOPT_HTTPHEADER] = $additional['headers'];
             $this->outFile = null;
         }  elseif ($method == 'POST' && $this->outFile) { // POST
             $options[CURLOPT_POST] = true;
@@ -165,6 +167,7 @@ class Dropbox_Curl extends Dropbox_ConsumerAbstract
             // Parse the response if it is a string
             if (is_string($response)) {
                 $response = $this->parse($response);
+                $response['code'] = (!empty($response['code'])) ? $response['code'] : $getinfo['http_code'];
             }
             
             // Set the last response
@@ -221,8 +224,8 @@ class Dropbox_Curl extends Dropbox_ConsumerAbstract
                     case 415:
                         throw new Dropbox_UnsupportedMediaTypeException($message, 415);
                     case 401:
-                    	//401 means oauth token is expired continue to manually handle the exception depending on the situation
-                    	continue;
+                        //401 means oauth token is expired continue to manually handle the exception depending on the situation
+                        break;
                     case 409:
                         //409 in API V2 every error will return with a 409 to find out what the error is the error description should be checked.                      
                         throw new Dropbox_Exception($message, $code);

@@ -47,92 +47,97 @@ class FFFeedUtils{
 		// Enable if you have 'Network is unreachable' error
 		if ($useIpv4) curl_setopt( $c, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 		if ($followLocation) curl_setopt($c, CURLOPT_FOLLOWLOCATION, true);
-    	curl_setopt($c, CURLOPT_AUTOREFERER, true);
-    	curl_setopt($c, CURLOPT_RETURNTRANSFER,true);
-    	curl_setopt($c, CURLOPT_VERBOSE, false);
-    	curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-    	curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
-    	if (isset($_COOKIE['XDEBUG_SESSION']) && $_COOKIE['XDEBUG_SESSION'] == 'PHPSTORM')
-    		curl_setopt($c, CURLOPT_COOKIE, 'XDEBUG_SESSION=PHPSTORM');
-    		if ($timeout != null)   curl_setopt($c, CURLOPT_TIMEOUT, $timeout);
-    		curl_setopt($c, CURLOPT_CONNECTTIMEOUT_MS, 5000);
-    		if (is_array($header))  curl_setopt($c, CURLOPT_HTTPHEADER, $header);
-    		$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
-    		$error = curl_error($c);
-    		$errors = array();
-    		if (strlen($error) > 0){
-    			if ($log) {
-    				if (isset($_REQUEST['debug'])) {
-    					echo 'DEBUG:: <br>';
-    					var_dump($error);
-    					echo '<br>';
-    					var_dump(debug_backtrace());
-    					echo 'URL: ' . $url;
-    					echo '<br>-------<br>';
-    					error_log(print_r($error, true));
-    					error_log(print_r(debug_backtrace(), true));
-    					error_log($url);
-    				}
-    			}
-    			if (strpos($error, 'Failed to connect') !== false && strpos($error, 'Network is unreachable') !== false){
-    				curl_setopt($c, CURLOPT_FAILONERROR, false);
-    				$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
-    				$error2 = curl_error($c);
-    				if (strlen($error2) > 0){
-    					$error .= '. Please, enable "USE IPV4 PROTOCOL" option at the settings tab.';
-    					$errors[] = array('msg' => $error, 'url' => $url);
-    					error_log('FFFeedUtils line 110 :: ' . $error);
-    					error_log('FFFeedUtils line 111 :: ' . $error2);
-    				}
-    				curl_close($c);
-    				return array('response' => $page, 'errors' => $errors);
-    			}
-    			else if ((strpos($url, 'https://graph.facebook.com') === 0) ||
-    					(strpos($url, 'https://api.instagram.com') === 0) ||
-    					(strpos($url, 'https://api.linkedin.com') === 0) ||
-    					(strpos($url, 'https://www.googleapis.com') === 0)
-    					) {
-    						curl_setopt($c, CURLOPT_FAILONERROR, false);
-    						$body = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
-    						$body = json_decode($body);
-    						if (isset($body->error->message)) $error = $body->error->message;
-    						else if (isset($body->meta->error_message)) $error = $body->meta->error_message;
-    						else if (isset($body->message)) $error = $body->message;
-    						else if (!is_null($body)) $error = 'Problem with parsing the error data';//print_r($body, true);
-    					}
-    					$errors[] = array('msg' => $error, 'url' => $url);
-    		}
-    		curl_close($c);
-    		return array('response' => $page, 'errors' => $errors);
+		curl_setopt($c, CURLOPT_AUTOREFERER, true);
+		curl_setopt($c, CURLOPT_RETURNTRANSFER,true);
+		curl_setopt($c, CURLOPT_VERBOSE, false);
+		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
+		if (isset($_COOKIE['XDEBUG_SESSION']) && $_COOKIE['XDEBUG_SESSION'] == 'PHPSTORM') curl_setopt($c, CURLOPT_COOKIE, 'XDEBUG_SESSION=PHPSTORM');
+		if ($timeout != null)   curl_setopt($c, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($c, CURLOPT_CONNECTTIMEOUT_MS, 5000);
+		if (is_array($header))  curl_setopt($c, CURLOPT_HTTPHEADER, $header);
+		$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
+		$error = curl_error($c);
+		$errors = array();
+		if (strlen($error) > 0){
+			if ($log) {
+				if (isset($_REQUEST['debug'])) {
+					echo 'DEBUG:: <br>';
+					var_dump($error);
+					echo '<br>';
+					var_dump(debug_backtrace());
+					echo 'URL: ' . $url;
+					echo '<br>-------<br>';
+					error_log(print_r($error, true));
+					error_log(print_r(debug_backtrace(), true));
+					error_log($url);
+				}
+			}
+			if (strpos($error, 'Failed to connect') !== false && strpos($error, 'Network is unreachable') !== false){
+				curl_setopt($c, CURLOPT_FAILONERROR, false);
+				$page = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
+				$error2 = curl_error($c);
+				if (strlen($error2) > 0){
+					$error .= '. Please, enable "USE IPV4 PROTOCOL" option at the settings tab.';
+					$errors[] = array('msg' => $error, 'url' => $url);
+					error_log('FFFeedUtils line 110 :: ' . $error);
+					error_log('FFFeedUtils line 111 :: ' . $error2);
+				}
+				curl_close($c);
+				return array('response' => $page, 'errors' => $errors);
+			}
+			else if ((strpos($url, 'https://graph.facebook.com') === 0) ||
+			         (strpos($url, 'https://api.instagram.com') === 0) ||
+			         (strpos($url, 'https://api.linkedin.com') === 0) ||
+			         (strpos($url, 'https://www.googleapis.com') === 0)
+			) {
+				curl_setopt($c, CURLOPT_FAILONERROR, false);
+				$body = ($followLocation) ? curl_exec($c) : self::curl_exec_follow($c);
+				$body = json_decode($body);
+				if (isset($body->error->message)) $error = $body->error->message;
+				else if (isset($body->meta->error_message)) $error = $body->meta->error_message;
+				else if (isset($body->message)) $error = $body->message;
+				else if (!is_null($body)) $error = 'Problem with parsing the error data';//print_r($body, true);
+			}
+			$errors[] = array('msg' => $error, 'url' => $url);
+		} else if (200 != $http_code = curl_getinfo($c, CURLINFO_HTTP_CODE)){
+			$errors[] = ['msg' => 'Unexpected HTTP code: ' . $http_code, 'url' => $url];
+		}
+		curl_close($c);
+		return array('response' => $page, 'errors' => $errors);
     }
 
-    /**
-     * @param string $text
-     * @return mixed
-     */
-    public static function removeEmoji($text) {
-        // Match Emoticons
-        $regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
-        $clean_text = preg_replace($regexEmoticons, '', $text);
+	/**
+	 * @param string $text
+	 * @return mixed
+	 */
+	public static function removeEmoji($text) {
+		if (defined('FF_REMOVE_EMOJI') && !FF_REMOVE_EMOJI){
+			return $text;
+		}
 
-        // Match Miscellaneous Symbols and Pictographs
-        $regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
-        $clean_text = preg_replace($regexSymbols, '', $clean_text);
+		// Match Emoticons
+		$regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
+		$clean_text = preg_replace($regexEmoticons, '', $text);
 
-        // Match Transport And Map Symbols
-        $regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
-        $clean_text = preg_replace($regexTransport, '', $clean_text);
+		// Match Miscellaneous Symbols and Pictographs
+		$regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
+		$clean_text = preg_replace($regexSymbols, '', $clean_text);
 
-        // Match Miscellaneous Symbols
-        $regexMisc = '/[\x{2600}-\x{26FF}]/u';
-        $clean_text = preg_replace($regexMisc, '', $clean_text);
+		// Match Transport And Map Symbols
+		$regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
+		$clean_text = preg_replace($regexTransport, '', $clean_text);
 
-        // Match Dingbats
-        $regexDingbats = '/[\x{2700}-\x{27BF}]/u';
-        $clean_text = preg_replace($regexDingbats, '', $clean_text);
+		// Match Miscellaneous Symbols
+		$regexMisc = '/[\x{2600}-\x{26FF}]/u';
+		$clean_text = preg_replace($regexMisc, '', $clean_text);
 
-        return $clean_text;
-    }
+		// Match Dingbats
+		$regexDingbats = '/[\x{2700}-\x{27BF}]/u';
+		$clean_text = preg_replace($regexDingbats, '', $clean_text);
+
+		return $clean_text;
+	}
 
 	/**
 	 * @param string $source

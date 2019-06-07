@@ -10,7 +10,7 @@ if ( ! defined( 'WPINC' ) ) die;
  * @author    Looks Awesome <email@looks-awesome.com>
 
  * @link      http://looks-awesome.com
- *@copyright 2014-2016 Looks Awesome
+ *@copyright Looks Awesome
  */
 class FFDB {
 	/** @var SafeMySQL $db */
@@ -301,6 +301,7 @@ class FFDB {
 						if (is_array($value) && sizeof($value) == 1){
 							$value = $value[0];
 						}
+						if (!is_array($result)) $result = [];
 						$result[$feed] = $value;
 					}
 

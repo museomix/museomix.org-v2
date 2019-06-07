@@ -2,182 +2,207 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Flow-Flow v1.2.37\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-04-09 20:44:43+0000\n"
-"Last-Translator: cyril <cd@french-media.com>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2019-03-06 15:29:40+00:00\n"
+"PO-Revision-Date: 2019-03-25 15:02+0000\n"
+"Last-Translator: Carsso <germaincarre@yahoo.fr>\n"
+"Language-Team: Français\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
-"X-Generator: CSL v1.x\n"
+"X-Generator: Loco https://localise.biz/\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
 "X-Poedit-Basepath: ../\n"
 "X-Poedit-Bookmarks: \n"
 "X-Poedit-SearchPath-0: .\n"
-"X-Textdomain-Support: yes"
+"X-Textdomain-Support: yes\n"
+"Language: fr-FR\n"
+"X-Loco-Version: 2.2.1; wp-5.1.1"
 
-#. translators: plugin header field 'Name'
-#: flow-flow.php:0
-#@ flow-flow
-msgid "Flow-Flow"
-msgstr ""
-
-#. translators: plugin header field 'PluginURI'
-#: flow-flow.php:0
-#@ flow-flow
-msgid "flow.looks-awesome.com"
-msgstr ""
-
-#. translators: plugin header field 'Description'
-#: flow-flow.php:0
-#@ flow-flow
-msgid "Awesome social streams on your site"
-msgstr ""
-
-#. translators: plugin header field 'Author'
-#: flow-flow.php:0
-#@ flow-flow
-msgid "Looks Awesome"
-msgstr ""
-
-#. translators: plugin header field 'AuthorURI'
-#: flow-flow.php:0
-#@ flow-flow
-msgid "looks-awesome.com"
-msgstr ""
-
-#: includes/FlowFlow.php:375
-#@ flow-flow
+#: includes/FlowFlow.php:76 views/public.php:31
 msgid "All"
 msgstr "Tout"
 
-#: includes/FlowFlow.php:376
-#@ flow-flow
+#: includes/FlowFlow.php:77 views/public.php:32
 msgid "Search"
 msgstr "Rechercher"
 
-#: includes/FlowFlow.php:377
-#@ flow-flow
+#: includes/FlowFlow.php:78 views/public.php:33
 msgid "Expand"
 msgstr "Voir plus"
 
-#: includes/FlowFlow.php:378
-#@ flow-flow
+#: includes/FlowFlow.php:79 views/public.php:34
 msgid "Collapse"
 msgstr "Réduire"
 
-#: includes/FlowFlow.php:379
-#@ flow-flow
+#: includes/FlowFlow.php:80 views/public.php:35
 msgid "Posted on"
 msgstr "Posté sur"
 
-#: includes/FlowFlow.php:380
-#@ flow-flow
+#: includes/FlowFlow.php:81 views/public.php:36
+msgid "Followers"
+msgstr "Abonnés"
+
+#: includes/FlowFlow.php:82 views/public.php:37
+msgid "Following"
+msgstr "Abonnements"
+
+#: includes/FlowFlow.php:83 views/public.php:38
+msgid "Posts"
+msgstr "Publications"
+
+#: includes/FlowFlow.php:84 views/public.php:39
 msgid "Show more"
 msgstr "Voir plus"
 
-#: includes/FlowFlow.php:383
-#: includes/social/FFFeedUtils.php:29
-#@ flow-flow
+#: includes/FlowFlow.php:87 views/public.php:42
 msgid "Yesterday"
 msgstr "Hier"
 
-#: includes/FlowFlow.php:384
-#: includes/social/FFFeedUtils.php:48
-#@ flow-flow
+#: includes/FlowFlow.php:88 views/public.php:43
 msgid "s"
 msgstr "s"
 
-#: includes/FlowFlow.php:385
-#: includes/social/FFFeedUtils.php:48
-#@ flow-flow
+#: includes/FlowFlow.php:89 views/public.php:44
 msgid "m"
 msgstr "m"
 
-#: includes/FlowFlow.php:386
-#: includes/social/FFFeedUtils.php:48
-#@ flow-flow
+#: includes/FlowFlow.php:90 views/public.php:45
 msgid "h"
 msgstr "h"
 
-#: includes/FlowFlow.php:387
-#: includes/social/FFFeedUtils.php:55
-#@ flow-flow
+#: includes/FlowFlow.php:91 views/public.php:46
 msgid "ago"
-msgstr "il y a"
+msgstr "plus tôt"
 
-#: includes/FlowFlow.php:389
-#@ flow-flow
+#: includes/FlowFlow.php:93 views/public.php:48
 msgid "Jan"
 msgstr "Jan"
 
-#: includes/FlowFlow.php:389
-#@ flow-flow
+#: includes/FlowFlow.php:93 views/public.php:48
 msgid "Feb"
 msgstr "Fév"
 
-#: includes/FlowFlow.php:389
-#@ flow-flow
+#: includes/FlowFlow.php:93 views/public.php:48
 msgid "March"
 msgstr "Mars"
 
-#: includes/FlowFlow.php:390
-#@ flow-flow
+#: includes/FlowFlow.php:94 views/public.php:49
 msgid "April"
 msgstr "Avril"
 
-#: includes/FlowFlow.php:390
-#@ flow-flow
+#: includes/FlowFlow.php:94 views/public.php:49
 msgid "May"
 msgstr "Mai"
 
-#: includes/FlowFlow.php:390
-#@ flow-flow
+#: includes/FlowFlow.php:94 views/public.php:49
 msgid "June"
 msgstr "Juin"
 
-#: includes/FlowFlow.php:391
-#@ flow-flow
+#: includes/FlowFlow.php:95 views/public.php:50
 msgid "July"
 msgstr "Juillet"
 
-#: includes/FlowFlow.php:391
-#@ flow-flow
+#: includes/FlowFlow.php:95 views/public.php:50
 msgid "Aug"
 msgstr "Août"
 
-#: includes/FlowFlow.php:391
-#@ flow-flow
+#: includes/FlowFlow.php:95 views/public.php:50
 msgid "Sept"
 msgstr "Sept"
 
-#: includes/FlowFlow.php:392
-#@ flow-flow
+#: includes/FlowFlow.php:96 views/public.php:51
 msgid "Oct"
 msgstr "Oct"
 
-#: includes/FlowFlow.php:392
-#@ flow-flow
+#: includes/FlowFlow.php:96 views/public.php:51
 msgid "Nov"
 msgstr "Nov"
 
-#: includes/FlowFlow.php:392
-#@ flow-flow
+#: includes/FlowFlow.php:96 views/public.php:51
 msgid "Dec"
 msgstr "Déc"
 
-#: includes/FlowFlow.php:395
-#@ flow-flow
+#: includes/FlowFlow.php:99 views/public.php:54
 msgid "Navigate with arrow keys"
 msgstr "Naviguez avec les touches fléchées"
 
-#. translators: plugin header field 'Version'
-#: flow-flow.php:0
-#@ flow-flow
-msgid "1.2.37"
-msgstr ""
+#: includes/FlowFlow.php:100 views/public.php:55
+msgid "View on"
+msgstr "Voir sur"
 
+#: includes/FlowFlow.php:101 views/public.php:56
+msgid "View on site"
+msgstr "Voir sur le site"
+
+#: includes/FlowFlow.php:102 views/public.php:57
+msgid "View all"
+msgstr "Voir tout"
+
+#: includes/FlowFlow.php:103 views/public.php:58
+msgid "comments"
+msgstr "commentaires"
+
+#: includes/FlowFlow.php:104 views/public.php:59
+msgid "Scroll for more"
+msgstr "Défiler pour plus"
+
+#: includes/FlowFlow.php:105 views/public.php:60
+msgid "No comments yet."
+msgstr "Aucun commentaire pour l'instant."
+
+#: includes/FlowFlow.php:106 views/public.php:61
+msgid "Be the first!"
+msgstr "Soyez le premier !"
+
+#: includes/FlowFlowActivator.php:43
+msgid "Social Stream"
+msgstr "Flux Social"
+
+#: includes/FlowFlowActivator.php:47
+msgid "Flow-Flow plugin social stream"
+msgstr "Flow-Flow plugin de flux social"
+
+#: includes/FlowFlowActivator.php:49
+msgid "Social"
+msgstr "Social"
+
+#: includes/FlowFlowActivator.php:57
+msgid "Choose stream to place on page:"
+msgstr "Choisissez un flux à placer sur la page :"
+
+#: includes/FlowFlowWPWidget.php:62
+msgid "Title:"
+msgstr "Titre :"
+
+#: includes/FlowFlowWPWidget.php:66
+msgid "Stream:"
+msgstr "Flux :"
+
+#: includes/LAAdminBase.php:93 includes/LAAdminBase.php:214
+msgid "You do not have sufficient permissions to access this page."
+msgstr "Vous n'avez pas la permission d'accéder à cette page."
+
+#. translators: plugin header field 'Name'
+msgid "Flow-Flow"
+msgstr "Flow-Flow"
+
+#. Plugin URI of the plugin/theme
+msgid "social-streams.com"
+msgstr "social-streams.com"
+
+#. translators: plugin header field 'Description'
+msgid "Awesome social streams on your site"
+msgstr "Flux sociaux incroyables sur votre site"
+
+#. translators: plugin header field 'Author'
+msgid "Looks Awesome"
+msgstr "Looks Awesome"
+
+#. translators: plugin header field 'AuthorURI'
+msgid "looks-awesome.com"
+msgstr "looks-awesome.com"

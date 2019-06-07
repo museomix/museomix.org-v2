@@ -27,6 +27,7 @@ class FacetWP_Integration_SearchWP
             $args['suppress_filters'] = true;
             if ( empty( $args['post_type'] ) ) {
                 $args['post_type'] = 'any';
+                $args['post_status'] = 'any';
             }
         }
 
@@ -74,15 +75,16 @@ class FacetWP_Integration_SearchWP
         $facet = $params['facet'];
         $selected_values = $params['selected_values'];
         $selected_values = is_array( $selected_values ) ? $selected_values[0] : $selected_values;
+        $search_engine = isset( $facet['search_engine'] ) ? $facet['search_engine'] : '';
 
-        if ( ! empty( $facet['search_engine'] ) ) {
+        if ( 'search' == $facet['type'] && 0 === strpos( $search_engine, 'swp_' ) ) {
             if ( empty( $selected_values ) ) {
                 return 'continue';
             }
 
             $swp_query = new SWP_Query( [
                 's'                 => $selected_values,
-                'engine'            => $facet['search_engine'],
+                'engine'            => substr( $search_engine, 4 ),
                 'posts_per_page'    => 200,
                 'fields'            => 'ids',
                 'facetwp'           => true,
@@ -103,7 +105,7 @@ class FacetWP_Integration_SearchWP
 
         foreach ( $settings['engines'] as $key => $attr ) {
             $label = isset( $attr['searchwp_engine_label'] ) ? $attr['searchwp_engine_label'] : __( 'Default', 'fwp' );
-            $engines[ $key ] = 'SearchWP - ' . $label;
+            $engines[ 'swp_' . $key ] = 'SearchWP - ' . $label;
         }
 
         return $engines;

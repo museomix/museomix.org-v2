@@ -151,6 +151,11 @@ class Media extends AbstractModel
     protected $comments = [];
 
     /**
+     * @var Comment[]
+     */
+    protected $previewComments = [];
+
+    /**
      * @var bool
      */
     protected $hasMoreComments = false;
@@ -164,6 +169,11 @@ class Media extends AbstractModel
      * @var Media[]|array
      */
     protected $sidecarMedias = [];
+
+    /**
+     * @var string
+     */
+    protected $locationSlug;
 
     /**
      * @param string $code
@@ -406,6 +416,14 @@ class Media extends AbstractModel
     }
 
     /**
+     * @return Comment[]
+     */
+    public function getPreviewComments()
+    {
+        return $this->previewComments;
+    }
+
+    /**
      * @return bool
      */
     public function hasMoreComments()
@@ -427,6 +445,14 @@ class Media extends AbstractModel
     public function getSidecarMedias()
     {
         return $this->sidecarMedias;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocationSlug()
+    {
+        return $this->locationSlug;
     }
 
 	/**
@@ -472,39 +498,38 @@ class Media extends AbstractModel
             case 'likes':
                 $this->likesCount = $arr[$prop]['count'];
                 break;
-            case 'thumbnail_resources':
-                foreach ($value as $thumbnail) {
-                    $resource                                     = new \stdClass();
-                    $resource->url                                = $thumbnail['src'];
-                    $resource->width                              = $thumbnail['config_width'];
-                    $resource->height                             = $thumbnail['config_height'];
-                    $this->thumbnailResources[ $resource->width ] = $resource;
-                }
-                break;
             case 'display_resources':
-                foreach ($value as $thumbnail) {
-                    $resource = new \stdClass();
-                    $resource->url = $thumbnail['src'];
-                    $resource->width = $thumbnail['config_width'];
-                    $resource->height = $thumbnail['config_height'];
-                    $this->thumbnailResources[$resource->width] = $resource;
-
-                    $thumbnailsUrl[] = $thumbnail['src'];
-                    switch ($thumbnail['config_width']) {
+                foreach ($value as $media) {
+                    $mediasUrl[] = $media['src'];
+                    switch ($media['config_width']) {
                         case 640:
-                            $this->imageThumbnailUrl = $thumbnail['src'];
+                            $this->imageThumbnailUrl = $media['src'];
                             break;
                         case 750:
-                            $this->imageLowResolutionUrl = $thumbnail['src'];
+                            $this->imageLowResolutionUrl = $media['src'];
                             break;
                         case 1080:
-                            $this->imageStandardResolutionUrl = $thumbnail['src'];
+                            $this->imageStandardResolutionUrl = $media['src'];
                             break;
-                        default:
-                            ;
                     }
+	                $resource                                     = new \stdClass();
+	                $resource->url                                = $media['src'];
+	                $resource->width                              = $media['config_width'];
+	                $resource->height                             = $media['config_height'];
+	                $this->thumbnailResources[ $resource->width ] = $resource;
                 }
-                $this->squareImages = $thumbnailsUrl;
+                break;
+            case 'thumbnail_resources':
+                $squareImagesUrl = [];
+                foreach ($value as $squareImage) {
+	                $resource                                     = new \stdClass();
+	                $resource->url                                = $squareImage['src'];
+	                $resource->width                              = $squareImage['config_width'];
+	                $resource->height                             = $squareImage['config_height'];
+	                $this->thumbnailResources[ $resource->width ] = $resource;
+                    $squareImagesUrl[] = $squareImage['src'];
+                }
+                $this->squareImages = $squareImagesUrl;
                 break;
             case 'display_url':
                 $this->imageHighResolutionUrl = $value;
@@ -548,9 +573,10 @@ class Media extends AbstractModel
                 }
                 break;
             case 'location':
-                $this->location = $arr[$prop];
+	            $this->location = $arr[$prop];
                 $this->locationId = $arr[$prop]['id'];
                 $this->locationName = $arr[$prop]['name'];
+                $this->locationSlug = $arr[$prop]['slug'];
                 break;
             case 'user':
                 $this->owner = Account::create($arr[$prop]);
@@ -579,7 +605,18 @@ class Media extends AbstractModel
                 $this->shortCode = $value;
                 $this->link = Endpoints::getMediaPageLink($this->shortCode);
                 break;
+            case 'edge_media_preview_comment':
+                if (isset($arr[$prop]['count'])) {
+                    $this->commentsCount = (int) $arr[$prop]['count'];
+                }
+                if (isset($arr[$prop]['edges']) && is_array($arr[$prop]['edges'])) {
+                    foreach ($arr[$prop]['edges'] as $commentData) {
+                        $this->previewComments[] = Comment::create($commentData['node']);
+                    }
+                }
+                break;
             case 'edge_media_to_comment':
+            case 'edge_media_to_parent_comment':
                 if (isset($arr[$prop]['count'])) {
                     $this->commentsCount = (int) $arr[$prop]['count'];
                 }

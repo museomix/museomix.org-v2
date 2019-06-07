@@ -17,7 +17,7 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
         $output .= '<div class="facetwp-slider"></div>';
         $output .= '</div>';
         $output .= '<span class="facetwp-slider-label"></span>';
-        $output .= '<div><input type="button" class="facetwp-slider-reset" value="' . __( 'Reset', 'fwp' ) . '" /></div>';
+        $output .= '<div><input type="button" class="facetwp-slider-reset" value="' . __( 'Reset', 'fwp-front' ) . '" /></div>';
         return $output;
     }
 
@@ -112,7 +112,7 @@ class FacetWP_Facet_Slider extends FacetWP_Facet
      * Output any front-end scripts
      */
     function front_scripts() {
-        FWP()->display->assets['nouislider.css'] = FACETWP_URL . '/assets/vendor/noUiSlider/nouislider.min.css';
+        FWP()->display->assets['nouislider.css'] = FACETWP_URL . '/assets/vendor/noUiSlider/nouislider.css';
         FWP()->display->assets['nouislider.js'] = FACETWP_URL . '/assets/vendor/noUiSlider/nouislider.min.js';
         FWP()->display->assets['nummy.js'] = FACETWP_URL . '/assets/js/src/nummy.js';
     }

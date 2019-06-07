@@ -32,7 +32,7 @@ class FacetWP_Indexer
         add_action( 'save_post',                [ $this, 'save_post' ] );
         add_action( 'delete_post',              [ $this, 'delete_post' ] );
         add_action( 'edited_term',              [ $this, 'edit_term' ], 10, 3 );
-        add_action( 'delete_term',              [ $this, 'delete_term' ], 10, 4 );
+        add_action( 'delete_term',              [ $this, 'delete_term' ], 10, 3 );
         add_action( 'set_object_terms',         [ $this, 'set_object_terms' ] );
         add_action( 'facetwp_indexer_cron',     [ $this, 'get_progress' ] );
         add_filter( 'wp_insert_post_parent',    [ $this, 'is_wp_insert_post' ] );
@@ -92,13 +92,19 @@ class FacetWP_Indexer
 
         $term = get_term( $term_id, $taxonomy );
         $slug = FWP()->helper->safe_value( $term->slug );
+        $matches = FWP()->helper->get_facets_by( 'source', "tax/$taxonomy" );
 
-        $wpdb->query( $wpdb->prepare( "
-            UPDATE {$wpdb->prefix}facetwp_index
-            SET facet_value = %s, facet_display_value = %s
-            WHERE facet_source = %s AND term_id = %d",
-            $slug, $term->name, "tax/$taxonomy", $term_id
-        ) );
+        if ( ! empty( $matches ) ) {
+            $facet_names = wp_list_pluck( $matches, 'name' );
+            $facet_names = implode( "','", array_map( 'esc_sql', $facet_names ) );
+
+            $wpdb->query( $wpdb->prepare( "
+                UPDATE {$wpdb->prefix}facetwp_index
+                SET facet_value = %s, facet_display_value = %s
+                WHERE facet_name IN ('$facet_names') AND term_id = %d",
+                $slug, $term->name, $term_id
+            ) );
+        }
     }
 
 
@@ -106,13 +112,20 @@ class FacetWP_Indexer
      * Update the index when terms get deleted
      * @since 0.6.0
      */
-    function delete_term( $term, $tt_id, $taxonomy, $deleted_term ) {
+    function delete_term( $term_id, $tt_id, $taxonomy ) {
         global $wpdb;
 
-        $wpdb->query( "
-            DELETE FROM {$wpdb->prefix}facetwp_index
-            WHERE facet_source = 'tax/$taxonomy' AND term_id IN ('$term')"
-        );
+        $matches = FWP()->helper->get_facets_by( 'source', "tax/$taxonomy" );
+
+        if ( ! empty( $matches ) ) {
+            $facet_names = wp_list_pluck( $matches, 'name' );
+            $facet_names = implode( "','", array_map( 'esc_sql', $facet_names ) );
+
+            $wpdb->query( "
+                DELETE FROM {$wpdb->prefix}facetwp_index
+                WHERE facet_name IN ('$facet_names') AND term_id = $term_id"
+            );
+        }
     }
 
 
@@ -289,7 +302,7 @@ class FacetWP_Indexer
                     'facet' => $facet
                 ] );
 
-                // Set flag for custom facet indexing
+                // Set flag for custom handling
                 $this->is_overridden = true;
 
                 // Bypass default indexing
@@ -306,10 +319,6 @@ class FacetWP_Indexer
 
                 // Get rows to insert
                 $rows = $this->get_row_data( $defaults );
-                $rows = apply_filters( 'facetwp_indexer_row_data', $rows, [
-                    'defaults'  => $defaults,
-                    'facet'     => $facet
-                ] );
 
                 foreach ( $rows as $row ) {
                     $this->index_row( $row );
@@ -323,6 +332,8 @@ class FacetWP_Indexer
             update_option( 'facetwp_transients', '' );
             update_option( 'facetwp_indexing', '' );
         }
+
+        do_action( 'facetwp_indexer_complete' );
     }
 
 
@@ -440,7 +451,10 @@ class FacetWP_Indexer
             $output[] = $params;
         }
 
-        return $output;
+        return apply_filters( 'facetwp_indexer_row_data', $output, [
+            'defaults'  => $defaults,
+            'facet'     => $this->facet
+        ] );
     }
 
 
@@ -475,10 +489,9 @@ class FacetWP_Indexer
         }
 
         $wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->prefix}facetwp_index
-            (post_id, facet_name, facet_source, facet_value, facet_display_value, term_id, parent_id, depth, variation_id) VALUES (%d, %s, %s, %s, %s, %d, %d, %d, %d)",
+            (post_id, facet_name, facet_value, facet_display_value, term_id, parent_id, depth, variation_id) VALUES (%d, %s, %s, %s, %d, %d, %d, %d)",
             $params['post_id'],
             $params['facet_name'],
-            $params['facet_source'],
             FWP()->helper->safe_value( $value ),
             $params['facet_display_value'],
             $params['term_id'],
